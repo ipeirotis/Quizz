@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/freebase-v1r33lv1.13.2-beta"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Gson"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Json-simple"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
