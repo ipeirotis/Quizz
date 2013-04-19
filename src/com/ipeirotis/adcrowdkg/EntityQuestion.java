@@ -23,14 +23,6 @@ public class EntityQuestion {
 	}
 
 	
-	/**
-	 * @param freebaseEntityId the freebaseEntityId to set
-	 */
-	public void setFreebaseEntityId(String freebaseEntityId) {
-	
-		this.freebaseEntityId = freebaseEntityId;
-	}
-
 	
 	/**
 	 * @return the relation
@@ -40,14 +32,6 @@ public class EntityQuestion {
 		return relation;
 	}
 
-	
-	/**
-	 * @param relation the relation to set
-	 */
-	public void setRelation(String relation) {
-	
-		this.relation = relation;
-	}
 
 	
 	/**
@@ -73,18 +57,35 @@ public class EntityQuestion {
 	@Persistent
 	private String	relation;
 
+	@Persistent
+	private Double	emptyweight;
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 	
-	public EntityQuestion(String relation, String freebaseEntityId) {
+	public EntityQuestion(String relation, String freebaseEntityId, Double	emptyweight) {
 
 		this.freebaseEntityId = freebaseEntityId;
 		this.relation = relation;
+		this.emptyweight = emptyweight;
 
-		Key k = KeyFactory.createKey(EntityQuestion.class.getSimpleName(), "id_" + relation + "_" + freebaseEntityId);
-		this.key = k;
+		this.key = generateKeyFromID(relation, freebaseEntityId);
 	}
 
+	public static Key generateKeyFromID(String relation, String freebaseEntityId) {
+		return KeyFactory.createKey(EntityQuestion.class.getSimpleName(), "id_" + relation + "_" + freebaseEntityId);
+	}
+
+
+
+	
+	/**
+	 * @return the emptyweight
+	 */
+	public Double getEmptyweight() {
+	
+		return emptyweight;
+	}
+	
 }

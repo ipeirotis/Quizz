@@ -37,7 +37,14 @@ public class AddEntity extends HttpServlet {
 				return;
 			}
 
-			EntityQuestion q = new EntityQuestion(relation, freebaseid);
+			Double emptyweight = Double.parseDouble(req.getParameter("emptyweight"));
+			if (emptyweight != null) {
+				resp.getWriter().println("Empty weight: " + emptyweight);
+			} else {
+				return;
+			}
+			
+			EntityQuestion q = new EntityQuestion(relation, freebaseid, emptyweight);
 
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);

@@ -79,8 +79,9 @@ public class AddRelation extends HttpServlet {
 				String s = scanner.nextLine();
 				String[] entries = s.split(",");
 				String mid = entries[0];
+				String weight = entries[5];
 				if (mid.equals("mid")) continue; // skip first line
-				queue.add(Builder.withUrl("/addEntity").param("relation", relation).param("freebaseid", mid).method(TaskOptions.Method.GET));
+				queue.add(Builder.withUrl("/addEntity").param("relation", relation).param("freebaseid", mid).param("emptyweight", weight).method(TaskOptions.Method.GET));
 			}
 			scanner.close();
 

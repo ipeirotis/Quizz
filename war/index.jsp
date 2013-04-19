@@ -8,6 +8,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
+<meta name="google-site-verification" content="kYjnyRwCqe4JTpWbEjE-yL7ae3YPFf8zxlQuGcKGb-Q" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>List of Supported Relations</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,11 +16,14 @@
 	media="screen">
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
+
+
+
 </head>
 <body>
 	<div class="container pagination-centered">
 		<div class="row span12">
-		<h2>FactSleuth</h2>
+		<h2>Crowd Quizzes</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Relation</th>
@@ -29,7 +33,7 @@
 				</tr>
 				<%
 					PersistenceManager pm = PMF.get().getPersistenceManager();
-					String query = "select from " + Question.class.getName() + " order by relation";
+					String query = "select from " + Question.class.getName();
 					List<Question> questions = (List<Question>) pm.newQuery(query).execute();
 					if (questions.isEmpty()) {
 				%>
@@ -63,5 +67,17 @@
 			</div>
 		</div>
 	</div>
+	
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
+  ga('send', 'pageview');
+
+</script>
+	
 </body>
 </html>

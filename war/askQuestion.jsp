@@ -20,6 +20,7 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/freebase/suggest/4_1/suggest.min.js"></script>
 
+
 <script src="http://malsup.github.com/jquery.form.js"></script> 
 
 </head>
@@ -38,11 +39,14 @@
 				
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				Question q = null;
+				EntityQuestion eq = null;
 				
 				try {
 					q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
+					eq = pm.getObjectById(EntityQuestion.class, EntityQuestion.generateKeyFromID(relation, mid));
 		    	} catch (Exception e) {
 		        	q = null;
+		        	eq = null;
 		    	}
 				
 			%>
@@ -83,7 +87,23 @@
 			}
 			%>
 				
-			$('#addUserEntry').ajaxForm(function() { 
+			$('#addUserEntry').ajaxForm(function() {
+				
+				ga('send', {
+					  'hitType': 'event', 
+					  'eventCategory': 'quiz-submission', 
+					  'eventAction': 'fill-in', 
+					  'eventLabel': '<%= q.getRelation() %>',
+					  <% if (eq.getEmptyweight()!=null) {
+					  	%> 'eventValue': <%= eq.getEmptyweight() %>, <%
+					  } else {
+					  	
+					  }
+					  %>
+					  
+					});
+				
+				
                 alert("Thank you for your entry!"); 
             }); 
 		});
@@ -124,7 +144,16 @@
 		}
 	</script>
 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+  ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
+  ga('send', 'pageview');
+
+</script>
 
 </body>
 </html>

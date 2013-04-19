@@ -24,31 +24,12 @@ public class Question {
 	}
 
 
-	
-	/**
-	 * @param freebaseType the freebaseType to set
-	 */
-	public void setFreebaseType(String freebaseType) {
-	
-		this.freebaseType = freebaseType;
-	}
-
-
 	/**
 	 * @return the questionText
 	 */
 	public String getQuestionText() {
 	
 		return questionText;
-	}
-
-	
-	/**
-	 * @param questionText the questionText to set
-	 */
-	public void setQuestionText(String questionText) {
-	
-		this.questionText = questionText;
 	}
 
 	
@@ -61,14 +42,6 @@ public class Question {
 	}
 
 	
-	/**
-	 * @param relation the relation to set
-	 */
-	public void setRelation(String relation) {
-	
-		this.relation = relation;
-	}
-
 	
 	/**
 	 * @return the key
@@ -79,14 +52,6 @@ public class Question {
 	}
 
 	
-	/**
-	 * @param key the key to set
-	 */
-	public void setKey(Key key) {
-	
-		this.key = key;
-	}
-
 	
 	/**
 	 * @return the freebaseAttribute
@@ -96,18 +61,6 @@ public class Question {
 		return freebaseAttribute;
 	}
 
-
-
-	
-	/**
-	 * @param freebaseAttribute the freebaseAttribute to set
-	 */
-	public void setFreebaseAttribute(String freebaseAttribute) {
-	
-		this.freebaseAttribute = freebaseAttribute;
-	}
-
-	
 	
 	// The name of the relation that we are targeting
 	@Persistent
@@ -140,8 +93,7 @@ public class Question {
 		this.freebaseAttribute = freebaseAttribute;
 		this.blobKey=blobKey;
 
-		Key k = generateKeyFromID(relation);
-		this.key = k;
+		this.key = generateKeyFromID(relation);
 	}
 	
 	public static Key generateKeyFromID(String id) {
