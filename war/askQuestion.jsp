@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.adcrowdkg.PMF"%>
-<%@ page import="com.ipeirotis.adcrowdkg.Question"%>
-<%@ page import="com.ipeirotis.adcrowdkg.EntityQuestion"%>
-<%@ page import="com.ipeirotis.adcrowdkg.FreebaseSearch"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.EntityQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
+<%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 
 <!DOCTYPE html>
@@ -26,16 +27,45 @@
 </head>
 <body>
 	<div class="container pagination-centered" >
-		<div class="row">
-		   <div class="span8 offset2">
-			<h3>Type the answer once, have the answer for ever</h3>
-			</div>
-		</div>
-		<div class="row">
-			<div class="span8 offset2">
+
 			<%
 				String relation = request.getParameter("relation");
 				String mid = request.getParameter("mid");
+				
+				String userName = null;
+				// String userName = "CrowdQuizzer";
+				
+				// UserService userService = UserServiceFactory.getUserService();
+				// User user = userService.getCurrentUser();
+				
+				// String thisURL = request.getRequestURL().toString().replaceAll("&","%2526");
+				
+				//if (user != null) {
+				//	userName =  user.getNickname();
+				//	pageContext.setAttribute("user", user);
+				//	response.getWriter().println("<p><a href=\"" + userService.createLogoutURL(thisURL) + "\">sign out</a>.</p>");
+				//	
+				//} else {
+				//	response.getWriter().println("<p>Please <a href=\"" + userService.createLoginURL(thisURL) + "\">sign in</a>.</p>");
+
+					// Get an array of Cookies associated with this domain
+					Cookie[] cookies = request.getCookies();
+				   if (cookies != null) {
+					   for (Cookie c: cookies) {
+					  	 if (c.getName().equals("username")) {
+					  		 userName = c.getValue();
+					  		 break;
+					  	 }
+					   }
+				   } 
+					
+				   if (userName == null) {
+				  	 userName = UUID.randomUUID().toString();;
+				   }
+
+				// }
+				Cookie username = new Cookie("username", userName);
+				response.addCookie( username );
 				
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				Question q = null;
@@ -47,16 +77,26 @@
 		    	} catch (Exception e) {
 		        	q = null;
 		        	eq = null;
-		    	}
+		    	} 
 				
 			%>
+		<div class="row">
+		   <div class="span8 offset2">
+			<h3>Do you know...</h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span8 offset2">
+			
+			
 			<form id="addUserEntry" action="/addUserEntry" style="background-color: #D4D4D4; border-radius: 5px;">
 			  <fieldset>
 			    <legend>
-			    	<%= q.getQuestionText() %> <%= FreebaseSearch.getFreebaseName(mid).toLowerCase() %>
+			    	<%= q.getQuestionText() %> <%= FreebaseSearch.getFreebaseName(mid) %>
 			    </legend>
 			    <input id="useranswer" name="useranswer" type="text">
 			    <input id="freebaseanswer" name="freebaseanswer" type="hidden">
+			    <input id="userid" name="userid" type="hidden">
 			    <input id="relation" name="relation" type="hidden" value="<%= relation %>">
 			    <input id="mid" name="mid" type="hidden" value="<%= mid %>">
 			    <div class="form-actions" style="background-color: #D0D0D0; border-radius: 5px;">
@@ -71,11 +111,13 @@
 	<script type="text/javascript">
 		$( document ).ready(function() {
 			
+			<!-- Populate the (hidden) userid field with the cookie information -->
+			$("input[name=userid]").val('<%= userName %>');
 			
-			
-			<!-- Populate the field with the existing answer from Freebase, if any -->
+			<!-- Populate the (hidden) freebaseanswer field with the existing answer from Freebase, if any -->
 			 queryFreebase('<%= mid %>', $("input[name=freebaseanswer]"));
 
+			 <!-- Add the Freebase Suggest widget on the form to enable autocompletion -->
 			<% if (q.getFreebaseType().equals("/type/float")) {
 				;
 			} else { %>	
@@ -87,25 +129,18 @@
 			}
 			%>
 				
-			$('#addUserEntry').ajaxForm(function() {
-				
-				ga('send', {
-					  'hitType': 'event', 
-					  'eventCategory': 'quiz-submission', 
-					  'eventAction': 'fill-in', 
-					  'eventLabel': '<%= q.getRelation() %>',
-					  <% if (eq.getEmptyweight()!=null) {
-					  	%> 'eventValue': <%= eq.getEmptyweight() %>, <%
-					  } else {
-					  	
-					  }
-					  %>
-					  
-					});
-				
-				
-                alert("Thank you for your entry!"); 
-            }); 
+			
+		    $('#addUserEntry').ajaxForm({ 
+		        // dataType identifies the expected content type of the server response 
+		        dataType:  'json', 
+		 
+		        // success identifies the function to invoke when the server response 
+		        // has been received 
+		        success:   processJson 
+		    }); 
+		    
+
+
 		});
 
 
@@ -115,8 +150,41 @@
 	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->
 	<!-- query Freebase, and replace its content with the name of the Freebase entity -->
 		
+    function processJson(data) {
 		
-
+		ga('send', {
+			  'hitType': 'event', 
+			  'eventCategory': 'quiz-submission', 
+			  'eventAction': 'fill-in', 
+			  'eventLabel': '<%= q.getRelation() %>',
+			  <% if (eq.getEmptyweight()!=null) {
+			  	%> 'eventValue': <%= eq.getEmptyweight() %>, <%
+			  } else {
+			  	
+			  }
+			  %>
+			  
+			});
+		
+		var result = jQuery.parseJSON(data);
+		var message = 'Thank you for your entry!\n';
+		if (data.correctAnswer) {
+			message += "The correct answer is: " + data.correctAnswer +"\n";
+		}
+		if (data.crowdAnswers.length>0) {
+			var crowd = '';
+			for (var c in data.crowdAnswers) {
+			    crowd = crowd + data.crowdAnswers[c] + ", ";
+			}
+			
+			message += "Other participants answered: " +crowd;
+		}
+		alert(message);
+        window.location.href = data.url;
+        
+    }
+	
+	
 		function queryFreebase(freebaseMid, element) {
 			
 			var query = {                         

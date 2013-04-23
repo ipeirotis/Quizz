@@ -6,15 +6,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 	<servlet>
 		<servlet-name>AddRelation</servlet-name>
-		<servlet-class>com.ipeirotis.adcrowdkg.AddRelation</servlet-class>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddRelation</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddEntity</servlet-name>
-		<servlet-class>com.ipeirotis.adcrowdkg.AddEntity</servlet-class>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddEntity</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddUserEntry</servlet-name>
-		<servlet-class>com.ipeirotis.adcrowdkg.AddUserEntry</servlet-class>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddUserEntry</servlet-class>
 	</servlet>
 
 
@@ -34,4 +34,17 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	
+	<security-constraint>
+        <web-resource-collection>
+         	<web-resource-name>Protected Area</web-resource-name> 
+            <url-pattern>/index.*</url-pattern>
+            <url-pattern>/addRelation.*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+	
+	
 </web-app>

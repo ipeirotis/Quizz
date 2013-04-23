@@ -1,9 +1,12 @@
-package com.ipeirotis.adcrowdkg;
+package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.*;
+
+import com.ipeirotis.crowdquiz.entities.EntityQuestion;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

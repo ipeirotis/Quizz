@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.adcrowdkg.PMF"%>
-<%@ page import="com.ipeirotis.adcrowdkg.Question"%>
-<%@ page import="com.ipeirotis.adcrowdkg.EntityQuestion"%>
-<%@ page import="com.ipeirotis.adcrowdkg.FreebaseSearch"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.EntityQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.List"%>
 <%@ page
 	import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
