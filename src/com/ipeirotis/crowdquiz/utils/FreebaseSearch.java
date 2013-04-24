@@ -18,26 +18,26 @@ public class FreebaseSearch {
 	private static HttpTransport			httpTransport		= new NetHttpTransport();
 	private static HttpRequestFactory	requestFactory	= httpTransport.createRequestFactory();
 
-	public static String getFreebaseName(String mid) throws IOException {
+	public static String getFreebaseAttribute(String mid, String freebaseAttribute) throws IOException {
 
-		GenericUrl url = new GenericUrl("https://www.googleapis.com/freebase/v1/search");
-		url.put("query", mid);
+		GenericUrl url = new GenericUrl("https://www.googleapis.com/freebase/v1/mqlread");
+
+		// TODO: Form this using a proper JSON library
+		String query = "{\"mid\":\"" + mid + "\", \"" + freebaseAttribute + "\": null, \"name\": null}";
+
+		url.put("query", query);
 		url.put("limit", "1");
 		url.put("key", FreebaseSearch.API_KEY);
 
 		HttpRequest request = requestFactory.buildGetRequest(url);
-		// System.out.println(url.toString());
 		HttpResponse httpResponse = request.execute();
+		String response = httpResponse.parseAsString();
 
 		try {
-			JsonObject jo = jp.parse(httpResponse.parseAsString()).getAsJsonObject();
-			JsonObject result = jo.get("result").getAsJsonArray().get(0).getAsJsonObject();
-			// Get the mid and ensure it is the same
-			String returnedMid = result.get("mid").getAsString();
-			if (!returnedMid.equals(mid))
-				return "";
-			// Return the name
-			String returnedName = result.get("name").getAsString();
+			JsonObject jo = jp.parse(response).getAsJsonObject();
+			JsonObject result = jo.get("result").getAsJsonObject();
+
+			String returnedName = result.get(freebaseAttribute).getAsString();
 			if (returnedName != null)
 				return returnedName;
 			else
@@ -50,8 +50,10 @@ public class FreebaseSearch {
 
 	public static void main(String[] args) throws IOException {
 
-		String entityName = FreebaseSearch.getFreebaseName("/m/01599");
-		System.out.println("Entity Name: " + entityName);
+		String name = FreebaseSearch.getFreebaseAttribute("/m/0cyhj_", "name");
+		String calories = FreebaseSearch.getFreebaseAttribute("/m/0cyhj_", "/food/food/energy");
+		System.out.println(name + "\t" + calories);
+
 	}
 
 }

@@ -12,42 +12,36 @@ import com.google.appengine.api.datastore.KeyFactory;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class EntityQuestion {
 
-
-	
 	/**
 	 * @return the freebaseEntityId
 	 */
 	public String getFreebaseEntityId() {
-	
+
 		return freebaseEntityId;
 	}
 
-	
-	
 	/**
 	 * @return the relation
 	 */
 	public String getRelation() {
-	
+
 		return relation;
 	}
 
-
-	
 	/**
 	 * @return the key
 	 */
 	public Key getKey() {
-	
+
 		return key;
 	}
 
-	
 	/**
-	 * @param key the key to set
+	 * @param key
+	 *          the key to set
 	 */
 	public void setKey(Key key) {
-	
+
 		this.key = key;
 	}
 
@@ -59,12 +53,12 @@ public class EntityQuestion {
 
 	@Persistent
 	private Double	emptyweight;
-	
+
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
-	
-	public EntityQuestion(String relation, String freebaseEntityId, Double	emptyweight) {
+
+	public EntityQuestion(String relation, String freebaseEntityId, Double emptyweight) {
 
 		this.freebaseEntityId = freebaseEntityId;
 		this.relation = relation;
@@ -74,18 +68,16 @@ public class EntityQuestion {
 	}
 
 	public static Key generateKeyFromID(String relation, String freebaseEntityId) {
+
 		return KeyFactory.createKey(EntityQuestion.class.getSimpleName(), "id_" + relation + "_" + freebaseEntityId);
 	}
 
-
-
-	
 	/**
 	 * @return the emptyweight
 	 */
 	public Double getEmptyweight() {
-	
+
 		return emptyweight;
 	}
-	
+
 }

@@ -1,34 +1,36 @@
 package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.ipeirotis.crowdquiz.entities.EntityQuestion;
 import com.ipeirotis.crowdquiz.utils.PMF;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 public class AddEntity extends HttpServlet {
 
 	private HttpServletResponse	r;
-	
-	final static Logger logger = Logger.getLogger("com.ipeirotis.adcrowdkg"); 
-	
+
+	final static Logger					logger	= Logger.getLogger("com.ipeirotis.adcrowdkg");
+
+	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		r = resp;
 
 		r.setContentType("text/plain");
-		
+
 		try {
 			String relation = req.getParameter("relation");
 			if (relation != null) {
 				resp.getWriter().println("Adding Relation: " + relation);
-				
+
 			} else {
 				return;
 			}
@@ -46,17 +48,16 @@ public class AddEntity extends HttpServlet {
 			} else {
 				return;
 			}
-			
+
 			EntityQuestion q = new EntityQuestion(relation, freebaseid, emptyweight);
 
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
 			pm.close();
-			
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
-			
+
 		}
 	}
 }
