@@ -10,7 +10,7 @@
     "x32": "http://www.google.com/images/icons/product/freebase-32.png", 
     "x16": "http://www.google.com/images/icons/product/freebase-16.png"
   }, 
-  "documentationLink": "http://wiki.freebase.com/wiki/API", 
+  "documentationLink": "https://developers.google.com/freebase/", 
   "id": "freebase:v1", 
   "name": "freebase", 
   "files": [
