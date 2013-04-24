@@ -1,4 +1,11 @@
-<!-- Indices written at Tue, 23 Apr 2013 23:24:17 EDT -->
+<!-- Indices written at Wed, 24 Apr 2013 12:02:45 EDT -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="EntityQuestion" ancestor="false" source="auto">
+        <property name="relation" direction="asc"/>
+        <property name="emptyweight" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>

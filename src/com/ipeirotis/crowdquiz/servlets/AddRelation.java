@@ -1,5 +1,6 @@
 package com.ipeirotis.crowdquiz.servlets;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,99 +31,6 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class AddRelation extends HttpServlet {
-
-	class CompletionsEntryBean {
-
-		private String	mid;
-		private Long		coverage;
-		private Long		filled_entities;
-		private Long		unsupported_entities;
-		private Long		empty_entities;
-		private Double	empty_weight;
-		private Double	total_weight;
-		private Double	filled_weight;
-
-		public String getMid() {
-
-			return mid;
-		}
-
-		public Long getCoverage() {
-
-			return coverage;
-		}
-
-		public Long getFilled_entities() {
-
-			return filled_entities;
-		}
-
-		public Long getUnsupported_entities() {
-
-			return unsupported_entities;
-		}
-
-		public Long getEmpty_entities() {
-
-			return empty_entities;
-		}
-
-		public Double getEmpty_weight() {
-
-			return empty_weight;
-		}
-
-		public Double getTotal_weight() {
-
-			return total_weight;
-		}
-
-		public Double getFilled_weight() {
-
-			return filled_weight;
-		}
-
-		public void setMid(String mid) {
-
-			this.mid = mid;
-		}
-
-		public void setCoverage(Long coverage) {
-
-			this.coverage = coverage;
-		}
-
-		public void setFilled_entities(Long filled_entities) {
-
-			this.filled_entities = filled_entities;
-		}
-
-		public void setUnsupported_entities(Long unsupported_entities) {
-
-			this.unsupported_entities = unsupported_entities;
-		}
-
-		public void setEmpty_entities(Long empty_entities) {
-
-			this.empty_entities = empty_entities;
-		}
-
-		public void setEmpty_weight(Double empty_weight) {
-
-			this.empty_weight = empty_weight;
-		}
-
-		public void setTotal_weight(Double total_weight) {
-
-			this.total_weight = total_weight;
-		}
-
-		public void setFilled_weight(Double filled_weight) {
-
-			this.filled_weight = filled_weight;
-		}
-
-	}
 
 	private HttpServletResponse	r;
 	private BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
@@ -175,13 +83,16 @@ public class AddRelation extends HttpServlet {
 
 			BlobstoreInputStream is = new BlobstoreInputStream(blobKey);
 			BufferedReader in = new BufferedReader(new InputStreamReader(is));
-			
+
 			CsvToBean<CompletionsEntryBean> csv = new CsvToBean<CompletionsEntryBean>();
 			CSVReader reader = new CSVReader(in);
-			ColumnPositionMappingStrategy<CompletionsEntryBean> strat = new ColumnPositionMappingStrategy<CompletionsEntryBean>();
-			strat.captureHeader(reader);
+			String [] header = reader.readNext();
 
-			
+			ColumnPositionMappingStrategy<CompletionsEntryBean> strat = new ColumnPositionMappingStrategy<CompletionsEntryBean>();
+			strat.setType(CompletionsEntryBean.class);
+			strat.captureHeader(reader);
+			strat.setColumnMapping(header);
+
 			List<CompletionsEntryBean> list = csv.parse(strat, reader);
 
 			Queue queue = QueueFactory.getDefaultQueue();
