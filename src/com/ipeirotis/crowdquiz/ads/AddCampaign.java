@@ -2,8 +2,8 @@ package com.ipeirotis.crowdquiz.ads;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,52 +12,49 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
-import com.google.api.ads.adwords.axis.factory.AdWordsServices;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroup;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupAd;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupAdOperation;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupAdReturnValue;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupAdServiceInterface;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupAdStatus;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupCriterion;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupCriterionOperation;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupCriterionReturnValue;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupCriterionServiceInterface;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupOperation;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupReturnValue;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupServiceInterface;
-import com.google.api.ads.adwords.axis.v201302.cm.AdGroupStatus;
-import com.google.api.ads.adwords.axis.v201302.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201302.cm.BiddableAdGroupCriterion;
-import com.google.api.ads.adwords.axis.v201302.cm.BiddingStrategyConfiguration;
-import com.google.api.ads.adwords.axis.v201302.cm.BiddingStrategyType;
-import com.google.api.ads.adwords.axis.v201302.cm.Bids;
-import com.google.api.ads.adwords.axis.v201302.cm.Budget;
-import com.google.api.ads.adwords.axis.v201302.cm.BudgetBudgetDeliveryMethod;
-import com.google.api.ads.adwords.axis.v201302.cm.BudgetBudgetPeriod;
-import com.google.api.ads.adwords.axis.v201302.cm.BudgetOperation;
-import com.google.api.ads.adwords.axis.v201302.cm.BudgetServiceInterface;
-import com.google.api.ads.adwords.axis.v201302.cm.Campaign;
-import com.google.api.ads.adwords.axis.v201302.cm.CampaignOperation;
-import com.google.api.ads.adwords.axis.v201302.cm.CampaignReturnValue;
-import com.google.api.ads.adwords.axis.v201302.cm.CampaignServiceInterface;
-import com.google.api.ads.adwords.axis.v201302.cm.CampaignStatus;
-import com.google.api.ads.adwords.axis.v201302.cm.CpcBid;
-import com.google.api.ads.adwords.axis.v201302.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201302.cm.KeywordMatchSetting;
-import com.google.api.ads.adwords.axis.v201302.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201302.cm.Money;
-import com.google.api.ads.adwords.axis.v201302.cm.NetworkSetting;
-import com.google.api.ads.adwords.axis.v201302.cm.Operator;
-import com.google.api.ads.adwords.axis.v201302.cm.Setting;
-import com.google.api.ads.adwords.axis.v201302.cm.TextAd;
+import com.google.api.ads.adwords.jaxws.factory.AdWordsServices;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroup;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdOperation;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdReturnValue;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdStatus;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterion;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterionOperation;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterionReturnValue;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterionServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupOperation;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupReturnValue;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupStatus;
+import com.google.api.ads.adwords.jaxws.v201302.cm.ApiException;
+import com.google.api.ads.adwords.jaxws.v201302.cm.ApiException_Exception;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BiddableAdGroupCriterion;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BiddingStrategyConfiguration;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BiddingStrategyType;
+import com.google.api.ads.adwords.jaxws.v201302.cm.Budget;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetBudgetDeliveryMethod;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetBudgetPeriod;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetOperation;
+import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
+import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignOperation;
+import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignReturnValue;
+import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignStatus;
+import com.google.api.ads.adwords.jaxws.v201302.cm.CpcBid;
+import com.google.api.ads.adwords.jaxws.v201302.cm.Keyword;
+import com.google.api.ads.adwords.jaxws.v201302.cm.KeywordMatchSetting;
+import com.google.api.ads.adwords.jaxws.v201302.cm.KeywordMatchType;
+import com.google.api.ads.adwords.jaxws.v201302.cm.Money;
+import com.google.api.ads.adwords.jaxws.v201302.cm.NetworkSetting;
+import com.google.api.ads.adwords.jaxws.v201302.cm.Operator;
+import com.google.api.ads.adwords.jaxws.v201302.cm.TextAd;
 import com.google.api.ads.adwords.lib.client.AdWordsSession;
 import com.google.api.ads.common.lib.auth.ClientLoginTokens;
 
 @SuppressWarnings("serial")
 public class AddCampaign extends HttpServlet {
-
-	final static Logger			logger	= Logger.getLogger("java.util.logging.config.file");
 
 	private AdWordsServices	adWordsServices;
 	private AdWordsSession	session;
@@ -65,34 +62,8 @@ public class AddCampaign extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		try {
-			AddCampaign service = new AddCampaign();
-
-			String campaignName = "Test";
-			Integer dailyBudget = 10;
-			Campaign campaign = service.createCampaign(campaignName, dailyBudget);
-			Long campaignId = service.publishCampaign(campaign);
-
-			String adGroupName = "Test-Adgroup";
-			Integer groupBudget = 10;
-			AdGroup adgroup = service.createAdgroup(adGroupName, campaignId, groupBudget);
-			Long adgroupId = service.publishAdgroup(adgroup);
-			for (int i = 1; i <= 5; i++) {
-				String bidKeyword = "Ipeirotis " + i;
-				service.addKeyword(bidKeyword, adgroupId);
-			}
-
-			String adHeadline = "This is a headline";
-			String adDescr1 = "This is the first line";
-			String adDescr2 = "This is the second line";
-			String displayURL = "http://crowd-power.appspot.com";
-			String targetURL = "http://crowd-power.appspot.com";
-			AdGroupAd ad = service.createTextAd(adHeadline, adDescr1, adDescr2, displayURL, targetURL, adgroupId);
-			Long textAdId = service.publishTextAd(ad);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception in Testing.", e);
-			e.printStackTrace();
-		}
+		runTest();
+		
 	}
 
 	public AddCampaign() throws Exception {
@@ -132,7 +103,15 @@ public class AddCampaign extends HttpServlet {
 		biddingStrategyConfiguration.setBiddingStrategyType(BiddingStrategyType.MANUAL_CPC);
 		campaign.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
 
-		Budget budget = getBudget(dailyBudget);
+		// Create a budget, which can be shared by multiple campaigns.
+		Budget budget = new Budget();
+		budget.setName("#" + System.currentTimeMillis());
+		Money budgetAmount = new Money();
+		Long dailyAmount = dailyBudget * 1000000L;
+		budgetAmount.setMicroAmount(dailyAmount);
+		budget.setAmount(budgetAmount);
+		budget.setDeliveryMethod(BudgetBudgetDeliveryMethod.STANDARD);
+		budget.setPeriod(BudgetBudgetPeriod.DAILY);
 		campaign.setBudget(budget);
 
 		// Set required keyword match to TRUE to allow for "the broadening of exact and phrase
@@ -140,8 +119,9 @@ public class AddCampaign extends HttpServlet {
 		// common misspellings, diacriticals and acronyms"
 		KeywordMatchSetting keywordMatch = new KeywordMatchSetting();
 		keywordMatch.setOptIn(Boolean.TRUE);
-		campaign.setSettings(new Setting[] { keywordMatch });
+		campaign.getSettings().add(keywordMatch);
 
+		
 		// Set the campaign network options to Search and Search Network.
 		NetworkSetting networkSetting = new NetworkSetting();
 		networkSetting.setTargetGoogleSearch(true);
@@ -153,42 +133,26 @@ public class AddCampaign extends HttpServlet {
 		// Add the campaign
 		return campaign;
 
-		/*
-		 * biddingStrategyConfiguration.setBiddingStrategyType(BiddingStrategyType.CONVERSION_OPTIMIZER);
-		 * campaign.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
-		 * CampaignOperation updateoperation = new CampaignOperation();
-		 * updateoperation.setOperand(campaign);
-		 * updateoperation.setOperator(Operator.SET);
-		 * operations = new CampaignOperation[] {updateoperation};
-		 * result = campaignService.mutate(operations);
-		 * 
-		 * if (result != null && result.getValue() != null) {
-		 * for (Campaign campaignResult : result.getValue()) {
-		 * System.out.println("Campaign with name \""
-		 * + campaignResult.getName() + "\" and id \""
-		 * + campaignResult.getId() + "\" was added.");
-		 * }
-		 * } else {
-		 * System.out.println("No campaigns were added.");
-		 * }
-		 */
 
 	}
 
 	/**
 	 * @param campaign
 	 * @throws RemoteException
+	 * @throws ApiException_Exception 
 	 * @throws ApiException
 	 */
-	public Long publishCampaign(Campaign campaign) throws RemoteException, ApiException {
+	public Long publishCampaign(Campaign campaign) throws RemoteException, ApiException_Exception {
 
 		// Get the CampaignService.
 		CampaignServiceInterface campaignService = adWordsServices.get(session, CampaignServiceInterface.class);
-
+		
 		CampaignOperation operation = new CampaignOperation();
 		operation.setOperand(campaign);
 		operation.setOperator(Operator.ADD);
-		CampaignOperation[] operations = new CampaignOperation[] { operation };
+		List<CampaignOperation> operations = new ArrayList<CampaignOperation>();
+		operations.add(operation);
+	
 		CampaignReturnValue result = campaignService.mutate(operations);
 		if (result != null && result.getValue() != null) {
 			for (Campaign campaignResult : result.getValue()) {
@@ -207,11 +171,13 @@ public class AddCampaign extends HttpServlet {
 	 * @param dailyAmount
 	 * @return
 	 * @throws RemoteException
+	 * @throws ApiException_Exception 
 	 * @throws ApiException
 	 */
-	private Budget getBudget(int dailyBudget) throws RemoteException, ApiException {
+	/*
+	private Budget getBudget(int dailyBudget) throws RemoteException, ApiException_Exception {
 
-		Long dailyAmount = dailyBudget * 1000000L;
+		
 
 		// Get the BudgetService.
 		BudgetServiceInterface budgetService = adWordsServices.get(session, BudgetServiceInterface.class);
@@ -228,12 +194,16 @@ public class AddCampaign extends HttpServlet {
 		BudgetOperation budgetOperation = new BudgetOperation();
 		budgetOperation.setOperand(budget);
 		budgetOperation.setOperator(Operator.ADD);
+		List<BudgetOperation> budgetoperations = new ArrayList<BudgetOperation>();
+		budgetoperations.add(budgetOperation);
 
 		// Only the budgetId should be sent, all other fields will be ignored by CampaignService.
-		Long budgetId = budgetService.mutate(new BudgetOperation[] { budgetOperation }).getValue(0).getBudgetId();
+		//Long budgetId = budgetService.mutate(budgetoperations).getValue(0).getBudgetId();
+		Long budgetId = budgetService.mutate(budgetoperations).getValue().get(0).getBudgetId();
 		budget.setBudgetId(budgetId);
 		return budget;
 	}
+	*/
 
 	public AdGroup createAdgroup(String adGroupName, Long campaignId, Integer bidAmount) {
 
@@ -246,9 +216,12 @@ public class AddCampaign extends HttpServlet {
 		// Create ad group bid.
 		BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
 		CpcBid bid = new CpcBid();
-		bid.setBid(new Money(null, bidAmount * 1000000L));
-
-		biddingStrategyConfiguration.setBids(new Bids[] { bid });
+		Money m = new Money();
+		m.setMicroAmount(bidAmount * 1000000L);
+		bid.setBid(m);
+		
+		
+		biddingStrategyConfiguration.getBids().add(bid);
 		adGroup.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
 
 		return adGroup;
@@ -261,7 +234,8 @@ public class AddCampaign extends HttpServlet {
 		operation.setOperand(adGroup);
 		operation.setOperator(Operator.ADD);
 
-		AdGroupOperation[] operations = new AdGroupOperation[] { operation };
+		List<AdGroupOperation> operations = new ArrayList<AdGroupOperation>();
+		operations.add(operation);
 
 		// Add ad groups.
 		AdGroupServiceInterface adGroupService = adWordsServices.get(session, AdGroupServiceInterface.class);
@@ -309,8 +283,9 @@ public class AddCampaign extends HttpServlet {
 		textAdGroupAdOperation.setOperand(ad);
 		textAdGroupAdOperation.setOperator(Operator.ADD);
 
-		AdGroupAdOperation[] operations = new AdGroupAdOperation[] { textAdGroupAdOperation };
-
+		List<AdGroupAdOperation> operations = new ArrayList<AdGroupAdOperation>();
+		operations.add(textAdGroupAdOperation);
+		
 		// Add ads.
 		AdGroupAdReturnValue result = adGroupAdService.mutate(operations);
 
@@ -339,7 +314,8 @@ public class AddCampaign extends HttpServlet {
 		keywordAdGroupCriterionOperation.setOperand(keywordBiddableAdGroupCriterion);
 		keywordAdGroupCriterionOperation.setOperator(Operator.ADD);
 
-		AdGroupCriterionOperation[] operations = new AdGroupCriterionOperation[] { keywordAdGroupCriterionOperation };
+		List<AdGroupCriterionOperation> operations = new ArrayList<AdGroupCriterionOperation>();
+		operations.add(keywordAdGroupCriterionOperation);
 
 		AdGroupCriterionServiceInterface adGroupCriterionService = adWordsServices.get(session,
 				AdGroupCriterionServiceInterface.class);
@@ -360,6 +336,15 @@ public class AddCampaign extends HttpServlet {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
+
+		runTest();
+
+	}
+
+	/**
+	 * 
+	 */
+	private static void runTest() {
 
 		try {
 			AddCampaign service = new AddCampaign();
@@ -386,10 +371,9 @@ public class AddCampaign extends HttpServlet {
 			AdGroupAd ad = service.createTextAd(adHeadline, adDescr1, adDescr2, displayURL, targetURL, adgroupId);
 			Long textAdId = service.publishTextAd(ad);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception in Testing.", e);
+			//logger.log(Level.SEVERE, "Exception in Testing.", e);
 			e.printStackTrace();
 		}
-
 	}
 
 }
