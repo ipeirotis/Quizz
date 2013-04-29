@@ -51,6 +51,13 @@ public class AddRelation extends HttpServlet {
 			} else {
 				return;
 			}
+			
+			String name = req.getParameter("name");
+			if (name != null) {
+				resp.getWriter().println("Name: " + name);
+			} else {
+				return;
+			}
 
 			String text = req.getParameter("text");
 			if (text != null) {
@@ -76,7 +83,7 @@ public class AddRelation extends HttpServlet {
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
 			BlobKey blobKey = blobs.get("myFile");
 
-			Question q = new Question(relation, text, freebaseattr, freebasetype, blobKey);
+			Question q = new Question(name, relation, text, freebaseattr, freebasetype, blobKey);
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
 			pm.close();
@@ -104,23 +111,8 @@ public class AddRelation extends HttpServlet {
 						.method(TaskOptions.Method.GET));
 			}
 
-			/*
-			 * Scanner scanner = new Scanner(is);
-			 * while(scanner.hasNextLine()){
-			 * String s = scanner.nextLine();
-			 * String[] entries = s.split(",");
-			 * String mid = entries[0];
-			 * String weight = entries[5];
-			 * if (mid.equals("mid")) continue; // skip first line
-			 * queue.add(Builder.withUrl("/addEntity").param("relation", relation).param("freebaseid",
-			 * mid).param("emptyweight", weight).method(TaskOptions.Method.GET));
-			 * }
-			 * scanner.close();
-			 */
-
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
-
 		}
 	}
 

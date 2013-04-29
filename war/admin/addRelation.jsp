@@ -18,9 +18,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>List of Supported Relations</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
+<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
-<script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 
 
 <link type="text/css" rel="stylesheet"
@@ -35,8 +35,7 @@
 <body>
 
 	<%
-		BlobstoreService blobstoreService = BlobstoreServiceFactory
-				.getBlobstoreService();
+		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 	%>
 
 
@@ -47,7 +46,15 @@
 			style="background-color: #D4D4D4; border-radius: 5px; padding:10px" method="post"
 			enctype="multipart/form-data">
 			<fieldset>
-				<legend style="text-align: center">Add Relation to Crowdsource</legend>
+				<legend style="text-align: center">Add relation to crowdsource</legend>
+								<div class="control-group">
+					<label class="control-label" for="relation">Name:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="name" name="name"
+							type="text" placeholder="Calories in food">
+					</div>
+				</div>
+				
 				<div class="control-group">
 					<label class="control-label" for="relation">Relation:</label>
 					<div class="controls">
@@ -99,7 +106,7 @@
 			// bind 'myForm' and provide a simple callback function 
 			$('#addRelation').ajaxForm(function() {
 				alert("Relation added!");
-				window.location.replace("/");
+				window.location.replace("/admin/");
 			});
 		});
 	</script>

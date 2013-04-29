@@ -53,6 +53,10 @@ public class Question {
 		return freebaseAttribute;
 	}
 
+	// The user-friendly name of the relation that we are targeting
+	@Persistent
+	private String	name;
+	
 	// The name of the relation that we are targeting
 	@Persistent
 	private String	relation;
@@ -76,8 +80,9 @@ public class Question {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 
-	public Question(String relation, String questionText, String freebaseAttribute, String freebaseType, BlobKey blobKey) {
+	public Question(String name, String relation, String questionText, String freebaseAttribute, String freebaseType, BlobKey blobKey) {
 
+		this.name = name;
 		this.questionText = questionText;
 		this.relation = relation;
 		this.freebaseType = freebaseType;
@@ -87,9 +92,15 @@ public class Question {
 		this.key = generateKeyFromID(relation);
 	}
 
-	public static Key generateKeyFromID(String id) {
+	
+	public String getName() {
+	
+		return name;
+	}
 
-		return KeyFactory.createKey(Question.class.getSimpleName(), "id_" + id);
+	public static Key generateKeyFromID(String relation) {
+
+		return KeyFactory.createKey(Question.class.getSimpleName(), "id_" + relation);
 	}
 
 }

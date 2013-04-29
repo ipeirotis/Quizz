@@ -27,7 +27,7 @@
 				
 %>
 
-<title>Unanswered questions for quiz <%=name%></title>
+<title>Ad campaign for quiz '<%=name%>'</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
@@ -40,40 +40,12 @@
 	<div class="container pagination-centered">
 		<table class="table table-striped  table-bordered">
 
-			<% 
-				// Get an array of Cookies associated with this domain
-				String userName = null;
-				Cookie[] cookies = request.getCookies();
-				if (cookies != null) {
-				   for (Cookie c: cookies) {
-				  	 if (c.getName().equals("username")) {
-				  		 userName = c.getValue();
-				  		 break;
-				  	 }
-				   }
-				} 
-				
-				if (userName == null) {
-					userName = UUID.randomUUID().toString();;
-				}
-				Cookie username = new Cookie("username", userName);
-				response.addCookie( username );
-				
-			%>
 			<tr>
 				<th colspan="2">Questions for quiz <%=name%></th>
 
 			</tr>
 			<%
 
-					String queryGivenAnswers = "SELECT from "  + UserEntry.class.getName() + 
-							" where userid=='" + userName +"' && relation=='"+relation+	"'";
-							//System.out.println(queryGivenAnswers);
-					List<UserEntry> answers = (List<UserEntry>) pm.newQuery(queryGivenAnswers).execute();
-					Set<String> entries = new HashSet<String>();
-					for (UserEntry ue: answers) {
-						entries.add(ue.getMid());
-					}
 					
 							
 					String query = "select from " + EntityQuestion.class.getName() + " where relation=='"+relation+	"'" 
@@ -88,7 +60,7 @@
 			<%
 				} else {
 						for (EntityQuestion q: questions) {
-							if (entries.contains(q.getFreebaseEntityId())) continue;
+							
 			%>
 			<tr>
 				<td><a target="_blank"

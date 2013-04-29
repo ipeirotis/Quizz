@@ -34,11 +34,11 @@
 	<div class="container pagination-centered">
 
 		<%
-				String relation = request.getParameter("relation");
+			String relation = request.getParameter("relation");
 				String mid = request.getParameter("mid");
 				
 				String userName = null;
-				
+
 					// Get an array of Cookies associated with this domain
 					Cookie[] cookies = request.getCookies();
 				   if (cookies != null) {
@@ -54,7 +54,7 @@
 				  	 userName = UUID.randomUUID().toString();;
 				   }
 
-				// }
+
 				Cookie username = new Cookie("username", userName);
 				response.addCookie( username );
 				
@@ -65,12 +65,11 @@
 				try {
 					q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
 					eq = pm.getObjectById(EntityQuestion.class, EntityQuestion.generateKeyFromID(relation, mid));
-		    	} catch (Exception e) {
-		        	q = null;
-		        	eq = null;
-		    	} 
-				
-			%>
+				    	} catch (Exception e) {
+				        	q = null;
+				        	eq = null;
+				    	}
+		%>
 		<div class="row">
 			<div class="span8 offset2">
 				<h3>Do you know...</h3>
@@ -93,8 +92,8 @@
 							id="freebaseanswer" name="freebaseanswer" type="hidden">
 						<input id="userid" name="userid" type="hidden"> <input
 							id="relation" name="relation" type="hidden"
-							value="<%= relation %>"> <input id="mid" name="mid"
-							type="hidden" value="<%= mid %>">
+							value="<%=relation%>"> <input id="mid" name="mid"
+							type="hidden" value="<%=mid%>">
 						<div class="form-actions"
 							style="background-color: #D0D0D0; border-radius: 5px;">
 							<button type="submit" class="btn">Submit</button>
@@ -109,22 +108,20 @@
 		$( document ).ready(function() {
 			
 			<!-- Populate the (hidden) userid field with the cookie information -->
-			$("input[name=userid]").val('<%= userName %>');
+			$("input[name=userid]").val('<%=userName%>');
 			
 			<!-- Populate the (hidden) freebaseanswer field with the existing answer from Freebase, if any -->
-			 queryFreebase('<%= mid %>', $("input[name=freebaseanswer]"));
+			 queryFreebase('<%=mid%>', $("input[name=freebaseanswer]"));
 
 			 <!-- Add the Freebase Suggest widget on the form to enable autocompletion -->
-			<% if (q.getFreebaseType().equals("/type/float")) {
+			<%if (q.getFreebaseType().equals("/type/float")) {
 				;
-			} else { %>	
+			} else {%>	
 				$("#useranswer").suggest({
 					'key' : 'AIzaSyAP0fH9aEndZbSDFT87g46YY0gjhkQY8Zc',
-				    'filter' : '(all type:<%= q.getFreebaseType() %>)', 
+				    'filter' : '(all type:<%=q.getFreebaseType()%>)', 
 				});
-			<%	
-			}
-			%>
+			<%}%>
 				
 			
 		    $('#addUserEntry').ajaxForm({ 
@@ -153,13 +150,10 @@
 			  'hitType': 'event', 
 			  'eventCategory': 'quiz-submission', 
 			  'eventAction': 'fill-in', 
-			  'eventLabel': '<%= q.getRelation() %>',
-			  <% if (eq.getEmptyweight()!=null) {
-			  	%> 'eventValue': <%= eq.getEmptyweight() %>, <%
-			  } else {
+			  'eventLabel': '<%=q.getRelation()%>',
+			  <%if (eq.getEmptyweight()!=null) {%> 'eventValue': <%=eq.getEmptyweight()%>, <%} else {
 			  	
-			  }
-			  %>
+			  }%>
 			  
 			});
 		
@@ -187,7 +181,7 @@
 			var query = {                         
 					'mid'               : freebaseMid,  
 					'name'				: null,
-					'<%= q.getFreebaseAttribute() %>' : null,
+					'<%=q.getFreebaseAttribute()%>' : null,
 				  };
 			
 			 var params = {
@@ -205,7 +199,7 @@
 		}
 
 		function updateValue(response, element) {
-			element.val(response.result['<%= q.getFreebaseAttribute() %>']);
+			element.val(response.result['<%=q.getFreebaseAttribute()%>']);
 		}
 	</script>
 

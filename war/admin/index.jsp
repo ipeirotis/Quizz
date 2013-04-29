@@ -12,21 +12,27 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>List of Supported Relations</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
+<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
 <script src="http://code.jquery.com/jquery.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
 
 
 
 </head>
 <body>
 	<div class="container pagination-centered">
-		<div class="row span4 offset4">
+		<div class="row span12">
 		<h2>Crowd Quizzes</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
-					<th>Quiz</th>
+					<th>Quiz name</th>
+					<th>Relation</th>
+					<th>Question text</th>
+					<th>Freebase Attribute of Answer</th>
+					<th>Freebase Type of Answer</th>
+					<th>Results</th>
+					<th>Ad campaign</th>
 				</tr>
 				<%
 					PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -35,7 +41,7 @@
 					if (questions.isEmpty()) {
 				%>
 				<tr>
-					<td style="text-align: center">No quizzes found!</td>
+					<td colspan="7" style="text-align: center">No Questions found!</td>
 				</tr>
 				<%
 					} else {
@@ -46,11 +52,24 @@
 					for (Question q : questions) {
 				%>
 				<tr>
-					<td><a
-						href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName()%></a></td>
+					<td><a href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName() %></a></td>
+					<td><%=q.getRelation()%></td>
+					<td><%=q.getQuestionText()%></td>
+					<td><%=q.getFreebaseAttribute()%></td>
+					<td><%=q.getFreebaseType()%></td>
+					<td><a href="data.jsp?relation=<%=q.getRelation()%>">Download</a></td>
+					<td><a href="adcampaign.jsp?relation=<%=q.getRelation()%>">Ad campaign</a></td>
 				</tr>
+
 				<%
 					}
+				%>
+				<tr>
+					<td colspan="7" style="text-align: center">
+						<a href="addRelation.jsp">Add a new relation to crowdsource</a>
+					</td>
+				</tr>
+				<% 
 					}
 
 					pm.close();
