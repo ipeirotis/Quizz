@@ -18,6 +18,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
 import au.com.bytecode.opencsv.bean.CsvToBean;
 
+import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreService;
@@ -26,6 +27,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.ipeirotis.crowdquiz.ads.CampaignManagement;
 import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -84,16 +86,49 @@ public class AddRelation extends HttpServlet {
 			if (fbelement != null) {
 				resp.getWriter().println("Freebase Element: " + fbelement);
 			} else {
-				return;
+				// return;
 			}
 
+			String budget = req.getParameter("budget");
+			if (budget != null) {
+				resp.getWriter().println("Budget: " + budget);
+			} else {
+				// return;
+			}
+			
+			String cpcbid = req.getParameter("cpcbid");
+			if (cpcbid != null) {
+				resp.getWriter().println("CPC bid: " + cpcbid);
+			} else {
+				// return;
+			}
+			
+			String keywords = req.getParameter("keywords");
+			if (keywords != null) {
+				resp.getWriter().println("AdKeywords: " + keywords);
+			} else {
+				// return;
+			}
+			
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
 			BlobKey blobKey = blobs.get("myFile");
 
 			Question q = new Question(name, relation, text, freebaseattr, fbelement, freebasetype, blobKey);
+			
+
+			
+			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
 			pm.close();
+			
+			Queue queue = QueueFactory.getDefaultQueue();
+			
+			queue.add(Builder.withUrl("/addCampaign")
+					.param("relation", relation)
+					.param("budget", budget)
+					.method(TaskOptions.Method.GET));
+			
 
 			BlobstoreInputStream is = new BlobstoreInputStream(blobKey);
 			BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -109,16 +144,33 @@ public class AddRelation extends HttpServlet {
 
 			List<CompletionsEntryBean> list = csv.parse(strat, reader);
 
-			Queue queue = QueueFactory.getDefaultQueue();
+
+			
 			for (CompletionsEntryBean ce : list) {
 				queue.add(Builder.withUrl("/addEntity")
 						.param("relation", relation)
 						.param("freebaseid", ce.getMid())
 						.param("emptyweight", ce.getEmpty_weight().toString())
 						.method(TaskOptions.Method.GET));
+				
+				// We introduce a delay of a few secs to allow the ad campaign
+				// to be created and for the entries to be uploaded and stored
+				long delay = 10; // in seconds
+				long etaMillis = System.currentTimeMillis() + delay * 1000000L;
+				queue.add(Builder.withUrl("/addAdGroup")
+						.param("relation", relation)
+						.param("mid", ce.getMid())
+						.param("cpcbid", cpcbid)
+						.param("keywords", keywords)
+						.method(TaskOptions.Method.GET)
+						.etaMillis(etaMillis));
 			}
+			
 
-		} catch (com.google.apphosting.api.DeadlineExceededException e) {
+			
+
+
+		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
 		}
 	}

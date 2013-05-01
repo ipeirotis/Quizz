@@ -77,10 +77,11 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label" for="fbelement">FB Element: <br><small><em>(optional, used when attribute compound)</em></small></label>
+					<label class="control-label" for="fbelement">FB Element:</label>
 					<div class="controls">
 						<input class="input-xxlarge" id="fbelement" name="fbelement" type="text"
 							placeholder="">
+					<div><small><em>(optional, used when the Freebase attribute is a compound)</em></small></div>
 					</div>
 				</div>
 				<div class="control-group">
@@ -91,10 +92,36 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label" for="myFile">File:<br><small><em>(A file from completions server [<a href="http://0.completion_server.completion-server.vc.borg.google.com:26062/attribute?locale=&q=kc:/food/food:energy">example</a>])</em></small> </label>
+					<label class="control-label" for="budget">Daily ad budget:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="budget" name="budget" type="text"
+							placeholder="10">
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="budget">CPC bid:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="cpcbid" name="cpcbid" type="text"
+							placeholder="0.05">
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="keywords">Ad keywords:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="keywords" name="keywords" type="text"
+							placeholder="calories, energy">
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="myFile">File:</label>
 					<div class="controls">
 						<span class="btn btn-file"><input id="myFile" name="myFile"
 							type="file"> </span>
+					
+					<div><small><em>(A file from completions server [<a href="http://0.completion_server.completion-server.vc.borg.google.com:26062/attribute?locale=&q=kc:/food/food:energy">example</a>])</em></small> </div>
 					</div>
 				</div>
 

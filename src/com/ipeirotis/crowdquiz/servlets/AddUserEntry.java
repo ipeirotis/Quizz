@@ -73,15 +73,6 @@ public class AddUserEntry extends HttpServlet {
 				return;
 			}
 			
-			/*
-			String userid = req.getParameter("userid");
-			if (userid != null) {
-			} else {
-				return;
-			}
-			*/
-			
-
 			String useranswer = req.getParameter("useranswer");
 			if (useranswer != null) {
 

@@ -45,6 +45,22 @@ public class Question {
 	@Persistent
 	private BlobKey	blobKey;
 
+	// The id of the ad campaign
+	@Persistent
+	private Long	campaignid;
+	
+	
+	public Long getCampaignid() {
+	
+		return campaignid;
+	}
+
+	
+	public void setCampaignid(Long campaignid) {
+	
+		this.campaignid = campaignid;
+	}
+
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;

@@ -9,7 +9,7 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/opencsv-2.3.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ads-lib-appengine-1.14.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/adwords-appengine-1.14.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/adwords-appengine-1.14.1.jar" sourcepath="C:/Users/Panos Ipeirotis/.m2/repository/com/google/api-ads/adwords-appengine/1.14.1/adwords-appengine-1.14.1-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.7.7.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-labs.jar"/>

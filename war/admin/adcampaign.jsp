@@ -17,8 +17,9 @@
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				String relation = request.getParameter("relation");
 				String name = "";
+				Question q = null;
 				try {
-					Question q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
+					q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
 					name = q.getName();
 				} catch (Exception e) {
 					
@@ -39,21 +40,12 @@
 <body>
 	<div class="container pagination-centered">
 		<table class="table table-striped  table-bordered">
+>
 
 			<tr>
-				<th colspan="2">Questions for quiz <%=name%></th>
+				<th colspan="2">Ad Campaign for quiz <%=name%>: <%= q.getCampaignid() %></th>
 
 			</tr>
-			<%
-
-					
-							
-					String query = "select from " + EntityQuestion.class.getName() + " where relation=='"+relation+	"'" 
-						+"  order by emptyweight DESC";
-					System.out.println(query);
-					List<EntityQuestion> questions = (List<EntityQuestion>) pm.newQuery(query).execute();
-					if (questions.isEmpty()) {
-			%>
 			<tr>
 				<td>No entries found!</td>
 			</tr>

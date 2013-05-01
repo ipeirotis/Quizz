@@ -16,11 +16,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AddUserEntry</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddUserEntry</servlet-class>
 	</servlet>
-		<servlet>
+	<servlet>
 		<servlet-name>AddCampaign</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.ads.AddCampaign</servlet-class>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddCampaign</servlet-class>
 	</servlet>
-
+	<servlet>
+		<servlet-name>AddAdGroup</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAdGroup</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>AddRelation</servlet-name>
@@ -34,9 +37,13 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AddUserEntry</servlet-name>
 		<url-pattern>/addUserEntry</url-pattern>
 	</servlet-mapping>
-		<servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>AddCampaign</servlet-name>
 		<url-pattern>/addCampaign</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AddAdGroup</servlet-name>
+		<url-pattern>/addAdGroup</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>
