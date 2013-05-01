@@ -77,6 +77,13 @@
 					</div>
 				</div>
 				<div class="control-group">
+					<label class="control-label" for="fbelement">FB Element: <br><small><em>(optional, used when attribute compound)</em></small></label>
+					<div class="controls">
+						<input class="input-xxlarge" id="fbelement" name="fbelement" type="text"
+							placeholder="">
+					</div>
+				</div>
+				<div class="control-group">
 					<label class="control-label" for="fbtype">FB Type:</label>
 					<div class="controls">
 						<input class="input-xxlarge" id="fbtype" name="fbtype" type="text"

@@ -79,11 +79,18 @@ public class AddRelation extends HttpServlet {
 			} else {
 				return;
 			}
+			
+			String fbelement = req.getParameter("fbelement");
+			if (fbelement != null) {
+				resp.getWriter().println("Freebase Element: " + fbelement);
+			} else {
+				return;
+			}
 
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
 			BlobKey blobKey = blobs.get("myFile");
 
-			Question q = new Question(name, relation, text, freebaseattr, freebasetype, blobKey);
+			Question q = new Question(name, relation, text, freebaseattr, fbelement, freebasetype, blobKey);
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
 			pm.close();

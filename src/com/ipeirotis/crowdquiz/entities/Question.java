@@ -13,6 +13,63 @@ import com.google.appengine.api.datastore.KeyFactory;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Question {
 
+	public static Key generateKeyFromID(String relation) {
+
+		return KeyFactory.createKey(Question.class.getSimpleName(), "id_" + relation);
+	}
+
+	// The user-friendly name of the relation that we are targeting
+	@Persistent
+	private String	name;
+
+	// The name of the relation that we are targeting
+	@Persistent
+	private String	relation;
+
+	// The question that we will ask to the user
+	@Persistent
+	private String	questionText;
+
+	// The type of entry for the freebaseAttribute
+	@Persistent
+	private String	freebaseType;
+
+	// The attribute that we are crowdsourcing
+	@Persistent
+	private String	freebaseAttribute;
+	
+	// The element from the attribute that we are crowdsourcing (when the attribute is a compound)
+	@Persistent
+	private String	freebaseElement;
+	
+	@Persistent
+	private BlobKey	blobKey;
+
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Key			key;
+
+	public Question(String name, String relation, String questionText, String freebaseAttribute, String freebaseElement, String freebaseType, BlobKey blobKey) {
+
+		this.name = name;
+		this.questionText = questionText;
+		this.relation = relation;
+		this.freebaseType = freebaseType;
+		this.freebaseAttribute = freebaseAttribute;
+		this.freebaseElement = freebaseElement;
+		this.blobKey = blobKey;
+
+		this.key = generateKeyFromID(relation);
+	}
+
+	/**
+	 * @return the freebaseAttribute
+	 */
+	public String getFreebaseAttribute() {
+
+		return freebaseAttribute;
+	}
+
 	/**
 	 * @return the freebaseType
 	 */
@@ -21,6 +78,20 @@ public class Question {
 		return freebaseType;
 	}
 
+	/**
+	 * @return the key
+	 */
+	public Key getKey() {
+
+		return key;
+	}
+
+	public String getName() {
+	
+		return name;
+	}
+
+	
 	/**
 	 * @return the questionText
 	 */
@@ -37,70 +108,10 @@ public class Question {
 		return relation;
 	}
 
-	/**
-	 * @return the key
-	 */
-	public Key getKey() {
-
-		return key;
-	}
-
-	/**
-	 * @return the freebaseAttribute
-	 */
-	public String getFreebaseAttribute() {
-
-		return freebaseAttribute;
-	}
-
-	// The user-friendly name of the relation that we are targeting
-	@Persistent
-	private String	name;
 	
-	// The name of the relation that we are targeting
-	@Persistent
-	private String	relation;
-
-	// The question that we will ask to the user
-	@Persistent
-	private String	questionText;
-
-	// The type of entry for the freebaseAttribute
-	@Persistent
-	private String	freebaseType;
-
-	// The attribute that we are crowdsourcing
-	@Persistent
-	private String	freebaseAttribute;
-
-	@Persistent
-	private BlobKey	blobKey;
-
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key			key;
-
-	public Question(String name, String relation, String questionText, String freebaseAttribute, String freebaseType, BlobKey blobKey) {
-
-		this.name = name;
-		this.questionText = questionText;
-		this.relation = relation;
-		this.freebaseType = freebaseType;
-		this.freebaseAttribute = freebaseAttribute;
-		this.blobKey = blobKey;
-
-		this.key = generateKeyFromID(relation);
-	}
-
+	public String getFreebaseElement() {
 	
-	public String getName() {
-	
-		return name;
-	}
-
-	public static Key generateKeyFromID(String relation) {
-
-		return KeyFactory.createKey(Question.class.getSimpleName(), "id_" + relation);
+		return freebaseElement;
 	}
 
 }

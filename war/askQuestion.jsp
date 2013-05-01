@@ -37,6 +37,7 @@
 				String relation = request.getParameter("relation");
 				String mid = request.getParameter("mid");
 				
+				/*
 				String userName = null;
 				
 					// Get an array of Cookies associated with this domain
@@ -54,9 +55,10 @@
 				  	 userName = UUID.randomUUID().toString();;
 				   }
 
-				// }
 				Cookie username = new Cookie("username", userName);
 				response.addCookie( username );
+				*/
+				
 				
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				Question q = null;
@@ -89,15 +91,14 @@
 							<%=FreebaseSearch.getFreebaseAttribute(mid, "name")%>
 							</a>
 						</legend>
-						<input id="useranswer" name="useranswer" type="text"> <input
-							id="freebaseanswer" name="freebaseanswer" type="hidden">
-						<input id="userid" name="userid" type="hidden"> <input
-							id="relation" name="relation" type="hidden"
-							value="<%= relation %>"> <input id="mid" name="mid"
-							type="hidden" value="<%= mid %>">
+						<input id="useranswer" name="useranswer" type="text"> 
+						<input id="relation" name="relation" type="hidden" value="<%= relation %>"> 
+						<input id="mid" name="mid" type="hidden" value="<%= mid %>">
 						<div class="form-actions"
 							style="background-color: #D0D0D0; border-radius: 5px;">
-							<button type="submit" class="btn">Submit</button>
+							<input type="submit" class="btn" name="action" value="Submit">
+							<input type="submit" class="btn" name="action" value="I don't know">
+							<input type="submit" class="btn" name="action" value="No such thing">
 						</div>
 					</fieldset>
 				</form>
@@ -108,14 +109,8 @@
 	<script type="text/javascript">
 		$( document ).ready(function() {
 			
-			<!-- Populate the (hidden) userid field with the cookie information -->
-			$("input[name=userid]").val('<%= userName %>');
-			
-			<!-- Populate the (hidden) freebaseanswer field with the existing answer from Freebase, if any -->
-			 queryFreebase('<%= mid %>', $("input[name=freebaseanswer]"));
-
 			 <!-- Add the Freebase Suggest widget on the form to enable autocompletion -->
-			<% if (q.getFreebaseType().equals("/type/float")) {
+			<% if (q.getFreebaseType().startsWith("/type/") || q.getFreebaseType().startsWith("/common/" )) {
 				;
 			} else { %>	
 				$("#useranswer").suggest({
@@ -141,12 +136,6 @@
 		});
 
 
-	</script>
-
-	<script type="text/javascript">
-	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->
-	<!-- query Freebase, and replace its content with the name of the Freebase entity -->
-		
     function processJson(data) {
 		
 		ga('send', {
@@ -181,32 +170,7 @@
         
     }
 	
-	
-		function queryFreebase(freebaseMid, element) {
-			
-			var query = {                         
-					'mid'               : freebaseMid,  
-					'name'				: null,
-					'<%= q.getFreebaseAttribute() %>' : null,
-				  };
-			
-			 var params = {
-					    'key'   : 'AIzaSyAP0fH9aEndZbSDFT87g46YY0gjhkQY8Zc',
-					    'limit' : 1,
-						'exact' : true,
-					    'query' : JSON.stringify(query)
-					  };
-			
-			url = 'https://www.googleapis.com/freebase/v1/mqlread';
-			
-			$.getJSON(url + '?callback=?',  params, function(response) {
-				updateValue(response, element)
-			});
-		}
 
-		function updateValue(response, element) {
-			element.val(response.result['<%= q.getFreebaseAttribute() %>']);
-		}
 	</script>
 
 	<script type="text/javascript">

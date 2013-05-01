@@ -15,6 +15,24 @@ public class UserEntry {
 	@Persistent
 	private String	userid;
 
+	@Persistent
+	private Long	timestamp;
+	
+	@Persistent
+	private String	ipaddress;
+	
+	
+	public Long getTimestamp() {
+	
+		return timestamp;
+	}
+
+	
+	public String getIpaddress() {
+	
+		return ipaddress;
+	}
+
 	/**
 	 * @return the userid
 	 */
@@ -32,24 +50,78 @@ public class UserEntry {
 	@Persistent
 	private String	relation;
 
+
+	@Persistent
+	private String	browser;
+
+	
+	public String getBrowser() {
+	
+		return browser;
+	}
+
+
+	
+	public void setBrowser(String browser) {
+	
+		this.browser = browser;
+	}
+
+	@Persistent
+	private String	action;
+	
 	@Persistent
 	private String	mid;
+
+	
+	public String getAction() {
+	
+		return action;
+	}
+
+
+	
+	public void setAction(String action) {
+	
+		this.action = action;
+	}
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 
-	public UserEntry(String userid, String relation, String mid, String useranswer, String freebaseanswer) {
+	public UserEntry(String userid, String relation, String mid, String useranswer) {
 
-		this.freebaseanswer = freebaseanswer;
 		this.relation = relation;
 		this.mid = mid;
 		this.useranswer = useranswer;
 		this.userid = userid;
 
+
 		Key k = generateKeyFromID(userid, relation, mid);
 		this.key = k;
 	}
+
+	
+	public void setUserid(String userid) {
+	
+		this.userid = userid;
+	}
+
+
+	
+	public void setTimestamp(Long timestamp) {
+	
+		this.timestamp = timestamp;
+	}
+
+
+	
+	public void setIpaddress(String ipaddress) {
+	
+		this.ipaddress = ipaddress;
+	}
+
 
 	public static Key generateKeyFromID(String userid, String relation, String mid) {
 
