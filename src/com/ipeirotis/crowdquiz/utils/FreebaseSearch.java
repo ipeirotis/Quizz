@@ -123,18 +123,20 @@ public class FreebaseSearch {
 	
 	public static void main(String[] args) throws IOException {
 
+		String name;
+		String attribute;
 		
-		
-		String name = FreebaseSearch.getFreebaseAttribute("/m/02mjmr", "name");
-		String attribute = FreebaseSearch.getFreebaseTopic("/m/02mjmr", "/people/person/spouse_s", "/people/marriage/spouse");
-		System.out.println(name + "\t" + attribute);
+		//name = FreebaseSearch.getFreebaseAttribute("/m/02mjmr", "name");
+		//attribute = FreebaseSearch.getFreebaseTopic("/m/02mjmr", "/people/person/spouse_s", "/people/marriage/spouse");
+		//System.out.println(name + "\t" + attribute);
 
-		name = FreebaseSearch.getFreebaseAttribute("/m/012xdf", "name");
-		attribute = FreebaseSearch.getFreebaseTopic("/m/012xdf", "/people/person/spouse_s", "/people/marriage/spouse");
+		//name = FreebaseSearch.getFreebaseAttribute("/m/012xdf", "name");
+		//attribute = FreebaseSearch.getFreebaseTopic("/m/012xdf", "/people/person/spouse_s", "/people/marriage/spouse");
+		//System.out.println(name + "\t" + attribute);
+		
+		name = FreebaseSearch.getFreebaseAttribute("/m/09qck", "name");
+		attribute = FreebaseSearch.getFreebaseTopic("/m/09qck", "/food/food/energy", null);
 		System.out.println(name + "\t" + attribute);
-		
-		
-		
 		
 	}
 

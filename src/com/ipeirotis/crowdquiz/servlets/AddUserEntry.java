@@ -159,7 +159,7 @@ public class AddUserEntry extends HttpServlet {
 		// when we are crowdsourcing food calories
 		if (relation.equals("kc:/food/food:energy")) {
 			try {
-				int kj = Integer.parseInt(freebaseanswer);
+				double kj = Double.parseDouble(freebaseanswer);
 				freebaseanswer = ("" + Math.round(kj / 4.2));
 			} catch (Exception e) {
 				freebaseanswer = "";

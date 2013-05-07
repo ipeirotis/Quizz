@@ -18,6 +18,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
 import au.com.bytecode.opencsv.bean.CsvToBean;
 
+import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
 import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
@@ -110,6 +111,28 @@ public class AddRelation extends HttpServlet {
 				// return;
 			}
 			
+			String adheadline = req.getParameter("adheadline");
+			if (adheadline != null) {
+				resp.getWriter().println("adText: " + adheadline);
+			} else {
+				// return;
+			}
+			
+			String adline1 = req.getParameter("adline1");
+			if (adline1 != null) {
+				resp.getWriter().println("adText: " + adline1);
+			} else {
+				// return;
+			}
+			
+			String adline2 = req.getParameter("adline2");
+			if (adline2 != null) {
+				resp.getWriter().println("adText: " + adline2);
+			} else {
+				// return;
+			}
+			
+			
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
 			BlobKey blobKey = blobs.get("myFile");
 
@@ -122,9 +145,9 @@ public class AddRelation extends HttpServlet {
 			pm.makePersistent(q);
 			pm.close();
 			
-			Queue queue = QueueFactory.getDefaultQueue();
+			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");
 			
-			queue.add(Builder.withUrl("/addCampaign")
+			queueAdCampaign.add(Builder.withUrl("/addCampaign")
 					.param("relation", relation)
 					.param("budget", budget)
 					.method(TaskOptions.Method.GET));
@@ -145,9 +168,11 @@ public class AddRelation extends HttpServlet {
 			List<CompletionsEntryBean> list = csv.parse(strat, reader);
 
 
+			Queue queueEntities = QueueFactory.getQueue("entities");
+			Queue queueAdgroup  = QueueFactory.getQueue("adgroup");
 			
 			for (CompletionsEntryBean ce : list) {
-				queue.add(Builder.withUrl("/addEntity")
+				queueEntities.add(Builder.withUrl("/addEntity")
 						.param("relation", relation)
 						.param("freebaseid", ce.getMid())
 						.param("emptyweight", ce.getEmpty_weight().toString())
@@ -156,14 +181,20 @@ public class AddRelation extends HttpServlet {
 				// We introduce a delay of a few secs to allow the ad campaign
 				// to be created and for the entries to be uploaded and stored
 				long delay = 10; // in seconds
-				long etaMillis = System.currentTimeMillis() + delay * 1000000L;
-				queue.add(Builder.withUrl("/addAdGroup")
+				long etaMillis = System.currentTimeMillis() + delay * 1000L;
+				queueAdgroup.add(Builder.withUrl("/addAdGroup")
 						.param("relation", relation)
 						.param("mid", ce.getMid())
 						.param("cpcbid", cpcbid)
 						.param("keywords", keywords)
+						.param("adheadline", adheadline)
+						.param("adline1", adline1)
+						.param("adline2", adline2)
 						.method(TaskOptions.Method.GET)
 						.etaMillis(etaMillis));
+				
+
+				
 			}
 			
 

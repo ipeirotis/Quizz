@@ -53,6 +53,36 @@ public class EntityQuestion {
 
 	@Persistent
 	private Double	emptyweight;
+	
+	@Persistent
+	private Long	adGroupId;
+	
+	@Persistent
+	private Long	adTextId;
+
+	
+	public Long getAdGroupId() {
+	
+		return adGroupId;
+	}
+
+	
+	public void setAdGroupId(Long adGroupId) {
+	
+		this.adGroupId = adGroupId;
+	}
+
+	
+	public Long getAdTextId() {
+	
+		return adTextId;
+	}
+
+	
+	public void setAdTextId(Long adTextId) {
+	
+		this.adTextId = adTextId;
+	}
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

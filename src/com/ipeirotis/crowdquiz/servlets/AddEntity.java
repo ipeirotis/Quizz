@@ -54,6 +54,9 @@ public class AddEntity extends HttpServlet {
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
 			pm.close();
+			
+			
+			
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);

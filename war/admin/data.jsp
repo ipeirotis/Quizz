@@ -25,8 +25,35 @@
 
 	List<UserEntry> answers = (List<UserEntry>) query.execute(relation);
 	StringBuffer sb = new StringBuffer();
+	sb.append("userid").append(",")
+		.append("mid").append(",")
+		.append("useranswer").append(",")
+		.append("action").append(",")
+		.append("ipaddress").append(",")
+		.append("timestamp").append(",")
+		//.append("browser").append(",")
+		.append("freebaseanswer").append("\n");
+		
 	for (UserEntry ue : answers) {
-		sb.append(ue.getUserid() + "," + ue.getMid() + "," + ue.getUseranswer() + "\n");
+		String userid = (ue.getUserid()==null)?"":ue.getUserid();
+		String mid = (ue.getMid()==null)?"":ue.getMid();
+		String useranswer = (ue.getUseranswer() ==null)?"":ue.getUseranswer(); 
+		String action = (ue.getAction()==null)?"":ue.getAction();
+		String ipaddress = (ue.getIpaddress()==null)?"":ue.getIpaddress();
+		String timestamp = (ue.getTimestamp()==null)?"":ue.getTimestamp().toString();
+		String browser = (ue.getBrowser()==null)?"":ue.getBrowser();
+		String freebaseanswer = (ue.getFreebaseanswer()==null)?"":ue.getFreebaseanswer();
+		
+		sb.append(userid).append(",")
+		.append(mid).append(",")
+		.append(useranswer).append(",")
+		.append(action).append(",")
+		.append(ipaddress).append(",")
+		.append(timestamp).append(",")
+		//.append(browser).append(",")
+		.append(freebaseanswer).append("\n");
+		
+		//sb.append(userid + "\t" + ue.getMid() + "\t" + ue.getUseranswer() + "\t" + ipaddress  + "," + action + "\n");
 	}
 	pm.close();
 

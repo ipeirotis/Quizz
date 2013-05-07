@@ -52,12 +52,14 @@ import com.google.api.ads.adwords.jaxws.v201302.cm.Operator;
 import com.google.api.ads.adwords.jaxws.v201302.cm.TextAd;
 import com.google.api.ads.adwords.lib.client.AdWordsSession;
 import com.google.api.ads.common.lib.auth.ClientLoginTokens;
+import com.google.api.ads.common.lib.exception.ValidationException;
+import com.google.api.client.googleapis.auth.clientlogin.ClientLoginResponseException;
 
 @SuppressWarnings("serial")
 public class CampaignManagement extends HttpServlet {
 
-	private AdWordsServices	adWordsServices;
-	private AdWordsSession	session;
+	private static AdWordsServices	adWordsServices;
+	private static AdWordsSession	session;
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -78,9 +80,8 @@ public class CampaignManagement extends HttpServlet {
 		}
 		
 	}
-
-	public CampaignManagement() throws Exception {
-
+	
+	static {
 		Configuration config = new PropertiesConfiguration();
 
 		config.setProperty("api.adwords.developerToken", "xh5fcw0gDCw10sCVmBiMeg");
@@ -96,13 +97,29 @@ public class CampaignManagement extends HttpServlet {
 		// api.adwords.returnMoneyInMicros=true
 
 		// Get a ClientLogin AuthToken.
-		String clientLoginToken = new ClientLoginTokens.Builder().forApi(ClientLoginTokens.Api.ADWORDS).from(config)
-				.build().requestToken();
+		String clientLoginToken = null;
+		try {
+			clientLoginToken = new ClientLoginTokens.Builder().forApi(ClientLoginTokens.Api.ADWORDS).from(config)
+					.build().requestToken();
+		} catch (IOException | ValidationException e) {
+			e.printStackTrace();
+		}
 
 		// Construct an AdWordsSession.
-		this.session = new AdWordsSession.Builder().from(config).withClientLoginToken(clientLoginToken).build();
+		try {
+			session = new AdWordsSession.Builder().from(config).withClientLoginToken(clientLoginToken).build();
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
 
-		this.adWordsServices = new AdWordsServices();
+		adWordsServices = new AdWordsServices();
+	}
+
+	public CampaignManagement() throws Exception {
+
+		// NOTE: We used to have session and adWordsServices as instance variables, but it seems that having them as static works better. 
+		// Need to test it further
+
 	}
 
 	public Campaign createCampaign(String campaignName, Integer dailyBudget) throws Exception {
@@ -281,7 +298,7 @@ public class CampaignManagement extends HttpServlet {
 		textAdGroupAd.setAd(textAd);
 
 		// You can optionally provide these field(s).
-		textAdGroupAd.setStatus(AdGroupAdStatus.PAUSED);
+		textAdGroupAd.setStatus(AdGroupAdStatus.ENABLED);
 
 		return textAdGroupAd;
 	}
