@@ -9,21 +9,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ipeirotis.crowdquiz.entities.EntityQuestion;
+import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
-public class AddEntity extends HttpServlet {
+public class AddQuizQuestion extends HttpServlet {
 
 	private HttpServletResponse	r;
 
-	final static Logger					logger	= Logger.getLogger("com.ipeirotis.adcrowdkg");
+	final static Logger					logger	= Logger.getLogger("com.ipeirotis.quizz");
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		r = resp;
-
 		r.setContentType("text/plain");
 
 		try {
@@ -35,21 +34,21 @@ public class AddEntity extends HttpServlet {
 				return;
 			}
 
-			String freebaseid = req.getParameter("freebaseid");
-			if (freebaseid != null) {
-				resp.getWriter().println("Freebase Entity ID: " + freebaseid);
+			String mid = req.getParameter("mid");
+			if (mid != null) {
+				resp.getWriter().println("Entity ID: " + mid);
 			} else {
 				return;
 			}
 
-			Double emptyweight = Double.parseDouble(req.getParameter("emptyweight"));
-			if (emptyweight != null) {
-				resp.getWriter().println("Empty weight: " + emptyweight);
+			Double weight = Double.parseDouble(req.getParameter("weight"));
+			if (weight != null) {
+				resp.getWriter().println("Weight: " + weight);
 			} else {
 				return;
 			}
 
-			EntityQuestion q = new EntityQuestion(relation, freebaseid, emptyweight);
+			QuizQuestion q = new QuizQuestion(relation, mid, weight);
 
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);

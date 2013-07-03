@@ -10,7 +10,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class EntityQuestion {
+public class QuizQuestion {
 
 	/**
 	 * @return the freebaseEntityId
@@ -52,7 +52,7 @@ public class EntityQuestion {
 	private String	relation;
 
 	@Persistent
-	private Double	emptyweight;
+	private Double	weight;
 	
 	@Persistent
 	private Long	adGroupId;
@@ -88,18 +88,18 @@ public class EntityQuestion {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 
-	public EntityQuestion(String relation, String freebaseEntityId, Double emptyweight) {
+	public QuizQuestion(String relation, String freebaseEntityId, Double weight) {
 
 		this.freebaseEntityId = freebaseEntityId;
 		this.relation = relation;
-		this.emptyweight = emptyweight;
+		this.weight = weight;
 
 		this.key = generateKeyFromID(relation, freebaseEntityId);
 	}
 
 	public static Key generateKeyFromID(String relation, String freebaseEntityId) {
 
-		return KeyFactory.createKey(EntityQuestion.class.getSimpleName(), "id_" + relation + "_" + freebaseEntityId);
+		return KeyFactory.createKey(QuizQuestion.class.getSimpleName(), "id_" + relation + "_" + freebaseEntityId);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class EntityQuestion {
 	 */
 	public Double getEmptyweight() {
 
-		return emptyweight;
+		return weight;
 	}
 
 }

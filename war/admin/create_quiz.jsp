@@ -2,8 +2,8 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.EntityQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.List"%>
 <%@ page
@@ -34,12 +34,6 @@
 </head>
 <body>
 
-	<%
-		BlobstoreService blobstoreService = BlobstoreServiceFactory
-				.getBlobstoreService();
-	%>
-
-
 	<div class="container">
 
 		<form class="form-horizontal" id="fillin"
@@ -60,41 +54,17 @@
 					$('#name').val("Calories in food");
 					$('#relation').val("kc:/food/food:energy");
 					$('#text').val("How many calories in 100 grams (3.5 oz) of");
-					$('#fbattr').val("/food/food/energy");
-					$('#fbelement').val("");
 					$('#fbtype').val("/type/float");
-					$('#adheadline').val("Nutrition Quiz");
-					$('#adline1').val("Check how well you know calories");
-					$('#adline2').val("and compare yourself against others");
-					$('#keywords').val("calories, energy");
-					$('#budget').val("10");
-					$('#cpcbid').val("0.05");
 				} else if (prefilled == "spouses") {
 					$('#name').val("Spouse");
 					$('#relation').val("kc:/people/person:spouse");
 					$('#text').val("Who is the current spouse of");
-					$('#fbattr').val("/people/person/spouse_s");
-					$('#fbelement').val("/people/marriage/spouse");
 					$('#fbtype').val("/people/person");
-					$('#adheadline').val("Spouse Quiz");
-					$('#adline1').val("Check how well you know spouses");
-					$('#adline2').val("and compare yourself against others");
-					$('#keywords').val("spouse, wife, husband");
-					$('#budget').val("10");
-					$('#cpcbid').val("0.05");
 				} else if (prefilled == "phone") {
 					$('#name').val("Customer service phone");
 					$('#relation').val("kc:/organization/organization:customer service phone");
 					$('#text').val("What is the customer service phone number for");
-					$('#fbattr').val("/organization/organization/phone_number");
-					$('#fbelement').val("");
 					$('#fbtype').val("/common/phone_number");
-					$('#adheadline').val("Phone Knowledge Quiz");
-					$('#adline1').val("Know customer service numbers?");
-					$('#adline2').val("Compare your knowledge against others");
-					$('#keywords').val("customer service phone, phone number, phone");
-					$('#budget').val("10");
-					$('#cpcbid').val("0.05");
 				}
 				
 				
@@ -105,13 +75,12 @@
 
 
 
-		<form class="form-horizontal" id="addRelation"
-			action="<%=blobstoreService.createUploadUrl("/addRelation")%>"
+		<form class="form-horizontal" id="createQuiz"
+			action="/addQuiz" method="post"
 			style="background-color: #D4D4D4; border-radius: 5px; padding: 10px"
-			method="post" enctype="multipart/form-data">
+			>
 			<fieldset>
-				<legend style="text-align: center">Add relation to
-					crowdsource</legend>
+				<legend style="text-align: center">Create a new quiz</legend>
 				<div class="control-group">
 					<label class="control-label" for="name">Name:</label>
 					<div class="controls">
@@ -132,22 +101,7 @@
 						<input class="input-xxlarge" id="text" name="text" type="text">
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="fbattr">FB Attribute:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="fbattr" name="fbattr" type="text">
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="fbelement">FB Element:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="fbelement" name="fbelement" type="text">
-						<div>
-							<small><em>(optional, used when the Freebase
-									attribute is a compound)</em></small>
-						</div>
-					</div>
-				</div>
+				
 				<div class="control-group">
 					<label class="control-label" for="fbtype">FB Type:</label>
 					<div class="controls">
@@ -155,76 +109,9 @@
 					</div>
 				</div>
 
-				<div class="control-group">
-					<label class="control-label" for="adheadline">Ad headline:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="adheadline" name="adheadline"
-							type="text">
-					</div>
-				</div>
-
-				<div class="control-group">
-					<label class="control-label" for="adline1">Ad line1:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="adline1" name="adline1"
-							type="text">
-					</div>
-				</div>
-
-				<div class="control-group">
-					<label class="control-label" for="adline2">Ad line2:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="adline2" name="adline2"
-							type="text">
-					</div>
-				</div>
-
-
-
-				<div class="control-group">
-					<label class="control-label" for="keywords">Ad keywords:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="keywords" name="keywords"
-							type="text">
-					</div>
-				</div>
-
-
-
-				<div class="control-group">
-					<label class="control-label" for="budget">Daily ad budget:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="budget" name="budget" type="text"
-							>
-					</div>
-				</div>
-
-				<div class="control-group">
-					<label class="control-label" for="cpcbid">CPC bid:</label>
-					<div class="controls">
-						<input class="input-xxlarge" id="cpcbid" name="cpcbid" type="text"
-							>
-					</div>
-				</div>
-
-
-				<div class="control-group">
-					<label class="control-label" for="myFile">File:</label>
-					<div class="controls">
-						<span class="btn btn-file"><input id="myFile" name="myFile"
-							type="file"> </span>
-
-						<div>
-							<small><em>(A file from completions server [<a
-									href="http://0.completion_server.completion-server.vc.borg.google.com:26062/attribute?locale=&q=kc:/food/food:energy">example</a>])
-							</em></small>
-						</div>
-					</div>
-				</div>
-
 				<div class="form-actions"
 					style="background-color: #D0D0D0; border-radius: 5px;">
-					<button type="submit" class="btn">Submit</button>
+					<button type="submit" class="btn">Submit</button>	
 				</div>
 			</fieldset>
 		</form>
@@ -235,7 +122,7 @@
 	<script>
 		$(document).ready(function() {
 			// bind 'myForm' and provide a simple callback function 
-			$('#addRelation').ajaxForm(function() {
+			$('#createQuiz').ajaxForm(function() {
 				alert("Relation added!");
 				window.location.replace("/admin/");
 			});

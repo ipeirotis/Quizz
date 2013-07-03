@@ -1,11 +1,7 @@
 package com.ipeirotis.crowdquiz.servlets;
 
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,30 +10,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
-import au.com.bytecode.opencsv.bean.CsvToBean;
-
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreInputStream;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.ipeirotis.crowdquiz.ads.CampaignManagement;
-import com.ipeirotis.crowdquiz.entities.Question;
+import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
-public class AddRelation extends HttpServlet {
+public class AddQuizAdCampaign extends HttpServlet {
 
 	private HttpServletResponse	r;
-	private BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
-
 	final static Logger					logger						= Logger.getLogger("com.ipeirotis.adcrowdkg");
 
 	@Override
@@ -76,6 +59,7 @@ public class AddRelation extends HttpServlet {
 				return;
 			}
 
+			/*
 			String freebaseattr = req.getParameter("fbattr");
 			if (freebaseattr != null) {
 				resp.getWriter().println("Freebase Property: " + freebaseattr);
@@ -89,6 +73,7 @@ public class AddRelation extends HttpServlet {
 			} else {
 				// return;
 			}
+			*/
 
 			String budget = req.getParameter("budget");
 			if (budget != null) {
@@ -133,12 +118,8 @@ public class AddRelation extends HttpServlet {
 			}
 			
 			
-			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
-			BlobKey blobKey = blobs.get("myFile");
-
-			Question q = new Question(name, relation, text, freebaseattr, fbelement, freebasetype, blobKey);
+			Quiz q = new Quiz(name, relation, text, freebasetype);
 			
-
 			
 			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -153,30 +134,10 @@ public class AddRelation extends HttpServlet {
 					.method(TaskOptions.Method.GET));
 			
 
-			BlobstoreInputStream is = new BlobstoreInputStream(blobKey);
-			BufferedReader in = new BufferedReader(new InputStreamReader(is));
-
-			CsvToBean<CompletionsEntryBean> csv = new CsvToBean<CompletionsEntryBean>();
-			CSVReader reader = new CSVReader(in);
-			String [] header = reader.readNext();
-
-			ColumnPositionMappingStrategy<CompletionsEntryBean> strat = new ColumnPositionMappingStrategy<CompletionsEntryBean>();
-			strat.setType(CompletionsEntryBean.class);
-			strat.captureHeader(reader);
-			strat.setColumnMapping(header);
-
-			List<CompletionsEntryBean> list = csv.parse(strat, reader);
-
-
-			Queue queueEntities = QueueFactory.getQueue("entities");
+			
 			Queue queueAdgroup  = QueueFactory.getQueue("adgroup");
 			
-			for (CompletionsEntryBean ce : list) {
-				queueEntities.add(Builder.withUrl("/addEntity")
-						.param("relation", relation)
-						.param("freebaseid", ce.getMid())
-						.param("emptyweight", ce.getEmpty_weight().toString())
-						.method(TaskOptions.Method.GET));
+			for (;;) {
 				
 				// We introduce a delay of a few secs to allow the ad campaign
 				// to be created and for the entries to be uploaded and stored
@@ -184,7 +145,7 @@ public class AddRelation extends HttpServlet {
 				long etaMillis = System.currentTimeMillis() + delay * 1000L;
 				queueAdgroup.add(Builder.withUrl("/addAdGroup")
 						.param("relation", relation)
-						.param("mid", ce.getMid())
+						.param("mid", "mid")
 						.param("cpcbid", cpcbid)
 						.param("keywords", keywords)
 						.param("adheadline", adheadline)

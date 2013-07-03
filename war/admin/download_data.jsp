@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/csv; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.UserEntry"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.EntityQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.UserAnswer"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.*"%>
@@ -13,17 +13,17 @@
 	String relation = request.getParameter("relation");
 	String name = "";
 	try {
-		Question q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
+		Quiz q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
 		name = q.getName();
 	} catch (Exception e) {
 
 	}
 
-	Query query = pm.newQuery(UserEntry.class);
+	Query query = pm.newQuery(UserAnswer.class);
 	query.setFilter("relation == relationParam");
 	query.declareParameters("String relationParam");
 
-	List<UserEntry> answers = (List<UserEntry>) query.execute(relation);
+	List<UserAnswer> answers = (List<UserAnswer>) query.execute(relation);
 	StringBuffer sb = new StringBuffer();
 	sb.append("userid").append(",")
 		.append("mid").append(",")
@@ -34,7 +34,7 @@
 		//.append("browser").append(",")
 		.append("freebaseanswer").append("\n");
 		
-	for (UserEntry ue : answers) {
+	for (UserAnswer ue : answers) {
 		String userid = (ue.getUserid()==null)?"":ue.getUserid();
 		String mid = (ue.getMid()==null)?"":ue.getMid();
 		String useranswer = (ue.getUseranswer() ==null)?"":ue.getUseranswer(); 
@@ -42,7 +42,7 @@
 		String ipaddress = (ue.getIpaddress()==null)?"":ue.getIpaddress();
 		String timestamp = (ue.getTimestamp()==null)?"":ue.getTimestamp().toString();
 		String browser = (ue.getBrowser()==null)?"":ue.getBrowser();
-		String freebaseanswer = (ue.getFreebaseanswer()==null)?"":ue.getFreebaseanswer();
+		//String freebaseanswer = (ue.getFreebaseanswer()==null)?"":ue.getFreebaseanswer();
 		
 		sb.append(userid).append(",")
 		.append(mid).append(",")
@@ -50,8 +50,8 @@
 		.append(action).append(",")
 		.append(ipaddress).append(",")
 		.append(timestamp).append(",")
-		//.append(browser).append(",")
-		.append(freebaseanswer).append("\n");
+		.append(browser).append(",")
+		.append("\n");
 		
 		//sb.append(userid + "\t" + ue.getMid() + "\t" + ue.getUseranswer() + "\t" + ipaddress  + "," + action + "\n");
 	}

@@ -6,16 +6,15 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Question {
+public class Quiz {
 
 	public static Key generateKeyFromID(String relation) {
 
-		return KeyFactory.createKey(Question.class.getSimpleName(), "id_" + relation);
+		return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + relation);
 	}
 
 	// The user-friendly name of the relation that we are targeting
@@ -35,15 +34,16 @@ public class Question {
 	private String	freebaseType;
 
 	// The attribute that we are crowdsourcing
-	@Persistent
-	private String	freebaseAttribute;
+	//@Persistent
+	//private String	freebaseAttribute;
 	
 	// The element from the attribute that we are crowdsourcing (when the attribute is a compound)
-	@Persistent
-	private String	freebaseElement;
+	//@Persistent
+	//private String	freebaseElement;
 	
-	@Persistent
-	private BlobKey	blobKey;
+	//
+	//@Persistent
+	//private BlobKey	blobKey;
 
 	// The id of the ad campaign
 	@Persistent
@@ -65,15 +65,15 @@ public class Question {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 
-	public Question(String name, String relation, String questionText, String freebaseAttribute, String freebaseElement, String freebaseType, BlobKey blobKey) {
+	public Quiz(String name, String relation, String questionText, String freebaseType) {
 
 		this.name = name;
 		this.questionText = questionText;
 		this.relation = relation;
 		this.freebaseType = freebaseType;
-		this.freebaseAttribute = freebaseAttribute;
-		this.freebaseElement = freebaseElement;
-		this.blobKey = blobKey;
+		//this.freebaseAttribute = freebaseAttribute;
+		//this.freebaseElement = freebaseElement;
+		//this.blobKey = blobKey;
 
 		this.key = generateKeyFromID(relation);
 	}
@@ -81,10 +81,12 @@ public class Question {
 	/**
 	 * @return the freebaseAttribute
 	 */
+	/*
 	public String getFreebaseAttribute() {
 
 		return freebaseAttribute;
 	}
+	*/
 
 	/**
 	 * @return the freebaseType
@@ -124,10 +126,11 @@ public class Question {
 		return relation;
 	}
 
-	
+	/*
 	public String getFreebaseElement() {
 	
 		return freebaseElement;
 	}
+	*/
 
 }

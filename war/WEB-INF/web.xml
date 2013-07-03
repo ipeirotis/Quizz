@@ -5,17 +5,47 @@
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 	<servlet>
-		<servlet-name>AddRelation</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddRelation</servlet-class>
+		<servlet-name>AddQuiz</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuiz</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddEntity</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddEntity</servlet-class>
+		<servlet-name>AddQuizQuestion</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuizQuestion</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddUserEntry</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddUserEntry</servlet-class>
+		<servlet-name>UploadQuestions</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadQuestions</servlet-class>
 	</servlet>
+		<servlet>
+		<servlet-name>AddGoldAnswer</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddGoldAnswer</servlet-class>
+	</servlet>
+		<servlet>
+		<servlet-name>UploadGoldAnswers</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadGoldAnswers</servlet-class>
+	</servlet>
+			<servlet>
+		<servlet-name>AddSilverAnswer</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddSilverAnswer</servlet-class>
+	</servlet>
+			<servlet>
+		<servlet-name>UploadSilverAnswers</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadSilverAnswers</servlet-class>
+	</servlet>
+		<servlet>
+		<servlet-name>AddUserAnswer</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddUserAnswer</servlet-class>
+	</servlet>
+		<servlet>
+		<servlet-name>ProcessUserAnswer</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.ProcessUserAnswer</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>UploadCrowdAnswers</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadCrowdAnswers</servlet-class>
+	</servlet>
+	
+
 	<servlet>
 		<servlet-name>AddCampaign</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddCampaign</servlet-class>
@@ -26,16 +56,44 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>AddRelation</servlet-name>
-		<url-pattern>/addRelation</url-pattern>
+		<servlet-name>AddQuiz</servlet-name>
+		<url-pattern>/addQuiz</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>AddEntity</servlet-name>
-		<url-pattern>/addEntity</url-pattern>
+		<servlet-name>AddQuizQuestion</servlet-name>
+		<url-pattern>/addQuizQuestion</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>AddUserEntry</servlet-name>
-		<url-pattern>/addUserEntry</url-pattern>
+		<servlet-name>UploadQuestions</servlet-name>
+		<url-pattern>/uploadQuestions</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AddGoldAnswer</servlet-name>
+		<url-pattern>/addGoldAnswer</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UploadGoldAnswers</servlet-name>
+		<url-pattern>/uploadGoldAnswers</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AddSilverAnswer</servlet-name>
+		<url-pattern>/addSilverAnswer</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UploadSilverAnswers</servlet-name>
+		<url-pattern>/uploadSilverAnswers</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>AddUserAnswer</servlet-name>
+		<url-pattern>/addUserAnswer</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ProcessUserAnswer</servlet-name>
+		<url-pattern>/processUserAnswer</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UploadCrowdAnswers</servlet-name>
+		<url-pattern>/uploadCrowdAnswers</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>AddCampaign</servlet-name>

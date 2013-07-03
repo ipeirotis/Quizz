@@ -8,9 +8,6 @@ import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -114,7 +111,7 @@ public class FreebaseSearch {
 			return result;
 			
 		} catch (Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			return "";
 		}
 

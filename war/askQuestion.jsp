@@ -2,8 +2,8 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.EntityQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
@@ -34,7 +34,7 @@
 	<div class="container pagination-centered">
 
 		<%
-				String relation = request.getParameter("relation");
+			String relation = request.getParameter("relation");
 				String mid = request.getParameter("mid");
 				
 				/*
@@ -61,18 +61,17 @@
 				
 				
 				PersistenceManager pm = PMF.get().getPersistenceManager();
-				Question q = null;
-				EntityQuestion eq = null;
+				Quiz q = null;
+				QuizQuestion eq = null;
 				
 				try {
-					q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
-					eq = pm.getObjectById(EntityQuestion.class, EntityQuestion.generateKeyFromID(relation, mid));
-		    	} catch (Exception e) {
-		        	q = null;
-		        	eq = null;
-		    	} 
-				
-			%>
+					q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
+					eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
+				    	} catch (Exception e) {
+				        	q = null;
+				        	eq = null;
+				    	}
+		%>
 		<div class="row">
 			<div class="span8 offset2">
 				<h3>Do you know...</h3>
@@ -82,7 +81,7 @@
 			<div class="span8 offset2">
 
 
-				<form id="addUserEntry" action="/addUserEntry"
+				<form id="addUserEntry" action="/processUserEntry"
 					style="background-color: #D4D4D4; border-radius: 5px;">
 					<fieldset>
 						<legend>

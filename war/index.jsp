@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="java.util.List"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -10,7 +10,7 @@
 <head>
 <meta name="google-site-verification" content="kYjnyRwCqe4JTpWbEjE-yL7ae3YPFf8zxlQuGcKGb-Q" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>List of Supported Relations</title>
+<title>Quizz: Available Quizzes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
@@ -23,16 +23,16 @@
 <body>
 	<div class="container pagination-centered">
 		<div class="row span4 offset4">
-		<h2>Crowd Quizzes</h2>
+		<h2>Available Quizzes</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Quiz</th>
 				</tr>
 				<%
 					PersistenceManager pm = PMF.get().getPersistenceManager();
-					String query = "select from " + Question.class.getName();
-					List<Question> questions = (List<Question>) pm.newQuery(query).execute();
-					if (questions.isEmpty()) {
+							String query = "select from " + Quiz.class.getName();
+							List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
+							if (questions.isEmpty()) {
 				%>
 				<tr>
 					<td style="text-align: center">No quizzes found!</td>
@@ -43,7 +43,7 @@
 
 
 				<%
-					for (Question q : questions) {
+					for (Quiz q : questions) {
 				%>
 				<tr>
 					<td><a

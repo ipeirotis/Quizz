@@ -12,16 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroup;
 import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.ads.CampaignManagement;
-import com.ipeirotis.crowdquiz.entities.EntityQuestion;
-import com.ipeirotis.crowdquiz.entities.Question;
-import com.ipeirotis.crowdquiz.servlets.AddUserEntry.Response;
+import com.ipeirotis.crowdquiz.entities.Quiz;
+import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.utils.FreebaseSearch;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -74,33 +71,34 @@ public class AddAdGroup extends HttpServlet {
 			
 			String adheadline = req.getParameter("adheadline");
 			if (adheadline != null) {
-				resp.getWriter().println("adText: " + adheadline);
+				//resp.getWriter().println("adText: " + adheadline);
 			} else {
 				// return;
 			}
 			
 			String adline1 = req.getParameter("adline1");
 			if (adline1 != null) {
-				resp.getWriter().println("adText: " + adline1);
+				//resp.getWriter().println("adText: " + adline1);
 			} else {
 				// return;
 			}
 			
 			String adline2 = req.getParameter("adline2");
 			if (adline2 != null) {
-				resp.getWriter().println("adText: " + adline2);
+				//resp.getWriter().println("adText: " + adline2);
 			} else {
 				// return;
 			}
 			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Question q;
+			Quiz q;
 			Long campaignId = null;
 			
 				try {
-					q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
+					q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
 					campaignId  = q.getCampaignid();
 				} catch (Exception e) {
+					e.printStackTrace();
 					return;
 				} 
 				pm.close();
@@ -149,9 +147,9 @@ public class AddAdGroup extends HttpServlet {
 			Long textAdId = service.publishTextAd(ad);
 			
 			pm = PMF.get().getPersistenceManager();
-			EntityQuestion eq = null;
+			QuizQuestion eq = null;
 				try {
-					eq = pm.getObjectById(EntityQuestion.class, EntityQuestion.generateKeyFromID(relation, mid));
+					eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
 					eq.setAdTextId(textAdId);
 					eq.setAdGroupId(adgroupId);
 					pm.makePersistent(eq);

@@ -2,9 +2,9 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.UserEntry"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.EntityQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.UserAnswer"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.*"%>
 
@@ -14,17 +14,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
 <%
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				String relation = request.getParameter("relation");
-				String name = "";
-				try {
-					Question q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
-					name = q.getName();
-				} catch (Exception e) {
-					
-				}
-				
-				
+
+	Quiz quiz = null;
+	PersistenceManager pm = PMF.get().getPersistenceManager();
+		String relation = request.getParameter("relation");
+		String name = "";
+		try {
+			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
+			name = quiz.getName();
+		} catch (Exception e) {
+	
+		}
 %>
 
 <title>Unanswered questions for quiz <%=name%></title>
@@ -40,69 +40,65 @@
 	<div class="container pagination-centered">
 		<table class="table table-striped  table-bordered">
 
-			<% 
+			<%
 				// Get an array of Cookies associated with this domain
-				String userName = null;
-				Cookie[] cookies = request.getCookies();
-				if (cookies != null) {
-				   for (Cookie c: cookies) {
-				  	 if (c.getName().equals("username")) {
-				  		 userName = c.getValue();
-				  		 break;
-				  	 }
-				   }
-				} 
-				
-				if (userName == null) {
-					userName = UUID.randomUUID().toString();;
-				}
-				Cookie username = new Cookie("username", userName);
-				response.addCookie( username );
-				
+						String userName = null;
+						Cookie[] cookies = request.getCookies();
+						if (cookies != null) {
+						   for (Cookie c: cookies) {
+						  	 if (c.getName().equals("username")) {
+						  		 userName = c.getValue();
+						  		 break;
+						  	 }
+						   }
+						} 
+						
+						if (userName == null) {
+							userName = UUID.randomUUID().toString();;
+						}
+						Cookie username = new Cookie("username", userName);
+						response.addCookie( username );
 			%>
 			<tr>
 				<th colspan="2">Questions for quiz <%=name%></th>
 
 			</tr>
 			<%
-
-					String queryGivenAnswers = "SELECT from "  + UserEntry.class.getName() + 
-							" where userid=='" + userName +"' && relation=='"+relation+	"'";
-							//System.out.println(queryGivenAnswers);
-					List<UserEntry> answers = (List<UserEntry>) pm.newQuery(queryGivenAnswers).execute();
-					Set<String> entries = new HashSet<String>();
-					for (UserEntry ue: answers) {
-						entries.add(ue.getMid());
-					}
-					
+				String queryGivenAnswers = "SELECT from "  + UserAnswer.class.getName() + 
+									" where userid=='" + userName +"' && relation=='"+relation+	"'";
+									//System.out.println(queryGivenAnswers);
+							List<UserAnswer> answers = (List<UserAnswer>) pm.newQuery(queryGivenAnswers).execute();
+							Set<String> entries = new HashSet<String>();
+							for (UserAnswer ue: answers) {
+								entries.add(ue.getMid());
+							}
 							
-					String query = "select from " + EntityQuestion.class.getName() + " where relation=='"+relation+	"'" 
-						+"  order by emptyweight DESC";
-					System.out.println(query);
-					List<EntityQuestion> questions = (List<EntityQuestion>) pm.newQuery(query).execute();
-					if (questions.isEmpty()) {
+									
+							String query = "select from " + QuizQuestion.class.getName() + " where relation=='"+relation+	"'" 
+								+"  order by weight DESC";
+							System.out.println(query);
+							List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();
+							if (questions.isEmpty()) {
 			%>
 			<tr>
 				<td>No entries found!</td>
 			</tr>
 			<%
 				} else {
-						for (EntityQuestion q: questions) {
-							if (entries.contains(q.getFreebaseEntityId())) continue;
+							for (QuizQuestion q: questions) {
+								if (entries.contains(q.getFreebaseEntityId())) continue;
 			%>
 			<tr>
-				<td><a target="_blank"
-					href="http://www.freebase.com<%=q.getFreebaseEntityId()%>"><div
-							name="FreebaseName" id="<%=q.getFreebaseEntityId()%>">Loading...</div></a></td>
-				<td><a
-					href="/askQuestion.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Fill the answer</a></td>
-								<td><a
-					href="/multChoice.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Multiple choice</a></td>
+				<td><div name="FreebaseName" id="<%=q.getFreebaseEntityId()%>">Loading...</div></td>
+				<td><a target="_blank" name="GoogleQuery" mid="<%=q.getFreebaseEntityId()%>">Google</a></td>
+				<td><a target="_blank" href="http://www.freebase.com<%=q.getFreebaseEntityId()%>">Freebase</a></td> 
+				<td><a href="/askQuestion.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Fill the answer</a></td>
+				<td><a href="/multChoice.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Multiple choice</a></td>
 			</tr>
 			<%
 				}
 					}
-					pm.close();
+					pm.close(); 
 			%>
 		</table>
 	</div>
@@ -112,6 +108,12 @@
 		$('div[name^="FreebaseName"]').each(function(index) {
 			queryFreebase($(this).attr('id'), $(this));
 		});
+		
+		$('a[name^="GoogleQuery"]').each(function(index) {
+			queryFreebase2($(this).attr('mid'), $(this), "http://www.google.com/
+					search?q=<%=quiz.getQuestionText()%> ");
+		});
+
 
 		function queryFreebase(freebaseMid, element) {
 
@@ -137,6 +139,33 @@
 
 		function updateNames(response, element) {
 			element.html(response.result.name);
+		}
+		
+		
+		function queryFreebase2(freebaseMid, element, prefix) {
+
+			var query = {
+				'mid' : freebaseMid,
+				'name' : null,
+			};
+
+			var params = {
+				'key' : 'AIzaSyAP0fH9aEndZbSDFT87g46YY0gjhkQY8Zc',
+				'limit' : 1,
+				'exact' : true,
+				'query' : JSON.stringify(query)
+			};
+
+			url = 'https://www.googleapis.com/freebase/v1/mqlread';
+
+			$.getJSON(url + '?callback=?', params, function(response) {
+				updateNames2(response, element, prefix)
+			});
+
+		}
+
+		function updateNames2(response, element, prefix) {
+			element.attr("href", prefix + response.result.name);
 		}
 	</script>
 	<script>

@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="java.util.List"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -10,73 +10,84 @@
 <head>
 <meta name="google-site-verification" content="kYjnyRwCqe4JTpWbEjE-yL7ae3YPFf8zxlQuGcKGb-Q" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>List of Supported Relations</title>
+<title>List of available quizzes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
 <script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 
-
+<link type="text/css" rel="stylesheet" href="/qtip/jquery.qtip.css" />
+<script type="text/javascript" src="/qtip/jquery.qtip.js"></script>
 
 </head>
 <body>
 	<div class="container pagination-centered">
 		<div class="row span12">
-		<h2>Crowd Quizzes</h2>
+		<h2>Available <span style="color:maroon">Quizz</span>es</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
-					<th>Quiz name</th>
-					<th>Relation</th>
+					<th>Name</th>
+					<th>ID</th>
 					<th>Question text</th>
-					<th>Freebase Attribute of Answer</th>
-					<th>Freebase Type of Answer</th>
-					<th>Results</th>
-					<th>Ad campaign</th>
+					<th>Answer Type</th>
+					<th style="text-align: center" colspan="4">Upload</th>
+					<th>Download</th>
+					<th>Adcampaign</th>
 				</tr>
+				
 				<%
-					PersistenceManager pm = PMF.get().getPersistenceManager();
-					String query = "select from " + Question.class.getName();
-					List<Question> questions = (List<Question>) pm.newQuery(query).execute();
-					if (questions.isEmpty()) {
-				%>
-				<tr>
-					<td colspan="7" style="text-align: center">No Questions found!</td>
-				</tr>
-				<%
+									PersistenceManager pm = PMF.get().getPersistenceManager();
+											String query = "select from " + Quiz.class.getName();
+											List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
+											if (questions.isEmpty()) {
+												;
 					} else {
-				%>
-
-
-				<%
-					for (Question q : questions) {
+						for (Quiz q : questions) {
 				%>
 				<tr>
 					<td><a href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName() %></a></td>
 					<td><%=q.getRelation()%></td>
 					<td><%=q.getQuestionText()%></td>
-					<td><%=q.getFreebaseAttribute()%></td>
 					<td><%=q.getFreebaseType()%></td>
-					<td><a href="data.jsp?relation=<%=q.getRelation()%>">Download</a></td>
-					<td><a href="adcampaign.jsp?relation=<%=q.getRelation()%>">Ad campaign</a></td>
+					<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a></td>
+					<td><a id="upload_gold" href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a></td>
+					<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a></td>
+					<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a></td>
+					<td><a id="download" href="download_data.jsp?relation=<%=q.getRelation()%>">Answers</a></td>
+					<td><a id="adcampaign" href="manage_adcampaign.jsp?relation=<%=q.getRelation()%>">Manage</a></td>
 				</tr>
+
+
 
 				<%
 					}
+				}
 				%>
 				<tr>
-					<td colspan="7" style="text-align: center">
-						<a href="addRelation.jsp">Add a new relation to crowdsource</a>
+					<td colspan="10" style="text-align: center">
+						<a href="create_quiz.jsp">Create a new quiz</a>
 					</td>
 				</tr>
 				<% 
-					}
+					
 
 					pm.close();
 				%>
 			</table>
 		</div>
 	</div>
+	
+	<!-- Setup help tooltips for the different page elements -->
+	<script>
+	$('#upload_gold').qtip({content: 'Upload correct answers for the questions asked'});
+	$('#upload_silver').qtip({content: 'Upload possible answers for the questions asked (with some <1 probability of being correct)'});
+	$('#upload_crowd').qtip({content: 'Upload answers submitted by users'});
+	$('#upload_questions').qtip({content: 'Upload additional entities for which we want to ask the quiz question'});
+	$('#download').qtip({content: 'Download the answers submitted so far by the users'});
+	$('#adcampaign').qtip({content: 'Manage the ad campaign'});
+	</script>
 	
 	<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

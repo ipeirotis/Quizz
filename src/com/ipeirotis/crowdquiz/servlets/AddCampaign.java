@@ -10,11 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
-import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.ads.CampaignManagement;
-import com.ipeirotis.crowdquiz.entities.EntityQuestion;
-import com.ipeirotis.crowdquiz.entities.Question;
-import com.ipeirotis.crowdquiz.servlets.AddUserEntry.Response;
+import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -54,10 +51,11 @@ public class AddCampaign extends HttpServlet {
 			Long campaignId = service.publishCampaign(campaign);
 			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Question q;
+			Quiz q;
 			try {
-				q = pm.getObjectById(Question.class, Question.generateKeyFromID(relation));
+				q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
 			} catch (Exception e) {
+				e.printStackTrace();
 				return;
 			}
 			

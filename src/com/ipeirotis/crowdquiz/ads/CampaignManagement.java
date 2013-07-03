@@ -35,8 +35,6 @@ import com.google.api.ads.adwords.jaxws.v201302.cm.BiddingStrategyType;
 import com.google.api.ads.adwords.jaxws.v201302.cm.Budget;
 import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetBudgetDeliveryMethod;
 import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetBudgetPeriod;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetOperation;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetServiceInterface;
 import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
 import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignOperation;
 import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignReturnValue;
@@ -53,7 +51,6 @@ import com.google.api.ads.adwords.jaxws.v201302.cm.TextAd;
 import com.google.api.ads.adwords.lib.client.AdWordsSession;
 import com.google.api.ads.common.lib.auth.ClientLoginTokens;
 import com.google.api.ads.common.lib.exception.ValidationException;
-import com.google.api.client.googleapis.auth.clientlogin.ClientLoginResponseException;
 
 @SuppressWarnings("serial")
 public class CampaignManagement extends HttpServlet {
