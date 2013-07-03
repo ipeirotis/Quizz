@@ -46,7 +46,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	final static Logger					logger	= Logger.getLogger("com.ipeirotis.crowdquiz");
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("application/json");
 
@@ -81,6 +81,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		String goldaanswer = getGoldAnswer(relation, mid);
 		Response result = new Response(nextURL, goldaanswer, answers);
 		String json = gson.toJson(result);
+		System.out.println(json);
 		resp.getWriter().println(json);
 
 	}
@@ -140,15 +141,15 @@ public class ProcessUserAnswer extends HttpServlet {
 
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
 		
-		String query = "select from " + QuizQuestion.class.getName() + " where relation=='" + relation + "'"
-				+ "  order by emptyweight DESC";
-		// System.out.println(query);
+		String query = "SELECT FROM " + QuizQuestion.class.getName() + " WHERE relation=='" + relation + "'"
+				+ "  ORDER BY weight DESC";
+		System.out.println(query);
 		@SuppressWarnings("unchecked")
 		List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();
 
-		String queryGivenAnswers = "SELECT from " + UserAnswer.class.getName() + " where userid=='" + userid
+		String queryGivenAnswers = "SELECT FROM " + UserAnswer.class.getName() + " WHERE userid=='" + userid
 				+ "' && relation=='" + relation + "'";
-		// System.out.println(queryGivenAnswers);
+		System.out.println(queryGivenAnswers);
 		@SuppressWarnings("unchecked")
 		List<UserAnswer> answers = (List<UserAnswer>) pm.newQuery(queryGivenAnswers).execute();
 		pm.close();

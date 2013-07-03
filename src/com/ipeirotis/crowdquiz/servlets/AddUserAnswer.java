@@ -1,11 +1,9 @@
 package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +22,7 @@ public class AddUserAnswer extends HttpServlet {
 		resp.setContentType("text/plain");
 
 		String action = req.getParameter("action");
-		String userid = getUseridFromCookie(req, resp);
+		String userid = req.getParameter("userid");
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
 		String useranswer = req.getParameter("useranswer");
@@ -52,35 +50,6 @@ public class AddUserAnswer extends HttpServlet {
 
 		resp.getWriter().println("OK");
 
-	}
-
-	/**
-	 * @param req
-	 * @return
-	 */
-	private String getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
-
-		// Get an array of Cookies associated with this domain
-
-		String userid = null;
-		Cookie[] cookies = req.getCookies();
-		if (cookies != null) {
-			for (Cookie c : cookies) {
-				if (c.getName().equals("username")) {
-					userid = c.getValue();
-					break;
-				}
-			}
-		}
-
-		if (userid == null) {
-			userid = UUID.randomUUID().toString();
-			;
-		}
-
-		Cookie username = new Cookie("username", userid);
-		resp.addCookie(username);
-		return userid;
 	}
 
 }

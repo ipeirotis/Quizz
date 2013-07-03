@@ -55,7 +55,7 @@
 					<td><a id="upload_gold" href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a></td>
 					<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a></td>
 					<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a></td>
-					<td><a id="download" href="download_data.jsp?relation=<%=q.getRelation()%>">Answers</a></td>
+					<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a></td>
 					<td><a id="adcampaign" href="manage_adcampaign.jsp?relation=<%=q.getRelation()%>">Manage</a></td>
 				</tr>
 

@@ -44,7 +44,10 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>UploadCrowdAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadCrowdAnswers</servlet-class>
 	</servlet>
-	
+	<servlet>
+		<servlet-name>DownloadUserAnswers</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.DownloadUserAnswers</servlet-class>
+	</servlet>
 
 	<servlet>
 		<servlet-name>AddCampaign</servlet-name>
@@ -95,6 +98,11 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>UploadCrowdAnswers</servlet-name>
 		<url-pattern>/uploadCrowdAnswers</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DownloadUserAnswers</servlet-name>
+		<url-pattern>/admin/downloadUserAnswers</url-pattern>
+	</servlet-mapping>
+	
 	<servlet-mapping>
 		<servlet-name>AddCampaign</servlet-name>
 		<url-pattern>/addCampaign</url-pattern>

@@ -8,7 +8,7 @@ public class UserAnswerBean {
 	private String	userid;
 	private String	mid;
 	private String	action;
-	private String	answer;
+	private String	useranswer;
 	
 	private Long	timestamp;
 	private String	ipaddress;
@@ -100,17 +100,17 @@ public class UserAnswerBean {
 	/**
 	 * @return the answer
 	 */
-	public String getAnswer() {
+	public String getUseranswer() {
 	
-		return answer;
+		return useranswer;
 	}
 	
 	/**
 	 * @param answer the answer to set
 	 */
-	public void setAnswer(String answer) {
+	public void setUseranswer(String answer) {
 	
-		this.answer = answer;
+		this.useranswer = answer;
 	}
 	
 	/**

@@ -31,8 +31,8 @@
 		.append("action").append(",")
 		.append("ipaddress").append(",")
 		.append("timestamp").append(",")
-		//.append("browser").append(",")
-		.append("freebaseanswer").append("\n");
+		.append("browser").append(",")
+		.append("referer").append("\n");
 		
 	for (UserAnswer ue : answers) {
 		String userid = (ue.getUserid()==null)?"":ue.getUserid();
@@ -42,7 +42,8 @@
 		String ipaddress = (ue.getIpaddress()==null)?"":ue.getIpaddress();
 		String timestamp = (ue.getTimestamp()==null)?"":ue.getTimestamp().toString();
 		String browser = (ue.getBrowser()==null)?"":ue.getBrowser();
-		//String freebaseanswer = (ue.getFreebaseanswer()==null)?"":ue.getFreebaseanswer();
+		String referer = (ue.getReferer()==null)?"":ue.getReferer();
+		
 		
 		sb.append(userid).append(",")
 		.append(mid).append(",")
@@ -51,11 +52,12 @@
 		.append(ipaddress).append(",")
 		.append(timestamp).append(",")
 		.append(browser).append(",")
+		.append(referer)
 		.append("\n");
-		
-		//sb.append(userid + "\t" + ue.getMid() + "\t" + ue.getUseranswer() + "\t" + ipaddress  + "," + action + "\n");
 	}
 	pm.close();
+	
+	System.out.println(sb.toString());
 
 	response.setContentType("text/csv; charset=UTF-8");
 	response.addHeader("cache-control", "must-revalidate");

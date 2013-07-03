@@ -29,16 +29,12 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 @SuppressWarnings("serial")
 public class UploadCrowdAnswers extends HttpServlet {
 
-	private HttpServletResponse	r;
-	private BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
-
 	final static Logger					logger= Logger.getLogger("com.ipeirotis.adcrowdkg");
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		r = resp;
-		r.setContentType("text/plain");
+		resp.setContentType("text/plain");
 
 		try {
 			String relation = req.getParameter("relation");
@@ -48,6 +44,7 @@ public class UploadCrowdAnswers extends HttpServlet {
 				return;
 			}
 			
+			BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
 			@SuppressWarnings("deprecation")
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
 			BlobKey blobKey = blobs.get("answers_file");
@@ -76,7 +73,7 @@ public class UploadCrowdAnswers extends HttpServlet {
 						param("userid", ce.getUserid()).
 						param("action", ce.getAction()).
 						param("mid", ce.getMid()).
-						param("useranswer", ce.getAnswer()).
+						param("useranswer", ce.getUseranswer()).
 						param("browser", ce.getBrowser()).
 						param("ipAddress", ce.getIpaddress()).
 						param("referer", ce.getReferer()).

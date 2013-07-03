@@ -81,7 +81,7 @@
 			<div class="span8 offset2">
 
 
-				<form id="addUserEntry" action="/processUserEntry"
+				<form id="addUserEntry" action="/processUserAnswer" method="post"
 					style="background-color: #D4D4D4; border-radius: 5px;">
 					<fieldset>
 						<legend>
