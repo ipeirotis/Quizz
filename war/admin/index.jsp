@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
@@ -12,8 +11,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>List of available quizzes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"
-	media="screen">
+<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
@@ -25,7 +23,7 @@
 <body>
 	<div class="container pagination-centered">
 		<div class="row span12">
-		<h2>Available <span style="color:maroon">Quizz</span>es</h2>
+			<h2>Available <span style="color: maroon">Quizz</span>es</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Name</th>
@@ -36,69 +34,83 @@
 					<th>Download</th>
 					<th>Adcampaign</th>
 				</tr>
-				
+
 				<%
-									PersistenceManager pm = PMF.get().getPersistenceManager();
-											String query = "select from " + Quiz.class.getName();
-											List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
-											if (questions.isEmpty()) {
-												;
+					PersistenceManager pm = PMF.get().getPersistenceManager();
+					String query = "select from " + Quiz.class.getName();
+					List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
+					if (questions.isEmpty()) {
+						;
 					} else {
 						for (Quiz q : questions) {
-				%>
-				<tr>
-					<td><a href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName() %></a></td>
-					<td><%=q.getRelation()%></td>
-					<td><%=q.getQuestionText()%></td>
-					<td><%=q.getFreebaseType()%></td>
-					<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a></td>
-					<td><a id="upload_gold" href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a></td>
-					<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a></td>
-					<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a></td>
-					<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a></td>
-					<td><a id="adcampaign" href="manage_adcampaign.jsp?relation=<%=q.getRelation()%>">Manage</a></td>
-				</tr>
-
-
-
-				<%
+							%>
+							<tr>
+								<td><a href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName()%></a></td>
+								<td><%=q.getRelation()%></td>
+								<td><%=q.getQuestionText()%></td>
+								<td><%=q.getFreebaseType()%></td>
+								<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a></td>
+								<td><a id="upload_gold"	href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a></td>
+								<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a></td>
+								<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a></td>
+								<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a></td>
+								<td><a id="adcampaign" href="manage_adcampaign.jsp?relation=<%=q.getRelation()%>">Manage</a></td>
+							</tr>
+							<%
+						}
 					}
-				}
+					pm.close();
 				%>
 				<tr>
 					<td colspan="10" style="text-align: center">
 						<a href="create_quiz.jsp">Create a new quiz</a>
 					</td>
 				</tr>
-				<% 
-					
-
-					pm.close();
-				%>
 			</table>
 		</div>
 	</div>
-	
+
 	<!-- Setup help tooltips for the different page elements -->
 	<script>
-	$('#upload_gold').qtip({content: 'Upload correct answers for the questions asked'});
-	$('#upload_silver').qtip({content: 'Upload possible answers for the questions asked (with some <1 probability of being correct)'});
-	$('#upload_crowd').qtip({content: 'Upload answers submitted by users'});
-	$('#upload_questions').qtip({content: 'Upload additional entities for which we want to ask the quiz question'});
-	$('#download').qtip({content: 'Download the answers submitted so far by the users'});
-	$('#adcampaign').qtip({content: 'Manage the ad campaign'});
+		$('#upload_gold').qtip({
+			content : 'Upload correct answers for the questions asked'
+		});
+		$('#upload_silver')
+				.qtip(
+						{
+							content : 'Upload possible answers for the questions asked (with some <1 probability of being correct)'
+						});
+		$('#upload_crowd').qtip({
+			content : 'Upload answers submitted by users'
+		});
+		$('#upload_questions')
+				.qtip(
+						{
+							content : 'Upload additional entities for which we want to ask the quiz question'
+						});
+		$('#download').qtip({
+			content : 'Download the answers submitted so far by the users'
+		});
+		$('#adcampaign').qtip({
+			content : 'Manage the ad campaign'
+		});
 	</script>
-	
+
 	<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		(function(i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function() {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script',
+				'//www.google-analytics.com/analytics.js', 'ga');
+		ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
+		ga('send', 'pageview');
+	</script>
 
-  ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
-  ga('send', 'pageview');
-
-</script>
-	
 </body>
 </html>
