@@ -6,6 +6,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.UserAnswer"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="java.util.*"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -41,23 +42,7 @@
 		<table class="table table-striped  table-bordered">
 
 			<%
-				// Get an array of Cookies associated with this domain
-						String userName = null;
-						Cookie[] cookies = request.getCookies();
-						if (cookies != null) {
-						   for (Cookie c: cookies) {
-						  	 if (c.getName().equals("username")) {
-						  		 userName = c.getValue();
-						  		 break;
-						  	 }
-						   }
-						} 
-						
-						if (userName == null) {
-							userName = UUID.randomUUID().toString();;
-						}
-						Cookie username = new Cookie("username", userName);
-						response.addCookie( username );
+				String userName = Helper.getUseridFromCookie(request, response);
 			%>
 			<tr>
 				<th colspan="2">Questions for quiz <%=name%></th>
@@ -90,7 +75,7 @@
 			%>
 			<tr>
 				<td><div name="FreebaseName" id="<%=q.getFreebaseEntityId()%>">Loading...</div></td>
-				<td><a target="_blank" name="GoogleQuery" mid="<%=q.getFreebaseEntityId()%>">Google</a></td>
+				<td><a target="_blank" name="GoogleQuery" id="<%=q.getFreebaseEntityId()%>">Google</a></td>
 				<td><a target="_blank" href="http://www.freebase.com<%=q.getFreebaseEntityId()%>">Freebase</a></td> 
 				<td><a href="/askQuestion.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Fill the answer</a></td>
 				<td><a href="/multChoice.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Multiple choice</a></td>
@@ -110,8 +95,7 @@
 		});
 		
 		$('a[name^="GoogleQuery"]').each(function(index) {
-			queryFreebase2($(this).attr('mid'), $(this), "http://www.google.com/
-					search?q=<%=quiz.getQuestionText()%> ");
+			queryFreebase2($(this).attr('id'), $(this), "http://www.google.com/search?q=<%=quiz.getQuestionText()%> ");
 		});
 
 

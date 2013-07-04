@@ -53,7 +53,7 @@
 				if (prefilled == "calories") {
 					$('#name').val("Calories in food");
 					$('#relation').val("kc:/food/food:energy");
-					$('#text').val("How many calories in 100 grams (3.5 oz) of");
+					$('#text').val("How many calories in 100 grams of");
 					$('#fbtype').val("/type/float");
 				} else if (prefilled == "spouses") {
 					$('#name').val("Spouse");

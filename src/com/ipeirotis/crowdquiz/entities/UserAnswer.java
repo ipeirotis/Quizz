@@ -56,10 +56,10 @@ public class UserAnswer {
 	
 	public UserAnswer(String userid, String relation, String mid, String useranswer) {
 
-		this.relation = relation;
-		this.mid = mid;
-		this.useranswer = useranswer;
-		this.userid = userid;
+		this.relation = relation.replace('\t', ' ');
+		this.mid = mid.replace('\t', ' ');
+		this.useranswer = useranswer.replace('\t', ' ');
+		this.userid = userid.replace('\t', ' ');
 
 
 		Key k = generateKeyFromID(userid, relation, mid);
@@ -145,12 +145,12 @@ public class UserAnswer {
 
 	public void setAction(String action) {
 	
-		this.action = action;
+		this.action = action.replace('\t', ' ');
 	}
 
 	public void setBrowser(String browser) {
 	
-		this.browser = browser;
+		this.browser = browser.replace('\t', ' ');
 	}
 
 	/**
@@ -159,12 +159,12 @@ public class UserAnswer {
 	 */
 	public void setReferer(String referer) {
 
-		this.referer = referer;
+		this.referer = referer.replace('\t', ' ');
 	}
 
 	public void setIpaddress(String ipaddress) {
 	
-		this.ipaddress = ipaddress;
+		this.ipaddress = ipaddress.replace('\t', ' ');
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class UserAnswer {
 	 */
 	public void setMid(String mid) {
 
-		this.mid = mid;
+		this.mid = mid.replace('\t', ' ');
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class UserAnswer {
 	 */
 	public void setRelation(String relation) {
 
-		this.relation = relation;
+		this.relation = relation.replace('\t', ' ');
 	}
 
 	public void setTimestamp(Long timestamp) {
@@ -205,12 +205,12 @@ public class UserAnswer {
 	 */
 	public void setUseranswer(String useranswer) {
 
-		this.useranswer = useranswer;
+		this.useranswer = useranswer.replace('\t', ' ');
 	}
 
 	public void setUserid(String userid) {
 	
-		this.userid = userid;
+		this.userid = userid.replace('\t', ' ');
 	}
 
 }

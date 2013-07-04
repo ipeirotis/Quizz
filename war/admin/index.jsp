@@ -49,11 +49,11 @@
 								<td><%=q.getRelation()%></td>
 								<td><%=q.getQuestionText()%></td>
 								<td><%=q.getFreebaseType()%></td>
-								<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a></td>
-								<td><a id="upload_gold"	href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a></td>
-								<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a></td>
-								<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a></td>
-								<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a></td>
+								<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a>&nbsp;(<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_gold"	href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="adcampaign" href="manage_adcampaign.jsp?relation=<%=q.getRelation()%>">Manage</a></td>
 							</tr>
 							<%
@@ -72,28 +72,75 @@
 
 	<!-- Setup help tooltips for the different page elements -->
 	<script>
-		$('#upload_gold').qtip({
-			content : 'Upload correct answers for the questions asked'
+		$('#upload_gold').qtip({content : 'Upload correct answers for the questions asked'});
+		$('#upload_silver').qtip({content : 'Upload possible answers for the questions asked (with some <1 probability of being correct)'});
+		$('#upload_crowd').qtip({content : 'Upload answers submitted by users'});
+		$('#upload_questions').qtip({content : 'Upload additional entities for which we want to ask the quiz question'});
+		$('#download').qtip({content : 'Download the answers submitted so far by the users'});
+		$('#adcampaign').qtip({content : 'Manage the ad campaign'});
+	</script>
+
+	<script type="text/javascript">
+	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->
+		$('div[name^="num_questions"]').each(function(index) {
+			var element = $(this);
+			var quiz = element.attr('quiz');
+			var url = '/api/getNumberOfQuizQuestions';
+			var params = {
+				'quiz' : quiz,
+			};
+			$.getJSON(url, params)
+			.done(function(response) {
+				element.html(response.questions);
+			});
 		});
-		$('#upload_silver')
-				.qtip(
-						{
-							content : 'Upload possible answers for the questions asked (with some <1 probability of being correct)'
-						});
-		$('#upload_crowd').qtip({
-			content : 'Upload answers submitted by users'
+		
+		$('div[name^="num_gold"]').each(function(index) {
+			var element = $(this);
+			var quiz = element.attr('quiz');
+			var url = '/api/getNumberOfGoldAnswers';
+			var params = {
+				'quiz' : quiz,
+			};
+			$.getJSON(url, params)
+			.done(function(response) {
+				element.html(response.questions);
+			});
 		});
-		$('#upload_questions')
-				.qtip(
-						{
-							content : 'Upload additional entities for which we want to ask the quiz question'
-						});
-		$('#download').qtip({
-			content : 'Download the answers submitted so far by the users'
+		
+		$('div[name^="num_silver"]').each(function(index) {
+			var element = $(this);
+			var quiz = element.attr('quiz');
+			var url = '/api/getNumberOfSilverAnswers';
+			var params = {
+				'quiz' : quiz,
+			};
+			$.getJSON(url, params)
+			.done(function(response) {
+				console.log("PANOS");
+				console.log(response.questions);
+				element.html(response.questions);
+			});
 		});
-		$('#adcampaign').qtip({
-			content : 'Manage the ad campaign'
+		
+		
+		$('div[name^="num_answers"]').each(function(index) {
+			var element = $(this);
+			var quiz = element.attr('quiz');
+			var url = '/api/getNumberOfUserAnswers';
+			var params = {
+				'quiz' : quiz,
+			};
+			$.getJSON(url, params)
+			.done(function(response) {
+				console.log("PANOS");
+				console.log(response.questions);
+				element.html(response.questions);
+			});
 		});
+		
+		
+		
 	</script>
 
 	<script>

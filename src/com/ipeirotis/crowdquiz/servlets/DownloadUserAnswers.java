@@ -40,13 +40,13 @@ public class DownloadUserAnswers extends HttpServlet {
 		@SuppressWarnings("unchecked")
 		List<UserAnswer> answers = (List<UserAnswer>) query.execute(relation);
 		StringBuffer sb = new StringBuffer();
-		sb.append("userid").append(",")
-			.append("mid").append(",")
-			.append("useranswer").append(",")
-			.append("action").append(",")
-			.append("ipaddress").append(",")
-			.append("timestamp").append(",")
-			.append("browser").append(",")
+		sb.append("userid").append("\t")
+			.append("mid").append("\t")
+			.append("useranswer").append("\t")
+			.append("action").append("\t")
+			.append("ipaddress").append("\t")
+			.append("timestamp").append("\t")
+			.append("browser").append("\t")
 			.append("referer").append("\n");
 			
 		for (UserAnswer ue : answers) {
@@ -60,23 +60,23 @@ public class DownloadUserAnswers extends HttpServlet {
 			String referer = (ue.getReferer()==null)?"":ue.getReferer();
 			
 			
-			sb.append(userid).append(",")
-			.append(mid).append(",")
-			.append(useranswer).append(",")
-			.append(action).append(",")
-			.append(ipaddress).append(",")
-			.append(timestamp).append(",")
-			.append(browser).append(",")
+			sb.append(userid).append("\t")
+			.append(mid).append("\t")
+			.append(useranswer).append("\t")
+			.append(action).append("\t")
+			.append(ipaddress).append("\t")
+			.append(timestamp).append("\t")
+			.append(browser).append("\t")
 			.append(referer)
 			.append("\n");
 		}
 		pm.close();
 		
 
-		response.setContentType("text/csv; charset=UTF-8");
+		response.setContentType("text/tab-separated-values; charset=UTF-8");
 		response.addHeader("cache-control", "must-revalidate");
 		response.addHeader("pragma", "must-revalidate");
-		response.addHeader("content-disposition", "attachment; filename=\"" + name + "-answers.csv\"");
+		response.addHeader("content-disposition", "attachment; filename=\"" + name + "-answers.tsv\"");
 		response.resetBuffer();
 		response.setBufferSize(sb.length());
 		response.getOutputStream().print(sb.toString());

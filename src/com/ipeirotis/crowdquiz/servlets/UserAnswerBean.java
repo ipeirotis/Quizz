@@ -30,7 +30,7 @@ public class UserAnswerBean {
 	 */
 	public void setReferer(String referer) {
 	
-		this.referer = referer;
+		this.referer = referer.replace('\t', ' ');
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class UserAnswerBean {
 	 */
 	public void setRelation(String relation) {
 	
-		this.relation = relation;
+		this.relation = relation.replace('\t', ' ');
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class UserAnswerBean {
 	 */
 	public void setUserid(String userid) {
 	
-		this.userid = userid;
+		this.userid = userid.replace('\t', ' ');
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public class UserAnswerBean {
 	 */
 	public void setMid(String mid) {
 	
-		this.mid = mid;
+		this.mid = mid.replace('\t', ' ');
 	}
 	
 	/**
@@ -94,7 +94,7 @@ public class UserAnswerBean {
 	 */
 	public void setAction(String action) {
 	
-		this.action = action;
+		this.action = action.replace('\t', ' ');
 	}
 	
 	/**
@@ -110,7 +110,7 @@ public class UserAnswerBean {
 	 */
 	public void setUseranswer(String answer) {
 	
-		this.useranswer = answer;
+		this.useranswer = answer.replace('\t', ' ');
 	}
 	
 	/**
@@ -142,7 +142,7 @@ public class UserAnswerBean {
 	 */
 	public void setIpaddress(String ipaddress) {
 	
-		this.ipaddress = ipaddress;
+		this.ipaddress = ipaddress.replace('\t', ' ');
 	}
 	
 	/**
@@ -158,7 +158,7 @@ public class UserAnswerBean {
 	 */
 	public void setBrowser(String browser) {
 	
-		this.browser = browser;
+		this.browser = browser.replace('\t', ' ');
 	}
 	
 }

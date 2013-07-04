@@ -53,7 +53,7 @@ public class UploadCrowdAnswers extends HttpServlet {
 			BufferedReader in = new BufferedReader(new InputStreamReader(is));
 
 			CsvToBean<UserAnswerBean> csv = new CsvToBean<UserAnswerBean>();
-			CSVReader reader = new CSVReader(in);
+			CSVReader reader = new CSVReader(in, '\t');
 			String [] header = reader.readNext();
 
 			ColumnPositionMappingStrategy<UserAnswerBean> strat = new ColumnPositionMappingStrategy<UserAnswerBean>();

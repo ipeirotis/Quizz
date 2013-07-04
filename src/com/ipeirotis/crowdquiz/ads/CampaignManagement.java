@@ -82,8 +82,8 @@ public class CampaignManagement extends HttpServlet {
 		Configuration config = new PropertiesConfiguration();
 
 		config.setProperty("api.adwords.developerToken", "xh5fcw0gDCw10sCVmBiMeg");
-		config.setProperty("api.adwords.clientCustomerId", "681-322-0047");
-		config.setProperty("api.adwords.email", "ipeirotis@gmail.com");
+		config.setProperty("api.adwords.clientCustomerId", "151-233-8808");
+		config.setProperty("api.adwords.email", "panos@quizz.us");
 		config.setProperty("api.adwords.password", "armani12");
 
 		config.setProperty("api.adwords.environment", "production");

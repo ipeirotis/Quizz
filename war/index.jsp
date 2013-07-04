@@ -3,6 +3,7 @@
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="java.util.List"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -29,35 +30,65 @@
 					<th>Quiz</th>
 				</tr>
 				<%
-					PersistenceManager pm = PMF.get().getPersistenceManager();
-							String query = "select from " + Quiz.class.getName();
-							List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
-							if (questions.isEmpty()) {
-				%>
-				<tr>
-					<td style="text-align: center">No quizzes found!</td>
-				</tr>
-				<%
-					} else {
-				%>
-
-
-				<%
+				
+			
+				PersistenceManager pm = PMF.get().getPersistenceManager();
+				String query = "select from " + Quiz.class.getName();
+				List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
+				pm.close();
+				
+				if (questions.isEmpty()) {
+					%>
+					<tr>
+						<td style="text-align: center">No quizzes found!</td>
+					</tr>
+					<%
+				} else {
 					for (Quiz q : questions) {
-				%>
-				<tr>
-					<td><a
-						href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName()%></a></td>
-				</tr>
-				<%
+						%>
+						<tr>
+						<td>
+						<a href="/processUserAnswer?relation=<%=q.getRelation()%>"><%=q.getName()%></a>
+						(<div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)
+						</td>
+						</tr>
+						<%
 					}
-					}
-
-					pm.close();
+				}
 				%>
 			</table>
 		</div>
 	</div>
+		<script type="text/javascript">
+	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->
+		$('div[name^="num_questions"]').each(function(index) {
+			var element = $(this);
+			var quiz = element.attr('quiz');
+			var url = '/api/getNumberOfQuizQuestions';
+			var params = {
+				'quiz' : quiz,
+			};
+			$.getJSON(url, params)
+			.done(function(response) {
+				element.html(response.questions);
+			});
+		});
+		
+		$('div[name^="num_answered"]').each(function(index) {
+			var element = $(this);
+			var quiz = element.attr('quiz');
+			var url = '/api/getNumberOfSubmittedAnswers';
+			var params = {
+				'quiz' : quiz,
+				'userid' : '<%=Helper.getUseridFromCookie(request, response)%>'
+			};
+			$.getJSON(url, params)
+			.done(function(response) {
+				element.html(response.questions);
+			});
+		});
+		</script>
+	
 	
 	<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

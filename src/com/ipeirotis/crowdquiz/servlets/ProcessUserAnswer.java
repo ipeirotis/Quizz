@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.GoldAnswer;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
+import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -44,13 +45,25 @@ public class ProcessUserAnswer extends HttpServlet {
 
 
 	final static Logger					logger	= Logger.getLogger("com.ipeirotis.crowdquiz");
+	
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+		String relation = req.getParameter("relation");
+		String userid = Helper.getUseridFromCookie(req, resp);
+		
+	String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
+	String nextURL = baseURL + getNextURL(relation, userid, null);
+	
+	resp.sendRedirect(nextURL);
+	}
+	
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("application/json");
 
-		String userid = getUseridFromCookie(req, resp);
+		String userid = Helper.getUseridFromCookie(req, resp);
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
 		String useranswer = req.getParameter("useranswer");
@@ -88,39 +101,20 @@ public class ProcessUserAnswer extends HttpServlet {
 
 	private String getGoldAnswer(String relation, String mid) {
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
-		GoldAnswer ga = pm.getObjectById(GoldAnswer.class, GoldAnswer.generateKeyFromID(relation, mid));
+		GoldAnswer ga;
+		try {
+			ga = pm.getObjectById(GoldAnswer.class, GoldAnswer.generateKeyFromID(relation, mid));
+		} catch (Exception e) {
+			ga = null;
+		}
 		pm.close();
-		return ga.getAnswer();
+		if (ga!=null) {
+			return ga.getAnswer();
+		} else {
+			return null;
+		}
 	}
 
-	/**
-	 * @param req
-	 * @return
-	 */
-	private String getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
-
-		// Get an array of Cookies associated with this domain
-
-		String userid = null;
-		Cookie[] cookies = req.getCookies();
-		if (cookies != null) {
-			for (Cookie c : cookies) {
-				if (c.getName().equals("username")) {
-					userid = c.getValue();
-					break;
-				}
-			}
-		}
-
-		if (userid == null) {
-			userid = UUID.randomUUID().toString();
-			;
-		}
-
-		Cookie username = new Cookie("username", userid);
-		resp.addCookie(username);
-		return userid;
-	}
 
 	/**
 	 * Returns the next question for the user. Checks all the previously given answers by the user
@@ -154,7 +148,9 @@ public class ProcessUserAnswer extends HttpServlet {
 		List<UserAnswer> answers = (List<UserAnswer>) pm.newQuery(queryGivenAnswers).execute();
 		pm.close();
 		Set<String> entries = new HashSet<String>();
-		entries.add(justAddedMid);
+		if (justAddedMid!=null) {
+			entries.add(justAddedMid);
+		}
 		for (UserAnswer ue : answers) {
 			entries.add(ue.getMid());
 		}
