@@ -102,10 +102,19 @@
 					</div>
 				</div>
 				
+				<!-- 
 				<div class="control-group">
-					<label class="control-label" for="fbtype">FB Type:</label>
+					<label class="control-label" for="fbtype">Freebase Type:</label>
 					<div class="controls">
 						<input class="input-xxlarge" id="fbtype" name="fbtype" type="text">
+					</div>
+				</div>
+				 -->
+				
+				<div class="control-group">
+					<label class="control-label" for="budget">Campaign Daily Budget:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="budget" name="budget" type="text">
 					</div>
 				</div>
 

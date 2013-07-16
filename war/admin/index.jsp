@@ -26,13 +26,11 @@
 			<h2>Available <span style="color: maroon">Quizz</span>es</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
-					<th>Name</th>
 					<th>ID</th>
+					<th>Name</th>
 					<th>Question text</th>
-					<th>Answer Type</th>
 					<th style="text-align: center" colspan="4">Upload</th>
 					<th>Download</th>
-					<th>Adcampaign</th>
 				</tr>
 
 				<%
@@ -45,16 +43,19 @@
 						for (Quiz q : questions) {
 							%>
 							<tr>
-								<td><a href="/listEntities.jsp?relation=<%=q.getRelation()%>"><%=q.getName()%></a></td>
 								<td><%=q.getRelation()%></td>
+								<td><%=q.getName()%><br>
+									<a 
+									href="listEntities.jsp?relation=<%=q.getRelation()%>">List</a>|<a 
+									href="edit_quiz.jsp?relation=<%=q.getRelation()%>">Edit</a>|<a 
+									href="/api/deleteQuiz?relation=<%=q.getRelation()%>">Delete</a>
+								</td>
 								<td><%=q.getQuestionText()%></td>
-								<td><%=q.getFreebaseType()%></td>
 								<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a>&nbsp;(<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="upload_gold"	href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="adcampaign" href="manage_adcampaign.jsp?relation=<%=q.getRelation()%>">Manage</a></td>
 							</tr>
 							<%
 						}
@@ -67,6 +68,7 @@
 					</td>
 				</tr>
 			</table>
+			<small><a href="/api/updateStatistics">Update counters</a></small>
 		</div>
 	</div>
 

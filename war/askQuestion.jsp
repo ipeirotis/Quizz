@@ -109,15 +109,16 @@
 		$( document ).ready(function() {
 			
 			 <!-- Add the Freebase Suggest widget on the form to enable autocompletion -->
-			<% if (q.getFreebaseType().startsWith("/type/") || q.getFreebaseType().startsWith("/common/" )) {
-				;
-			} else { %>	
-				$("#useranswer").suggest({
-					'key' : 'AIzaSyAP0fH9aEndZbSDFT87g46YY0gjhkQY8Zc',
-				    'filter' : '(all type:<%= q.getFreebaseType() %>)', 
-				});
-			<%	
-			}
+			<%
+			
+			// if (q.getFreebaseType().startsWith("/type/") || q.getFreebaseType().startsWith("/common/" )) {
+			//	;
+			//} else { 
+			//	$("#useranswer").suggest({
+			//		'key' : 'AIzaSyAP0fH9aEndZbSDFT87g46YY0gjhkQY8Zc',
+			//	    'filter' : '(all type: = q.getFreebaseType() )', 
+			//	});
+			//}
 			%>
 				
 			
@@ -142,8 +143,8 @@
 			  'eventCategory': 'quiz-submission', 
 			  'eventAction': 'fill-in', 
 			  'eventLabel': '<%= q.getRelation() %>',
-			  <% if (eq.getEmptyweight()!=null) {
-			  	%> 'eventValue': <%= eq.getEmptyweight() %>, <%
+			  <% if (eq.getWeight()!=null) {
+			  	%> 'eventValue': <%= eq.getWeight() %>, <%
 			  } else {
 			  	
 			  }
@@ -152,19 +153,10 @@
 			});
 		
 		var result = jQuery.parseJSON(data);
-		var message = 'Thank you for your entry!\n';
-		if (data.correctAnswer) {
-			message += "The correct answer is: " + data.correctAnswer +"\n";
+		if (data.message) {
+			alert(data.message);
 		}
-		if (data.crowdAnswers.length>0) {
-			var crowd = '';
-			for (var c in data.crowdAnswers) {
-			    crowd = crowd + data.crowdAnswers[c] + ", ";
-			}
-			
-			message += "Other participants answered: " +crowd;
-		}
-		alert(message);
+		
         window.location.href = data.url;
         
     }

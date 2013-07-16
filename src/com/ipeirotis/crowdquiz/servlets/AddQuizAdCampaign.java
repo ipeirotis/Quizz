@@ -118,7 +118,7 @@ public class AddQuizAdCampaign extends HttpServlet {
 			}
 			
 			
-			Quiz q = new Quiz(name, relation, text, freebasetype);
+			Quiz q = new Quiz(name, relation, text);
 			
 			
 			

@@ -45,7 +45,10 @@ public class UploadQuestions extends HttpServlet {
 			String relation = req.getParameter("relation");
 			if (relation != null) {
 				resp.getWriter().println("Adding Relation: " + relation);
+				resp.getWriter().flush();
 			} else {
+				resp.getWriter().println("No relation specified");
+				resp.getWriter().flush();
 				return;
 			}
 			
@@ -56,25 +59,25 @@ public class UploadQuestions extends HttpServlet {
 			BlobstoreInputStream is = new BlobstoreInputStream(blobKey);
 			BufferedReader in = new BufferedReader(new InputStreamReader(is));
 
-			CsvToBean<CompletionsEntryBean> csv = new CsvToBean<CompletionsEntryBean>();
+			CsvToBean<QuestionBean> csv = new CsvToBean<QuestionBean>();
 			CSVReader reader = new CSVReader(in);
 			String [] header = reader.readNext();
 
-			ColumnPositionMappingStrategy<CompletionsEntryBean> strat = new ColumnPositionMappingStrategy<CompletionsEntryBean>();
-			strat.setType(CompletionsEntryBean.class);
+			ColumnPositionMappingStrategy<QuestionBean> strat = new ColumnPositionMappingStrategy<QuestionBean>();
+			strat.setType(QuestionBean.class);
 			strat.captureHeader(reader);
 			strat.setColumnMapping(header);
 
-			List<CompletionsEntryBean> list = csv.parse(strat, reader);
+			List<QuestionBean> list = csv.parse(strat, reader);
 
 
 			Queue queueEntities = QueueFactory.getQueue("quizquestions");
 			
-			for (CompletionsEntryBean ce : list) {
+			for (QuestionBean ce : list) {
 				queueEntities.add(Builder.withUrl("/addQuizQuestion")
 						.param("relation", relation)
 						.param("mid", ce.getMid())
-						.param("weight", ce.getEmpty_weight().toString())
+						.param("weight", ce.getWeight().toString())
 						.method(TaskOptions.Method.POST));
 				
 			}

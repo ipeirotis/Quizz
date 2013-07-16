@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -62,8 +63,25 @@ public class AddSilverAnswer extends HttpServlet {
 			}
 	
 			PersistenceManager pm = PMF.get().getPersistenceManager();
-			SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
-			pm.makePersistent(sa);
+			try {
+				// We only add the gold question, if there is a corresponding quizquestion.
+				// Otherwise, we ignore the addition
+				QuizQuestion qq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
+				qq.setHasSilverAnswers(true);
+				pm.makePersistent(qq);
+				
+				SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
+				pm.makePersistent(sa);
+			} catch (Exception e) {
+				resp.setStatus(409);
+				pm.close();
+				return;
+			}
+			
+			
+			
+			
+			
 			pm.close();
 
 			resp.getWriter().println("OK");

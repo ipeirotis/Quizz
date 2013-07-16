@@ -17,16 +17,18 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 @SuppressWarnings("serial")
 public class AddCampaign extends HttpServlet {
 
-	private HttpServletResponse	r;
-
 	final static Logger					logger	= Logger.getLogger("com.ipeirotis.adcrowdkg");
 
+	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-		r = resp;
-
-		r.setContentType("application/json");
+		doPost(req, resp);
+	}
+	
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	
+		resp.setContentType("application/json");
 
 		try {
 			String relation = req.getParameter("relation");

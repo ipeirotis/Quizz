@@ -48,7 +48,7 @@
 						%>
 						<tr>
 						<td>
-						<a href="/processUserAnswer?relation=<%=q.getRelation()%>"><%=q.getName()%></a>
+						<a href="/startQuiz?relation=<%=q.getRelation()%>"><%=q.getName()%></a>
 						(<div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)
 						</td>
 						</tr>

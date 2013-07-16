@@ -22,6 +22,46 @@ public class SilverAnswer {
 	@Persistent
 	private String	answer;
 
+	
+	/**
+	 * @return the probability
+	 */
+	public Double getProbability() {
+	
+		return probability;
+	}
+
+
+	
+	/**
+	 * @param probability the probability to set
+	 */
+	public void setProbability(Double probability) {
+	
+		this.probability = probability;
+	}
+
+
+	
+	/**
+	 * @return the source
+	 */
+	public String getSource() {
+	
+		return source;
+	}
+
+
+	
+	/**
+	 * @param source the source to set
+	 */
+	public void setSource(String source) {
+	
+		this.source = source;
+	}
+
+
 	@Persistent
 	private Double	probability;
 

@@ -65,12 +65,12 @@ public class Quiz {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 
-	public Quiz(String name, String relation, String questionText, String freebaseType) {
+	public Quiz(String name, String relation, String questionText) {
 
 		this.name = name;
 		this.questionText = questionText;
 		this.relation = relation;
-		this.freebaseType = freebaseType;
+		this.freebaseType = null;
 		//this.freebaseAttribute = freebaseAttribute;
 		//this.freebaseElement = freebaseElement;
 		//this.blobKey = blobKey;

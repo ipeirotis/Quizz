@@ -123,7 +123,7 @@ public class CampaignManagement extends HttpServlet {
 
 		// Create campaign.
 		Campaign campaign = new Campaign();
-		campaign.setName(campaignName + "#" + System.currentTimeMillis());
+		campaign.setName(campaignName); // + "#" + System.currentTimeMillis());
 		campaign.setStatus(CampaignStatus.ACTIVE);
 
 		BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
@@ -152,8 +152,8 @@ public class CampaignManagement extends HttpServlet {
 		// Set the campaign network options to Search only
 		NetworkSetting networkSetting = new NetworkSetting();
 		networkSetting.setTargetGoogleSearch(true);
-		networkSetting.setTargetSearchNetwork(false);
-		networkSetting.setTargetContentNetwork(false);
+		networkSetting.setTargetSearchNetwork(true);
+		networkSetting.setTargetContentNetwork(true);
 		networkSetting.setTargetPartnerSearchNetwork(false);
 		campaign.setNetworkSetting(networkSetting);
 

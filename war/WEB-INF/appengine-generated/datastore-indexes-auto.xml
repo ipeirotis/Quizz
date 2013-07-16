@@ -1,11 +1,4 @@
-<!-- Indices written at Wed, 3 Jul 2013 18:03:13 PDT -->
+<!-- Indices written at Mon, 15 Jul 2013 21:14:39 PDT -->
 
-<datastore-indexes>
+<datastore-indexes/>
 
-    <!-- Used 11 times in query history -->
-    <datastore-index kind="QuizQuestion" ancestor="false" source="auto">
-        <property name="relation" direction="asc"/>
-        <property name="weight" direction="desc"/>
-    </datastore-index>
-
-</datastore-indexes>

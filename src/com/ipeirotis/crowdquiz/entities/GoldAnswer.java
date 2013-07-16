@@ -35,14 +35,14 @@ public class GoldAnswer {
 		this.answer = answer;
 
 
-		Key k = generateKeyFromID(relation, mid);
+		Key k = generateKeyFromID(relation, mid, answer);
 		this.key = k;
 	}
 
 
-	public static Key generateKeyFromID(String relation, String mid) {
+	public static Key generateKeyFromID(String relation, String mid, String answer) {
 
-		return KeyFactory.createKey(GoldAnswer.class.getSimpleName(), "id_" + relation + "_" + mid);
+		return KeyFactory.createKey(GoldAnswer.class.getSimpleName(), "id_" + relation + "_" + mid + "_" + answer);
 	}
 
 	

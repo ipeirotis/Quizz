@@ -15,29 +15,29 @@
   "name": "freebase", 
   "files": [
     {
-      "downloadUrl": "/downloads/freebase/v1/38/java/1.15.0-rc/google-api-services-freebase-v1-rev38-1.15.0-rc.jar", 
-      "path": "google-api-services-freebase-v1-rev38-1.15.0-rc.jar", 
+      "downloadUrl": "/downloads/freebase/v1/39/java/1.15.0-rc/google-api-services-freebase-v1-rev39-1.15.0-rc.jar", 
+      "path": "google-api-services-freebase-v1-rev39-1.15.0-rc.jar", 
       "type": "binary", 
-      "timestamp": "2013-06-19 02:30"
+      "timestamp": "2013-06-27 03:50"
     }, 
     {
-      "downloadUrl": "/downloads/freebase/v1/38/java/1.15.0-rc/google-api-services-freebase-v1-rev38-1.15.0-rc-javadoc.jar", 
-      "path": "google-api-services-freebase-v1-rev38-1.15.0-rc-javadoc.jar", 
+      "downloadUrl": "/downloads/freebase/v1/39/java/1.15.0-rc/google-api-services-freebase-v1-rev39-1.15.0-rc-javadoc.jar", 
+      "path": "google-api-services-freebase-v1-rev39-1.15.0-rc-javadoc.jar", 
       "type": "documentation", 
-      "timestamp": "2013-06-19 02:30"
+      "timestamp": "2013-06-27 03:50"
     }, 
     {
-      "downloadUrl": "/downloads/freebase/v1/38/java/1.15.0-rc/google-api-services-freebase-v1-rev38-1.15.0-rc-sources.jar", 
-      "path": "google-api-services-freebase-v1-rev38-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/freebase/v1/39/java/1.15.0-rc/google-api-services-freebase-v1-rev39-1.15.0-rc-sources.jar", 
+      "path": "google-api-services-freebase-v1-rev39-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-06-19 02:29"
+      "timestamp": "2013-06-27 03:50"
     }, 
     {
-      "path": "google-api-services-freebase-v1-rev38-1.15.0-rc.jar.properties", 
+      "path": "google-api-services-freebase-v1-rev39-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
-  "revision": 38, 
+  "revision": 39, 
   "language": "java", 
   "language_version": "1.15.0-rc", 
   "dependencies": [
