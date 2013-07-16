@@ -35,18 +35,19 @@ public class GetNumberOfGoldAnswers extends HttpServlet {
 		@Override
 		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-      Cache cache;
-
+      Cache cache = null;
+      boolean useCache = true;
+      
       try {
           CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
           cache = cacheFactory.createCache(Collections.emptyMap());
       } catch (CacheException e) {
-          cache = null;
+          useCache = false;
       }
       
 			String quiz = req.getParameter("quiz");
 			String nocache = req.getParameter("nocache");
-			boolean useCache = true;
+			
 			if (nocache!=null && nocache.equals("yes")) {
 				useCache = false;
 			}
@@ -54,7 +55,7 @@ public class GetNumberOfGoldAnswers extends HttpServlet {
 			String key = "goldanswers_"+quiz;
 			
 			String questions;
-			if (cache!=null && useCache && cache.containsKey(key)) {
+			if (useCache && cache.containsKey(key)) {
 				byte[] value = (byte[])cache.get(key);
 				questions = new String(value);
 			} else {
@@ -76,6 +77,7 @@ public class GetNumberOfGoldAnswers extends HttpServlet {
 			Query q = pm.newQuery(GoldAnswer.class);
 			q.setFilter("relation == lastNameParam");
 			q.declareParameters("String lastNameParam");
+			@SuppressWarnings("unchecked")
 			List<GoldAnswer> results = (List<GoldAnswer>) q.execute(quiz);
 			Integer numQuestions = results.size();
 			return numQuestions.toString();
