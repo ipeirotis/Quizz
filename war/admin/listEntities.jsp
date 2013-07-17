@@ -6,7 +6,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.UserAnswer"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
 <%@ page import="java.util.*"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -42,7 +42,7 @@
 		<table class="table table-striped  table-bordered">
 
 			<%
-				String userName = Helper.getUseridFromCookie(request, response);
+				String userName = (User.getUseridFromCookie(request, response)).getUserid();
 			%>
 			<tr>
 				<th colspan="2">Questions for quiz <%=name%></th>

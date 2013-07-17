@@ -17,14 +17,13 @@ import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
-public class UpdateStatistics extends HttpServlet {
+public class UpdateCountStatistics extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
 		Queue queue = QueueFactory.getQueue("default");
-
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query q = pm.newQuery(Quiz.class);
 		List<Quiz> list = (List<Quiz>) q.execute();
@@ -54,6 +53,8 @@ public class UpdateStatistics extends HttpServlet {
 					.param("nocache", "yes")
 					.method(TaskOptions.Method.GET));
 		}
+		
+		
 		
 		
 

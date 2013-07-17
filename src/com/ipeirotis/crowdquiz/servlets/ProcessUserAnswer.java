@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.annotations.Persistent;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +19,8 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Treatment;
+import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -43,11 +46,16 @@ public class ProcessUserAnswer extends HttpServlet {
 
 		resp.setContentType("application/json");
 
-		String userid = Helper.getUseridFromCookie(req, resp);
+		User user = User.getUseridFromCookie(req, resp);
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
 		String useranswer = req.getParameter("useranswer");
+		
 		String action = req.getParameter("action");
+		if (action.equals("I don't know")) {
+			useranswer = "";
+		}
+		
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
 		String referer = req.getHeader("Referer");
@@ -56,7 +64,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		Queue queue = QueueFactory.getQueue("answers");
 		queue.add(Builder.withUrl("/addUserAnswer").
 				param("relation", relation).
-				param("userid", userid).
+				param("userid", user.getUserid()).
 				param("action", action).
 				param("mid", mid).
 				param("useranswer", useranswer).
@@ -69,9 +77,9 @@ public class ProcessUserAnswer extends HttpServlet {
 		
 		Gson gson = new Gson();
 		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
-		String nextURL = baseURL + Helper.getNextURL(relation, userid, mid);
+		String nextURL = baseURL + Helper.getNextURL(relation, user.getUserid(), mid);
 
-		String message = getFeedbackMessage("", relation, userid, mid);
+		String message = getFeedbackMessage(user, relation, mid, useranswer);
 		Response result = new Response(nextURL, message);
 		String json = gson.toJson(result);
 		System.out.println(json);
@@ -79,11 +87,50 @@ public class ProcessUserAnswer extends HttpServlet {
 
 	}
 	
-	private String getFeedbackMessage(String treatment, String relation, String userid, String mid) {
-		// List<String> answers = getCrowdAnswers(relation, userid, mid);
-		// Set<String> goldaanswers = getGoldAnswers(relation, mid);
+	private String getFeedbackMessage(User user, String relation, String mid, String answer) {
 		
-		return "Thank you for your entry!";
+		String message = "";
+		
+		Treatment t = user.getTreatment();
+		
+		// Should we show any popup with a message?
+		// Boolean showMessage;
+		//
+		// Should we show the correct answer in the popup?
+		// Boolean showCorrect;
+
+		// Should we show the total number of correct answers so far?
+		// Boolean showScore;
+
+		// Should we show the percentage of correct answers?
+		// Boolean showPercentageCorrect;
+
+		// Should we show the answers given by other users?
+		// Boolean showCrowdAnswers;
+
+		// Should we show the rank among the other users in terms of % of correct answers?
+		// Boolean showPercentageRank;
+
+		// Should we show the rank among the other users in terms of # of correct answers?
+		// Boolean showScoreRank;
+		
+		if (!t.getShowMessage()) {
+			return null;
+		}
+		
+		if (t.getShowCorrect()) {
+			List<String> gold = QuizQuestion.getGoldAnswers(relation, mid);
+			if (gold.contains(answer)) {
+				message += "Your answer '" + answer + "' is correct!\n";
+			} else {
+				message += "Your answer '" + answer + "' is incorrect!\n";
+			}
+			
+		}
+		
+		
+		
+		return message;
 	}
 
 

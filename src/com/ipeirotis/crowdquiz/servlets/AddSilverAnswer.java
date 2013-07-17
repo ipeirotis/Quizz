@@ -73,7 +73,7 @@ public class AddSilverAnswer extends HttpServlet {
 				SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
 				pm.makePersistent(sa);
 			} catch (Exception e) {
-				resp.setStatus(409);
+				//resp.setStatus(409);
 				pm.close();
 				return;
 			}

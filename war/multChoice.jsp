@@ -3,8 +3,10 @@
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
@@ -36,19 +38,19 @@
 
 		<%
 			String relation = request.getParameter("relation");
-				String mid = request.getParameter("mid");
-				
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				Quiz q = null;
-				QuizQuestion eq = null;
-				
-				try {
-					q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-					eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-				    	} catch (Exception e) {
-				        	q = null;
-				        	eq = null;
-				    	}
+			String mid = request.getParameter("mid");
+
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			Quiz q = null;
+			QuizQuestion eq = null;
+
+			try {
+				q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
+				eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
+			} catch (Exception e) {
+				q = null;
+				eq = null;
+			}
 		%>
 
 		<div class="row">
@@ -61,13 +63,21 @@
 						<legend>
 							<%=q.getQuestionText()%>
 							<a href="http://www.freebase.com<%=mid%>"> 
-							<%=FreebaseSearch.getFreebaseAttribute(mid, "name")%>
+							<%=FreebaseSearch.getFreebaseAttribute(mid,"name") %>
 							</a>
 						</legend>
 						
 						<div class="controls">
 						<%
-						Set<String> answers = eq.getMultipleChoice(4);
+						int choices = 4;
+						Set<String> answers = eq.getMultipleChoice(choices);
+						if (answers.size()<2) {
+							User u = User.getUseridFromCookie(request, response);
+							String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+							String nextURL = baseURL + Helper.getNextURL(relation, u.getUserid(), null);
+							response.sendRedirect(nextURL);
+							return;
+						}
 						for (String s: answers) {
 							%>
 							<div class="row">

@@ -38,7 +38,7 @@ public class GetNumberOfUserAnswers extends HttpServlet {
 		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
       Cache cache;
-      Map props = new HashMap();
+      Map<String, Integer> props = new HashMap<String, Integer>();
       props.put(GCacheFactory.EXPIRATION_DELTA, 300);
 
       try {

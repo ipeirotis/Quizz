@@ -25,12 +25,13 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 @SuppressWarnings("serial")
 public class AddAdGroup extends HttpServlet {
 
-	private HttpServletResponse	r;
+	private HttpServletResponse r;
 
-	final static Logger					logger	= Logger.getLogger("com.ipeirotis.AddAdGroup");
+	final static Logger logger = Logger.getLogger("com.ipeirotis.AddAdGroup");
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 
 		r = resp;
 
@@ -38,128 +39,126 @@ public class AddAdGroup extends HttpServlet {
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				// resp.getWriter().println("Adding ad campaign for relation: " + relation);
-
-			} else {
+			if (relation == null) {
+				resp.setStatus(422); // 422 (Unprocessable Entity)
 				return;
 			}
-			
+
 			String mid = req.getParameter("mid");
-			if (mid != null) {
-				// resp.getWriter().println("Adding ad campaign for relation: " + relation);
-
-			} else {
-				return;
+			if (mid == null) {
+				// In this case, we create the "default" ad for the quiz
+				// return;
 			}
-			
+
 			String cpcbid = req.getParameter("cpcbid");
-			if (cpcbid != null) {
-				// resp.getWriter().println("Adding ad campaign for relation: " + relation);
-
-			} else {
+			if (cpcbid == null) {
+				resp.setStatus(422); // 422 (Unprocessable Entity)
 				return;
 			}
-			
+
 			String keywords = req.getParameter("keywords");
-			if (keywords != null) {
-				// resp.getWriter().println("Adding ad campaign for relation: " + relation);
-
-			} else {
+			if (keywords == null) {
+				resp.setStatus(422); // 422 (Unprocessable Entity)
 				return;
 			}
-			
+
 			String adheadline = req.getParameter("adheadline");
-			if (adheadline != null) {
-				//resp.getWriter().println("adText: " + adheadline);
-			} else {
-				// return;
+			if (adheadline == null) {
+				resp.setStatus(422); // 422 (Unprocessable Entity)
+				return;
 			}
-			
+
 			String adline1 = req.getParameter("adline1");
-			if (adline1 != null) {
-				//resp.getWriter().println("adText: " + adline1);
-			} else {
-				// return;
+			if (adline1 == null) {
+				resp.setStatus(422); // 422 (Unprocessable Entity)
+				return;
 			}
-			
+
 			String adline2 = req.getParameter("adline2");
-			if (adline2 != null) {
-				//resp.getWriter().println("adText: " + adline2);
-			} else {
-				// return;
+			if (adline2 == null) {
+				resp.setStatus(422); // 422 (Unprocessable Entity)
+				return;
 			}
-			
+
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			Quiz q;
 			Long campaignId = null;
+			try {
+				q = pm.getObjectById(Quiz.class,
+						Quiz.generateKeyFromID(relation));
+				campaignId = q.getCampaignid();
+			} catch (Exception e) {
+			}
+			pm.close();
 			
-				try {
-					q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-					campaignId  = q.getCampaignid();
-				} catch (Exception e) {
-					e.printStackTrace();
-					return;
-				} 
-				pm.close();
-				
-				// All relations (should) have a corresponding ad campaign. 
+			if (campaignId == null) {
+				// All relations (should) have a corresponding ad campaign.
 				// If we get a null, we just put the task back in the queue
-				if (campaignId == null) {
-					Queue queueAdgroup  = QueueFactory.getQueue("adgroup");
-					long delay = 10; // in seconds
-					long etaMillis = System.currentTimeMillis() + delay * 1000L;
+				// and run the call again.
+				// This happens either when the Quiz object has not yet 
+				// persisted in the datastore the campaignId
+				Queue queueAdgroup = QueueFactory.getQueue("adgroup");
+				long delay = 10; // in seconds
+				long etaMillis = System.currentTimeMillis() + delay * 1000L;
+				
+				if (mid==null) {
+				queueAdgroup.add(Builder.withUrl("/addAdGroup")
+						.param("relation", relation)
+						.param("cpcbid", cpcbid)
+						.param("keywords", keywords)
+						.param("adheadline", adheadline)
+						.param("adline1", adline1)
+						.param("adline2", adline2)
+						.method(TaskOptions.Method.POST).etaMillis(etaMillis));
+				} else {
 					queueAdgroup.add(Builder.withUrl("/addAdGroup")
 							.param("relation", relation)
 							.param("mid", mid)
 							.param("cpcbid", cpcbid)
 							.param("keywords", keywords)
-								.param("adheadline", adheadline)
-								.param("adline1", adline1)
-								.param("adline2", adline2)
-							.method(TaskOptions.Method.GET)
-							.etaMillis(etaMillis));
-					return;
+							.param("adheadline", adheadline)
+							.param("adline1", adline1)
+							.param("adline2", adline2)
+							.method(TaskOptions.Method.POST).etaMillis(etaMillis));
 				}
-
-			
-
-
+				resp.setStatus(202); // The request has been accepted for
+										// processing, but the processing has
+										// not been completed
+				return;
+			}
 
 			CampaignManagement service = new CampaignManagement();
 
-			String midName = FreebaseSearch.getFreebaseAttribute(mid, "name");
+			String midName = (mid == null) ? "default" : FreebaseSearch	.getFreebaseAttribute(mid, "name");
 			String adGroupName = midName;
-			
+
 			AdGroup adgroup = service.createAdgroup(adGroupName, campaignId, Double.parseDouble(cpcbid));
 			Long adgroupId = service.publishAdgroup(adgroup);
-			
+
 			String[] keyword = keywords.split(",");
 			for (String k : keyword) {
-				String bidKeyword = midName.toLowerCase() + " " +  k.trim().toLowerCase();
+				String bidKeyword = ((mid != null) ? midName.toLowerCase() :"") + " " + k.trim().toLowerCase();
 				service.addKeyword(bidKeyword.replaceAll("[^A-Za-z0-9 ]", " "), adgroupId);
 			}
-			
-		
-			String displayURL = "http://crowd-power.appspot.com";
-			String targetURL = "http://crowd-power.appspot.com/askQuestion.jsp?mid="+URLEncoder.encode(mid, "UTF-8")+"&relation="+URLEncoder.encode(relation, "UTF-8");
+
+			String displayURL = "http://www.quizz.us";
+			String targetURL = "http://www.quizz.us/startQuiz?relation=" + URLEncoder.encode(relation, "UTF-8");
 			AdGroupAd ad = service.createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
 			Long textAdId = service.publishTextAd(ad);
-			
-			pm = PMF.get().getPersistenceManager();
-			QuizQuestion eq = null;
+
+			if (mid != null) {
+				pm = PMF.get().getPersistenceManager();
 				try {
-					eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
+					QuizQuestion eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
 					eq.setAdTextId(textAdId);
 					eq.setAdGroupId(adgroupId);
 					pm.makePersistent(eq);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, e.getMessage(), e);
-				} 
+				}
 				pm.close();
-			
+			}
 
-			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 

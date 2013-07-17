@@ -3,6 +3,7 @@
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="java.util.List"%>
 
@@ -80,7 +81,7 @@
 			var url = '/api/getNumberOfSubmittedAnswers';
 			var params = {
 				'quiz' : quiz,
-				'userid' : '<%=Helper.getUseridFromCookie(request, response)%>'
+				'userid' : '<%=User.getUseridFromCookie(request, response).getUserid()%>'
 			};
 			$.getJSON(url, params)
 			.done(function(response) {

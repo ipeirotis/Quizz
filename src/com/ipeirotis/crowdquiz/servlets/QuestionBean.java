@@ -3,6 +3,8 @@ package com.ipeirotis.crowdquiz.servlets;
 public class QuestionBean {
 
 	private String	mid;
+	private String name;
+	
 	private Double	weight;
 
 	/**
@@ -11,6 +13,19 @@ public class QuestionBean {
 	public String getMid() {
 
 		return mid;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the weight
+	 */
+	public Double getWeight() {
+	
+		return weight;
 	}
 
 	/**
@@ -23,12 +38,8 @@ public class QuestionBean {
 	}
 
 	
-	/**
-	 * @return the weight
-	 */
-	public Double getWeight() {
-	
-		return weight;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	

@@ -68,7 +68,7 @@
 					</td>
 				</tr>
 			</table>
-			<small><a href="/api/updateStatistics">Update counters</a></small>
+			<small><a href="/api/updateCountStatistics">Update counters</a></small>
 		</div>
 	</div>
 

@@ -123,7 +123,7 @@ public class CampaignManagement extends HttpServlet {
 
 		// Create campaign.
 		Campaign campaign = new Campaign();
-		campaign.setName(campaignName); // + "#" + System.currentTimeMillis());
+		campaign.setName(campaignName + "#" + System.currentTimeMillis());
 		campaign.setStatus(CampaignStatus.ACTIVE);
 
 		BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();

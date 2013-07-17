@@ -55,7 +55,7 @@ public class AddGoldAnswer extends HttpServlet {
 				GoldAnswer ga = new GoldAnswer(relation, mid, answer);
 				pm.makePersistent(ga);
 			} catch (Exception e) {
-				resp.setStatus(409);
+				// resp.setStatus(409);
 				pm.close();
 				return;
 			}

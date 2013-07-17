@@ -41,34 +41,25 @@
 			<label for="prefilled">Select an existing relation</label> <select
 				id="fill_name">
 				<option value="empty"></option>
-				<option value="calories">Calories in food</option>
-				<option value="spouses">Spouses</option>
-				<option value="phone">Customer service number</option>
+				<option value="symptoms">Disease Symptoms</option>
 			</select>
 			<button type="submit" class="btn">Submit!</button>
 		</form>
 
 		<script>
 			function fillin(prefilled) {
-				if (prefilled == "calories") {
-					$('#name').val("Calories in food");
-					$('#relation').val("kc:/food/food:energy");
-					$('#text').val("How many calories in 100 grams of");
-					$('#fbtype').val("/type/float");
-				} else if (prefilled == "spouses") {
-					$('#name').val("Spouse");
-					$('#relation').val("kc:/people/person:spouse");
-					$('#text').val("Who is the current spouse of");
-					$('#fbtype').val("/people/person");
-				} else if (prefilled == "phone") {
-					$('#name').val("Customer service phone");
-					$('#relation').val("kc:/organization/organization:customer service phone");
-					$('#text').val("What is the customer service phone number for");
-					$('#fbtype').val("/common/phone_number");
-				}
-				
-				
-				
+				if (prefilled == "empty") {
+
+				} else if (prefilled == "symptoms") {
+					$('#name').val("Disease symptoms");
+					$('#relation').val("kc:/medicine/disease:symptoms");
+					$('#text').val("What is a symptom of");
+					$('#adheadline').val("What is a symptom of");
+					$('#adline1').val("What is a symptom of");
+					$('#adline2').val("What is a symptom of");
+					$('#text').val("What is a symptom of");
+					
+				} 
 
 			}
 		</script>
@@ -112,9 +103,54 @@
 				 -->
 				
 				<div class="control-group">
-					<label class="control-label" for="budget">Campaign Daily Budget:</label>
+					<label class="control-label" for="adheadline">Ad headline:</label>
 					<div class="controls">
-						<input class="input-xxlarge" id="budget" name="budget" type="text">
+						<input class="input-xxlarge" id="adheadline" name="adheadline"
+							type="text">
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="adline1">Ad line1:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="adline1" name="adline1"
+							type="text">
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="adline2">Ad line2:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="adline2" name="adline2"
+							type="text">
+					</div>
+				</div>
+
+
+
+				<div class="control-group">
+					<label class="control-label" for="keywords">Ad keywords:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="keywords" name="keywords"
+							type="text">
+					</div>
+				</div>
+
+
+
+				<div class="control-group">
+					<label class="control-label" for="budget">Daily ad budget:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="budget" name="budget" type="text"
+							>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="cpcbid">CPC bid:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="cpcbid" name="cpcbid" type="text"
+							>
 					</div>
 				</div>
 

@@ -77,6 +77,7 @@ public class UploadQuestions extends HttpServlet {
 				queueEntities.add(Builder.withUrl("/addQuizQuestion")
 						.param("relation", relation)
 						.param("mid", ce.getMid())
+						.param("name", ce.getName())
 						.param("weight", ce.getWeight().toString())
 						.method(TaskOptions.Method.POST));
 				

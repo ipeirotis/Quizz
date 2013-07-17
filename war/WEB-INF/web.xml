@@ -74,8 +74,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfSubmittedAnswers</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>UpdateStatistics</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateStatistics</servlet-class>
+		<servlet-name>UpdateCountStatistics</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateCountStatistics</servlet-class>
 	</servlet>
 	
 	<servlet>
@@ -163,8 +163,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/api/getNumberOfSubmittedAnswers</url-pattern>
 	</servlet-mapping>
 		<servlet-mapping>
-		<servlet-name>UpdateStatistics</servlet-name>
-		<url-pattern>/api/updateStatistics</url-pattern>
+		<servlet-name>UpdateCountStatistics</servlet-name>
+		<url-pattern>/api/updateCountStatistics</url-pattern>
 	</servlet-mapping>
 			<servlet-mapping>
 		<servlet-name>DeleteQuiz</servlet-name>

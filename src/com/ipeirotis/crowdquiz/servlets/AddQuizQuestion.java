@@ -15,15 +15,12 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 @SuppressWarnings("serial")
 public class AddQuizQuestion extends HttpServlet {
 
-	private HttpServletResponse	r;
-
 	final static Logger					logger	= Logger.getLogger("com.ipeirotis.quizz");
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		r = resp;
-		r.setContentType("text/plain");
+		resp.setContentType("text/plain");
 
 		try {
 			String relation = req.getParameter("relation");
@@ -40,6 +37,13 @@ public class AddQuizQuestion extends HttpServlet {
 			} else {
 				return;
 			}
+			
+			String name = req.getParameter("name");
+			if (name != null) {
+				resp.getWriter().println("Entity name: " + name);
+			} else {
+				return;
+			}
 
 			Double weight = Double.parseDouble(req.getParameter("weight"));
 			if (weight != null) {
@@ -48,7 +52,7 @@ public class AddQuizQuestion extends HttpServlet {
 				return;
 			}
 
-			QuizQuestion q = new QuizQuestion(relation, mid, weight);
+			QuizQuestion q = new QuizQuestion(relation, mid, name, weight);
 
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
