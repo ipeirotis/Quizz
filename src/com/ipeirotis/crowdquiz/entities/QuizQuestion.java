@@ -68,6 +68,12 @@ public class QuizQuestion {
 
 	@Persistent
 	private Integer numberOfSilverAnswers;
+	
+	@Persistent
+	private Boolean hasUserAnswers;
+
+	@Persistent
+	private Integer numberOfUserAnswers;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -443,6 +449,22 @@ public class QuizQuestion {
 	public void setWeight(Double weight) {
 
 		this.weight = weight;
+	}
+
+	public Boolean getHasUserAnswers() {
+		return hasUserAnswers;
+	}
+
+	public void setHasUserAnswers(Boolean hasUserAnswers) {
+		this.hasUserAnswers = hasUserAnswers;
+	}
+
+	public Integer getNumberOfUserAnswers() {
+		return numberOfUserAnswers;
+	}
+
+	public void setNumberOfUserAnswers(Integer numberOfUserAnswers) {
+		this.numberOfUserAnswers = numberOfUserAnswers;
 	}
 
 }

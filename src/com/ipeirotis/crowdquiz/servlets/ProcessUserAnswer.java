@@ -118,7 +118,7 @@ public class ProcessUserAnswer extends HttpServlet {
 			return null;
 		}
 		
-		if (t.getShowCorrect()) {
+		//if (t.getShowCorrect()) {
 			List<String> gold = QuizQuestion.getGoldAnswers(relation, mid);
 			if (gold.contains(answer)) {
 				message += "Your answer '" + answer + "' is correct!\n";
@@ -126,7 +126,7 @@ public class ProcessUserAnswer extends HttpServlet {
 				message += "Your answer '" + answer + "' is incorrect!\n";
 			}
 			
-		}
+		//}
 		
 		
 		

@@ -41,7 +41,7 @@ public class Helper {
 		
 		String query = "SELECT FROM " + QuizQuestion.class.getName() 
 							+ " WHERE relation=='" + relation + "'"
-							+ " && hasGoldAnswer==true ORDER BY weight DESC";
+							+ " && hasGoldAnswer==true";
 
 		@SuppressWarnings("unchecked")
 		List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();

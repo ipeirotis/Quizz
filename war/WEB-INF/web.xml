@@ -91,6 +91,16 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AddAdGroup</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAdGroup</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateAllQuestionStatistics</servlet-class>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>UpdateQuestionStatistics</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateQuestionStatistics</servlet-class>
+	</servlet>	
 
 
 	<servlet-mapping>
@@ -162,11 +172,19 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>GetNumberOfSubmittedAnswers</servlet-name>
 		<url-pattern>/api/getNumberOfSubmittedAnswers</url-pattern>
 	</servlet-mapping>
-		<servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>UpdateCountStatistics</servlet-name>
 		<url-pattern>/api/updateCountStatistics</url-pattern>
 	</servlet-mapping>
-			<servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UpdateQuestionStatistics</servlet-name>
+		<url-pattern>/api/updateQuestionStatistics</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
+		<url-pattern>/api/updateAllQuestionStatistics</url-pattern>
+	</servlet-mapping>		
+	<servlet-mapping>
 		<servlet-name>DeleteQuiz</servlet-name>
 		<url-pattern>/api/deleteQuiz</url-pattern>
 	</servlet-mapping>
