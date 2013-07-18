@@ -12,7 +12,7 @@
 <head>
 <meta name="google-site-verification" content="kYjnyRwCqe4JTpWbEjE-yL7ae3YPFf8zxlQuGcKGb-Q" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Quizz: Available Quizzes</title>
+<title>Quizz: Test yourself, Compare yourself, Learn new things</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
@@ -25,7 +25,9 @@
 <body>
 	<div class="container pagination-centered">
 		<div class="row span4 offset4">
-		<h2>Available Quizzes</h2>
+		<h2>Available <span style="color: maroon">Quizz</span>es</h2>
+
+		
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Quiz</th>
@@ -50,7 +52,7 @@
 						<tr>
 						<td>
 						<a href="/startQuiz?relation=<%=q.getRelation()%>"><%=q.getName()%></a>
-						(<div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)
+						(Your progress: <div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)
 						</td>
 						</tr>
 						<%
@@ -58,8 +60,14 @@
 				}
 				%>
 			</table>
+			
+
 		</div>
 	</div>
+
+<%@ include file="social-sharing.html" %>
+<%@ include file="google-analytics.html" %>
+
 		<script type="text/javascript">
 	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->
 		$('div[name^="num_questions"]').each(function(index) {
@@ -90,17 +98,7 @@
 		});
 		</script>
 	
-	
-	<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
-  ga('send', 'pageview');
-
-</script>
 	
 </body>
 </html>

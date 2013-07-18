@@ -35,42 +35,21 @@
 
 		<%
 			String relation = request.getParameter("relation");
-				String mid = request.getParameter("mid");
-				
-				/*
-				String userName = null;
-				
-					// Get an array of Cookies associated with this domain
-					Cookie[] cookies = request.getCookies();
-				   if (cookies != null) {
-					   for (Cookie c: cookies) {
-					  	 if (c.getName().equals("username")) {
-					  		 userName = c.getValue();
-					  		 break;
-					  	 }
-					   }
-				   } 
-					
-				   if (userName == null) {
-				  	 userName = UUID.randomUUID().toString();;
-				   }
+			String mid = request.getParameter("mid");
 
-				Cookie username = new Cookie("username", userName);
-				response.addCookie( username );
-				*/
-				
-				
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				Quiz q = null;
-				QuizQuestion eq = null;
-				
-				try {
-					q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-					eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-				    	} catch (Exception e) {
-				        	q = null;
-				        	eq = null;
-				    	}
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			Quiz q = null;
+			QuizQuestion eq = null;
+
+			try {
+				q = pm.getObjectById(Quiz.class,
+						Quiz.generateKeyFromID(relation));
+				eq = pm.getObjectById(QuizQuestion.class,
+						QuizQuestion.generateKeyFromID(relation, mid));
+			} catch (Exception e) {
+				q = null;
+				eq = null;
+			}
 		%>
 		<div class="row">
 			<div class="span8 offset2">
@@ -86,18 +65,19 @@
 					<fieldset>
 						<legend>
 							<%=q.getQuestionText()%>
-							<a href="http://www.freebase.com<%=mid%>"> 
-							<%=FreebaseSearch.getFreebaseAttribute(mid, "name")%>
+							<a href="http://www.freebase.com<%=mid%>"> <%=FreebaseSearch.getFreebaseAttribute(mid, "name")%>
 							</a>
 						</legend>
-						<input id="useranswer" name="useranswer" type="text"> 
-						<input id="relation" name="relation" type="hidden" value="<%= relation %>"> 
-						<input id="mid" name="mid" type="hidden" value="<%= mid %>">
+						<input id="useranswer" name="useranswer" type="text"> <input
+							id="relation" name="relation" type="hidden"
+							value="<%=relation%>"> <input id="mid" name="mid"
+							type="hidden" value="<%=mid%>">
 						<div class="form-actions"
 							style="background-color: #D0D0D0; border-radius: 5px;">
 							<input type="submit" class="btn" name="action" value="Submit">
-							<input type="submit" class="btn" name="action" value="I don't know">
-							<input type="submit" class="btn" name="action" value="No such thing">
+							<input type="submit" class="btn" name="action"
+								value="I don't know"> <input type="submit" class="btn"
+								name="action" value="No such thing">
 						</div>
 					</fieldset>
 				</form>
@@ -105,21 +85,21 @@
 		</div>
 	</div>
 
+<%@ include file="social-sharing.html" %>
+<%@ include file="google-analytics.html" %>
+
 	<script type="text/javascript">
 		$( document ).ready(function() {
 			
 			 <!-- Add the Freebase Suggest widget on the form to enable autocompletion -->
-			<%
-			
-			// if (q.getFreebaseType().startsWith("/type/") || q.getFreebaseType().startsWith("/common/" )) {
+			<%// if (q.getFreebaseType().startsWith("/type/") || q.getFreebaseType().startsWith("/common/" )) {
 			//	;
 			//} else { 
 			//	$("#useranswer").suggest({
 			//		'key' : 'AIzaSyAP0fH9aEndZbSDFT87g46YY0gjhkQY8Zc',
 			//	    'filter' : '(all type: = q.getFreebaseType() )', 
 			//	});
-			//}
-			%>
+			//}%>
 				
 			
 		    $('#addUserEntry').ajaxForm({ 
@@ -138,17 +118,16 @@
 
     function processJson(data) {
 		
+    	
+    	// Sends notification for conversion to Google Analytics
 		ga('send', {
 			  'hitType': 'event', 
 			  'eventCategory': 'quiz-submission', 
 			  'eventAction': 'fill-in', 
-			  'eventLabel': '<%= q.getRelation() %>',
-			  <% if (eq.getWeight()!=null) {
-			  	%> 'eventValue': <%= eq.getWeight() %>, <%
-			  } else {
-			  	
-			  }
-			  %>
+			  'eventLabel': '<%=q.getRelation()%>',
+			  <%if (eq.getWeight() != null) {%> 'eventValue': <%=eq.getWeight()%>, <%} else {
+
+			}%>
 			  
 			});
 		
@@ -164,16 +143,7 @@
 
 	</script>
 
-	<script type="text/javascript">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
-  ga('send', 'pageview');
-
-</script>
 
 </body>
 </html>

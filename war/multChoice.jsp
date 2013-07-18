@@ -31,6 +31,8 @@
 
 <script src="http://malsup.github.com/jquery.form.js"
 	type="text/javascript"></script>
+	
+
 
 </head>
 <body>
@@ -52,8 +54,13 @@
 				eq = null;
 			}
 		%>
+		
+		<div class="row">
+		<div class="span4 offset4"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
+		</div>
 
 		<div class="row">
+			
 			<div class="span8 offset2">
 
 
@@ -102,7 +109,13 @@
 				</form>
 			</div>
 		</div>
+		
+		
+			
 	</div>
+
+<%@ include file="social-sharing.html" %>
+<%@ include file="google-analytics.html" %>
 
 	<script type="text/javascript">
 		$( document ).ready(function() {
@@ -124,6 +137,7 @@
 
     function processJson(data) {
 		
+    	// Mark a conversion in Google Analytics
 		ga('send', {
 			  'hitType': 'event', 
 			  'eventCategory': 'quiz-submission', 
@@ -150,16 +164,7 @@
 
 	</script>
 
-	<script type="text/javascript">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-89122-22', 'crowd-power.appspot.com');
-  ga('send', 'pageview');
-
-</script>
 
 </body>
 </html>
