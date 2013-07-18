@@ -52,7 +52,7 @@
 						<tr>
 						<td>
 						<a href="/startQuiz?relation=<%=q.getRelation()%>"><%=q.getName()%></a>
-						(Your progress: <div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)
+						<br><small>(Your progress: <div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</small>
 						</td>
 						</tr>
 						<%
