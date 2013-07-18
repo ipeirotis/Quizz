@@ -91,33 +91,6 @@ public class ProcessUserAnswer extends HttpServlet {
 		
 		String message = "";
 		
-		Treatment t = user.getTreatment();
-		
-		// Should we show any popup with a message?
-		// Boolean showMessage;
-		//
-		// Should we show the correct answer in the popup?
-		// Boolean showCorrect;
-
-		// Should we show the total number of correct answers so far?
-		// Boolean showScore;
-
-		// Should we show the percentage of correct answers?
-		// Boolean showPercentageCorrect;
-
-		// Should we show the answers given by other users?
-		// Boolean showCrowdAnswers;
-
-		// Should we show the rank among the other users in terms of % of correct answers?
-		// Boolean showPercentageRank;
-
-		// Should we show the rank among the other users in terms of # of correct answers?
-		// Boolean showScoreRank;
-		
-		if (!t.getShowMessage()) {
-			return null;
-		}
-		
 		//if (t.getShowCorrect()) {
 			List<String> gold = QuizQuestion.getGoldAnswers(relation, mid);
 			if (gold.contains(answer)) {
@@ -127,9 +100,6 @@ public class ProcessUserAnswer extends HttpServlet {
 			}
 			
 		//}
-		
-		
-		
 		return message;
 	}
 

@@ -1,6 +1,7 @@
 package com.ipeirotis.crowdquiz.entities;
 
-import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -28,108 +29,40 @@ public class Treatment {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
 
-	// TODO: Create a different table in datastore with the conditions, and assign a probability
-	// to each of them. Then, when creating the treatment, query the datastore for the probabilities
-	// assigned to each condition.
+	// The name of the treatment
+	@Persistent
+	String name;
 	
-	// Should we show any popup with a message?
+	// The probability of assigning this treatment to a user
 	@Persistent
-	Boolean showMessage;
-	
-	// Should we show the correct answer in hte popup?
+	Double probability;
+
+	// This is to allow for the treatment to block other treatments 
+	// within the same experiment
 	@Persistent
-	Boolean showCorrect;
+	Set<String> blocks;
 
-	// Should we show the total number of correct answers so far?
+	// This is to allow for the treatment to be blocked by other treatments 
+	// within the same experiment
 	@Persistent
-	Boolean showScore;
+	Set<String> blockedBy;
 
-	// Should we show the percentage of correct answers?
+	// If this treatment needs to run by itself
 	@Persistent
-	Boolean showPercentageCorrect;
+	Boolean blocksAll;
 
-	// Should we show the answers given by other users?
-	@Persistent
-	Boolean showCrowdAnswers;
 
-	// Should we show the rank among the other users in terms of % of correct answers?
-	@Persistent
-	Boolean showPercentageRank;
-
-	// Should we show the rank among the other users in terms of # of correct answers?
-	@Persistent
-	Boolean showScoreRank;
-
-	
-	public Treatment() {
-
+	public Treatment(String name, Double probability) {
+		this.key = Treatment.generateKeyFromID(name);
+		this.name = name;
+		this.probability = probability;
+		this.blocks = new HashSet<String>();
+		this.blockedBy = new HashSet<String>();
+		this.blocksAll = false;
 	}
 	
-	public static Key generateKeyFromID(Long setting) {
-
-		return KeyFactory.createKey(Treatment.class.getSimpleName(), "id_" + setting);
-	}
-	
-
-	public static Treatment assignTreatment() {
-		Treatment result = new Treatment();
-
-		Field[] fields = Treatment.class.getDeclaredFields();
-		//System.out.println("Fields:"+fields.length);
-
-		int cnt = 0;
-		
-		// Setting is effectively a bit vector, setting 0/1 the various treatments
-		long setting = 0;
-		for (Field f : fields) {
-			if (f.getType().equals(Boolean.class)) {
-				f.setAccessible(true);
-				
-				// Assign a random value to each condition
-				Boolean value = (Math.random() < 0.5) ? false : true;
-				//System.out.println("Setting " + f.getName() + " to " + value);
-				try {
-					f.set(result, value);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-				
-				// Encode in the setting vector whether this treatment is on or off
-				long add = Math.round(Math.pow(2, ++cnt));
-				if (value==true) {
-					setting += add;
-				}
-			}
-		}
-		//System.out.println("Setting:"+setting);
-		result.setKey(Treatment.generateKeyFromID(setting));
-		return result;
-	}
-	
-	public String toString() {
-		
-
-		Field[] fields = Treatment.class.getDeclaredFields();
-
-		StringBuffer sb = new StringBuffer();
-		sb.append("key:"+this.key+"\n");
-		for (Field f : fields) {
-			if (f.getType().equals(Boolean.class)) {
-				String name = f.getName();
-				Boolean value = null;
-				try {
-					value = (Boolean) f.get(this);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-				sb.append(name+ ":" + value+"\n");
-				
-			}
-		}
-			
-		return sb.toString();
+	public static Key generateKeyFromID(String name) {
+		return KeyFactory.createKey(Treatment.class.getSimpleName(), "id_" + name);
 	}
 
 	public Key getKey() {
@@ -140,61 +73,46 @@ public class Treatment {
 		this.key = key;
 	}
 
-	public Boolean getShowCorrect() {
-		return showCorrect;
+	public String getName() {
+		return name;
 	}
 
-	public void setShowCorrect(Boolean showCorrect) {
-		this.showCorrect = showCorrect;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Boolean getShowScore() {
-		return showScore;
+	public Double getProbability() {
+		return probability;
 	}
 
-	public void setShowScore(Boolean showScore) {
-		this.showScore = showScore;
+	public void setProbability(Double probability) {
+		this.probability = probability;
 	}
 
-	public Boolean getShowPercentageCorrect() {
-		return showPercentageCorrect;
+	public Set<String> getBlocks() {
+		return blocks;
 	}
 
-	public void setShowPercentageCorrect(Boolean showPercentageCorrect) {
-		this.showPercentageCorrect = showPercentageCorrect;
+	public void setBlocks(Set<String> blocks) {
+		this.blocks = blocks;
 	}
 
-	public Boolean getShowCrowdAnswers() {
-		return showCrowdAnswers;
+	public Set<String> getBlockedBy() {
+		return blockedBy;
 	}
 
-	public void setShowCrowdAnswers(Boolean showCrowdAnswers) {
-		this.showCrowdAnswers = showCrowdAnswers;
+	public void setBlockedBy(Set<String> blockedBy) {
+		this.blockedBy = blockedBy;
 	}
 
-	public Boolean getShowMessage() {
-		return showMessage;
+	public Boolean getBlocksAll() {
+		return blocksAll;
 	}
 
-	public void setShowMessage(Boolean showMessage) {
-		this.showMessage = showMessage;
+	public void setBlocksAll(Boolean blocksAll) {
+		this.blocksAll = blocksAll;
 	}
 
-	public Boolean getShowPercentageRank() {
-		return showPercentageRank;
-	}
-
-	public void setShowPercentageRank(Boolean showPercentageRank) {
-		this.showPercentageRank = showPercentageRank;
-	}
-
-	public Boolean getShowScoreRank() {
-		return showScoreRank;
-	}
-
-	public void setShowScoreRank(Boolean showScoreRank) {
-		this.showScoreRank = showScoreRank;
-	}
 
 
 }

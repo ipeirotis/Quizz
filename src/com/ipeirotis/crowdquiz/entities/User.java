@@ -1,10 +1,9 @@
 package com.ipeirotis.crowdquiz.entities;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -30,13 +29,14 @@ public class User {
 	@Persistent
 	private String	userid;
 	
-	@Persistent
-	private Treatment treatment;
+	// The set of treatments assigned to the user
+	@Persistent(defaultFetchGroup = "true")
+	private Experiment experiment;
 	
 	
 	public User(String userid) {
 		this.userid = userid;
-		this.treatment = Treatment.assignTreatment();
+		this.experiment = new Experiment();
 		this.key = generateKeyFromID(userid);
 	}
 	
@@ -88,12 +88,12 @@ public class User {
 		this.userid = userid;
 	}
 
-	public Treatment getTreatment() {
-		return treatment;
+	public boolean getsTreatment(String treatmentName) {
+		return this.experiment.getsTreatment(treatmentName);
 	}
-
-	public void setTreatment(Treatment treatment) {
-		this.treatment = treatment;
+	
+	public Map<String, Boolean> getTreatments() {
+		return this.experiment.treatments;
 	}
 	
 }

@@ -9,6 +9,13 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
+/** 
+ * The Quiz is the basic unit of the application. Each quiz contains 
+ * a set of QuizQuestions. 
+ * 
+ * @author ipeirotis
+ *
+ */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Quiz {
 
@@ -21,7 +28,9 @@ public class Quiz {
 	@Persistent
 	private String	name;
 
-	// The name of the relation that we are targeting
+	// The name of the relation that we are targeting. 
+	// Typically, we assign the name of a KP attribute on this one
+	// and serves as a defacto primary key for the quiz.
 	@Persistent
 	private String	relation;
 
@@ -29,23 +38,14 @@ public class Quiz {
 	@Persistent
 	private String	questionText;
 
-	// The type of entry for the freebaseAttribute
+	// The type of entry for the answer that we expect
+	// We do not use this for multiple choice questions
+	// but it is used for the fill-in questions, to enable
+	// autocompletion using the Freebase auto-suggest widget
 	@Persistent
 	private String	freebaseType;
 
-	// The attribute that we are crowdsourcing
-	//@Persistent
-	//private String	freebaseAttribute;
-	
-	// The element from the attribute that we are crowdsourcing (when the attribute is a compound)
-	//@Persistent
-	//private String	freebaseElement;
-	
-	//
-	//@Persistent
-	//private BlobKey	blobKey;
-
-	// The id of the ad campaign
+	// The id of the AdWords ad campaign that brings visitors to the quiz
 	@Persistent
 	private Long	campaignid;
 	
@@ -71,9 +71,7 @@ public class Quiz {
 		this.questionText = questionText;
 		this.relation = relation;
 		this.freebaseType = null;
-		//this.freebaseAttribute = freebaseAttribute;
-		//this.freebaseElement = freebaseElement;
-		//this.blobKey = blobKey;
+
 
 		this.key = generateKeyFromID(relation);
 	}
@@ -125,12 +123,5 @@ public class Quiz {
 
 		return relation;
 	}
-
-	/*
-	public String getFreebaseElement() {
-	
-		return freebaseElement;
-	}
-	*/
 
 }
