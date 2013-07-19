@@ -223,14 +223,11 @@ public class QuizQuestion {
 		return key;
 	}
 
-	public Set<String> getMultipleChoice(int size) {
-		Set<String> results = new TreeSet<String>();
-
+	public String getRandomGoldAnswer() {
 		// First we need to put one correct result
 		ArrayList<String> gold = getGoldAnswers();
 		if (gold.size() == 0) {
-			// TODO: Handle such lack of gold gracefully;
-			return results;
+			return null;
 		}
 
 		// Select one gold answer at random and put it in the results
@@ -238,7 +235,11 @@ public class QuizQuestion {
 		if (r >= gold.size()) {
 			r = gold.size() - 1;
 		}
-		results.add(gold.get(r));
+		return gold.get(r);
+	}
+	
+	public Set<String> getIncorrectAnswers(int size) {
+		Set<String> results = new TreeSet<String>();
 
 		// Get a set of potential answers from other questions
 		List<String> wrongAnswers = getGoldAnswers(this.relation);
@@ -247,6 +248,7 @@ public class QuizQuestion {
 		wrongAnswers.remove(this.name);
 		
 		// Remove all gold answers
+		ArrayList<String> gold = getGoldAnswers();
 		wrongAnswers.removeAll(gold);
 
 		// Get a list of potential good answers from KV and remove them
@@ -264,8 +266,19 @@ public class QuizQuestion {
 			results.add(candidate);
 		}
 
-		// List<String> u = getUserAnswers();
+		return results;
+	}
+	
+	
+	public Set<String> getMultipleChoice(int size) {
+		Set<String> results = new TreeSet<String>();
 
+		String gold = getRandomGoldAnswer();
+		results.add(gold);
+		
+		Set<String> pyrite = getIncorrectAnswers(size-1);
+		results.addAll(pyrite);
+		
 		return results;
 	}
 

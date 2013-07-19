@@ -5,9 +5,7 @@
 <title>Quizz: ${param.title}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
-<link type="text/css" rel="stylesheet" href="/qtip/jquery.qtip.css" />
-<script type="text/javascript" src="/qtip/jquery.qtip.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.0.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
 </head>

@@ -26,6 +26,8 @@ public class AddUserAnswer extends HttpServlet {
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
 		String useranswer = req.getParameter("useranswer");
+		String correct = req.getParameter("correct");
+		Boolean isCorrect = (correct.equals("true"));
 		String browser = req.getParameter("browser");
 		String ipAddress = req.getParameter("ipAddress");
 		String referer = req.getParameter("referer");
@@ -43,6 +45,7 @@ public class AddUserAnswer extends HttpServlet {
 		ue.setIpaddress(ipAddress);
 		ue.setTimestamp(timestamp);
 		ue.setAction(action);
+		if (isCorrect!=null) ue.setIsCorrect(isCorrect);
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		pm.makePersistent(ue);

@@ -84,7 +84,7 @@ public class GetNumberOfSubmittedAnswers extends HttpServlet {
 
 			Map<String,Object> params = new HashMap<String, Object>();
 			params.put("quizParam", quiz);
-      params.put("useridParam", userid);
+			params.put("useridParam", userid);
       
 			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 			Integer numQuestions = results.size();

@@ -37,11 +37,11 @@
 									href="/api/deleteQuiz?relation=<%=q.getRelation()%>">Delete</a>
 								</td>
 								<td><%=q.getQuestionText()%></td>
-								<td><a id="upload_questions" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a>&nbsp;(<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="upload_gold"	href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="upload_silver" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="upload_crowd" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="download" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_questions" title="Upload additional entities for which we want to ask the quiz question" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a>&nbsp;(<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_gold"	title="Upload correct answers for the questions asked" href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_silver" title="Upload possible answers for the questions asked (with some <1 probability of being correct)" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="upload_crowd" title="Upload answers submitted by users (that have been downloaded previously from Quizz.us)" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="download" title="Download the answers submitted so far by the users" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
 							</tr>
 							<%
 						}
@@ -57,16 +57,6 @@
 			<small><a href="/api/updateCountStatistics">Update counters</a></small>
 		</div>
 	</div>
-
-	<!-- Setup help tooltips for the different page elements -->
-	<script>
-		$('#upload_gold').qtip({content : 'Upload correct answers for the questions asked'});
-		$('#upload_silver').qtip({content : 'Upload possible answers for the questions asked (with some <1 probability of being correct)'});
-		$('#upload_crowd').qtip({content : 'Upload answers submitted by users'});
-		$('#upload_questions').qtip({content : 'Upload additional entities for which we want to ask the quiz question'});
-		$('#download').qtip({content : 'Download the answers submitted so far by the users'});
-		$('#adcampaign').qtip({content : 'Manage the ad campaign'});
-	</script>
 
 	<script type="text/javascript">
 	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->

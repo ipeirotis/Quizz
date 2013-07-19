@@ -9,13 +9,23 @@ public class UserAnswerBean {
 	private String	mid;
 	private String	action;
 	private String	useranswer;
-	
+	private Boolean iscorrect;
 	private Long	timestamp;
 	private String	ipaddress;
 	private String	browser;
 	private String	referer;
 	
 	
+	public Boolean getIscorrect() {
+		return iscorrect;
+	}
+
+
+	public void setIscorrect(Boolean iscorrect) {
+		this.iscorrect = iscorrect;
+	}
+
+
 	/**
 	 * @return the referer
 	 */

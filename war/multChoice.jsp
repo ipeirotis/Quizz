@@ -5,70 +5,75 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
+<%@ page import="java.util.TreeSet"%>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>List of Supported Relations</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
-	media="screen">
-<script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<%
+	User u = User.getUseridFromCookie(request, response);
+	String relation = request.getParameter("relation");
+	String mid = request.getParameter("mid");
 
-<link type="text/css" rel="stylesheet"
-	href="https://www.gstatic.com/freebase/suggest/4_1/suggest.min.css" />
-<script type="text/javascript"
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-<script type="text/javascript"
-	src="https://www.gstatic.com/freebase/suggest/4_1/suggest.min.js"></script>
+	PersistenceManager pm = PMF.get().getPersistenceManager();
+	Quiz quiz = null;
+	QuizQuestion question = null;
+	QuizPerformance performance = null;
 
-
-<script src="http://malsup.github.com/jquery.form.js"
-	type="text/javascript"></script>
+	try {
+		quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
+		question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
+	} catch (Exception e) {
+		String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+		String nextURL = baseURL + Helper.getNextURL(relation, u.getUserid(), null);
+		response.sendRedirect(nextURL);
+	}
 	
+	try {
+		performance = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, u.getUserid()));
+	} catch (Exception e) {
+		//performance = new QuizPerformance(relation, u.getUserid());
+		//pm.makePersistent(performance);
+	}
+	
+	
+	pm.close();
+%>
+
+<jsp:include page="/header.jsp"><jsp:param name="title" value="<%= quiz.getName() %>" /></jsp:include>
+
 
 
 </head>
 <body>
 	<div class="container pagination-centered">
 
-		<%
-			String relation = request.getParameter("relation");
-			String mid = request.getParameter("mid");
 
-			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Quiz q = null;
-			QuizQuestion eq = null;
-
-			try {
-				q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-				eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-			} catch (Exception e) {
-				q = null;
-				eq = null;
-			}
-		%>
 		
 		<div class="row">
-		<div class="span4 offset4"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
+		<div class="span9 offset1" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
 		</div>
 
+<% if (performance!=null) { %>
+		<div class="row" style="color:maroon;font-size:small">
+		<div class="span3 offset1" >Correct (%)<br><%= performance.getCorrectanswers() %>/<%= performance.getTotalanswers() %> (<%= performance.displayPercentageCorrect() %>)</div>
+		<div class="span3">Rank (#correct)<br><%= performance.getRankPercentCorrect() %>/<%=performance.getTotalUsers() %> (Top-<%= performance.displayRankPercentageCorrect() %>)</div>
+		<div class="span3">Rank (%correct)<br><%= performance.getRankTotalCorrect() %>/<%=performance.getTotalUsers() %> (Top-<%= performance.displayRankTotalCorrect() %>)</div>
+		</div>
+<% } %>
 		<div class="row">
 			
-			<div class="span8 offset2">
+			<div class="span9 offset1">
 
 
 				<form id="addUserEntry" action="/processUserAnswer" method="post"
 					style="background-color: #D4D4D4; border-radius: 5px;">
 					<fieldset>
 						<legend>
-							<%=q.getQuestionText()%>
+							<%=quiz.getQuestionText()%>
 							<a href="http://www.freebase.com<%=mid%>"> 
 							<%=FreebaseSearch.getFreebaseAttribute(mid,"name") %>
 							</a>
@@ -77,9 +82,16 @@
 						<div class="controls">
 						<%
 						int choices = 4;
-						Set<String> answers = eq.getMultipleChoice(choices);
+
+						Set<String> answers = new TreeSet<String>();
+
+						String gold = question.getRandomGoldAnswer();
+						answers.add(gold);
+
+						Set<String> pyrite = question.getIncorrectAnswers(choices-1);
+						answers.addAll(pyrite);
+						
 						if (answers.size()<2) {
-							User u = User.getUseridFromCookie(request, response);
 							String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 							String nextURL = baseURL + Helper.getNextURL(relation, u.getUserid(), null);
 							response.sendRedirect(nextURL);
@@ -88,9 +100,9 @@
 						for (String s: answers) {
 							%>
 							<div class="row">
-							<div class="span2 offset3">
+							<div class="span4 offset2">
 							<label class="radio" for="radios-<%=s%>" style="text-align:left">
-							<input style="background-color: #EEEEEE; border-radius: 5px;" type="radio" name="useranswer" id="radios-<%=s%>" value="<%=s%>"><%=s%></input>
+							<input style="background-color: #EEEEEE; border-radius: 5px;" type="radio" name="useranswer" id="radios-<%=s%>" value="<%=s%>"><%=s%>
 							</label>
 							</div>
 							</div>
@@ -100,6 +112,8 @@
 						</div>
 						<input id="relation" name="relation" type="hidden" value="<%= relation %>"> 
 						<input id="mid" name="mid" type="hidden" value="<%= mid %>">
+						<input id="gold" name="gold" type="hidden" value="<%= gold %>"> 
+						
 						<div class="form-actions"
 							style="background-color: #D0D0D0; border-radius: 5px;">
 							<input type="submit" class="btn" name="action" value="Submit">
@@ -114,14 +128,10 @@
 			
 	</div>
 
-<%@ include file="social-sharing.html" %>
-<%@ include file="google-analytics.html" %>
 
 	<script type="text/javascript">
 		$( document ).ready(function() {
-					
-			
-		    $('#addUserEntry').ajaxForm({ 
+			$('#addUserEntry').ajaxForm({ 
 		        // dataType identifies the expected content type of the server response 
 		        dataType:  'json', 
 		 
@@ -129,9 +139,6 @@
 		        // has been received 
 		        success:   processJson 
 		    }); 
-		    
-
-
 		});
 
 
@@ -142,9 +149,9 @@
 			  'hitType': 'event', 
 			  'eventCategory': 'quiz-submission', 
 			  'eventAction': 'fill-in', 
-			  'eventLabel': '<%= q.getRelation() %>',
-			  <% if (eq.getWeight()!=null) {
-			  	%> 'eventValue': <%= eq.getWeight() %>, <%
+			  'eventLabel': '<%= quiz.getRelation() %>',
+			  <% if (question.getWeight()!=null) {
+			  	%> 'eventValue': <%= question.getWeight() %>, <%
 			  } else {
 			  	
 			  }
@@ -164,6 +171,8 @@
 
 	</script>
 
+<%@ include file="social-sharing.html" %>
+<%@ include file="google-analytics.html" %>
 
 
 </body>
