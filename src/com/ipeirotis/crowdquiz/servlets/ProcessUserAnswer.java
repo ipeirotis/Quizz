@@ -78,7 +78,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		updateQuizPerformance(user, relation, isCorrect);
 		
 		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
-		queueUserStats.add(Builder.withUrl("/api/updateUserStatistics")
+		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
 				.param("quiz", relation)
 				.param("userid", user.getUserid())
 				.method(TaskOptions.Method.GET));

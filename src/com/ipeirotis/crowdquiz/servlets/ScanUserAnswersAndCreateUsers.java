@@ -60,7 +60,6 @@ public class ScanUserAnswersAndCreateUsers extends HttpServlet {
 			}
 		}
 		
-		
 		pm.close();
 		
 	}
