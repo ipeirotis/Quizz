@@ -1,8 +1,8 @@
 package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Date;
-import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
@@ -48,7 +48,7 @@ public class ProcessUserAnswer extends HttpServlet {
 			useranswer = "";
 		}
 		String gold = req.getParameter("gold");
-		
+
 		String action = req.getParameter("action");
 		if (action.equals("I don't know")) {
 			useranswer = "";
@@ -60,6 +60,8 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long timestamp = (new Date()).getTime();
 		
 		Boolean isCorrect = useranswer.equals(gold);
+
+		
 
 		Queue queueAnswers = QueueFactory.getQueue("answers");
 		queueAnswers.add(Builder.withUrl("/addUserAnswer").
@@ -77,22 +79,48 @@ public class ProcessUserAnswer extends HttpServlet {
 		
 		updateQuizPerformance(user, relation, isCorrect);
 		
-		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
+Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
 				.param("quiz", relation)
 				.param("userid", user.getUserid())
 				.method(TaskOptions.Method.GET));
 		
-		Gson gson = new Gson();
-		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
-		String nextURL = baseURL + Helper.getNextURL(relation, user.getUserid(), mid);
 
-		String message = getFeedbackMessage(user, relation, mid, useranswer, gold);
-		Response result = new Response(nextURL, message);
+
+		QuizQuestion question = null;
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {
+			question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
+		} finally {
+			pm.close();
+		}
+		Integer total = question.getNumberOfUserAnswers();
+		if (total == null) total=0;
+		Integer correct = question.getNumberOfCorrentUserAnswers();
+		if (correct == null) correct =0;
+		
+		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String multChoiceURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), mid);
+		String feedbackURL = baseURL + "/feedback.jsp?useranswer=" + URLEncoder.encode(useranswer, "UTF-8")
+									 + "&gold=" + URLEncoder.encode(gold, "UTF-8")
+									 + "&iscorrect=" + URLEncoder.encode(isCorrect.toString(), "UTF-8")
+									 + "&totalanswers=" + URLEncoder.encode(total.toString(), "UTF-8")
+									 + "&correctanswers=" + URLEncoder.encode(correct.toString(), "UTF-8")
+									 + "&url=" + URLEncoder.encode(multChoiceURL, "UTF-8");
+				
+		
+		Response result = new Response(multChoiceURL, feedbackURL);
+		Gson gson = new Gson();
 		String json = gson.toJson(result);
 		System.out.println(json);
 		resp.getWriter().println(json);
-		resp.sendRedirect(nextURL);
+		
+		Boolean showFeedback = user.getsTreatment("showMessage");
+		if (showFeedback) {
+			resp.sendRedirect(feedbackURL); 
+		} else {
+			resp.sendRedirect(multChoiceURL);
+		}
 	}
 
 	private void updateQuizPerformance(User user, String relation, Boolean isCorrect) {
@@ -109,23 +137,6 @@ public class ProcessUserAnswer extends HttpServlet {
 		qp.increaseTotal();
 		pm.makePersistentAll(qp);
 		pm.close();
-	}
-	
-	private String getFeedbackMessage(User user, String relation, String mid, String answer, String gold) {
-		
-		String message = "";
-		
-		if (answer.equals("")) return message;
-		
-		
-			if (gold.equals(answer)) {
-				message += "Your answer '" + answer + "' is correct!\n";
-			} else {
-				message += "Your answer '" + answer + "' is incorrect!\n";
-			}
-			
-		//}
-		return message;
 	}
 
 

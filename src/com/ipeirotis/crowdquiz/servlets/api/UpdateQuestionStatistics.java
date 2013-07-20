@@ -11,12 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.entities.GoldAnswer;
-import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
@@ -62,6 +57,9 @@ public class UpdateQuestionStatistics extends HttpServlet {
 		question.setNumberOfUserAnswers(u);
 		resp.getWriter().print("Number of user answers:"+u+"\n");
 
+		int c = getNumberOfCorrectUserAnswers(relation, mid);
+		question.setNumberOfCorrentUserAnswers(c);
+		resp.getWriter().print("Number of correct user answers:"+u+"\n");
 		
 		pm.makePersistent(question);
 		pm.close();
@@ -111,6 +109,21 @@ public class UpdateQuestionStatistics extends HttpServlet {
 		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 		return results.size();
 	}
+	
+	private int getNumberOfCorrectUserAnswers(String quiz, String mid) {
+		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		Query q = pm.newQuery(UserAnswer.class);
+		q.setFilter("relation == quizParam && mid == midParam && action=='Submit' && isCorrect");
+		q.declareParameters("String quizParam, String midParam");
+
+		Map<String,Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quiz);
+		params.put("midParam", mid);
+  
+		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+		return results.size();
+	}
+
 
 	
 	

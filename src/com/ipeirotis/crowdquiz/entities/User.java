@@ -66,6 +66,8 @@ public class User {
 		}
 
 		Cookie username = new Cookie("username", userid);
+		username.setMaxAge(60 * 24 * 3600);
+		username.setPath("/");
 		resp.addCookie(username);
 		
 		User user = null;

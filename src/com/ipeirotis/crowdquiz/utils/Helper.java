@@ -1,15 +1,13 @@
 package com.ipeirotis.crowdquiz.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.jdo.PersistenceManager;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
@@ -33,9 +31,7 @@ public class Helper {
 	 * @param pm
 	 * @return
 	 */
-	public static String getNextURL(String relation, String userid, String justAddedMid) {
-
-		
+	public static String getNextMultipleChoiceURL(String relation, String userid, String justAddedMid) {
 		
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
 		
@@ -67,11 +63,8 @@ public class Helper {
 		
 		availableQuestions.removeAll(alreadyAnswered);
 		
-	//String nextURL = "/listEntities.jsp?relation=" + relation;
-			
-
+		String nextURL = "/";
 		if (availableQuestions.isEmpty()) {
-			String nextURL = "/";
 			return nextURL;
 		} else {
 			ArrayList<String> list = new ArrayList<String>(availableQuestions);
@@ -79,11 +72,15 @@ public class Helper {
 			if (rnd<0) rnd=0;
 			if (rnd>=availableQuestions.size()) rnd = availableQuestions.size()-1;
 			String mid = list.get(rnd);
-			String nextURL = "/multChoice.jsp?relation=" + relation + "&mid=" + mid;
+			
+			try {
+				nextURL = "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8")  + "&mid=" + URLEncoder.encode(mid, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 			return nextURL;
+			
 		}
-		
-		
 	}
 
 	

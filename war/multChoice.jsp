@@ -13,8 +13,11 @@
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.TreeSet"%>
 
+
+
+
 <%
-	User u = User.getUseridFromCookie(request, response);
+	User user = User.getUseridFromCookie(request, response);
 	String relation = request.getParameter("relation");
 	String mid = request.getParameter("mid");
 
@@ -27,13 +30,13 @@
 		quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
 		question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
 	} catch (Exception e) {
-		String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-		String nextURL = baseURL + Helper.getNextURL(relation, u.getUserid(), null);
+		String baseURL = request.getScheme() + "://" + request.getServerName(); 
+		String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), null);
 		response.sendRedirect(nextURL);
 	}
 	
 	try {
-		performance = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, u.getUserid()));
+		performance = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, user.getUserid()));
 	} catch (Exception e) {
 		//performance = new QuizPerformance(relation, u.getUserid());
 		//pm.makePersistent(performance);
@@ -43,7 +46,7 @@
 	pm.close();
 %>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="<%= quiz.getName() %>" /></jsp:include>
+<jsp:include page="/header.jsp"><jsp:param name="title" value="<%=quiz.getName()%>" /></jsp:include>
 
 
 
@@ -54,51 +57,56 @@
 
 		
 		<div class="row">
-		<div class="span9 offset1" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
+			<div class="span8 offset2" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
 		</div>
 
-<% if (performance!=null) { %>
-		<div class="row" style="color:maroon;font-size:small">
-		<div class="span3 offset1" >Correct (%)<br><%= performance.getCorrectanswers() %>/<%= performance.getTotalanswers() %> (<%= performance.displayPercentageCorrect() %>)</div>
-		<div class="span3">Rank (#correct)<br><%= performance.getRankPercentCorrect() %>/<%=performance.getTotalUsers() %> (Top-<%= performance.displayRankPercentageCorrect() %>)</div>
-		<div class="span3">Rank (%correct)<br><%= performance.getRankTotalCorrect() %>/<%=performance.getTotalUsers() %> (Top-<%= performance.displayRankTotalCorrect() %>)</div>
+<%
+	if (performance!=null) {
+%>
+		<div class="row" >
+			<div class="span8 offset2" style="color:maroon;font-size:small;background-color: #F4F4F4; border-radius: 5px;">
+				<div class="span2" id="showTotalCorrect">#Correct<br><%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%></div>
+				<div class="span2" id="showPercentageCorrect">Correct (%)<br><%=performance.displayPercentageCorrect()%></div>
+				<div class="span2" id="showPercentageRank">Rank (%correct)<br><%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)</div>
+				<div class="span2" id="showTotalCorrectRank">Rank (#correct)<br><%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)</div>
+			</div>
 		</div>
-<% } %>
+<%
+	}
+%>
+
 		<div class="row">
-			
-			<div class="span9 offset1">
-
-
+			<div class="span8 offset2">
 				<form id="addUserEntry" action="/processUserAnswer" method="post"
 					style="background-color: #D4D4D4; border-radius: 5px;">
 					<fieldset>
 						<legend>
 							<%=quiz.getQuestionText()%>
 							<a href="http://www.freebase.com<%=mid%>"> 
-							<%=FreebaseSearch.getFreebaseAttribute(mid,"name") %>
+							<%=FreebaseSearch.getFreebaseAttribute(mid,"name")%>
 							</a>
 						</legend>
 						
 						<div class="controls">
 						<%
-						int choices = 4;
+							int choices = 4;
 
-						Set<String> answers = new TreeSet<String>();
+										Set<String> answers = new TreeSet<String>();
 
-						String gold = question.getRandomGoldAnswer();
-						answers.add(gold);
+										String gold = question.getRandomGoldAnswer();
+										answers.add(gold);
 
-						Set<String> pyrite = question.getIncorrectAnswers(choices-1);
-						answers.addAll(pyrite);
-						
-						if (answers.size()<2) {
-							String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-							String nextURL = baseURL + Helper.getNextURL(relation, u.getUserid(), null);
-							response.sendRedirect(nextURL);
-							return;
-						}
-						for (String s: answers) {
-							%>
+										Set<String> pyrite = question.getIncorrectAnswers(choices-1);
+										answers.addAll(pyrite);
+										
+										if (answers.size()<2) {
+											String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+											String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), null);
+											response.sendRedirect(nextURL);
+											return;
+										}
+										for (String s: answers) {
+						%>
 							<div class="row">
 							<div class="span4 offset2">
 							<label class="radio" for="radios-<%=s%>" style="text-align:left">
@@ -170,6 +178,35 @@
 	
 
 	</script>
+
+<script>
+<%
+if (user.getsTreatment("showPercentageRank")) { 
+	%>$('#showPercentageRank').show();<%
+} else {
+	%>$('#showPercentageRank').hide();<%
+}
+
+if (user.getsTreatment("showTotalCorrectRank")) { 
+	%>$('#showTotalCorrectRank').show();<%
+} else {
+	%>$('#showTotalCorrectRank').hide(); <%
+}
+
+if (user.getsTreatment("showTotalCorrect")) { 
+	%>$('#showTotalCorrect').show();<%
+} else {
+	%>$('#showTotalCorrect').hide(); <%
+}
+
+if (user.getsTreatment("showPercentageCorrect")) { 
+	%>$('#showPercentageCorrect').show();<%
+} else {
+	%>$('#showPercentageCorrect').hide();<%
+}
+%>
+</script>
+
 
 <%@ include file="social-sharing.html" %>
 <%@ include file="google-analytics.html" %>

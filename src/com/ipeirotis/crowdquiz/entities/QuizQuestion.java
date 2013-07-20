@@ -74,6 +74,9 @@ public class QuizQuestion {
 
 	@Persistent
 	private Integer numberOfUserAnswers;
+	
+	@Persistent
+	private Integer numberOfCorrentUserAnswers;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -478,6 +481,14 @@ public class QuizQuestion {
 
 	public void setNumberOfUserAnswers(Integer numberOfUserAnswers) {
 		this.numberOfUserAnswers = numberOfUserAnswers;
+	}
+
+	public Integer getNumberOfCorrentUserAnswers() {
+		return numberOfCorrentUserAnswers;
+	}
+
+	public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
+		this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
 	}
 
 }
