@@ -23,7 +23,6 @@ public class UserAnswer {
 	@Persistent
 	private Long	timestamp;
 	
-	
 	@Persistent
 	private String	ipaddress;
 
