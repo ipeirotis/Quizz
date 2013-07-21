@@ -26,8 +26,6 @@
 	src="https://www.gstatic.com/freebase/suggest/4_1/suggest.min.js"></script>
 
 
-<script src="http://malsup.github.com/jquery.form.js"
-	type="text/javascript"></script>
 
 </head>
 <body>

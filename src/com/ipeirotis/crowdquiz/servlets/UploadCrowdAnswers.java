@@ -25,6 +25,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.ipeirotis.crowdquiz.utils.Helper;
 
 @SuppressWarnings("serial")
 public class UploadCrowdAnswers extends HttpServlet {
@@ -34,15 +35,17 @@ public class UploadCrowdAnswers extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		resp.setContentType("text/plain");
 
+		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String url = baseURL + "/admin/";
+		resp.sendRedirect(url); 
+		
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Relation: " + relation);
-			} else {
+			if (relation == null) {
 				return;
 			}
+
 			
 			BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
 			@SuppressWarnings("deprecation")
@@ -79,8 +82,9 @@ public class UploadCrowdAnswers extends HttpServlet {
 						param("referer", ce.getReferer()).
 						param("timestamp", ce.getTimestamp().toString()).
 						method(TaskOptions.Method.POST));
-
 			}
+			
+
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);

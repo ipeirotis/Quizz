@@ -57,14 +57,14 @@
 
 		
 		<div class="row">
-			<div class="span8 offset2" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
+			<div class="span10 offset1" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
 		</div>
 
 <%
 	if (performance!=null) {
 %>
 		<div class="row" >
-			<div class="span8 offset2" style="color:maroon;font-size:small;background-color: #F4F4F4; border-radius: 5px;">
+			<div class="span10 offset1" style="color:maroon;font-size:small;background-color: #F4F4F4; border-radius: 5px;">
 				<div class="span2" id="showTotalCorrect">#Correct<br><%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%></div>
 				<div class="span2" id="showPercentageCorrect">Correct (%)<br><%=performance.displayPercentageCorrect()%></div>
 				<div class="span2" id="showPercentageRank">Rank (%correct)<br><%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)</div>
@@ -76,7 +76,7 @@
 %>
 
 		<div class="row">
-			<div class="span8 offset2">
+			<div class="span10 offset1">
 				<form id="addUserEntry" action="/processUserAnswer" method="post"
 					style="background-color: #D4D4D4; border-radius: 5px;">
 					<fieldset>
@@ -108,7 +108,7 @@
 										for (String s: answers) {
 						%>
 							<div class="row">
-							<div class="span4 offset2">
+							<div class="span6 offset2">
 							<label class="radio" for="radios-<%=s%>" style="text-align:left">
 							<input style="background-color: #EEEEEE; border-radius: 5px;" type="radio" name="useranswer" id="radios-<%=s%>" value="<%=s%>"><%=s%>
 							</label>
@@ -168,11 +168,12 @@
 			});
 		
 		var result = jQuery.parseJSON(data);
-		if (data.feedback) {
-			alert(data.feedback);
-		}
 		
-        window.location.href = data.url;
+		if (result.showFeedbackURL) {
+       		window.location.href = result.multChoiceURL;
+		} else {
+        	window.location.href = result.feedbackURL;
+        }
         
     }
 	

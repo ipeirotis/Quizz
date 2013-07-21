@@ -53,15 +53,15 @@
 				String correctanswers = request.getParameter("correctanswers");
 
 				if (totalanswers!=null && correctanswers!=null) {
-					Integer t = Integer.parseInt(totalanswers);
-					Integer c = Integer.parseInt(correctanswers);
-					Double p = (t>0)? 1.0*c/t:0.0;
+					Integer t = Integer.parseInt(totalanswers)+1;
+					Integer c = Integer.parseInt(correctanswers)+1;
+					Double p = 1.0*c/t;
 					NumberFormat percentFormat = NumberFormat.getPercentInstance();
 					percentFormat.setMaximumFractionDigits(0);
 					String rate = percentFormat.format(p);
 					%> 
 					The success rate in this question is <%=rate %>.<br>
-					Out of the <%=totalanswers %> users, <%=correctanswers %> answered correctly. 
+					Out of the <%=t.toString() %> users, <%=c.toString() %> answered correctly. 
 					<%
 				} 
 				%>

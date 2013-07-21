@@ -37,14 +37,13 @@ public class UploadGoldAnswers extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		r = resp;
-		r.setContentType("text/plain");
+		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String url = baseURL + "/admin/";
+		resp.sendRedirect(url); 
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Relation: " + relation);
-			} else {
+			if (relation == null) {
 				return;
 			}
 			

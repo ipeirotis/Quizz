@@ -74,6 +74,7 @@ public class GetNumberOfQuizQuestions extends HttpServlet {
 			Query q = pm.newQuery(QuizQuestion.class);
 			q.setFilter("relation == lastNameParam");
 			q.declareParameters("String lastNameParam");
+			@SuppressWarnings("unchecked")
 			List<QuizQuestion> results = (List<QuizQuestion>) q.execute(quiz);
 			Integer numQuestions = results.size();
 			return numQuestions.toString();

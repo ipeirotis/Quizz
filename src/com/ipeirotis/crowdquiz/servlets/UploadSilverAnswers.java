@@ -29,7 +29,6 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 @SuppressWarnings("serial")
 public class UploadSilverAnswers extends HttpServlet {
 
-	private HttpServletResponse	r;
 	private BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
 
 	final static Logger					logger= Logger.getLogger("com.ipeirotis.adcrowdkg");
@@ -37,16 +36,18 @@ public class UploadSilverAnswers extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		r = resp;
-		r.setContentType("text/plain");
+		
+		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String url = baseURL + "/admin/";
+		resp.sendRedirect(url); 
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Relation: " + relation);
-			} else {
+			if (relation == null) {
 				return;
 			}
+			
+			
 			
 			@SuppressWarnings("deprecation")
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
@@ -80,10 +81,6 @@ public class UploadSilverAnswers extends HttpServlet {
 				
 			}
 			
-
-			
-
-
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
 		}

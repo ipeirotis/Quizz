@@ -25,6 +25,9 @@ public class AddQuiz extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("text/plain");
+		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String url = baseURL + "/admin/";
+		resp.sendRedirect(url); 
 
 		try {
 			String relation = req.getParameter("relation");

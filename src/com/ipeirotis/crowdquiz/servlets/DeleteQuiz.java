@@ -30,13 +30,14 @@ public class DeleteQuiz extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		resp.setContentType("text/plain");
+		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String url = baseURL + "/admin/";
+		resp.sendRedirect(url); 
+		
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Deleting Quiz ID: " + relation);
-			} else {
+			if (relation == null) {
 				return;
 			}
 			
@@ -52,12 +53,14 @@ public class DeleteQuiz extends HttpServlet {
 			Query q = pm.newQuery(QuizQuestion.class);
 			q.setFilter("relation == relationParam");
 			q.declareParameters("String relationParam");
+			@SuppressWarnings("unchecked")
 			List<QuizQuestion> questions = (List<QuizQuestion>) q.execute(relation);
 			pm.deletePersistentAll(questions);
 			
 			q = pm.newQuery(GoldAnswer.class);
 			q.setFilter("relation == relationParam");
 			q.declareParameters("String relationParam");
+			@SuppressWarnings("unchecked")
 			List<GoldAnswer> gold = (List<GoldAnswer>) q.execute(relation);
 			pm.deletePersistentAll(gold);
 			
@@ -65,49 +68,19 @@ public class DeleteQuiz extends HttpServlet {
 			q = pm.newQuery(SilverAnswer.class);
 			q.setFilter("relation == relationParam");
 			q.declareParameters("String relationParam");
+			@SuppressWarnings("unchecked")
 			List<SilverAnswer> silver = (List<SilverAnswer>) q.execute(relation);
 			pm.deletePersistentAll(silver);
 			
 			q = pm.newQuery(UserAnswer.class);
 			q.setFilter("relation == relationParam");
 			q.declareParameters("String relationParam");
+			@SuppressWarnings("unchecked")
 			List<UserAnswer> useranswers = (List<UserAnswer>) q.execute(relation);
 			pm.deletePersistentAll(useranswers);
 			
 			pm.close();
 			
-			/*
-			String freebasetype = req.getParameter("fbtype");
-			if (freebasetype != null) {
-				resp.getWriter().println("Answer Freebase-Type: " + freebasetype);
-			} else {
-				return;
-			}
-			*/
-
-
-			String budget = req.getParameter("budget");
-			if (budget != null) {
-				resp.getWriter().println("Budget: " + budget);
-			} else {
-				return;
-			}
-			
-			
-
-			
-			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");
-			
-			// We introduce a delay of a few secs to allow the quiz to be created
-			// and stored to the datastore
-			long delay = 5; // in seconds
-			long etaMillis = System.currentTimeMillis() + delay * 1000L;
-			queueAdCampaign.add(Builder.withUrl("/addCampaign")
-					.param("relation", relation)
-					.param("budget", budget)
-					.method(TaskOptions.Method.POST)
-					.etaMillis(etaMillis));
-
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);

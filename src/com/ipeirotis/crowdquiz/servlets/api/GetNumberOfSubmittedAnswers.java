@@ -35,11 +35,13 @@ public class GetNumberOfSubmittedAnswers extends HttpServlet {
 		}
 
 		@Override
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
       Cache cache;
 
-      Map props = new HashMap();
+      
+			Map props = new HashMap();
       props.put(GCacheFactory.EXPIRATION_DELTA, 30);
 
       try {
@@ -86,6 +88,7 @@ public class GetNumberOfSubmittedAnswers extends HttpServlet {
 			params.put("quizParam", quiz);
 			params.put("useridParam", userid);
       
+			@SuppressWarnings("unchecked")
 			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 			Integer numQuestions = results.size();
 			return numQuestions.toString();

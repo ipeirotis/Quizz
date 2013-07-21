@@ -36,21 +36,20 @@ public class UploadQuestions extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-		r = resp;
-
-		r.setContentType("text/plain");
-
+		
+		// NOTE: The upload servlets should just return a headers-only redirect and nothing else.
 		try {
+
+
+			String baseURL = req.getScheme() + "://" + req.getServerName(); 
+			String url = baseURL + "/admin/";
+			resp.sendRedirect(url); 
+
+			
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Relation: " + relation);
-				resp.getWriter().flush();
-			} else {
-				resp.getWriter().println("No relation specified");
-				resp.getWriter().flush();
+			if (relation == null) {
 				return;
-			}
+			} 
 			
 			@SuppressWarnings("deprecation")
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);

@@ -95,8 +95,6 @@
 			};
 			$.getJSON(url, params)
 			.done(function(response) {
-				console.log("PANOS");
-				console.log(response.questions);
 				element.html(response.questions);
 			});
 		});
@@ -111,8 +109,6 @@
 			};
 			$.getJSON(url, params)
 			.done(function(response) {
-				console.log("PANOS");
-				console.log(response.questions);
 				element.html(response.questions);
 			});
 		});
