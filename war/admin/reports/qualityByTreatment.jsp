@@ -41,9 +41,15 @@
 				<%
 
 					query = pm.newQuery(QuizPerformance.class);
-					query.setFilter("quiz == quizParam");
-					query.declareParameters("String quizParam");
-					List<QuizPerformance> perf = (List<QuizPerformance>) query.execute(relation);
+					List<QuizPerformance> perf = null;
+					if (relation!=null) {
+						query.setFilter("quiz == quizParam");
+						query.declareParameters("String quizParam");
+						perf = (List<QuizPerformance>) query.execute(relation);
+					} else {
+						perf = (List<QuizPerformance>) query.execute();
+					}
+					
 					
 					for (QuizPerformance qp: perf) {
 						User user = null;
@@ -54,7 +60,7 @@
 						}
 						%>
 						<tr>
-							<td><%=relation%></a></td>
+							<td><%=qp.getQuiz()%></a></td>
 							<%
 							for (Treatment t : treatments) {
 								%><td><%=user.getsTreatment(t.getName())%></td><%
