@@ -1,0 +1,1001 @@
+name,mid,weight
+Dizziness,/m/033mg5,353201.0
+Hypertension,/m/0k95h,350724.0
+Vertigo,/m/07rwf2,342994.0
+Urinary tract infection,/m/07x16,324472.0
+Candidiasis,/m/020gv,289162.0
+Diarrhea,/m/0f3kl,260856.0
+Hiccup,/m/02p3nc,256618.0
+Headache,/m/0j5fv,256502.0
+Heartburn,/m/01bfsv,242282.0
+Nosebleed,/m/02zbth,241459.0
+Hypotension,/m/02hvph,234578.0
+Gastroesophageal reflux disease,/m/01b_5g,229043.0
+Canker sore,/m/05frfm,226635.0
+Kidney Stone,/m/09hbx,222890.0
+Hemorrhoids,/m/017f7c,212373.0
+Mouth ulcer,/m/01klhb,207549.0
+Lumbago,/m/020hwm,202790.0
+Type 2 diabetes,/m/0146bp,176634.0
+Migraine,/m/05904,175592.0
+Miscarriage,/m/0127lb,155083.0
+Herpes labialis,/m/05mw4by,147449.0
+Indigestion,/m/04kl78,145119.0
+Epilepsy,/m/02vrr,144022.0
+Acne,/m/0jwqt,141106.0
+Gout,/m/0ffxt,139737.0
+Autism,/m/0gwj,138462.0
+Diabetes mellitus,/m/0c58k,136258.0
+Stroke,/m/02y0js,133948.0
+Constipation,/m/016kf9,128879.0
+Iron deficiency anemia,/m/02tdc5,128610.0
+Cancer,/m/0qcr0,122606.0
+Skin tag,/m/0fktd,120078.0
+Seizure,/m/06rhk,118532.0
+Tonic–clonic seizure,/m/02r6d3v,112987.0
+Type 1 diabetes,/m/0849qj,110868.0
+Fatigue,/m/01j6t0,109645.0
+Major depression,/m/02bft,109621.0
+Alopecia,/m/03bwzh1,108438.0
+Hives,/m/03nky3,108354.0
+Anemia,/m/0lcdk,108191.0
+Atopic dermatitis,/m/06xb9t,107195.0
+Gallstone,/m/01q6mh,105537.0
+Back pain,/m/0142ky,104690.0
+Oral candidiasis,/m/03l35g,104667.0
+Depression,/m/03f_cb,102799.0
+Eczema,/m/0ftzc,97244.0
+Conjunctivitis,/m/0c36_,96133.0
+Tinnitus,/m/0pv6y,95839.0
+Anxiety disorder,/m/0ftsr,95303.0
+Autistic Spectrum Disorders,/m/02p3f5,95222.0
+Peptic ulcer,/m/0h3h4,94490.0
+Nausea,/m/0gxb2,93643.0
+Arthritis,/m/0t1t,93422.0
+Halitosis,/m/025hzf,91047.0
+Erectile dysfunction,/m/03tkm,89418.0
+Hematuria,/m/02sc7d,88044.0
+Pharyngitis,/m/01gkcc,87120.0
+Plantar wart,/m/01tmrp,84722.0
+Appendicitis,/m/0jbx2,83081.0
+Breast cancer,/m/0j8hd,80638.0
+Red eye,/m/04pxm5,79373.0
+Genital wart,/m/019thv,78640.0
+Tachycardia,/m/0156z4,78521.0
+Renal failure,/m/01psyx,78304.0
+Hypercholesterolemia,/m/02k7pj,77674.0
+Generalized anxiety disorder,/m/02zr3h,76388.0
+Down syndrome,/m/029s1,74343.0
+HIV,/m/03p41,73129.0
+Herpes zoster,/m/029577,73075.0
+Sciatica,/m/01_wxr,72791.0
+Charley horse,/m/042j33,72217.0
+Ovarian cyst,/m/01xyfj,72019.0
+Myocardial infarction,/m/0gk4g,71682.0
+Pruritus,/m/04kllm9,69719.0
+Blood in stool,/m/08cmfm,69143.0
+Schizophrenia,/m/06xqq,68671.0
+Asthma,/m/0c78m,68641.0
+Pancreatic cancer,/m/01_qc_,68532.0
+Chronic fatigue syndrome,/m/0dctd,68045.0
+Xerostomia,/m/04d7y3,67865.0
+Alzheimer's disease,/m/0dcsx,67845.0
+Wart,/m/086hz,67434.0
+Anxiety,/m/0k_9,67087.0
+Furuncle,/m/03xp5n,67031.0
+Orthostatic hypotension,/m/0pv4d,66886.0
+Psoriasis,/m/0pv62,66790.0
+Insomnia,/m/0ddwt,66470.0
+Benign paroxysmal positional vertigo,/m/03_mj_,65668.0
+Restless legs syndrome,/m/01jyld,63738.0
+Hypokalemia,/m/03vmt0,62581.0
+Cellulitis,/m/036l45,62442.0
+Hypoglycemia,/m/03gwt,62218.0
+Bell's palsy,/m/0dxdd,61488.0
+Hypothyroidism,/m/0hg11,61307.0
+Pruritus ani,/m/02pq2mj,59555.0
+AIDS,/m/0d19y2,59098.0
+Neonatal jaundice,/m/074hph,58903.0
+Mastodynia,/m/06pp7p,58764.0
+Varicose veins,/m/081dp,58341.0
+Bipolar disorder,/m/01g2q,57740.0
+Bacterial vaginosis,/m/01glh,57012.0
+Leukopenia,/m/03zrfj,56687.0
+Jaundice,/m/0hgxh,56535.0
+Ringworm,/m/023yjf,55536.0
+Pneumonia,/m/0dq9p,55231.0
+Gastroenteritis,/m/03k2qf,54434.0
+Androgenic alopecia,/m/0d5tz0,54115.0
+Rheumatoid arthritis,/m/06g7c,54009.0
+Dysmenorrhea,/m/0255t_,53435.0
+Bacterial pneumonia,/m/03v4ny,52715.0
+Acute pancreatitis,/m/0407gc,52617.0
+Parkinson's disease,/m/0g02vk,51802.0
+Pimple,/m/01fxyp,51727.0
+Multiple sclerosis,/m/0dcqh,51165.0
+Chronic Obstructive Pulmonary Disease,/m/0gzv0,50387.0
+Cervical cancer,/m/0d_bk,50334.0
+Palpitation,/m/029ggh,50069.0
+Cardiovascular disease,/m/02k6hp,49904.0
+Obesity,/m/0fltx,49787.0
+Irregular menstruation,/m/05bm66n,49414.0
+Vaginitis,/m/01vcpr,49325.0
+Edema,/m/0j80c,49237.0
+Panic attack,/m/0g88b,48835.0
+Otalgia,/m/05vywy,48754.0
+Hyponatremia,/m/01b322,48036.0
+Pancreatitis,/m/0h1wz,47880.0
+Angina Pectoris,/m/0hg45,47629.0
+Cough,/m/01b_21,47454.0
+Muscle Spasms,/m/04zjnsf,46403.0
+Herpes simplex,/m/0gxbfm,45226.0
+Cellulite,/m/0265xn,45067.0
+Hypovitaminosis D,/m/054gvqh,44248.0
+Cerebral aneurysm,/m/01g45j,44240.0
+Brain tumor,/m/09969,44097.0
+Amyotrophic lateral sclerosis,/m/017s1k,43986.0
+Female infertility,/m/03bx9gs,43967.0
+Thrombocytopenia,/m/02kgmg,43842.0
+Obsessive-compulsive disorder,/m/0f6gy,43683.0
+Attention deficit hyperactivity disorder,/m/0h99n,43399.0
+Stye,/m/03r92g,43229.0
+Leukemia,/m/04psf,43159.0
+Acute renal failure,/m/03545w,42936.0
+Tonsillitis,/m/03ng0t,42915.0
+Atrial fibrillation,/m/01wf75,42811.0
+Cardiac arrhythmia,/m/01pf6,41995.0
+Obstructive sleep apnea,/m/03m3nd4,41372.0
+Hiatal hernia,/m/01c4wk,41159.0
+Supraventricular tachycardia,/m/03k_qd,41064.0
+Tonsillolith,/m/04cxzt,40372.0
+Hyperthyroidism,/m/03hz0,40149.0
+Hepatitis B,/m/0167bx,39551.0
+Avitaminosis,/m/0q42v,39542.0
+Fibromyalgia,/m/01v3ks,39463.0
+Rickets,/m/06gzp,39402.0
+Peripheral neuropathy,/m/02w1fx,39089.0
+Shin splints,/m/052zyw,39046.0
+Fever,/m/0cjf0,38884.0
+Scabies,/m/074kq,38482.0
+Sickle cell disease,/m/0730g,38344.0
+Chronic renal failure,/m/035482,38330.0
+Borderline personality disorder,/m/0134rc,38149.0
+Sebaceous cyst,/m/04mw5n,38139.0
+Joint pain,/m/021hck,38084.0
+Bunion,/m/01l2ky,37981.0
+Cleft Palate,/m/07y4w6s,37931.0
+Reactive hypoglycemia,/m/05_ndt,37800.0
+Tuberculosis,/m/07jwr,37678.0
+Bradycardia,/m/01r__,37541.0
+Anorexia nervosa,/m/098lw,37312.0
+Rosacea,/m/03chkz,36868.0
+Hepatitis A,/m/01yjzm,36865.0
+Hypogonadism,/m/038k4x,36833.0
+Sinusitis,/m/072hv,36810.0
+Colorectal cancer,/m/01dcqj,35886.0
+Toothache,/m/045c85,35576.0
+Non-alcoholic fatty liver disease,/m/0g0wml,35574.0
+Abdominal obesity,/m/0f8fc,35327.0
+Thrombus,/m/018_rt,34820.0
+Osteoporosis,/m/05mdx,34578.0
+Acute myeloid leukemia,/m/0bx3n7,34547.0
+Otitis media,/m/01fhyk,34208.0
+Hyperkalemia,/m/037h0g,33945.0
+Diverticulosis,/m/035xtl,33774.0
+Cerebral palsy,/m/0dcrb,33707.0
+Meningitis,/m/09d11,33395.0
+Lower gastrointestinal bleeding,/m/097dch,33317.0
+Uterine fibroid,/m/05vry9,32767.0
+Prostate cancer,/m/0m32h,32663.0
+Lymphadenopathy,/m/03yzl6,32637.0
+Crohn's disease,/m/0h1n9,32346.0
+Lung cancer,/m/04p3w,32169.0
+Diverticulitis,/m/035xnj,32122.0
+Hepatitis,/m/09jg8,32047.0
+Glaucoma,/m/0jy0d,32025.0
+Stretch marks,/m/056g4k,31989.0
+Interstitial cystitis,/m/03ywy,31953.0
+Irritable bowel syndrome,/m/01dxg3,31565.0
+Coronary disease,/m/047vl78,31492.0
+Substance dependence,/m/0466pc0,31306.0
+Dementia,/m/09klv,31243.0
+Cataract,/m/0m7h6,31226.0
+Iron deficiency,/m/014x04,31165.0
+Menorrhagia,/m/031c33,31043.0
+Cyst,/m/019rnl,30986.0
+Sleepwalking,/m/01l08f,30879.0
+Viral pneumonia,/m/07fn78,30815.0
+Pre-eclampsia,/m/025lwc,30578.0
+Sleep paralysis,/m/01jb2q,30476.0
+Infertility,/m/018g78,30351.0
+Tension headache,/m/01vnk8,30311.0
+Inguinal hernia,/m/03m_f1,30295.0
+Heart failure,/m/01l2m3,30277.0
+Genital herpes,/m/05m_zpz,30197.0
+Lupus erythematosus,/m/057xmrj,30130.0
+Otitis,/m/0743mf,29918.0
+Bed bug infestation,/m/0ddfslx,29726.0
+Tinea capitis,/m/02p3ym5,29671.0
+Muscle weakness,/m/0927l7,29569.0
+Sudden infant death syndrome,/m/0hc5c,29311.0
+Ulcerative colitis,/m/0h1r3,29253.0
+Deafness,/m/014wq_,28727.0
+Malaria,/m/0542n,28669.0
+Systemic lupus erythematosus,/m/04nz3,28649.0
+Keratoconjunctivitis sicca,/m/03ckn0,28182.0
+Melena,/m/02n2tg,28139.0
+Goitre,/m/036zm,28033.0
+Chlamydia infection,/m/020gd,27945.0
+Azoospermia,/m/06999s,27903.0
+Stuttering,/m/070yw,27888.0
+Bruise,/m/02zpsl,27858.0
+Alopecia areata,/m/016q32,27608.0
+Diplopia,/m/03x17h,27537.0
+Skin rash,/m/0v4rnx,27521.0
+Bronchitis,/m/047gmsk,27300.0
+Hypertriglyceridemia,/m/02_sbz,27256.0
+Male infertility,/m/03bx917,27199.0
+Breast cyst,/m/02qqd82,27175.0
+Ice-cream headache,/m/038y5y,26886.0
+Fatty liver,/m/03s7fs,26886.0
+Hernia,/m/0k48r,26652.0
+Streptococcal pharyngitis,/m/0mztl,26534.0
+Acute bronchitis,/m/01s2xh,26506.0
+Head and neck cancer,/m/0369n2,26004.0
+Amnesia,/m/01j4hd,25981.0
+Spina bifida,/m/01dn_8,25496.0
+Sepsis,/m/014w_8,25404.0
+Childhood obesity,/m/0c9h_6,25397.0
+Gingivitis,/m/01d20w,25303.0
+Metrorrhagia,/m/08_6kp,25282.0
+Staphylococcal infection,/m/04f74_3,25121.0
+Deep vein thrombosis,/m/02r3jk,24602.0
+Hyperglycemia,/m/0kfqw,24563.0
+Infectious mononucleosis,/m/0qjk8,24522.0
+Vitiligo,/m/0hg1d,24509.0
+Paresthesia,/m/023m3v,24360.0
+Delirium,/m/014qfd,24117.0
+Typhoid fever,/m/07s4l,24098.0
+Abdominal aortic aneurysm,/m/03g23y,24033.0
+Fecal incontinence,/m/018h28,23908.0
+Tremor,/m/09d28,23196.0
+Non-Hodgkin lymphoma,/m/0jdj1,23154.0
+Polycystic ovary syndrome,/m/0f5wq,23017.0
+Gastritis,/m/03y91v,22931.0
+Hypothermia,/m/012rps,22899.0
+Onychomycosis,/m/06yxtq,22822.0
+Tinea pedis,/m/03nq53,22781.0
+Body odor,/m/037ywk,22431.0
+Ventricular tachycardia,/m/025v410,22334.0
+Preterm birth,/m/027hpx,22293.0
+Hypoxia,/m/03gns,22118.0
+Muscle pain,/m/013677,22064.0
+Aneurysm,/m/01vpyv,22005.0
+Hodgkin's lymphoma,/m/02qg4h,21934.0
+Ectopic pregnancy,/m/0f5y4,21897.0
+Narcissistic personality disorder,/m/019jq7,21864.0
+Alcoholism,/m/012jc,21819.0
+Ovarian cancer,/m/025hl8,21739.0
+Skin cancer,/m/0h9dj,21598.0
+Thyroid disease,/m/05n00c6,21553.0
+Benign prostatic hyperplasia,/m/0m3cj,21517.0
+Colitis,/m/043hy3,21377.0
+Dermatitis,/m/06x09g,21270.0
+Vaginal discharge,/m/07k9rmb,21210.0
+Human papillomavirus infection,/m/019syx,21184.0
+Dehydration,/m/014961,20696.0
+Mental illness,/m/04x4r,20668.0
+Proteinuria,/m/012zf3,20570.0
+Eating disorder,/m/0fnyw,20569.0
+Carpal tunnel syndrome,/m/0fl_v,20523.0
+Tetanus,/m/0cfb2,20492.0
+Chapped lips,/m/025sqf6,20476.0
+Lipoma,/m/01q9cj,20384.0
+Diabetic neuropathy,/m/02kfps,20272.0
+Pneumothorax,/m/01q1sz,20197.0
+Amenorrhoea,/m/01j62y,20121.0
+Cystic fibrosis,/m/0dcp_,20109.0
+Panic disorder,/m/025s_q_,20085.0
+Dental caries,/m/025j63,20072.0
+Inflammation,/m/0j7_w,20010.0
+Non-small cell lung cancer,/m/0fgjh0,19917.0
+Gestational diabetes,/m/033pgk,19825.0
+Allergy,/m/0fd23,19700.0
+Splenomegaly,/m/03zqp2,19571.0
+Sensorineural hearing loss,/m/04fmz1,19520.0
+Endometriosis,/m/0d_9n,19505.0
+Food poisoning,/m/02m76d,19428.0
+Cardiomegaly,/m/08_51g,19399.0
+Vasovagal response,/m/039y0d,19389.0
+Pityriasis rosea,/m/048p44,19364.0
+Substance abuse,/m/0p_cr,19358.0
+Hematospermia,/m/0bblkc,19352.0
+Anorexia,/m/0brgy,19223.0
+Chronic bacterial prostatitis,/m/043m5kg,19199.0
+Impetigo,/m/0mzty,19172.0
+Prostatitis,/m/0fj2s,18984.0
+Leukocytosis,/m/03btw1,18810.0
+Laryngitis,/m/02l37c,18776.0
+Pulmonary embolism,/m/01ddth,18666.0
+Conductive hearing loss,/m/04fmtx,18628.0
+Liver cancer,/m/03m3vr6,18584.0
+Anal fistula,/m/09nk0t,18500.0
+Gynecomastia,/m/07cszr,18419.0
+Shoulder problem,/m/01ss8j,18243.0
+Nasal congestion,/m/05s5v6,18241.0
+Osteoarthritis,/m/02jf6f,18221.0
+Liver spot,/m/0bv48n,18153.0
+Chickenpox,/m/01r6j,18121.0
+Plantar fasciitis,/m/03kjvy,18110.0
+Acute prostatitis,/m/02qb78z,18066.0
+Hepatitis C,/m/0jdvt,17995.0
+Dyspareunia,/m/01qqq7,17931.0
+Hepatocellular carcinoma,/m/01jgq1,17829.0
+Celiac disease,/m/0h1pq,17776.0
+Papillary thyroid cancer,/m/03gq6tq,17730.0
+Atherosclerosis,/m/0lp66,17714.0
+Scoliosis,/m/0yvgr,17528.0
+Thyroid cancer,/m/011wk5,17384.0
+Retinal detachment,/m/03dww2,17321.0
+Oral cancer,/m/025hkl,17203.0
+Aortic aneurysm,/m/03bnvh,17191.0
+Mydriasis,/m/01dhgh,17149.0
+Breakthrough bleeding,/m/04fjyf,17141.0
+Liver disease,/m/047grmq,17125.0
+Posttraumatic stress disorder,/m/0l8bg,17088.0
+Hypomagnesemia,/m/042f_0,17019.0
+Metabolic acidosis,/m/04tksh,16998.0
+Pelvic inflammatory disease,/m/064fq,16938.0
+Irritant diaper dermatitis,/m/025r6w,16829.0
+Neonatal acne,/m/051zgzv,16633.0
+Melanocytic nevus,/m/0dc28,16623.0
+Dysphagia,/m/01bztl,16613.0
+Lymphoma,/m/0jdk0,16612.0
+Autoimmune Disease,/m/04dx3qn,16377.0
+Post-nasal drip,/m/0615kf,16345.0
+Urinary incontinence,/m/018h13,16288.0
+Colorectal polyp,/m/03cn1dx,16242.0
+Pleurisy,/m/01vnwz,16187.0
+Costochondritis,/m/05k48b,16186.0
+Myopia,/m/0m2w3,16173.0
+Emphysema,/m/0hk18,16159.0
+Bulimia nervosa,/m/016khw,16135.0
+Trigeminal neuralgia,/m/01t91m,16129.0
+Cluster headache,/m/01t391,16128.0
+Premature ventricular contraction,/m/01hjkt,16053.0
+Cradle cap,/m/06c1zl,15966.0
+Hematemesis,/m/02n2t1,15954.0
+Dyslexia,/m/029sk,15932.0
+Chronic bronchitis,/m/03bw_1n,15827.0
+Influenza,/m/0cycc,15825.0
+Temporomandibular joint dysfunction,/m/07k8j,15751.0
+Stomach cancer,/m/01mtqf,15741.0
+Brittle nails,/m/090ryn,15684.0
+Adhesive capsulitis of shoulder,/m/04n8k4,15563.0
+Bubonic plague,/m/03y05ty,15528.0
+Glioblastoma multiforme,/m/03_5ld,15423.0
+Drooling,/m/019bfk,15355.0
+Metabolic alkalosis,/m/025sktj,15312.0
+Cardiac arrest,/m/0gg4h,15304.0
+Fever of unknown origin,/m/0cbb1s,15090.0
+Ascites,/m/01c24r,15041.0
+Contact dermatitis,/m/0337rv,14998.0
+Group B streptococcal infection,/m/08ycm_,14948.0
+Cirrhosis,/m/097ns,14845.0
+Hypercalcaemia,/m/02k540,14754.0
+Common cold,/m/0n073,14691.0
+Phobia,/m/05tf3,14674.0
+High anion gap metabolic acidosis,/m/0523xz8,14417.0
+Testicular cancer,/m/01rt5h,14296.0
+Night terror,/m/0272zb,14247.0
+Blindness,/m/064kj9p,14243.0
+Hypocalcaemia,/m/02k53m,14224.0
+Graves' disease,/m/0dmx6,14198.0
+Spinal disc herniation,/m/0glgtq,14176.0
+Poliomyelitis,/m/068p_,14155.0
+Antisocial personality disorder,/m/01c88f,14114.0
+Malnutrition,/m/01m4w4,13971.0
+Ménière's disease,/m/0fjjk,13948.0
+Black hairy tongue,/m/0781bw,13924.0
+Asperger syndrome,/m/09cds,13761.0
+Sinus tachycardia,/m/06rsny,13690.0
+Foot drop,/m/0bcwy3,13665.0
+Dissociative identity disorder,/m/09wnd,13624.0
+Intestinal Obstruction,/m/01vzqb,13608.0
+Birthmark,/m/01ljf2,13598.0
+Ptosis,/m/0gdsn5,13524.0
+Mental retardation,/m/09fz4,13504.0
+Allergic rhinitis,/m/0c01msq,13339.0
+Cholera,/m/024c2,13331.0
+Otitis externa,/m/04w68t,13328.0
+Social anxiety disorder,/m/0d0g5,13323.0
+Pelvic pain,/m/0754ln,13189.0
+Ingrown hair,/m/0cmmcy,13124.0
+Transient ischemic attack,/m/07s82,13105.0
+Magnesium deficiency,/m/08lnhd,13073.0
+Milium,/m/0527by,13000.0
+Huntington's disease,/m/0cvql,12938.0
+Rhinitis,/m/02mdz9,12933.0
+Labyrinthitis,/m/03m31g,12921.0
+Telangiectasia,/m/0500_3,12896.0
+Right Bundle Branch Block,/m/05_6l9,12872.0
+Acute liver failure,/m/04k10n,12868.0
+Polyp,/m/022v7t,12818.0
+Viral hepatitis,/m/04ggf4p,12800.0
+Essential tremor,/m/02vv2,12780.0
+Color blindness,/m/022xh,12717.0
+Pleural effusion,/m/01z_gp,12701.0
+Atypical trigeminal neuralgia,/m/043rcyk,12666.0
+Somniloquy,/m/06m3x4,12665.0
+Vaginismus,/m/01p7c_,12614.0
+Gingival recession,/m/0dr8s9,12587.0
+Angular cheilitis,/m/099686,12514.0
+Leprosy,/m/0c5f7,12512.0
+Lactic acidosis,/m/01l2sf,12471.0
+Abscess,/m/0lxt,12457.0
+Bartholin's cyst,/m/025vt6,12387.0
+Bruxism,/m/0149nm,12384.0
+Motor neuron disease,/m/0kh3,12365.0
+Epididymitis,/m/02h2lg,12314.0
+Periodontal disease,/m/0yvzp,12188.0
+Astigmatism,/m/0chf1d,12126.0
+Cancer of the larynx,/m/021plp,12080.0
+Thyroid nodule,/m/05l6q9,11969.0
+Nasal polyp,/m/034hsj,11947.0
+Uveitis,/m/040_ch,11939.0
+Cherry hemangioma,/m/04htqz,11917.0
+Gonorrhea,/m/0mh4s,11887.0
+Ganglion cyst,/m/01xnxc,11885.0
+Trismus,/m/01fgvy,11832.0
+Nystagmus,/m/01skrq,11601.0
+Hammer toe,/m/03vwp3,11599.0
+Nocturnal enuresis,/m/01wy8y,11581.0
+Miliaria,/m/04hxwb,11541.0
+Sexually transmitted disease,/m/074c1,11512.0
+Dysentery,/m/0h3bn,11496.0
+Tendonitis,/m/01kcp2,11489.0
+Tennis elbow,/m/03tkg7,11413.0
+Melanoma,/m/035b2g,11373.0
+Abdominal distension,/m/09d7vk,11349.0
+Spasmodic torticollis,/m/02p74qn,11321.0
+Blepharospasm,/m/08k14_,11282.0
+Tourette syndrome,/m/0fm5n,11184.0
+Burning feet syndrome,/m/0btcb4,11157.0
+Renal cell carcinoma,/m/025hh9,11073.0
+Onychocryptosis,/m/0476hh,10997.0
+Liver failure,/m/02psvcf,10962.0
+Somnolence,/m/0311pr,10926.0
+Dilated cardiomyopathy,/m/02vv55,10851.0
+Narcolepsy,/m/05dmm,10802.0
+Endometrial polyp,/m/03bx4wx,10746.0
+Syphilis,/m/074m2,10720.0
+Braxton Hicks contractions,/m/03_81f,10716.0
+Seborrheic dermatitis,/m/02cvvl,10654.0
+Internal bleeding,/m/02xb32,10631.0
+Macular degeneration,/m/03mmxd,10531.0
+Periodontitis,/m/0jt43f1,10508.0
+Bone pain,/m/06q_c0,10506.0
+Necrotizing fasciitis,/m/01q6nb,10463.0
+Anal fissure,/m/02gscl,10445.0
+Haemophilia,/m/03myr,10430.0
+Thrombosis,/m/018_pw,10424.0
+Geographic tongue,/m/08xkh8,10384.0
+Esophageal cancer,/m/01k9gb,10317.0
+Trichomoniasis,/m/0m72x,10264.0
+Dengue fever,/m/09wsg,10254.0
+Albinism,/m/0122t,10241.0
+Loss of smell,/m/0m7pl,10192.0
+Candidal vulvovaginitis,/m/05szxnc,10185.0
+Infectious disease,/m/03tp4,10183.0
+Food allergy,/m/03282z,10164.0
+Graves' ophthalmopathy,/m/0fl3qm,10137.0
+Paranoid personality disorder,/m/033j3r,10113.0
+Lymphedema,/m/04r36,10102.0
+Hashimoto's thyroiditis,/m/030mph,10052.0
+Guillain-Barré syndrome,/m/0370f,10039.0
+Idiopathic thrombocytopenic purpura,/m/02153r,10032.0
+Histrionic personality disorder,/m/018tsx,10028.0
+Premature ovarian failure,/m/0ch1p6,9962.0
+Atrial Premature Complex,/m/04kgzqg,9958.0
+Folliculitis,/m/0259tt,9944.0
+Keratosis pilaris,/m/04h12y,9911.0
+Bladder cancer,/m/01bcp7,9895.0
+Trigger finger,/m/01nzkk,9863.0
+Placental abruption,/m/0508hk,9848.0
+Raynaud's phenomenon,/m/02v2jk,9783.0
+Pulmonary edema,/m/0260ph,9774.0
+Blister,/m/01k1jq,9735.0
+Pulmonary hypertension,/m/031wv7,9624.0
+Purpura,/m/04c2m8,9530.0
+Hydrocephalus,/m/01cw5r,9526.0
+Cerebral hemorrhage,/m/08g5q7,9497.0
+Callus,/m/01l2l9,9490.0
+Watery eyes,/m/02r3mv3,9490.0
+Carbon monoxide poisoning,/m/02gkhm,9478.0
+Hyperpigmentation,/m/046z7d,9445.0
+Hyperthermia,/m/0k10t,9438.0
+Anal cancer,/m/02vxm4,9394.0
+Gastroparesis,/m/02w1n2,9372.0
+Blepharitis,/m/03b708,9298.0
+Cerebral hypoxia,/m/05sqjw,9298.0
+Mastitis,/m/023vvb,9224.0
+Psychopathy,/m/017zj8,9219.0
+Dwarfism,/m/010vmq,9214.0
+Multiple myeloma,/m/01qqwn,9145.0
+Viral meningitis,/m/05n0276,9075.0
+Polymyalgia rheumatica,/m/05l42g,9065.0
+Sleep apnea,/m/071d3,9014.0
+Spinal stenosis,/m/030cb2,8940.0
+Greater trochanteric pain syndrome,/m/026m45t,8924.0
+Polyphagia,/m/03gncj,8907.0
+Cervical polyp,/m/03ckw2w,8872.0
+Hemolytic anemia,/m/02skgx,8855.0
+Cardiomyopathy,/m/0chk3,8854.0
+Piriformis syndrome,/m/046b5d,8845.0
+Postpartum depression,/m/017qg_,8821.0
+Varicocele,/m/05144q,8813.0
+Psychosis,/m/063yv,8808.0
+Motion sickness,/m/0gxcc,8806.0
+Perioral dermatitis,/m/0989vr,8797.0
+Sabinas brittle hair syndrome,/m/026tgm,8736.0
+"Hand, foot and mouth disease",/m/0175qf,8688.0
+Angioedema,/m/03tlvj,8636.0
+Glossodynia,/m/03_3c6,8633.0
+Measles,/m/0g2gb,8621.0
+Henoch–Schönlein purpura,/m/03ctwd,8603.0
+Umbilical hernia,/m/08q1cz,8479.0
+Hypernatremia,/m/03xr5j,8428.0
+Mucosal lichen planus,/m/05fc4h8,8404.0
+Paranoia,/m/063zb,8372.0
+Salmonellosis,/m/0418dc,8332.0
+Alveolar osteitis,/m/04wdxg,8313.0
+Lactose intolerance,/m/0fp3b,8304.0
+Neutropenia,/m/01j66c,8205.0
+Calcaneal spur,/m/025t1sl,8197.0
+Sprained ankle,/m/025tl48,8173.0
+Melasma,/m/04z9bf,8157.0
+Muscular dystrophy,/m/04snn,8132.0
+Dyshidrosis,/m/05vs7s,8115.0
+Rheumatic fever,/m/0259gp,8094.0
+Lichen planus,/m/03nfsv,8083.0
+Club foot,/m/02pbss,8082.0
+Tinea versicolor,/m/0259ng,8081.0
+Urinary retention,/m/045y32,8068.0
+Amoebic dysentery,/m/07s9t_7,8062.0
+Amblyopia,/m/02s64_,8058.0
+Olecranon bursitis,/m/026mqd8,8051.0
+Tinea cruris,/m/0259ln,8044.0
+Bursitis,/m/034z18,8029.0
+Hyperparathyroidism,/m/0343bb,7991.0
+Toxic shock syndrome,/m/0221fx,7977.0
+Interstitial lung disease,/m/05504g,7961.0
+Respiratory acidosis,/m/04tkvk,7923.0
+Encephalitis,/m/09c_t,7888.0
+Insulin resistance,/m/0f6yg,7869.0
+Viral encephalitis,/m/05pd912,7856.0
+Creutzfeldt–Jakob disease,/m/01ptn,7841.0
+Mood disorder,/m/0drn8,7819.0
+Septic shock,/m/029mr9,7791.0
+Balance disorder,/m/0180jb,7767.0
+Myasthenia gravis,/m/04st8,7726.0
+Peripheral edema,/m/06v6kk,7693.0
+Genu varum,/m/03pk5z,7660.0
+Familial hypocalciuric hypercalcemia,/m/05q6_bn,7656.0
+Muscle atrophy,/m/0dds0h,7624.0
+Anembryonic gestation,/m/04cw04,7580.0
+Dermatographic urticaria,/m/06djbj,7574.0
+Rhabdomyolysis,/m/01j9rp,7561.0
+Hypersomnia,/m/03cfcn,7536.0
+Rabies,/m/0fsd1,7512.0
+Anorectal abscess,/m/027gcqw,7435.0
+Bipolar II disorder,/m/03cxsx9,7426.0
+Coronary artery disease,/m/01s1m,7396.0
+Mumps,/m/0g3xk,7279.0
+Pericarditis,/m/032snl,7252.0
+Gangrene,/m/01jj75,7226.0
+Pressure ulcer,/m/03ncwn,7135.0
+Chalazion,/m/03gf8g,7104.0
+Osteosarcoma,/m/01t12j,7046.0
+Progeria,/m/01d3l1,7038.0
+Metabolic syndrome,/m/0f6wd,7025.0
+Polycythemia vera,/m/02vk5_b,7014.0
+Respiratory alkalosis,/m/025s3md,7005.0
+Kyphosis,/m/02jrl1,6986.0
+Atrial flutter,/m/02xqjq,6953.0
+Placenta praevia,/m/03nvt0,6936.0
+Thrombotic thrombocytopenic purpura,/m/02dp3g,6918.0
+Left Bundle Branch Block,/m/09k76g,6909.0
+Flat feet,/m/0445c5,6891.0
+Diabetes insipidus,/m/0c5s4,6881.0
+Obstetric fistula,/m/01hn1j,6872.0
+Polycythemia,/m/02k88f,6865.0
+Dystonia,/m/02_x8m,6850.0
+Hematological malignancy,/m/02vn0j,6847.0
+Immunodeficiency,/m/02yg4w,6841.0
+Degenerative disc disease,/m/04prc2,6829.0
+Gas gangrene,/m/07xwhc,6810.0
+Cushing's syndrome,/m/0mzm2,6788.0
+Vision loss,/m/04t973,6774.0
+Lyme disease,/m/01kcry,6764.0
+Turner syndrome,/m/0d4gq,6748.0
+Pyelonephritis,/m/04_rt_,6732.0
+Infective endocarditis,/m/05c607h,6726.0
+Photophobia,/m/02lv8g,6716.0
+Nasal septum deviation,/m/05cz29,6714.0
+Specific phobia,/m/0hm9t,6693.0
+Beau's lines,/m/069j_5,6686.0
+Yellow fever,/m/087z2,6685.0
+Hyperventilation syndrome,/m/02v52j,6685.0
+Fistula,/m/01dx9c,6675.0
+Nocturia,/m/0868jh,6662.0
+Keloid,/m/015j4f,6658.0
+Neutrophilia,/m/01jjvn,6639.0
+Elephantiasis,/m/01d_07,6611.0
+Scarlet fever,/m/0mzt3,6603.0
+Pancytopenia,/m/063jn6,6575.0
+Eosinophilia,/m/01jmy5,6548.0
+Renal Cancer,/m/02kby42,6518.0
+Paralysis,/m/05sj8,6502.0
+Scurvy,/m/07016,6492.0
+Nipple discharge,/m/04696g,6478.0
+Floater,/m/018j1l,6471.0
+Rectovaginal fistula,/m/03q7gn,6465.0
+Edwards syndrome,/m/0287xs,6465.0
+Granuloma annulare,/m/0cvpr9,6456.0
+Allergic conjunctivitis,/m/04v6d0,6454.0
+Mycosis,/m/058g6_,6415.0
+Bone tumor,/m/01t125,6389.0
+Scintillating scotoma,/m/0d_98y,6389.0
+Baker's cyst,/m/036dlx,6359.0
+Strabismus,/m/02s645,6297.0
+Adult attention deficit hyperactivity disorder,/m/05mbnv,6255.0
+Hypotonic hyponatremia,/m/05zwjgv,6247.0
+Breast lump,/m/080fvq7,6215.0
+Croup,/m/01t5c7,6211.0
+Trichotillomania,/m/0h_8y,6208.0
+Dysphonia,/m/07_7w6,6187.0
+Personality disorder,/m/01c896,6154.0
+Hypopigmentation,/m/048hpn,6146.0
+Congenital disorder,/m/01vj_9,6141.0
+Tooth abscess,/m/027pm63,6091.0
+Malabsorption,/m/03f07j,6023.0
+Overactive bladder,/m/027hvwb,5999.0
+Dysarthria,/m/03ygz2,5997.0
+Smallpox,/m/06vr2,5967.0
+Bovine spongiform encephalopathy,/m/0jy66,5929.0
+Oppositional defiant disorder,/m/086q2q,5924.0
+Hydrocele,/m/04vy02,5888.0
+Syndrome of inappropriate antidiuretic hormone secretion,/m/03zzcc,5881.0
+Heterochromia iridum,/m/02w_rc,5866.0
+Proctalgia fugax,/m/0b9_fz,5836.0
+Nephrogenic diabetes insipidus,/m/05qb94y,5833.0
+Pediculosis capitis,/m/04glp3v,5829.0
+Essential thrombocytosis,/m/03md98,5819.0
+Aplastic anemia,/m/01bw86,5798.0
+Peanut allergy,/m/085pjw,5786.0
+Shock,/m/012n6d,5786.0
+Avoidant personality disorder,/m/01_4_n,5747.0
+Frontotemporal dementia,/m/0319wk,5746.0
+Yellow nail syndrome,/m/091w95,5730.0
+Pedophilia,/m/0g1x2_,5729.0
+Premenstrual syndrome,/m/01fxrj,5724.0
+Premature rupture of membranes,/m/070s6k,5717.0
+Diabetic ketoacidosis,/m/0fmk8,5715.0
+Ataxia,/m/0l95,5693.0
+Pilonidal cyst,/m/0238df,5668.0
+Dupuytren's contracture,/m/036l18,5639.0
+Rectal prolapse,/m/03080q,5604.0
+Fibroadenoma,/m/05m0k8,5596.0
+Nephrotic syndrome,/m/01n597,5579.0
+Oliguria,/m/04b1kq,5578.0
+Thrombocytosis,/m/03btxg,5570.0
+Binge eating disorder,/m/01t6ky,5564.0
+Uterine prolapse,/m/05c61r5,5557.0
+Hirsutism,/m/0ps0b,5509.0
+Cauliflower ear,/m/04bjtp,5502.0
+Rheumatism,/m/02tds8,5472.0
+Gastrointestinal bleeding,/m/03njtl,5455.0
+Hydrocele testis,/m/02ckqx,5454.0
+Third degree heart block,/m/02zcgm,5426.0
+Dysfunctional uterine bleeding,/m/04cslz,5410.0
+Normal pressure hydrocephalus,/m/0421qr,5402.0
+Premenstrual dysphoric disorder,/m/02sqpm,5384.0
+Hyperopia,/m/0248jp,5373.0
+Sarcoidosis,/m/01q5y6,5346.0
+Substance use disorder,/m/0b__q89,5334.0
+Glomerulonephritis,/m/04gfv_,5313.0
+Pertussis,/m/016ygs,5308.0
+Anaphylaxis,/m/0jtyb,5288.0
+First degree heart block,/m/0312q7,5274.0
+Endocarditis,/m/02mqb,5261.0
+Neuralgia,/m/05kzxm,5248.0
+Peritonitis,/m/011zdm,5245.0
+Alcohol abuse,/m/025s7td,5241.0
+Gallbladder disease,/m/080jhsv,5240.0
+Concussion,/m/023ndx,5214.0
+Acute pericarditis,/m/0c9kg4,5214.0
+Pernicious anemia,/m/02mzv1,5197.0
+Hypotonia,/m/03wbww,5194.0
+Uterine cancer,/m/0259pl,5190.0
+Hyperlipidemia,/m/05f45h,5187.0
+Erythema nodosum,/m/08fm2f,5185.0
+Addison's disease,/m/01xtf2,5174.0
+Botulism,/m/0b02k,5142.0
+Cholangiocarcinoma,/m/03v9q6,5135.0
+Blood blister,/m/05zy6c,5091.0
+Acidosis,/m/02gwty,5091.0
+Vasculitis,/m/0317gc,5077.0
+Menopause,/m/0d5t6,5073.0
+Endometrial cancer,/m/0259rv,5053.0
+Anencephaly,/m/01hr6t,5043.0
+Optic neuritis,/m/05pzb,5022.0
+Generalized lymphadenopathy,/m/02q4r8d,4974.0
+Sudden cardiac death,/m/0d_mn0,4973.0
+Adrenal fatigue,/m/0403mf5,4960.0
+Gluten sensitivity,/m/02vmndb,4956.0
+Multi-infarct dementia,/m/01h3g2,4951.0
+Intrauterine growth restriction,/m/05pdffb,4925.0
+Vitamin A deficiency,/m/025_whb,4920.0
+Gastrointestinal perforation,/m/06hw8z,4906.0
+Menstrual disorder,/m/0b5pfn,4902.0
+Agoraphobia,/m/0fv1r,4863.0
+Acute lymphoblastic leukemia,/m/03fqwr,4833.0
+Genu valgum,/m/03pjz0,4826.0
+Sleep disorder,/m/0cnmb,4820.0
+Torticollis,/m/01q136,4818.0
+Transient global amnesia,/m/02p79_f,4793.0
+Coma,/m/01qw1,4783.0
+Cerebral edema,/m/0219bz,4766.0
+Seborrheic keratosis,/m/04htz4,4738.0
+Parkinsonism,/m/0dcs4,4726.0
+Chronic inflammatory demyelinating polyneuropathy,/m/0cg7ym,4723.0
+Angelman syndrome,/m/0fbhc,4683.0
+Hemangioma,/m/03jcdy,4638.0
+Primary hyperparathyroidism,/m/079nq0,4636.0
+Morton's neuroma,/m/08qjq6,4630.0
+Mittelschmerz,/m/016d_p,4585.0
+Osteomyelitis,/m/02tm23,4578.0
+Nightmare disorder,/m/032_z3,4566.0
+Stevens–Johnson syndrome,/m/072zr,4565.0
+Osteomalacia,/m/02npcz,4559.0
+Traumatic brain injury,/m/0428cn,4555.0
+Pericardial effusion,/m/08z994,4544.0
+Peyronie's disease,/m/012tt4,4544.0
+Strain,/m/0868zd,4544.0
+Avascular necrosis,/m/0563k0,4540.0
+Fissured tongue,/m/09xsw9,4538.0
+Biliary colic,/m/026stnc,4538.0
+Long QT syndrome,/m/01_q_r,4532.0
+Dermatosis,/m/08cqsh,4512.0
+Bacillary dysentery,/m/05c62tb,4492.0
+Radiculopathy,/m/02pfkpc,4478.0
+Tumor,/m/07p3l,4459.0
+Cystitis,/m/0373y8,4444.0
+Chondromalacia patellae,/m/067_bq,4427.0
+Ileus,/m/0443mq,4419.0
+Papilledema,/m/01c9lj,4418.0
+Hypoalbuminemia,/m/09bl05,4413.0
+Bronchiectasis,/m/01w_2w,4412.0
+Testicular torsion,/m/01pw5r,4401.0
+Macrocytic anemia,/m/03d7y8x,4398.0
+Knee arthritis,/m/0b6jspr,4392.0
+Upper respiratory tract infection,/m/02wmyj,4387.0
+Hypovolemia,/m/02hwb2,4373.0
+Neurogenic diabetes insipidus,/m/05p7ly5,4363.0
+Arteriosclerosis,/m/03hfsv1,4359.0
+Molluscum contagiosum,/m/0254yv,4355.0
+Phlebitis,/m/03rwrr,4328.0
+Pruritic urticarial papules and plaques of pregnancy,/m/0cmq67,4305.0
+Left ventricular hypertrophy,/m/04dxph,4288.0
+Diphtheria,/m/0g2q5,4275.0
+Problem gambling,/m/05bf51,4274.0
+Thrombophlebitis,/m/054yph,4269.0
+Liver tumour,/m/01n3bm,4258.0
+Venous thrombosis,/m/01dzks,4256.0
+Precocious puberty,/m/02_nx2,4254.0
+Congenital heart defect,/m/03k22s,4251.0
+Dermoid cyst,/m/02tpk7,4245.0
+Bone fracture,/m/03fz1q,4231.0
+Diffuse esophageal spasm,/m/0gydnd,4216.0
+Microcytic anemia,/m/06nx_1,4205.0
+Lichen sclerosus,/m/04dm4l,4183.0
+Recurrent miscarriage,/m/04cv98,4156.0
+Swine influenza,/m/057c6k,4148.0
+Joint stiffness,/m/088b11,4128.0
+Mucous cyst of the oral mucosa,/m/08zh5q,4119.0
+Group A streptococcal infection,/m/0g0b2,4108.0
+Thoracic aortic aneurysm,/m/05c5zwd,4103.0
+Macrocytosis,/m/07np_0,4100.0
+Paraplegia,/m/0251gx,4099.0
+Cervicitis,/m/020v3l,4095.0
+Lymphocytopenia,/m/08z6j9,4092.0
+Ventricular fibrillation,/m/0193gy,4084.0
+Febrile seizure,/m/013q86,4073.0
+Hydronephrosis,/m/05t8mv,4060.0
+Sunburn,/m/015slp,4042.0
+Depersonalization disorder,/m/0534j3,4033.0
+Subdural hematoma,/m/036slc,4032.0
+Nerve compression syndrome,/m/080py3g,4027.0
+Maternal death,/m/01zn8_,4027.0
+Kawasaki disease,/m/040k6g,4024.0
+Polyhydramnios,/m/03w162,4022.0
+Lordosis,/m/03_039,4009.0
+Mitral valve prolapse,/m/02np4g,4005.0
+Developmental disability,/m/06xd3t,3998.0
+Hypochondriasis,/m/04c_jpd,3978.0
+Passive-aggressive behavior,/m/048n0j,3976.0
+Non-gonococcal urethritis,/m/01qmrl,3964.0
+Cervical ectropion,/m/02615nk,3949.0
+Upper gastrointestinal bleeding,/m/02n2jh,3949.0
+Tay–Sachs disease,/m/0fm54,3931.0
+Phenylketonuria,/m/05sgs,3925.0
+Secondary hypertension,/m/08jdw1,3924.0
+Atelectasis,/m/04d83y,3904.0
+Renal glycosuria,/m/02qvpsp,3896.0
+Temporal arteritis,/m/07s7n,3892.0
+Pain,/m/062t2,3888.0
+Aphasia,/m/0wnw,3856.0
+Polycystic kidney disease,/m/04_1hvw,3851.0
+Tic,/m/02gpbb,3850.0
+Iron overload,/m/02n_ct,3843.0
+Autoimmune hemolytic anemia,/m/0b1p89,3833.0
+Idiopathic intracranial hypertension,/m/0692j,3828.0
+Transsexualism,/m/0hpkp,3822.0
+Esophageal varices,/m/0340vp,3813.0
+Facial nerve paralysis,/m/04mpk9,3798.0
+Hypertensive emergency,/m/083f6p,3789.0
+Beriberi,/m/01fxk4,3785.0
+Mental confusion,/m/06kqbx,3776.0
+Postpartum hemorrhage,/m/09rvyz7,3774.0
+Kwashiorkor,/m/04bhy,3742.0
+Torus mandibularis,/m/0d5gym,3727.0
+Mitral regurgitation,/m/03k3ys,3722.0
+Tick-borne encephalitis,/m/066wn9,3718.0
+Anovulation,/m/0336py,3706.0
+Heart block,/m/031q2c,3703.0
+Infection,/m/098s1,3700.0
+Legionellosis,/m/0ht05,3700.0
+Benign fasciculation syndrome,/m/0152jr,3700.0
+Portal hypertension,/m/034h9r,3698.0
+Dysthymia,/m/04qrp_,3672.0
+Nyctalopia,/m/04970l,3659.0
+Hypogonadotropic hypogonadism,/m/0j_33wy,3657.0
+Peripheral vascular disease,/m/02gm18,3657.0
+Aspiration pneumonia,/m/05htgj,3634.0
+Steatorrhea,/m/03_7qy,3634.0
+Torus palatinus,/m/0dkmbz,3624.0
+Tardive dyskinesia,/m/01vl0h,3619.0
+Pulseless electrical activity,/m/04wymw,3599.0
+Disseminated intravascular coagulation,/m/01jjrv,3558.0
+Photodermatitis,/m/03c2dk,3545.0
+Sacroiliitis,/m/08chg1,3544.0
+Webbed toes,/m/0gdnk6,3524.0
+Hypersalivation,/m/0fpjgc1,3521.0
+Sjögren's syndrome,/m/0gcfd,3519.0
+Chondrocalcinosis,/m/04t1vl,3508.0
+Prepatellar bursitis,/m/0f38qy,3477.0
+Hematoma,/m/032ssz,3474.0
+Selective mutism,/m/04k9zv,3466.0
+Delusional disorder,/m/01l7xz,3463.0
+Aortic stenosis,/m/01blcz,3433.0
+Iliotibial band syndrome,/m/0ht1p,3428.0
+Absence seizure,/m/020cs5,3424.0
+Klinefelter syndrome,/m/0dxq1,3402.0
+Vitamin B12 deficiency,/m/02x2xmj,3397.0
+Anemia of chronic disease,/m/076pm9,3366.0
+Fragile X syndrome,/m/0dyrs,3355.0
+Hand eczema,/m/056mynh,3350.0
+Insanity,/m/0135vc,3336.0
+Monocytosis,/m/01jmzt,3331.0
+Genetic disorder,/m/03896,3323.0
+Gallbladder cancer,/m/06trxr,3322.0
+Chronic prostatitis/chronic pelvic pain syndrome,/m/043jxv5,3318.0
+Post-polio syndrome,/m/021msy,3308.0
+Venous ulcer,/m/08slm7,3292.0
+Horner's syndrome,/m/04v0fj,3284.0
+Autoimmune hepatitis,/m/043ttbm,3281.0
+Fetal alcohol syndrome,/m/02p2f_4,3254.0
+Polydactyly,/m/01bb3r,3252.0
+Eosinophilic esophagitis,/m/0bhp42,3230.0
+Lymphocytosis,/m/01jn3l,3221.0
+Acute respiratory distress syndrome,/m/02fv1m,3218.0
+Gulf War syndrome,/m/0dcxw,3217.0
+Achalasia,/m/019wfl,3215.0
+Koilonychia,/m/0gj4qx,3214.0
+Catarrh,/m/0403w_,3213.0
+Thyroiditis,/m/08vy6d,3209.0
+Scleroderma,/m/05m_zv2,3192.0
+Atypical facial pain,/m/0h97r9m,3192.0
+Developmental dyspraxia,/m/02rbmx,3167.0
+Avian influenza,/m/0292d3,3165.0
+Basal-cell carcinoma,/m/033jjt,3162.0
+Inflammatory bowel disease,/m/02x0yg,3142.0
+Kleptomania,/m/02891s,3139.0
+Subarachnoid hemorrhage,/m/035h27,3133.0
+Pseudofolliculitis barbae,/m/05g94f,3132.0
+Vision disorder,/m/04jmzm5,3131.0
+Hypospadias,/m/021xc6,3104.0
+Complex partial seizure,/m/06vvtk,3103.0
+Tic disorder,/m/08bx2t,3097.0
+Priapism,/m/0ldwy,3093.0
+Zinc deficiency,/m/03cndsk,3086.0
+Essential hypertension,/m/064r6sk,3086.0
+Oligohydramnios,/m/03bx1md,3068.0
+Esophagitis,/m/01b_b2,3067.0
+Duchenne muscular dystrophy,/m/03vsh3,3056.0
+Body dysmorphic disorder,/m/020b0k,3054.0
+Gastric dumping syndrome,/m/04ynvh,3050.0
+Electric shock,/m/01f1lm,3049.0
+Nummular dermatitis,/m/04hm2_,3047.0
+Exophthalmos,/m/05mjhy,3033.0
+Gigantism,/m/01jmvq,3033.0
+Epiretinal membrane,/m/02q29tq,3033.0
+Asthenopia,/m/07v7rh,3024.0
+Conjoined twins,/m/0nqkm,3018.0
+Subconjunctival hemorrhage,/m/049j33,3003.0
+Respiratory disease,/m/08nhwb,3001.0
+Inclusion body myositis,/m/03_1n,2989.0
+Meningism,/m/04v_ml,2967.0
+Cholecystitis,/m/01sfxk,2966.0
+Ebola,/m/0frm3,2965.0
+Clubbed thumb,/m/0h6smv,2963.0
+Gastroschisis,/m/04hsdf,2960.0
+Demyelinating disease,/m/039wr4,2959.0
+Thoracic outlet syndrome,/m/038zmf,2941.0
+Depersonalization,/m/01zn1_,2936.0
+Malocclusion,/m/06r0ps,2921.0
+Complex regional pain syndrome,/m/0fl51,2917.0
+Allergic contact dermatitis,/m/0bwl048,2909.0
+Ankylosing spondylitis,/m/02gwg9,2900.0
+Scotoma,/m/03gzmf,2887.0
+Morgellons,/m/054hn2,2881.0
+Black eye,/m/065wv1,2865.0
+Cervical intraepithelial neoplasia,/m/08nsgq,2859.0
+Hyperprolactinaemia,/m/01tynm,2857.0
+Mania,/m/05417,2853.0
+Skin ulcer,/m/01klgg,2850.0
+Water-electrolyte imbalance,/m/03nkmb,2847.0
+Specific developmental disorder,/m/06ym_2,2828.0
+Alcoholic liver disease,/m/01snkw,2826.0
+Erythema multiforme,/m/03s352,2824.0
+Dermatillomania,/m/073q8n,2813.0
+Oxidative stress,/m/06qhr2,2811.0
+Diabetic foot ulcer,/m/064p1q4,2803.0
+Glossitis,/m/07ckc_,2800.0
+Seasickness,/m/04srvc,2796.0
+Claustrophobia,/m/01qrty,2796.0
+Non-communicable disease,/m/0gnjv4,2787.0
+Hidradenitis suppurativa,/m/02rxy7,2779.0
+Mixed anxiety-depressive disorder,/m/04zvmg2,2772.0
+Malignant hyperthermia,/m/035pwp,2772.0
+Myositis,/m/08_nfn,2767.0
+Cervical incompetence,/m/08dqh0,2766.0
+Urethritis,/m/07wvs,2754.0
+Dissociative disorder,/m/07bc25,2754.0
+Myelodysplastic syndrome,/m/019gky,2754.0
+Conversion disorder,/m/03l954,2751.0
+Multiple organ dysfunction syndrome,/m/03hnn3,2746.0
+Atheroma,/m/03fv5k,2745.0
+Delirium tremens,/m/0fpnjr,2730.0
+Liver abscess,/m/02qgwdq,2707.0
+Hydatidiform mole,/m/03yy47,2686.0
+Cholesterol embolism,/m/0464hy7,2685.0
+Livedo reticularis,/m/08wrk9,2678.0
+Balanitis,/m/0254ks,2666.0
+Megaloblastic anemia,/m/04_235,2664.0
+Wrist drop,/m/01_2kb,2660.0
+Cavernous hemangioma,/m/0k0v67j,2660.0
+Intrahepatic cholestasis of pregnancy,/m/0h7tbf,2659.0
+Paraphimosis,/m/01bqwy,2654.0
+Pituitary adenoma,/m/03xdwt,2654.0
+Simple partial seizure,/m/02p7ncl,2648.0
+Pica,/m/01b8zz,2639.0
+Vestibular schwannoma,/m/03y9w6,2620.0
+African trypanosomiasis,/m/011m2q,2608.0
+Hypoplastic left heart syndrome,/m/05xvps,2604.0
+Drug-induced lupus erythematosus,/m/01xn0xx,2601.0
+Diabetic coma,/m/014590,2598.0
+Hydrops fetalis,/m/05s55d,2597.0
+Female genital prolapse,/m/07kyr1,2596.0
+Chromosome abnormality,/m/0g4fqn,2593.0
+Ischaemic heart disease,/m/0gjbx0w,2592.0

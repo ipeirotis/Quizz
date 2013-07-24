@@ -1,0 +1,999 @@
+name,mid,weight
+Eminem,/m/01vsgrn,467914.0
+Daft Punk,/m/016j7m,449519.0
+Kanye West,/m/02l840,304488.0
+Jay-Z,/m/01vw20h,145915.0
+Drake,/m/05mt_q,131170.0
+J. Cole,/m/065zh2l,95560.0
+Paramore,/m/09lwrt,92988.0
+Mac Miller,/m/0dln428,84352.0
+Tool,/m/07m7k,82744.0
+Justin Timberlake,/m/0j1yf,75004.0
+Avenged Sevenfold,/m/041f35,72230.0
+Beyoncé,/m/01mpq7s,61981.0
+Black Sabbath,/m/01czx,60992.0
+Ozzy Osbourne,/m/01vtqml,60918.0
+Vampire Weekend,/m/03f5tvj,60226.0
+Bill Ward,/m/01tmkbf,51452.0
+Lil Wayne,/m/016kjs,49865.0
+Queens of the Stone Age,/m/014_lq,45013.0
+Honey Singh,/m/0hn8t6m,44766.0
+Fall Out Boy,/m/052z_y,39819.0
+Demi Lovato,/m/02wb6yq,38223.0
+Rihanna,/m/06mt91,37519.0
+Michael Bublé,/m/02xkkq,37013.0
+Kid Cudi,/m/04n2vgk,36740.0
+Pink,/m/01vrt_c,36725.0
+Miley Cyrus,/m/0bdxs5,33411.0
+Selena Gomez,/m/0gs6vr,31956.0
+Boards of Canada,/m/0prx6,31036.0
+Metallica,/m/04rcr,30710.0
+Rod Stewart,/m/0qf11,30672.0
+The National,/m/072q26,30548.0
+Jason Newsted,/m/01jxng,30235.0
+James Hetfield,/m/01nrz4,30022.0
+Luke Bryan,/m/02vpng6,29628.0
+Arctic Monkeys,/m/05q_9w,28216.0
+Lady Gaga,/m/0478__m,26442.0
+Wale,/m/049fb8r,25948.0
+Fantasia,/m/01rj4bk,25486.0
+Chris Brown,/m/07ss8_,24771.0
+MGMT,/m/01w5n51,24738.0
+Pearl Jam,/m/0d193h,24547.0
+Mike McCready,/m/02pxlf,24498.0
+Avril Lavigne,/m/0161c2,23372.0
+Katy Perry,/m/03y82t6,23272.0
+Stone Gossard,/m/03bhmt,22724.0
+Phoenix,/m/070r4_,22560.0
+Tyga,/m/0414qmv,21956.0
+Lana Del Rey,/m/0h62t_s,21513.0
+Kings of Leon,/m/03g5jw,20990.0
+Mariah Carey,/m/04xrx,20732.0
+Satinder Sartaaj,/m/0c012bg,20067.0
+Foster the People,/m/0gd9524,19699.0
+Falling in Reverse,/m/0h3n6gv,19374.0
+John Mayer,/m/01s21dg,19369.0
+A Day To Remember,/m/02752c9,19326.0
+Robert Trujillo,/m/02t426,18808.0
+30 Seconds to Mars,/m/05x5l9,18781.0
+Linkin Park,/m/04qmr,18448.0
+Cher,/m/01vtj38,18434.0
+Arcade Fire,/m/045wvq,18013.0
+John Legend,/m/01wcp_g,17902.0
+Blake Shelton,/m/046pqq,17888.0
+Ciara,/m/03h_0_z,17842.0
+Robin Thicke,/m/01q32bd,17792.0
+Five Finger Death Punch,/m/03f785z,17364.0
+Beady Eye,/m/0c01jn2,17281.0
+Alice in Chains,/m/0d945,17186.0
+Jared Leto,/m/02fybl,17104.0
+Avicii,/m/0bs3d41,16640.0
+Bruno Mars,/m/0bs1g5r,16387.0
+Kenny Chesney,/m/01l35sx,16375.0
+One Direction,/m/0fqqnpw,16295.0
+Kirk Hammett,/m/0489w,16072.0
+Kelly Rowland,/m/01vx5w7,15988.0
+Jerry Cantrell,/m/01mz41,15808.0
+Nine Inch Nails,/m/0jg77,15411.0
+50 Cent,/m/01vvyc_,15252.0
+David Bowie,/m/01vsy7t,15151.0
+Coldplay,/m/0kr_t,15066.0
+Imran Khan,/m/076y6cr,14913.0
+Backstreet Boys,/m/0hmlc,14815.0
+Slipknot,/m/0ntq7,14665.0
+Mike Shinoda,/m/012hqb,13838.0
+"Shawn ""Clown"" Crahan",/m/053jk8,13759.0
+George Strait,/m/016sqs,13715.0
+Agnetha Fältskog,/m/01lnd8w,13657.0
+T.I.,/m/03f7lp0,13629.0
+Joey Jordison,/m/01wt4wc,13467.0
+Chris Martin,/m/024dgj,13388.0
+Jonas Brothers,/m/0cbm64,13301.0
+Bon Jovi,/m/0g_g2,13191.0
+Dave Grohl,/m/0285c,12824.0
+Skillet,/m/01j59b0,12782.0
+The Black Keys,/m/03vhvp,12726.0
+French Montana,/m/080c3gp,12258.0
+Sharry Mann,/m/0h1fq3_,12214.0
+Joshua Homme,/m/01vng3b,12203.0
+Rob Zombie,/m/01wg982,12162.0
+Kendrick Lamar,/m/0g9x698,12023.0
+Britney Spears,/m/015f7,11942.0
+Ed Sheeran,/m/0g9sr1k,11886.0
+John Fogerty,/m/016s_5,11871.0
+City and Colour,/m/02p608_,11754.0
+Richie Sambora,/m/0zjpz,11617.0
+Adele,/m/02z4b_8,11537.0
+Justin Bieber,/m/06w2sn5,11476.0
+Atif Aslam,/m/0501yh,11272.0
+Will.i.am,/m/01w9wwg,11225.0
+Eric Church,/m/0cjrgx,11210.0
+Brad Paisley,/m/03gr7w,11208.0
+Jack Johnson,/m/02h7gb,11160.0
+Empire of the Sun,/m/04n4fqy,11103.0
+Future,/m/0hhwdgn,10986.0
+Blink-182,/m/0120rz,10982.0
+Travis Barker,/m/03xl77,10907.0
+Wiz Khalifa,/m/026yh6k,10858.0
+Foo Fighters,/m/02r3zy,10856.0
+Babbu Maan,/m/01rxfsw,10838.0
+The-Dream,/m/02wwwv5,10628.0
+Mark Hoppus,/m/0191cq,10354.0
+Thomas DeLonge,/m/04_jsg,10340.0
+Maroon 5,/m/02k5sc,10310.0
+Kanth Kaler,/m/05mqkzj,10099.0
+Sleeping with Sirens,/m/0c3zl14,9999.0
+Miguel Jontel Pimentel,/m/0cz9brt,9981.0
+Prince,/m/01vvycq,9855.0
+Lady Antebellum,/m/049fvbf,9626.0
+The Stone Roses,/m/094qh,9574.0
+The Weeknd,/m/0gjdn4c,9557.0
+Panic! at the Disco,/m/089pg7,9529.0
+Depeche Mode,/m/02cpp,9401.0
+Skrillex,/m/0462ph1,9366.0
+Hunter Hayes,/m/01sj7yt,9189.0
+The Lonely Island,/m/07nxsq,9146.0
+OneRepublic,/m/02q3w3v,9132.0
+Disclosure,/m/0n5vlzp,9103.0
+The Strokes,/m/0130zt,9067.0
+Taylor Swift,/m/0dl567,9014.0
+Falling in Reverse,/m/0cc56v_,8949.0
+The Civil Wars,/m/0fs0bm6,8811.0
+Wu-Tang Clan,/m/0827v,8793.0
+Jessie J,/m/0ds7zj1,8721.0
+Mumford & Sons,/m/04zzs32,8706.0
+AC/DC,/m/0134s5,8655.0
+Brantley Gilbert,/m/0ch47pk,8623.0
+Modest Mouse,/m/01k_yf,8586.0
+Cliff Williams,/m/04lzkc,8309.0
+Isaac Brock,/m/02xnd3,8267.0
+Keith Urban,/m/05cljf,8205.0
+System of a Down,/m/073gq,8201.0
+Dream Theater,/m/0jn38,8192.0
+Brian Johnson,/m/02nwzm,8099.0
+The Postal Service,/m/01q0md,8087.0
+Jimi Hendrix,/m/01vsy3q,8063.0
+Volbeat,/m/0ghczw,8031.0
+Dr. Dre,/m/01vvydl,7997.0
+Frank Ocean,/m/0gmbh5m,7945.0
+Marc Anthony,/m/01wv9p,7930.0
+Korn,/m/0c9l1,7923.0
+Asking Alexandria,/m/07s7mkl,7916.0
+Darius Rucker,/m/02_qfv,7802.0
+Nicki Minaj,/m/047sxrj,7679.0
+Rise Against,/m/044cyx,7661.0
+Deep Purple,/m/0cfgd,7639.0
+"Tyler, the Creator",/m/0crdtjw,7598.0
+Big Sean,/m/03f771p,7534.0
+Serj Tankian,/m/01386_,7521.0
+Fleetwood Mac,/m/033s6,7461.0
+Neko Case,/m/01skz_,7382.0
+Hillsong United,/m/01sl2n9,7309.0
+Akon,/m/0dt1cm,7263.0
+Hillsong Music,/m/059k6b,7215.0
+Steve Morse,/m/049b20,7201.0
+Lindsey Buckingham,/m/094wr,7159.0
+Radiohead,/m/09jm8,7075.0
+Ian Gillan,/m/0dgfsk,6967.0
+Megadeth,/m/0560w,6925.0
+D'Angelo,/m/01wzlxj,6883.0
+Rick Ross,/m/01ssf87,6848.0
+Angus Young,/m/02p54n,6684.0
+Lars Ulrich,/m/020hh3,6625.0
+AFI,/m/0143q0,6621.0
+Nas,/m/01v40wd,6557.0
+Win Butler,/m/05bz1b,6530.0
+2 Chainz,/m/0j45n9v,6507.0
+Paul McCartney,/m/03j24kf,6500.0
+Justin Moore,/m/04grfr0,6488.0
+Red Hot Chili Peppers,/m/06mj4,6412.0
+Guns N' Roses,/m/081wh1,6411.0
+Muse,/m/0187x8,6371.0
+Pitbull,/m/03f0qd7,6358.0
+Brand New,/m/0367np,6331.0
+Sigur Rós,/m/01324k,6326.0
+Trivium,/m/081skl,6297.0
+Relient K,/m/06g721,6252.0
+Macklemore,/m/0crcmvm,6223.0
+Yeah Yeah Yeahs,/m/01tm_l,6188.0
+P-Square,/m/0c_hn2,6153.0
+Meek Mill,/m/0gkzp28,6074.0
+Tamar,/m/01q9f7y,6068.0
+M.I.A.,/m/01vt5c_,6029.0
+Enrique Iglesias,/m/01s7ns,5989.0
+Priyanka Chopra,/m/03fwln,5943.0
+Florence and the Machine,/m/04zvkdd,5932.0
+Limp Bizkit,/m/04qzm,5781.0
+Earl Sweatshirt,/m/0g588b7,5714.0
+ASAP Rocky,/m/0hhqp47,5673.0
+Tim McGraw,/m/02lk95,5640.0
+Juicy J,/m/01q_39r,5585.0
+Fred Durst,/m/01q7cb_,5580.0
+Girl Talk,/m/01wqphl,5572.0
+Don Henley,/m/01xzb6,5552.0
+Karnivool,/m/01rjpff,5438.0
+Donald Glover,/m/02778wm,5340.0
+Chrisette Michele,/m/026vhmh,5330.0
+Snoop Dogg,/m/01vw8mh,5329.0
+Joe,/m/01hk8j2,5303.0
+Iron Maiden,/m/014_xj,5301.0
+Celine Dion,/m/01cwhp,5293.0
+Kesha,/m/05mt7ny,5290.0
+Pretty Lights,/m/0dm8ysq,5247.0
+Ariana Grande,/m/09gkdy4,5235.0
+Adnan Sami,/m/06ndb5,5202.0
+Nelly,/m/016pns,5183.0
+James Blake,/m/0dgp1xz,5177.0
+Edward Sharpe and the Magnetic Zeros,/m/07s75jp,5174.0
+Beck Hansen,/m/0137g1,5170.0
+The Script,/m/04fd57z,5169.0
+Kelly Clarkson,/m/025ldg,5166.0
+A. R. Rahman,/m/01gg59,5155.0
+Wes Borland,/m/01vs7x3,5117.0
+August Burns Red,/m/01rym7j,5063.0
+Kid Ink,/m/0jt7mcc,5044.0
+Major Lazer,/m/05zn5hk,5030.0
+Bruce Springsteen,/m/0gcs9,5029.0
+Wings,/m/01jfzm6,5023.0
+Garry Sandhu,/m/0h_cvst,4997.0
+Usher,/m/01trhmt,4970.0
+Bruce Dickinson,/m/01lvl5,4963.0
+LL Cool J,/m/01vvyd8,4949.0
+Jayceon Terrell Taylor,/m/01vwd7x,4931.0
+LeAnn Rimes,/m/01fkxr,4902.0
+Zac Brown Band,/m/0408z4w,4901.0
+Sara Bareilles,/m/0fq4l2,4890.0
+India.Arie,/m/01vvlyt,4877.0
+Eve,/m/0k6yt1,4862.0
+Pharrell Williams,/m/04mn81,4849.0
+Killswitch Engage,/m/01f5z8,4836.0
+Tupac Shakur,/m/07pzc,4818.0
+The Killers,/m/03d9d6,4804.0
+Chief Keef,/m/0k8t8kx,4796.0
+Rammstein,/m/06dk_,4794.0
+Young Jeezy,/m/01r_nkk,4747.0
+Roshan Prince,/m/0j7l1r9,4712.0
+Dave Matthews Band,/m/013w8y,4709.0
+Goo Goo Dolls,/m/01jmj8,4694.0
+Pistol Annies,/m/0gkyfh4,4691.0
+The Lumineers,/m/0jt6vts,4656.0
+Rudimental,/m/0j_6g0r,4648.0
+The Band Perry,/m/09gmh66,4644.0
+Mick Fleetwood,/m/09503,4602.0
+Nickelback,/m/0150jk,4569.0
+Miles Kane,/m/03f5w8k,4563.0
+Paolo Nutini,/m/0dl7pg,4530.0
+Alicia Keys,/m/0g824,4519.0
+Green Day,/m/0dvqq,4470.0
+Eric Clapton,/m/02qwg,4440.0
+B.o.B,/m/047ts85,4422.0
+The Head and the Heart,/m/0frdrfr,4403.0
+Black Francis,/m/01vt8h_,4394.0
+Pixies,/m/05xq9,4376.0
+Stereophonics,/m/015_8p,4357.0
+Young the Giant,/m/0g5xwf2,4337.0
+Queensrÿche,/m/01k7hc9,4336.0
+Bohemia the Punjabi Rapper,/m/01w99fy,4281.0
+Jimmy Buffett,/m/0168cl,4268.0
+HAIM,/m/0n45kt3,4265.0
+Tinie Tempah,/m/04zx34d,4251.0
+Michael Jackson,/m/09889g,4208.0
+Elton John,/m/01vrz41,4166.0
+Madonna,/m/01vs_v8,4095.0
+Armin van Buuren,/m/03m_lw,4075.0
+Cassadee Pope,/m/0b6mxpj,4074.0
+Nachiketa Chakraborty,/m/04_03fv,4072.0
+Laura Marling,/m/02qrljl,4066.0
+Maxwell,/m/07929f,4063.0
+R. Kelly,/m/0ffgh,4059.0
+Bon Iver,/m/03hln_8,4058.0
+Andrew VanWyngarden,/m/09v7fw6,4052.0
+Amy Grant,/m/010hn,4049.0
+Ray J,/m/01nr7rn,4028.0
+Jai Paul,/m/0g59tpl,4024.0
+Bernard Fanning,/m/072d65,4000.0
+Imagine Dragons,/m/0dr_0tw,3998.0
+Texas,/m/025b26,3994.0
+Bonobo,/m/01w58mw,3982.0
+Jimmy Eat World,/m/012vnv,3977.0
+The Knife,/m/08ztpc,3947.0
+Janet Jackson,/m/0gbwp,3933.0
+James Arthur,/m/0n_ghmb,3911.0
+Mayday Parade,/m/03f31w2,3892.0
+Tré Cool,/m/04r4yj,3887.0
+Fun,/m/04glv29,3880.0
+Franz Ferdinand,/m/02ft60,3860.0
+Noel Gallagher's High Flying Birds,/m/0gystz9,3824.0
+New Kids on the Block,/m/016kq3,3814.0
+Scotty McCreery,/m/0cc99yf,3807.0
+David Guetta,/m/0840vq,3787.0
+Headstones,/m/01jpffs,3783.0
+Black Lips,/m/01sjj0w,3779.0
+Slayer,/m/0jrcj,3775.0
+Patrick Carney,/m/060pmk,3743.0
+Rage Against the Machine,/m/0krh8,3738.0
+Janelle Monae,/m/0gktwr,3733.0
+Ace Hood,/m/049f6kl,3731.0
+Carrie Underwood,/m/058s57,3715.0
+Gippy Grewal,/m/076ypgv,3713.0
+Psy,/m/0cxm11,3713.0
+Miranda Lambert,/m/086rld,3711.0
+The Rolling Stones,/m/07mvp,3709.0
+Eagles,/m/0mjn2,3687.0
+Kerry King,/m/01f4d3,3679.0
+The Wanted,/m/0cc544j,3679.0
+Fleet Foxes,/m/03qmrpl,3677.0
+Of Monsters and Men,/m/0hglxhl,3661.0
+Dido,/m/01vwbts,3619.0
+Hanson,/m/0px6z,3603.0
+My Bloody Valentine,/m/011kc9,3597.0
+Amon Amarth,/m/03v5x0,3574.0
+Noel Gallagher,/m/01bpnd,3562.0
+Lauryn Hill,/m/015mrk,3560.0
+Necrophagist,/m/044x_m,3550.0
+André 3000,/m/02xb_r,3535.0
+Carcass,/m/03y9r5,3528.0
+Bring Me The Horizon,/m/0l030d,3518.0
+Chase & Status,/m/03d226q,3502.0
+Gorillaz,/m/03fbc,3500.0
+Gucci Mane,/m/078wwr,3499.0
+Jennifer Lopez,/m/043zg,3485.0
+Taylor Hanson,/m/04d27kq,3481.0
+Jaheim,/m/01wbd0n,3470.0
+Flavour N'abania,/m/0h_bfc4,3466.0
+Keyshia Cole,/m/01pkxs9,3460.0
+Fabolous,/m/03j3pg9,3455.0
+Willie Nelson,/m/0137n0,3448.0
+Olly Murs,/m/0ch3wbh,3425.0
+Natalie Maines,/m/018pyg,3399.0
+Mafikizolo,/m/01v68xq,3397.0
+Ghostface Killah,/m/01wph57,3385.0
+AWOLNATION,/m/0gfd3bs,3383.0
+Streetlight Manifesto,/m/03n5x3,3325.0
+Jason Derülo,/m/04fzp51,3296.0
+Ne-Yo,/m/06s7rd,3272.0
+Ben Howard,/m/0gy1n0d,3250.0
+Jason Aldean,/m/07ccwh,3223.0
+Evanescence,/m/01gtx7,3220.0
+Ludacris,/m/01vw37m,3218.0
+K.Michelle,/m/0g57r05,3216.0
+Disturbed,/m/0181_r,3212.0
+Editors,/m/04q9ld,3206.0
+Josh Groban,/m/02bc74,3188.0
+Jessica Sanchez,/m/04dzwxt,3176.0
+Surjit Bhullar,/m/01x2_32,3167.0
+Tom Morello,/m/0fpj4lx,3140.0
+Florida Georgia Line,/m/0k97tys,3118.0
+Mick Jagger,/m/01kx_81,3109.0
+Big Time Rush,/m/0g5w3p8,3093.0
+Brandon Boyd,/m/0q9gq,3089.0
+Shinedown,/m/04jnpd,3080.0
+Myleene Klass,/m/01q17qx,3052.0
+Caro Emerald,/m/09gmp35,3044.0
+Kevin Gates,/m/0dy5g5q,3040.0
+Hollywood Undead,/m/02630p_,3026.0
+Tiësto,/m/01w334h,3023.0
+Bob Dylan,/m/01vrncs,3017.0
+Prodigy,/m/01vxqmt,3016.0
+Tyrone Tribbett,/m/0d9sps,3003.0
+Alter Bridge,/m/053xjm,3000.0
+Ellie Goulding,/m/080gct2,2980.0
+Three Days Grace,/m/02rrlv,2967.0
+Glenn Frey,/m/01jfnvd,2942.0
+Iron & Wine,/m/01knvv,2933.0
+The Prodigy,/m/016lmg,2907.0
+Angela Bowie,/m/08759_,2903.0
+Pusha T,/m/0glqz8g,2896.0
+Sting,/m/0lbj1,2890.0
+Anita Baker,/m/030155,2872.0
+Kylie Minogue,/m/049qx,2870.0
+Breaking Benjamin,/m/04xc0g,2869.0
+Soundgarden,/m/0b1hw,2867.0
+Anthony Santos,/m/09gdrgy,2841.0
+Mastodon,/m/050swh,2841.0
+Calvin Harris,/m/0288c4g,2838.0
+Barenaked Ladies,/m/0lvvs,2837.0
+Damien Rice,/m/03vtny,2830.0
+Shakira,/m/01wj18h,2817.0
+Protest the Hero,/m/089978,2805.0
+MGK,/m/0gjcnwm,2787.0
+Rascal Flatts,/m/01ljtr1,2757.0
+Stone Temple Pilots,/m/0kx3c,2753.0
+Transplants,/m/063_hc,2713.0
+Selena Gomez & the Scene,/m/09rt83f,2707.0
+Logic,/m/0lq5y6d,2704.0
+Escape The Fate,/m/0dsrs3,2696.0
+The Saturdays,/m/043kkg9,2672.0
+The Flaming Lips,/m/0l8g0,2670.0
+Big Boi,/m/01vvfwl,2663.0
+The xx,/m/07kht64,2662.0
+The Avalanches,/m/02pqgj,2657.0
+Amrinder Gill,/m/01skr3t,2652.0
+Dizzee Rascal,/m/01wk7ld,2639.0
+Scars on Broadway,/m/0g2myb,2638.0
+Zac Hanson,/m/04d2cnv,2638.0
+Trey Songz,/m/074vr1,2629.0
+Tom Jones,/m/0cg9y,2625.0
+Deftones,/m/0q4vb,2602.0
+Charlie Wilson,/m/06d5y9,2600.0
+Lakhwinder Wadali,/m/0h1dyhf,2600.0
+Ravinder Grewal,/m/05mqqhg,2591.0
+Anthony Hamilton,/m/071pvb,2580.0
+Nachhatar Gill,/m/0j449l2,2580.0
+Opeth,/m/0cfhb,2576.0
+Angaraag Mahanta,/m/0hhsh7n,2572.0
+Diljit Dosanjh,/m/0bwjc2c,2570.0
+Stevie Nicks,/m/094xh,2564.0
+Stone Sour,/m/03rfyr,2561.0
+Bastille,/m/0n49g_9,2557.0
+Colin Greenwood,/m/01p0xy,2551.0
+98 Degrees,/m/01sbc4,2547.0
+Nikki Sixx,/m/01byb9,2539.0
+Falak,/m/01wwbrc,2536.0
+Chris Young,/m/01t2ghc,2504.0
+Kid Rock,/m/01vw20_,2487.0
+Dave Matthews,/m/018y2s,2480.0
+Frank Turner,/m/0ftgly,2448.0
+Outkast,/m/011z3g,2422.0
+Cage the Elephant,/m/04cqxxg,2421.0
+Christina Aguilera,/m/0127s7,2420.0
+Sheryl Crow,/m/06rgq,2420.0
+Hugh Laurie,/m/013pk3,2372.0
+Exo,/m/0h_dkd6,2367.0
+Robbie Williams,/m/09qr6,2365.0
+Mindless Self Indulgence,/m/02cl_7,2364.0
+Wayne Coyne,/m/02lqvk,2352.0
+Pepper,/m/01my5lh,2350.0
+"Harry Connick, Jr.",/m/03kts,2343.0
+Tom Araya,/m/01j87v,2335.0
+Chris Daughtry,/m/0b6vy1,2335.0
+Shania Twain,/m/01x0yrt,2333.0
+David Gilmour,/m/01vs4ff,2322.0
+Ray LaMontagne,/m/01qwj55,2320.0
+Alt-J,/m/0k3lyz1,2318.0
+Portugal. The Man,/m/0dph5z,2316.0
+Brandy Norwood,/m/03f3yfj,2308.0
+Madlib,/m/01kpv04,2290.0
+Lily Allen,/m/0czkbt,2285.0
+Damon Albarn,/m/0phx4,2284.0
+Ice Cube,/m/01vw26l,2260.0
+Randy Rogers Band,/m/01qldwy,2250.0
+HIM,/m/02tmxp,2231.0
+Rush,/m/01t_xp_,2224.0
+Blur,/m/0bt8c,2221.0
+Jamie Cullum,/m/01nn3m,2210.0
+A Perfect Circle,/m/01ns3t,2209.0
+Owl City,/m/04dzm2z,2206.0
+Schoolboy Q,/m/0g9zvmb,2203.0
+Boston,/m/016dxh,2194.0
+Nachattar Gill,/m/01st6cb,2193.0
+K. S. Makhan,/m/0kvkdqp,2183.0
+Incubus,/m/0f799,2182.0
+La Roux,/m/05b1_cs,2178.0
+Airbourne,/m/09n79j,2177.0
+Talib Kweli,/m/018n9d,2177.0
+Graham Coxon,/m/01qzry,2169.0
+Ronnie Wood,/m/01mwsnc,2162.0
+Tamela Mann,/m/01vt_j8,2159.0
+Justice,/m/01shqcj,2157.0
+KT Tunstall,/m/01wsl7c,2152.0
+Needtobreathe,/m/02plkqp,2150.0
+Andrea Bocelli,/m/02b25y,2148.0
+Steel Panther,/m/01qh7_x,2147.0
+Steve Martin,/m/0p_47,2140.0
+Orchestral Manoeuvres in the Dark,/m/0170nd,2132.0
+Weezer,/m/0838y,2107.0
+Of Mice & Men,/m/09gb9j6,2100.0
+Mystikal,/m/018n7d,2094.0
+Knife Party,/m/0dwnld3,2091.0
+Primal Scream,/m/0kbx8,2078.0
+Emeli Sandé,/m/0bby4gj,2077.0
+Bryan Williams,/m/05cknf,2069.0
+Filter,/m/016psj,2066.0
+Nile Rodgers,/m/016fhp,2061.0
+Third Eye Blind,/m/02gn01,2056.0
+Lupe Fiasco,/m/01wn718,2056.0
+Stephan Jenkins,/m/0347gw,2053.0
+Joe Satriani,/m/0j6cj,2047.0
+Stephen King,/m/0jt90f5,2045.0
+Adam Levine,/m/044mfr,2042.0
+Van Halen,/m/0ycfj,2037.0
+Pet Shop Boys,/m/0dm5l,2037.0
+Steve Earle,/m/01bpc9,2032.0
+Aphex Twin,/m/0k60,2032.0
+Bliss n Eso,/m/01s8jvr,2005.0
+Biffy Clyro,/m/03vryn,1999.0
+Chester Bennington,/m/011_ww,1996.0
+Hopsin,/m/0dllvll,1992.0
+Miss Pooja,/m/03c169c,1980.0
+Avant,/m/01l15bn,1973.0
+The Cat Empire,/m/02n60t,1973.0
+James Blunt,/m/063t3j,1972.0
+Mötley Crüe,/m/04x73,1972.0
+Rivers Cuomo,/m/01cv3n,1971.0
+Kaskade,/m/074cjz,1970.0
+Will Smith,/m/0147dk,1967.0
+Tom Petty,/m/0fq117k,1965.0
+Faith Hill,/m/01wmgrf,1963.0
+Tricky,/m/01w4yj2,1961.0
+Austin Mahone,/m/0hr9rgd,1955.0
+Enya,/m/01vvpjj,1954.0
+Rancid,/m/01hykl_,1954.0
+Trey Anastasio,/m/025xt8y,1950.0
+Rob Halford,/m/01mymt,1937.0
+Sick Puppies,/m/01mn682,1937.0
+Dawes,/m/01wm3bd,1932.0
+Black Veil Brides,/m/06zppx3,1925.0
+Creed,/m/016k3n,1925.0
+Placebo,/m/01k021,1920.0
+Embrace,/m/03sc22,1911.0
+Danny Brown,/m/0hr95yw,1907.0
+Jack White,/m/01vsnff,1902.0
+Judas Priest,/m/016m5c,1890.0
+Grouplove,/m/0g68sxp,1887.0
+Snow Patrol,/m/03hmh_,1873.0
+We Came as Romans,/m/06wb1_s,1869.0
+Goldfrapp,/m/0383y9,1865.0
+Fat Freddy's Drop,/m/01s1s7k,1861.0
+Trace Adkins,/m/01wzk3c,1860.0
+Yelawolf,/m/0b76ftj,1854.0
+ZZ Top,/m/089tm,1847.0
+Daughtry,/m/0f2jr1,1844.0
+Noah and the Whale,/m/03xn99q,1835.0
+Jake Owen,/m/0frvgg,1831.0
+Tom Petty and the Heartbreakers,/m/0gr69,1830.0
+Paris Hilton,/m/0227vl,1821.0
+Them Crooked Vultures,/m/06_v0k3,1804.0
+DJ Khaled,/m/01ssf9t,1800.0
+Attila,/m/0gg54w7,1799.0
+Passenger,/m/0qfmt81,1797.0
+Matchbox Twenty,/m/028d8m,1793.0
+Slash,/m/01vv6_6,1779.0
+/Passenger,/m/0dqr8kq,1778.0
+Muhammad Owais Raza Qadri,/m/04041t4,1777.0
+Alkaline Trio,/m/01bg09,1763.0
+Rocko,/m/03wff49,1761.0
+Ghost,/m/0gg7xx2,1761.0
+Kasabian,/m/04dpt7,1759.0
+Travis,/m/01s0rkh,1756.0
+The Glitch Mob,/m/0fqbcfp,1746.0
+Cassie Ventura,/m/07hl8_,1741.0
+No Doubt,/m/016fmf,1730.0
+Alan Jackson,/m/016c8l,1729.0
+Billy Currington,/m/07jfh5,1726.0
+Toni Braxton,/m/02h9_l,1725.0
+Ryan Adams,/m/0167v4,1720.0
+Agam Kumar Nigam,/m/01sjsfk,1712.0
+Deerhunter,/m/0285kk5,1707.0
+Gurdas Maan,/m/01qj_k4,1700.0
+Mount Kimbie,/m/0fqdsrr,1696.0
+D'banj,/m/0c_cyx,1682.0
+Fitz and The Tantrums,/m/0cz8yr5,1680.0
+Azealia Banks,/m/0hnfbjv,1677.0
+Blue,/m/04ldxt,1668.0
+Robyn,/m/01wdxyy,1664.0
+Steve Perry,/m/03yz68,1653.0
+Jamie T,/m/0dwwzs,1652.0
+Asher Roth,/m/04gp0zv,1650.0
+Martin Stimming,/m/0qgws9s,1638.0
+Papa Roach,/m/03q763,1637.0
+Little Mix,/m/0hr30dv,1633.0
+Chevelle,/m/01vbd5,1630.0
+Joe Walsh,/m/01sb5r,1629.0
+Cold War Kids,/m/0fzpn7,1620.0
+Black Flag,/m/01k9t__,1613.0
+Jesse McCartney,/m/05w6cw,1611.0
+Garth Brooks,/m/036px,1609.0
+My Chemical Romance,/m/03r2qm,1608.0
+Jason Mraz,/m/0259r0,1606.0
+Atmosphere,/m/02j2py,1596.0
+Z-Ro,/m/01rjzb5,1595.0
+Bullet for My Valentine,/m/06wcs2,1591.0
+Harbhajan Mann,/m/0c89fp,1591.0
+South Park Mexican,/m/016n_c,1589.0
+DMX,/m/01vvzb1,1587.0
+The Bilz and Kashif,/m/04ydr62,1587.0
+Wilco,/m/0khth,1584.0
+Meat Loaf,/m/01vvybv,1583.0
+The Dillinger Escape Plan,/m/01sh40,1579.0
+The Naked and Famous,/m/0fqb4sv,1572.0
+Hilary Duff,/m/0lk90,1570.0
+Robert Plant,/m/0pkyh,1549.0
+Tegan and Sara,/m/036z_k,1548.0
+Krewella,/m/0k0nyh9,1548.0
+George Michael,/m/01vvyfh,1541.0
+Master Saleem,/m/01vl2ww,1538.0
+Matt Corby,/m/02zbhv0,1538.0
+Gwen Stefani,/m/016fnb,1537.0
+The Wonder Years,/m/03j072m,1532.0
+Gary Allan,/m/01l8n7l,1530.0
+Odd Future,/m/0dlmm52,1528.0
+Alison Moyet,/m/019v3d,1526.0
+Big K.R.I.T.,/m/0cc9l01,1520.0
+Ashanti,/m/01wqmm8,1514.0
+Born of Osiris,/m/03wc88q,1509.0
+Iggy Pop,/m/01whg97,1507.0
+Professor Green,/m/03f353h,1507.0
+Timaya,/m/03m8bm2,1501.0
+Toad the Wet Sprocket,/m/02kssx,1496.0
+"Earth, Wind & Fire",/m/0163m1,1494.0
+Mary J. Blige,/m/01vvyvk,1492.0
+Chiodos,/m/07vbzh,1492.0
+Staind,/m/079df,1490.0
+Marilyn Manson,/m/03h502k,1489.0
+Aerosmith,/m/0134pk,1489.0
+Goodie Mob,/m/016_k4,1486.0
+Jimmy Page,/m/01vsyg9,1482.0
+Death from Above 1979,/m/056rf_,1479.0
+The Cure,/m/0fsyx,1478.0
+Deltron 3030,/m/02s92r,1475.0
+Classified,/m/01q74f4,1475.0
+Wolfmother,/m/055kfg,1472.0
+Manchester Orchestra,/m/0fv8tb,1472.0
+Jal,/m/01s0p94,1464.0
+Mark Owen,/m/034tr0,1461.0
+Device,/m/0jzxw5t,1460.0
+Red,/m/0bhjkl,1457.0
+Christina Perri,/m/0ch2wrp,1454.0
+Gretchen Wilson,/m/03d40f,1453.0
+Roger Waters,/m/017g21,1450.0
+Alex James,/m/041dqn,1447.0
+The Avett Brothers,/m/05x_kr,1446.0
+Tom Odell,/m/0pb51xm,1444.0
+Baths,/m/0g575fd,1437.0
+Letlive,/m/01s25r_,1436.0
+A Wilhelm Scream,/m/01qcvgc,1432.0
+Afrojack,/m/0g546s5,1430.0
+Counting Crows,/m/01cblr,1425.0
+Lil' Kim,/m/01wyz92,1425.0
+DevilDriver,/m/02c4qx,1416.0
+Train,/m/03yxn3,1414.0
+Flume,/m/0nhcqdj,1408.0
+Styles P,/m/065y7q,1404.0
+Pierce the Veil,/m/03f6ffq,1393.0
+Jake Bugg,/m/0j9k3bv,1388.0
+The 1975,/m/0pc5ghh,1388.0
+Geddy Lee,/m/03d8y,1383.0
+Blue October,/m/060fb3,1381.0
+Ab-Soul,/m/0k3lp1t,1380.0
+Mos Def,/m/03f4xvm,1380.0
+Eleanor Friedberger,/m/08722t,1380.0
+Jay Chou,/m/02nfjp,1378.0
+Kodaline,/m/0284hqq,1371.0
+Missy Elliott,/m/018n6m,1371.0
+The Roots,/m/01f2q5,1364.0
+Washed Out,/m/0bmg05w,1364.0
+Marilyn Manson,/m/01vsxdm,1359.0
+Nick Cave and the Bad Seeds,/m/02mq_y,1358.0
+Jill Scott,/m/044gyq,1358.0
+Anupam Roy,/m/0dgn5sv,1358.0
+Sinach,/m/0nhdk6n,1354.0
+Jay Sean,/m/01wlcly,1343.0
+Joanna Newsom,/m/03rkvb,1340.0
+Switchfoot,/m/0pr13,1336.0
+Kraftwerk,/m/048xh,1336.0
+Teddy Afro,/m/0cn_hg,1332.0
+The 1975,/m/0qfbplf,1330.0
+Hezekiah Walker,/m/026v1vc,1326.0
+Kip Moore,/m/0gl0hjp,1324.0
+The Airborne Toxic Event,/m/03j0ns1,1323.0
+Taking Back Sunday,/m/01sbdn,1320.0
+Patty Griffin,/m/03d68k,1316.0
+Dance Gavin Dance,/m/026ks1k,1315.0
+Roger Glover,/m/02jg9g,1303.0
+311,/m/0163mv,1299.0
+Alabama Shakes,/m/0j3g6p_,1299.0
+Reza Sadeghi,/m/0gxg3v,1297.0
+Fifth Harmony,/m/0qc5flm,1294.0
+Sum 41,/m/01403_,1293.0
+LeCrae,/m/01sg1_8,1293.0
+Darren Criss,/m/0dlmdn_,1289.0
+Steely Dan,/m/014kyy,1283.0
+Duran Duran,/m/01323p,1281.0
+Death Cab for Cutie,/m/02tjm_,1280.0
+Clutch,/m/01j4gy3,1280.0
+Die Antwoord,/m/0b6dz8t,1277.0
+David Cook,/m/03w9hl_,1264.0
+YG,/m/0g9_hlg,1264.0
+George Benson,/m/03d2k,1263.0
+Godsmack,/m/0163j_,1263.0
+Neil Young,/m/0m2l9,1262.0
+The Black Dahlia Murder,/m/03dl55,1261.0
+Koffi Olomidé,/m/01p59n6,1258.0
+Led Zeppelin,/m/04k05,1256.0
+Toby Keith,/m/01k_n63,1254.0
+Lamb of God,/m/01pnbvw,1248.0
+Steven Tyler,/m/01wmjkb,1247.0
+Bret Michaels,/m/01wkmgb,1245.0
+Studio Killers,/m/0h3v30z,1242.0
+Girls' Generation,/m/02v_j9n,1239.0
+Sevendust,/m/03ppsl,1239.0
+Dierks Bentley,/m/06mf7y,1231.0
+Rahat Fateh Ali Khan,/m/01wrvc1,1227.0
+Nero,/m/0dnr3sc,1226.0
+Pete Doherty,/m/01_rlk,1218.0
+Bob Seger,/m/01pbxb,1217.0
+Sarah Brightman,/m/01sxd1,1216.0
+Candice Glover,/m/0rpjgld,1216.0
+CocoRosie,/m/05xm4v,1214.0
+Skylar Grey,/m/093br7,1213.0
+Nick Rhodes,/m/01dgtg,1212.0
+Nick Cave,/m/01wl38s,1211.0
+Erykah Badu,/m/01w7nww,1205.0
+Dixie Chicks,/m/018ndc,1204.0
+Sub Focus,/m/01wvn2r,1196.0
+Children of Bodom,/m/0lb_3,1194.0
+Omar Lye-Fook,/m/01l2hlp,1193.0
+Riff Raff,/m/0k7yxnc,1192.0
+The Mavericks,/m/0611ys,1191.0
+Billie Joe Armstrong,/m/0kxbc,1185.0
+Ahmir-Khalib Thompson,/m/01wzkd9,1183.0
+Madness,/m/0fq0s89,1183.0
+Maher Zain,/m/0cn_2pr,1179.0
+Mayer Hawthorne,/m/065yffx,1177.0
+White Lies,/m/0409cdm,1177.0
+S.A. Martinez,/m/03f7dd7,1170.0
+Kurt Vile,/m/06wb9m1,1168.0
+Gary Lightbody,/m/0frv2g,1167.0
+Aaliyah,/m/0x3n,1166.0
+Bone Thugs-N-Harmony,/m/01mqpz,1164.0
+The Fray,/m/07lf2h,1161.0
+Ricky Martin,/m/01w61th,1160.0
+Rizzle Kicks,/m/0gyvcbq,1155.0
+The Front Bottoms,/m/0gvv2_n,1155.0
+Angels & Airwaves,/m/07w1kf,1153.0
+Seether,/m/03v8z0,1152.0
+Cher Lloyd,/m/0h1h5ns,1151.0
+Falak Shabir,/m/0sh0057,1149.0
+TGT,/m/03c5d5j,1147.0
+De La Soul,/m/0169x4,1145.0
+The Fall,/m/07rnh,1142.0
+McFly,/m/02kfyr,1142.0
+Thomas Rhett,/m/0j43_0f,1142.0
+Tim Mahoney,/m/03f7fn_,1141.0
+Jadakiss,/m/01lqkw_,1140.0
+Tope Alabi,/m/026q8r_,1138.0
+Scarface,/m/01wcs15,1132.0
+Madness,/m/0b0w7,1129.0
+Immortal Technique,/m/01w7sll,1126.0
+The Bloodhound Gang,/m/0dz93n,1121.0
+Crash Kings,/m/09gg0dw,1121.0
+Michael Franti,/m/039dm5,1119.0
+Suede,/m/016qf1,1118.0
+Ben Gibbard,/m/0fpj9pm,1116.0
+Omar-S,/m/01rx22c,1115.0
+"""Weird Al"" Yankovic",/m/01wj0gb,1112.0
+Norma Jean,/m/0fs59b,1108.0
+Tom Hamilton,/m/02jh47,1104.0
+Sammy Adams,/m/0bh9pqh,1103.0
+Omarion,/m/019g40,1098.0
+Status Quo,/m/01f3c6,1094.0
+Parachute,/m/0dm8dxq,1092.0
+Take That,/m/020gw1,1091.0
+Interpol,/m/02zd7f,1091.0
+Journey,/m/015cqh,1089.0
+Mike Stud,/m/0p3qqb9,1089.0
+Enigma,/m/02ltrn,1089.0
+ABBA,/m/0kjh,1087.0
+Alex Ebert,/m/0cc8frw,1085.0
+Jeff Lynne,/m/0473q,1084.0
+The Stooges,/m/01ld0vl,1080.0
+Cults,/m/0fvg0nl,1080.0
+George Jones,/m/01hb9p,1079.0
+Man Overboard,/m/0dthv2_,1079.0
+Donell Jones,/m/01l19b_,1078.0
+Dom Kennedy,/m/03hzpnk,1077.0
+The Pretty Reckless,/m/0bs259y,1076.0
+Foals,/m/02qhydg,1074.0
+Karise Eden,/m/0k2lvr5,1068.0
+Spoon,/m/02713q,1068.0
+Chris Tomlin,/m/01mhvx1,1068.0
+Babyshambles,/m/03nn9n,1067.0
+Una Healy,/m/05b4trd,1067.0
+Pink Floyd,/m/01wv9xn,1063.0
+Hoodie Allen,/m/0gjbgnn,1061.0
+She & Him,/m/03xmyhp,1056.0
+The Duckworth Lewis Method,/m/06419wy,1055.0
+Black Thought,/m/05pbgl,1053.0
+Porter Robinson,/m/0gh72nh,1053.0
+Sonu Nigam,/m/03nd87,1050.0
+Harjit Harman,/m/07s3w3w,1049.0
+Zubeen Garg,/m/0dr0lf,1049.0
+Yo Gotti,/m/01wgdfz,1045.0
+Phillip Phillips,/m/0j46c2c,1045.0
+Farhan Saeed,/m/0gz8w7,1044.0
+John Britt Daniel,/m/01t_07f,1042.0
+Visage,/m/01rwyfq,1041.0
+Ben Rector,/m/0ch3jmh,1034.0
+Master P,/m/016ksk,1033.0
+Tate Stevens,/m/0p812k2,1032.0
+The Black Eyed Peas,/m/01dwrc,1025.0
+3 Doors Down,/m/014gd9,1025.0
+Junip,/m/01rx5d8,1020.0
+Seasick Steve,/m/03f3tr1,1016.0
+Warpaint,/m/076zbfp,1016.0
+The Offspring,/m/0mgcr,1015.0
+Gold Panda,/m/0dljbvk,1015.0
+Sade,/m/0hk3_0n,1013.0
+Akcent,/m/01ryrz6,1008.0
+Brian Wilson,/m/0kzy0,1005.0
+Collective Soul,/m/01jml5,1004.0
+Sixto Rodriguez,/m/0djpnw,1003.0
+Norah Jones,/m/0197tq,1003.0
+Skid Row,/m/05nmwg,997.0
+Tim Armstrong,/m/01tv3x2,996.0
+Morrissey,/m/01w524f,994.0
+Manic Street Preachers,/m/016qcd,991.0
+Waka Flocka Flame,/m/09gnjnz,987.0
+Sia Furler,/m/03ks26,985.0
+Casey Donahew Band,/m/0fqqcx9,983.0
+Flo Rida,/m/02vwckw,979.0
+Sammy Hagar,/m/02rt2d,979.0
+Joe Budden,/m/01nyx5k,975.0
+Sean Paul,/m/01wglss,974.0
+Eric Benét,/m/03zf2f,969.0
+Jon Bon Jovi,/m/01vw87c,967.0
+Daniel Padilla,/m/0h65pcr,966.0
+Matthew Morrison,/m/0783m_,962.0
+Against Me!,/m/01qczr,956.0
+Tokio Hotel,/m/07kt1v,955.0
+Enter Shikari,/m/07gwgk,953.0
+Motörhead,/m/05841,952.0
+Slaughterhouse,/m/05p3jx4,951.0
+Queen,/m/0bk1p,950.0
+Robin Meade,/m/040vnz,949.0
+Hardwell,/m/0j27_hy,948.0
+Young Scooter,/m/0nhr_g7,948.0
+Big Tymers,/m/05ckn1,946.0
+Shpongle,/m/01jh0v,945.0
+We the Kings,/m/03cm2f7,943.0
+Brian May,/m/0bkg4,942.0
+Iggy Azalea,/m/0hhqcwf,942.0
+Jennifer Nettles,/m/0b7tn2,941.0
+JoJo,/m/01wjgjb,941.0
+Passion Pit,/m/04mzz43,933.0
+Randy Houser,/m/049h3rr,932.0
+Ian Fraser Kilmister,/m/01w5ggj,930.0
+Def Leppard,/m/017mbb,929.0
+Björk,/m/01vrqtm,928.0
+Sami Yusuf,/m/08cnsg,925.0
+Jay Electronica,/m/01w2ksr,915.0
+Siavash Ghomeishi,/m/01qcxmf,911.0
+Action Bronson,/m/0gyxd9x,908.0
+The Smashing Pumpkins,/m/07r1_,906.0
+Aaron Dontez Yates,/m/01n23y8,902.0
+Shane & Shane,/m/01q3mz4,901.0
+Bombay Bicycle Club,/m/02q21vv,899.0
+Beth Gibbons,/m/02t42p,898.0
+Busta Rhymes,/m/01wgxtl,892.0
+Kailash Kher,/m/0dkbr4,892.0
+Lauren Alaina,/m/0gg82ty,891.0
+Tank,/m/0cy62g,889.0
+Thompson Square,/m/0gdvz18,888.0
+Tyrese Gibson,/m/01l1b90,888.0
+Pendulum,/m/01mdm7p,887.0
+Marina & the Diamonds,/m/063yc9y,886.0
+The Neighbourhood,/m/02qmrkw,886.0
+David Gray,/m/03kwjh,885.0
+Thom Yorke,/m/01p0w_,885.0
+In Flames,/m/0370w8,884.0
+Cee Lo Green,/m/01w5jwb,879.0
+Jonathan Cain,/m/01p6_6v,874.0
+Mike Patton,/m/01gx5f,874.0
+Russell Morris,/m/01q9gc6,873.0
+Leona Lewis,/m/025_1vt,872.0
+Johnny Cash,/m/03h_fk5,872.0
+Boyz II Men,/m/015bwt,872.0
+TesseracT,/m/03yzd8s,871.0
+Hodgy Beats,/m/0gvqss_,871.0
+Anthrax,/m/0bsj9,870.0
+Basement Jaxx,/m/01yvs2,870.0
+Halestorm,/m/0b5jft,869.0
+Franco,/m/0fr5jhz,868.0
+Gentleman,/m/08k94w,865.0
+Diane Birch,/m/01x1wzt,862.0
+Hurts,/m/09v2j1p,862.0
+James Taylor,/m/01309x,861.0
+Freddie Mercury,/m/01vn0t_,854.0
+Hot Chelle Rae,/m/09glmzf,853.0
+Lil Boosie,/m/01s36sp,852.0
+Sublime with Rome,/m/0b6m0np,847.0
+After The Burial,/m/05p1wq3,847.0
+Lucy Hale,/m/0754d6,845.0
+Grimes,/m/0gvqw50,842.0
+Theory of a Deadman,/m/05d3p_,841.0
+Lionel Richie,/m/016vqk,838.0
+Todd Rundgren,/m/095x_,833.0
+The Beatles,/m/07c0j,832.0
+Simple Plan,/m/01h113,830.0
+Carlos Santana,/m/01304j,830.0
+TLC,/m/07j79f,829.0
+Gabrielle Aplin,/m/0h3vftd,829.0
+Capital Cities,/m/0ngt4dg,827.0
+Kiss,/m/011xhx,827.0
+Harry Judd,/m/052hq4,827.0
+Westlife,/m/020_81,824.0
+Portishead,/m/0m19t,823.0
+Adam Lambert,/m/07sbny7,823.0
+Behemoth,/m/01rgvm,822.0
+The Fratellis,/m/0cz1md,822.0
+Neil Peart,/m/05j7_,820.0
+Fort Minor,/m/06t1c5,819.0
+Glenn Lewis,/m/01lw4d8,818.0
+Faith No More,/m/011_vz,816.0
+Bo Burnham,/m/04cvmzk,815.0
+Raekwon,/m/013w4h,813.0
+Within Temptation,/m/01ws7f,812.0
+Gwar,/m/03j_hq,812.0
+Dave Brockie,/m/01wdb_2,812.0
+Mike Posner,/m/05mvpk7,812.0
+Banky W.,/m/0bh7xk0,811.0
+Sugarland,/m/038h5h,810.0
+Röyksopp,/m/01zrx0,808.0
+Tobymac,/m/01w20rx,807.0
+Whitesnake,/m/0130yf,806.0
+Charlie Benante,/m/05jjx2,805.0
+Camera Obscura,/m/01mdyh1,804.0
+Animals as Leaders,/m/063_5mh,803.0
+Andy Mineo,/m/0l7h1c1,803.0
+Michael Franti & Spearhead,/m/01j83g1,802.0
+Fuck Buttons,/m/03nsb8j,798.0
+Lissie,/m/03xmwyf,797.0
+Mario,/m/01mlfn5,794.0
+Rita Ora,/m/0bxzjj9,794.0
+Taylor Hawkins,/m/01dxfc,792.0
+T-Pain,/m/0837ql,792.0
+Monster Truck,/m/0nhq0m8,790.0
+Lawson,/m/0j7m0_c,790.0
+Carly Rose Sonenclar,/m/0hgrd71,789.0
+Chvrches,/m/0p3qb9l,788.0
+All Time Low,/m/01rlkvh,787.0
+Neon Neon,/m/03f6827,786.0
+David Lynch,/m/026dx,785.0
+Matt Colwell,/m/0fqnks8,784.0
+Gregory Alan Isakov,/m/03d8qm1,784.0
+Mohsen Yeganeh,/m/0dlkgwl,782.0
+Austra,/m/0gwzsrp,782.0
+Misery Signals,/m/06y5wr,782.0
+Tenacious D,/m/01ldr5,780.0
+Hands Like Houses,/m/0jl05m0,780.0
+Basshunter,/m/01ww_2d,776.0
+Lisa Stansfield,/m/01w78ry,775.0
+Andrew Bayer,/m/0f99v97,775.0
+Mudvayne,/m/027yv6,774.0
+Gotye,/m/01wvnws,774.0
+James Holden,/m/01msrvt,773.0
+Arnel Pineda,/m/03csddg,771.0
+Cody Simpson,/m/0bxzygh,771.0
+Baby Animals,/m/02wv07,769.0
+Boy & Bear,/m/0fr6tm4,767.0
+Andrew Stockdale,/m/0b9kll,767.0
+Phil Anselmo,/m/027w9v,765.0
+Common,/m/01w7nwm,764.0
+The Story So Far,/m/01v5yd1,764.0
+Leonard Cohen,/m/0lccn,762.0
+David Coverdale,/m/01m8qmz,760.0
+Cloud Control,/m/03j3pyd,759.0
+Plies,/m/027bnfk,758.0
+Michael Bolton,/m/02p68d,758.0
+The Black Crowes,/m/015hzk,753.0
+Swedish House Mafia,/m/027rdwc,751.0
+Israel Houghton,/m/02727tb,750.0
+Khaled,/m/050f73,749.0
+Petula Clark,/m/01c2_j,748.0
+Kellie Pickler,/m/0b3p9c,746.0
+CHIC,/m/0kbzx,746.0
+Surfer Blood,/m/0b6dy5q,745.0
+Sean Kingston,/m/02rg9p2,742.0
+Zahara,/m/0h957tj,740.0
+Ratatat,/m/03tw9k,737.0
+Gregory Alan Isakov,/m/0fqp8fd,736.0
+Bob Marley,/m/0bkf4,736.0
+Wiley,/m/01wnjn4,736.0
+Ben Lee,/m/0444xs,735.0
+Moderat,/m/07kj7dm,735.0
+Ronald Isley,/m/050_46,734.0
+Kirk Franklin,/m/01kwlwp,733.0
+Brian McKnight,/m/03q2t9,733.0
+Boz Scaggs,/m/01wm1z7,732.0
+Tribes,/m/0gywg9y,731.0

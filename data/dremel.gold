@@ -1,0 +1,28 @@
+DEFINE INLINE TABLE completions
+SELECT 	`prefix` as mid, 
+            SUM(attribute_support.support.frequency) AS pred_frequency 
+    FROM 	(FLATTEN(kgraph.completions.latest, 
+        	attribute_support.attribute_id))
+    WHERE attribute_support.attribute_id = "xxxxxxxxxx" 
+        AND attribute_support.support.locale = "en"
+    GROUP BY mid
+    ORDER BY pred_frequency DESC
+    LIMIT 1000;
+ 
+
+
+
+SELECT	
+	# title AS obj_name, 
+   	entity_id AS mid, 
+        # fact.attribute_id AS pred, 
+        # fact.display_value.span.entity_id AS subj_mid, 
+        fact.display_value.span.display_text AS answer
+FROM (FLATTEN(kpanels.cards.latest, fact))
+WHERE  locale="en" 
+    	AND fact.display_value.span.entity_id<>""
+    	AND fact.attribute_id="xxxxxxxxxx"
+        AND entity_id IN (SELECT mid FROM completions);
+
+
+
