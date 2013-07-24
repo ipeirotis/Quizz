@@ -2,6 +2,7 @@
 <backends>
   <backend name="backend">
   <class>B1</class>
+  <instances>10</instances>
   <options>
     <dynamic>true</dynamic>
     <public>true</public>

@@ -12,7 +12,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.TreeSet"%>
-
+<%@ page import="java.text.NumberFormat"%>
 
 
 
@@ -58,6 +58,55 @@
 		
 		<div class="row">
 			<div class="span10 offset1" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
+		</div>
+
+		<div class="row ">
+				<div id="showMessage" class="span10 offset1" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
+				<%
+				String useranswer = request.getParameter("useranswer");
+				if (useranswer==null) useranswer="";
+				String gold_prior = request.getParameter("goldprior");
+				if (gold_prior==null) gold_prior="";
+				String isCorrect = request.getParameter("iscorrect");
+				if (isCorrect==null) isCorrect="";
+				if (isCorrect.equals("true")) {
+					%> The answer  <b><%=useranswer%></b> was <span style="color: green">correct</span>! <%
+				} else { 
+					%> The answer  <b><%=useranswer%></b> was <span style="color: red">incorrect</span>!<%
+				}
+				%>
+				</div>
+				
+				<div id="showCorrect" class="span10 offset1" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
+				<%
+				if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {
+					%>The correct answer was <span style="color: green"><%=gold_prior %></span>.<%	
+				}
+				if (!user.getsTreatment("showMessage")) {
+					%>The correct answer was <span style="color: green"><%=gold_prior %></span>.<%	
+				}
+				%>
+				</div>
+				
+				
+				<div id="showCrowdAnswers" class="span10 offset1" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
+				<%
+				String totalanswers = request.getParameter("totalanswers");
+				String correctanswers = request.getParameter("correctanswers");
+
+				if (totalanswers!=null && correctanswers!=null) {
+					Integer t = Integer.parseInt(totalanswers)+1;
+					Integer c = Integer.parseInt(correctanswers)+1;
+					Double p = 1.0*c/t;
+					NumberFormat percentFormat = NumberFormat.getPercentInstance();
+					percentFormat.setMaximumFractionDigits(0);
+					String rate = percentFormat.format(p);
+					%> 
+					The success rate in the previous question was <%=rate %>. Out of the <%=t.toString() %> users, <%=c.toString() %> answered correctly. 
+					<%
+				} 
+				%>
+				</div>
 		</div>
 
 <%
@@ -205,6 +254,25 @@ if (user.getsTreatment("showPercentageCorrect")) {
 } else {
 	%>$('#showPercentageCorrect').hide();<%
 }
+
+if (user.getsTreatment("showMessage")) { 
+	%>$('#showMessage').show();  $('#showMessage').delay(5000).fadeOut();<%
+} else {
+	%>$('#showMessage').hide();<%
+}
+
+if (user.getsTreatment("showCorrect")) { 
+	%>$('#showCorrect').show();  $('#showCorrect').delay(5000).fadeOut();<%
+} else {
+	%>$('#showCorrect').hide();<%
+}
+
+if (user.getsTreatment("showCrowdAnswers")) { 
+	%>$('#showCrowdAnswers').show(); $('#showCrowdAnswers').delay(5000).fadeOut();<%
+} else {
+	%>$('#showCrowdAnswers').hide();<%
+}
+
 %>
 </script>
 

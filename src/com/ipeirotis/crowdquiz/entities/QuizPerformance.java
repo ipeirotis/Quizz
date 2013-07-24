@@ -47,6 +47,10 @@ public class QuizPerformance {
 	@Persistent
 	Integer correctanswers;
 	
+	// The total information gain by this user
+	@Persistent
+	Double score;
+	
 	// The rank across % correct
 	@Persistent
 	Integer rankPercentCorrect;
@@ -54,6 +58,10 @@ public class QuizPerformance {
 	// The rank across % correct
 	@Persistent
 	Integer rankTotalCorrect;
+	
+	// The rank across the IG score
+	@Persistent
+	Integer rankScore;
 	
 	// The number of other users that participated in the same quiz 
 	@Persistent
@@ -65,6 +73,7 @@ public class QuizPerformance {
 		this.quiz = quiz;
 		this.totalanswers = 0;
 		this.correctanswers = 0;
+		this.score = 0.0;
 	}
 	
 	public static Key generateKeyFromID(String quiz, String userid) {
@@ -144,6 +153,10 @@ public class QuizPerformance {
 		int lowerPercentage=0;
 		int equalPercentage=0;
 		
+		int higherScore=0;
+		int lowerScore=0;
+		int equalScore=0;
+		
 		int higherCorrect=0;
 		int lowerCorrect=0;
 		int equalCorrect=0;
@@ -156,19 +169,29 @@ public class QuizPerformance {
 			} else if (qp.getPercentageCorrect()<this.getPercentageCorrect()) {
 				lowerPercentage++;
 			} else {
-				equalPercentage++;
+				equalPercentage++; // Just in case we want to be more conservative in reporting rank, taking ties into account
 			}
+			
+			if (qp.getScore()>this.getScore()) {
+				higherScore++;
+			} else if (qp.getScore()<this.getScore()) {
+				lowerScore++;
+			} else {
+				equalScore++; // Just in case we want to be more conservative in reporting rank, taking ties into account
+			}
+			
 			
 			if (qp.getCorrectanswers() > this.getCorrectanswers()) {
 				higherCorrect++;
 			} else if (qp.getCorrectanswers() < this.getCorrectanswers()) {
 				lowerCorrect++;
 			} else {
-				equalCorrect++;
+				equalCorrect++; // Just in case we want to be more conservative in reporting rank, taking ties into account
 			}
 		}
 		this.rankPercentCorrect = higherPercentage+1;
 		this.rankTotalCorrect = higherCorrect+1;
+		this.rankScore=higherScore+1;
 		this.totalUsers = higherCorrect + lowerCorrect + equalCorrect + 1;
 	}
 	
@@ -200,6 +223,21 @@ public class QuizPerformance {
 		}
 		this.correctanswers = c;
 		this.totalanswers = results.size();
+		
+		int numberOfMultipleChoiceOptions = 4;
+		try {
+			
+			// We do not want to give any positive score to someone who is "too wrong" so that their
+			// answers become accidentally informative. So, if the quality drops below random
+			// we set it at a level equal to random.
+			double quality = this.getPercentageCorrect();
+			if (quality<1.0/numberOfMultipleChoiceOptions) quality = 1.0/numberOfMultipleChoiceOptions;
+			
+			this.score = this.getIGScore(this.totalanswers, this.getPercentageCorrect(), numberOfMultipleChoiceOptions);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		pm.close();
 	}
@@ -254,6 +292,60 @@ public class QuizPerformance {
 		NumberFormat percentFormat = NumberFormat.getPercentInstance();
 		percentFormat.setMaximumFractionDigits(0);
 		return percentFormat.format(1.0*this.getRankTotalCorrect()/this.getTotalUsers());
+	}
+	
+	public String displayScore() {
+		NumberFormat format = NumberFormat.getInstance();
+		format.setMinimumFractionDigits(2);
+		format.setMaximumFractionDigits(2);
+		return format.format(this.getScore());
+	}
+	
+	/**
+	 * The score is the total amount of information contributed by the user.
+	 * 
+	 * We compute the information gain for a single answer of quality q,
+	 * and multiply with the total number of answers given
+	 * @throws Exception 
+	 * 
+	 * 
+	 */
+	private double getIGScore(int answers, double q, int n) throws Exception {
+		double informationGain = entropy(q,n) - entropy(1.0/n, n);
+		return answers * informationGain;
+	}
+	
+	public Double getScore() {
+		if (this.score==null) return 0.0;
+		return score;
+	}
+
+	public void setScore(Double score) {
+		this.score = score;
+	}
+
+	public Integer getRankScore() {
+		return rankScore;
+	}
+
+	public void setRankScore(Integer rankScore) {
+		this.rankScore = rankScore;
+	}
+
+	/**
+	 * Computing the entropy of an answer given by a user with quality q (quality=probability of correct)
+	 * and n available options in the multiple choice question
+	 * @throws Exception 
+	 * 
+	 */
+	private double entropy(double q, int n) throws Exception {
+		if (q==1.0) return 0;
+		if (q==0.0) return Math.log(1.0/(n-1))/Math.log(2);
+		if (n==1) return 0;
+		if (n<1) throw new Exception("Invalid value for n in entropy calculation");
+		if (q<0.0 || q>1.0) throw new Exception("Invalid value for q in entropy calculation");
+		double entropy = (1-q) * Math.log((1-q)/(n-1))/Math.log(2)+ q*Math.log(q)/Math.log(2);
+		return entropy;
 	}
 	
 }

@@ -3,17 +3,17 @@
   <cron>
     <url>/api/updateAllQuestionStatistics</url>
     <description>Update the gold, silver, user counts for all questions</description>
-    <schedule>every 60 minutes</schedule>
+    <schedule>every 720 minutes</schedule>
   </cron>
     <cron>
     <url>/api/updateAllUserStatistics</url>
     <description>Update QuizPerformance statistics for all users</description>
-    <schedule>every 60 minutes</schedule>
+    <schedule>every 720 minutes</schedule>
   </cron>
   <cron>
     <url>/api/updateCountStatistics</url>
     <description>Update the counters that display number of questions, answers, etc in the admin interface</description>
-    <schedule>every 60 minutes</schedule>
+    <schedule>every 720 minutes</schedule>
   </cron>
 
 </cronentries>

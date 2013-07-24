@@ -17,7 +17,7 @@
 
 <body>
 	<div class="container pagination-centered">
-		<div class="row span12">
+		<div class="row">
 			<h2>Contribution Quality by Treatment</h2>
 				<%
 				PersistenceManager	pm = PMF.get().getPersistenceManager();
@@ -26,25 +26,29 @@
 				List<Treatment> treatments = (List<Treatment>) query.execute();
 				
 				%>
-			<table class="table table-striped  table-bordered">
+			<table class="table table-striped  table-bordered" style="font-size:small">
 				<tr>
+					<th>User</th>
 					<th>Quiz</th>
 					<%
 					for (Treatment t: treatments) {
-						 %><th><%=t.getName() %> (<%=t.getProbability()%>)</th><%
+						 %><th><%=t.getName() %></th><%
 					}
 					%>
 					<th>#Correct</th>
 					<th>#Total</th>
 					<th>Quality</th>
+					<th>Score</th>
 				</tr>
 				<%
 
 					query = pm.newQuery(QuizPerformance.class);
+					query.setOrdering("score desc");
 					List<QuizPerformance> perf = null;
 					if (relation!=null) {
 						query.setFilter("quiz == quizParam");
 						query.declareParameters("String quizParam");
+						
 						perf = (List<QuizPerformance>) query.execute(relation);
 					} else {
 						perf = (List<QuizPerformance>) query.execute();
@@ -60,7 +64,8 @@
 						}
 						%>
 						<tr>
-							<td><%=qp.getQuiz()%></a></td>
+							<td nowrap><%=user.getUserid()%></td>
+							<td nowrap><%=qp.getQuiz()%></a></td>
 							<%
 							for (Treatment t : treatments) {
 								%><td><%=user.getsTreatment(t.getName())%></td><%
@@ -68,7 +73,8 @@
 							%>
 							<td><%=qp.getCorrectanswers()%></td>
 							<td><%=qp.getTotalanswers()%></td>
-							<td><%=qp.getPercentageCorrect()%></td>
+							<td><%=qp.displayPercentageCorrect()%></td>
+							<td><%=qp.displayScore()%></td>
 						</tr>
 						<%
 					}

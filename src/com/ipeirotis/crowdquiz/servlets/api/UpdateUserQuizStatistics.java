@@ -16,7 +16,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
 		String quiz = req.getParameter("quiz");
@@ -42,7 +42,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		}
 		
 		qp.computePercentageRank();
-		resp.getWriter().print("Persisting...\n");
+		//resp.getWriter().print("Persisting...\n");
 		pm.makePersistent(qp);
 		pm.close();
 		

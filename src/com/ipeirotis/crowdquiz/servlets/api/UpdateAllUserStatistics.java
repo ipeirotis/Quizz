@@ -1,6 +1,7 @@
 package com.ipeirotis.crowdquiz.servlets.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -41,9 +42,20 @@ public class UpdateAllUserStatistics extends HttpServlet {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query query = pm.newQuery(User.class);
-		List<User> userlist = (List<User>) query.execute();
+		List<User> userlist = new ArrayList<User>();
+		int limit = 1000;
+		int i=0;
+		while (true) {
+			query.setRange(i, i+limit);
+			List<User> results = (List<User>) query.execute();
+			if (results.size()==0) break;
+			userlist.addAll(results);
+			i+=limit;
+		}
+		
 		query = pm.newQuery(Quiz.class);
 		List<Quiz> quizlist = (List<Quiz>) query.execute();
+		
 		pm.close();
 
 		for (User user : userlist) {
@@ -52,7 +64,7 @@ public class UpdateAllUserStatistics extends HttpServlet {
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 					.param("userid", user.getUserid())
 					.param("quiz", quiz.getRelation())
-					.method(TaskOptions.Method.GET));
+					.method(TaskOptions.Method.POST));
 			}
 		}
 	}

@@ -83,7 +83,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
 				.param("quiz", relation)
 				.param("userid", user.getUserid())
-				.method(TaskOptions.Method.GET));
+				.method(TaskOptions.Method.POST));
 
 		QuizQuestion question = null;
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -101,13 +101,13 @@ public class ProcessUserAnswer extends HttpServlet {
 
 		String baseURL = req.getScheme() + "://" + req.getServerName();
 		String multChoiceURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), mid);
-		String feedbackURL = baseURL 
-				+ "/feedback.jsp?useranswer=" + URLEncoder.encode(useranswer, "UTF-8") 
-				+ "&gold=" + URLEncoder.encode(gold, "UTF-8") 
+		String feedbackURL = multChoiceURL
+				+ "&useranswer=" + URLEncoder.encode(useranswer, "UTF-8") 
+				+ "&goldprior=" + URLEncoder.encode(gold, "UTF-8") 
 				+ "&iscorrect=" + URLEncoder.encode(isCorrect.toString(), "UTF-8")
 				+ "&totalanswers=" + URLEncoder.encode(total.toString(), "UTF-8") 
-				+ "&correctanswers=" + URLEncoder.encode(correct.toString(), "UTF-8") 
-				+ "&url=" + URLEncoder.encode(multChoiceURL, "UTF-8");
+				+ "&correctanswers=" + URLEncoder.encode(correct.toString(), "UTF-8"); 
+				//+ "&url=" + URLEncoder.encode(multChoiceURL, "UTF-8");
 
 		Boolean showFeedback = user.getsTreatment("showMessage");
 
@@ -117,11 +117,11 @@ public class ProcessUserAnswer extends HttpServlet {
 		System.out.println(json);
 		resp.getWriter().println(json);
 
-		if (showFeedback) {
+		//if (showFeedback) {
+			//resp.sendRedirect(feedbackURL);
+		//} else {
 			resp.sendRedirect(feedbackURL);
-		} else {
-			resp.sendRedirect(multChoiceURL);
-		}
+		//}
 		return;
 
 	}
