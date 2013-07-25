@@ -11,7 +11,7 @@
 
 <body>
 	<div class="container pagination-centered">
-		<div class="row span4 offset4">
+		<div class="row span4">
 		<h2>Available <span style="color: maroon">Quizz</span>es</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>

@@ -56,12 +56,12 @@
 
 
 		
-		<div class="row">
-			<div class="span10 offset1" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
+		<div class="row-fluid">
+			<div class="span12" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
 		</div>
 
-		<div class="row ">
-				<div id="showMessage" class="span10 offset1" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
+		<div class="row-fluid " id="showMessage">
+				<div  class="span12" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
 				<%
 				String useranswer = request.getParameter("useranswer");
 				if (useranswer==null) useranswer="";
@@ -76,8 +76,8 @@
 				}
 				%>
 				</div>
-				
-				<div id="showCorrect" class="span10 offset1" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
+			</div><div class="row-fluid" id="showCorrect">	
+				<div  class="span12" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
 				<%
 				if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {
 					%>The correct answer was <span style="color: green"><%=gold_prior %></span>.<%	
@@ -87,9 +87,9 @@
 				}
 				%>
 				</div>
+			</div><div class="row-fluid" id="showCrowdAnswers">		
 				
-				
-				<div id="showCrowdAnswers" class="span10 offset1" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
+				<div  class="span12" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
 				<%
 				String totalanswers = request.getParameter("totalanswers");
 				String correctanswers = request.getParameter("correctanswers");
@@ -112,20 +112,18 @@
 <%
 	if (performance!=null) {
 %>
-		<div class="row" >
-			<div class="span10 offset1" style="color:maroon;font-size:small;background-color: #F4F4F4; border-radius: 5px;">
-				<div class="span2" id="showTotalCorrect">#Correct<br><%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%></div>
-				<div class="span2" id="showPercentageCorrect">Correct (%)<br><%=performance.displayPercentageCorrect()%></div>
-				<div class="span2" id="showPercentageRank">Rank (%correct)<br><%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)</div>
-				<div class="span2" id="showTotalCorrectRank">Rank (#correct)<br><%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)</div>
-			</div>
+		<div class="row-fluid" style="color:maroon;font-size:small;background-color: #F4F4F4; border-radius: 5px; text-align: center" >
+				<div class="span3" style="display: inline-block" id="showTotalCorrect">#Correct<br><%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%></div>
+				<div class="span3" style="display: inline-block"  id="showPercentageCorrect">Correct (%)<br><%=performance.displayPercentageCorrect()%></div>
+				<div class="span3" style="display: inline-block" id="showPercentageRank">Rank (%correct)<br><%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)</div>
+				<div class="span3" style="display: inline-block" id="showTotalCorrectRank">Rank (#correct)<br><%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)</div>
 		</div>
 <%
 	}
 %>
 
-		<div class="row">
-			<div class="span10 offset1">
+		<div class="row-fluid">
+			<div class="span12">
 				<form id="addUserEntry" action="/processUserAnswer" method="post"
 					style="background-color: #D4D4D4; border-radius: 5px;">
 					<fieldset>
@@ -156,8 +154,8 @@
 										}
 										for (String s: answers) {
 						%>
-							<div class="row">
-							<div class="span6 offset2">
+							<div class="row-fluid">
+							<div class="span12">
 							<label class="radio" for="radios-<%=s%>" style="text-align:left">
 							<input style="background-color: #EEEEEE; border-radius: 5px;" type="radio" name="useranswer" id="radios-<%=s%>" value="<%=s%>"><%=s%>
 							</label>
@@ -187,16 +185,6 @@
 
 
 	<script type="text/javascript">
-		$( document ).ready(function() {
-			$('#addUserEntry').ajaxForm({ 
-		        // dataType identifies the expected content type of the server response 
-		        dataType:  'json', 
-		 
-		        // success identifies the function to invoke when the server response 
-		        // has been received 
-		        success:   processJson 
-		    }); 
-		});
 
 
     function processJson(data) {
@@ -215,15 +203,6 @@
 			  %>
 			  
 			});
-		
-		var result = jQuery.parseJSON(data);
-		
-		if (result.showFeedbackURL) {
-       		window.location.href = result.multChoiceURL;
-		} else {
-        	window.location.href = result.feedbackURL;
-        }
-        
     }
 	
 

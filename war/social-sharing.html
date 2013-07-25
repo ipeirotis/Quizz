@@ -1,37 +1,51 @@
 
-<div class="container pagination-centered" name="social">
+<div class="container pagination-centered" name="social" style="text-align: justify">
+	<div class="row-fluid">
+		<div class="span12">
+			<div name="facebook" style="display: inline-block" >
 
-	<div class="row">
-
-		<div class="span1 offset4" name="gplus">
-			<script src="https://apis.google.com/js/plusone.js"></script>
-			<g:plus action="share" href="http://www.quizz.us" annotation="bubble"></g:plus>
-		</div>
-
-		<div class="span1" name="space"></div>
-
-		<div class="span1" name="twitter">
-			<a href="https://twitter.com/share" class="twitter-share-button"
-				data-url="http://www.quizz.us" data-hashtags="quizz">Tweet</a>
-			<script>
-				!function(d, s, id) {
-					var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/
-							.test(d.location) ? 'http' : 'https';
-					if (!d.getElementById(id)) {
+				<div id="fb-root"></div>
+				<script>
+					(function(d, s, id) {
+						var js, fjs = d.getElementsByTagName(s)[0];
+						if (d.getElementById(id))
+							return;
 						js = d.createElement(s);
 						js.id = id;
-						js.src = p + '://platform.twitter.com/widgets.js';
+						js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=198024766932237";
 						fjs.parentNode.insertBefore(js, fjs);
-					}
-				}(document, 'script', 'twitter-wjs');
-			</script>
+					}(document, 'script', 'facebook-jssdk'));
+				</script>
+				<div class="fb-like" data-href="http://www.quizz.us"
+					data-send="false" data-layout="button_count" data-width="225"
+					data-show-faces="false"></div>
+
+
+			</div>
+		
+			<div name="gplus" style="display: inline-block">
+				<script src="https://apis.google.com/js/plusone.js"></script>
+				<g:plus action="share" href="http://www.quizz.us" annotation="bubble"></g:plus>
+			</div>
+
+			<div name="twitter" style="display: inline-block">
+				<a href="https://twitter.com/share" class="twitter-share-button"
+					data-url="http://www.quizz.us" data-hashtags="quizz">Tweet</a>
+				<script>
+					!function(d, s, id) {
+						var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/
+								.test(d.location) ? 'http' : 'https';
+						if (!d.getElementById(id)) {
+							js = d.createElement(s);
+							js.id = id;
+							js.src = p + '://platform.twitter.com/widgets.js';
+							fjs.parentNode.insertBefore(js, fjs);
+						}
+					}(document, 'script', 'twitter-wjs');
+				</script>
+			</div>
+
+
 		</div>
-
-		<div class="span1" name="space"></div>
-
-		<div class="span1" name="facebook">
-
-			<iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.quizz.us&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=true&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=198024766932237" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe>
-
 	</div>
 </div>
