@@ -41,8 +41,8 @@ public class UploadQuestions extends HttpServlet {
 		try {
 
 
-			String baseURL = req.getScheme() + "://" + req.getServerName(); 
-			String url = baseURL + "/admin/";
+			String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
+			String url = baseURL + "/admin/manage/";
 			resp.sendRedirect(url); 
 
 			

@@ -24,10 +24,7 @@ public class AddQuiz extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		resp.setContentType("text/plain");
-		String baseURL = req.getScheme() + "://" + req.getServerName(); 
-		String url = baseURL + "/admin/";
-		resp.sendRedirect(url); 
+
 
 		try {
 			String relation = req.getParameter("relation");
@@ -135,8 +132,11 @@ public class AddQuiz extends HttpServlet {
 						.param("adline2", adline2)
 					.method(TaskOptions.Method.POST)
 					.etaMillis(etaMillis));
-			return;
-			
+
+			resp.setContentType("text/plain");
+			String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort(); 
+			String url = baseURL + "/admin/manage/";
+			resp.sendRedirect(url); 
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);

@@ -43,6 +43,9 @@ public class Experiment {
 	}
 
     public boolean getsTreatment(String treatmentName) {
+    	if (this.treatments == null) {
+    		assignTreatments();
+    	}
     	if (this.treatments.containsKey(treatmentName)) {
     		Boolean active = this.treatments.get(treatmentName);
     		if (active==null) {

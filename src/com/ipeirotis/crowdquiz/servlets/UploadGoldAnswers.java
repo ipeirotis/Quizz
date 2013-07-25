@@ -37,8 +37,8 @@ public class UploadGoldAnswers extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		String baseURL = req.getScheme() + "://" + req.getServerName(); 
-		String url = baseURL + "/admin/";
+		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
+		String url = baseURL + "/admin/manage/";
 		resp.sendRedirect(url); 
 
 		try {
