@@ -41,7 +41,7 @@
 								<td><a id="upload_gold"	title="Upload correct answers for the questions asked" href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="upload_silver" title="Upload possible answers for the questions asked (with some <1 probability of being correct)" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getRelation()%>">...</div>)</td>
 								<td><a id="upload_crowd" title="Upload answers submitted by users (that have been downloaded previously from Quizz.us)" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Crowd</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="download" title="Download the answers submitted so far by the users" href="downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
+								<td><a id="download" title="Download the answers submitted so far by the users" href="/admin/downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
 							</tr>
 							<%
 						}

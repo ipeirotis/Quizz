@@ -5,7 +5,6 @@
   <instances>10</instances>
   <options>
     <dynamic>true</dynamic>
-    <public>true</public>
   </options>
   </backend>
 </backends>
