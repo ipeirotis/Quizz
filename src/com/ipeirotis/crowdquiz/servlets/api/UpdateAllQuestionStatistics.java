@@ -22,7 +22,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		Queue queue = QueueFactory.getQueue("default");
+		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		queue.add(Builder.withUrl("/api/updateAllQuestionStatistics")
 				.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 				.method(TaskOptions.Method.POST));
@@ -30,7 +30,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 	
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		Queue queue = QueueFactory.getQueue("default");
+		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query q = pm.newQuery(QuizQuestion.class);
 		List<QuizQuestion> list = (List<QuizQuestion>) q.execute();
