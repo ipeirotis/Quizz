@@ -1,23 +1,15 @@
 package com.ipeirotis.crowdquiz.entities;
 
 import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserReferal {

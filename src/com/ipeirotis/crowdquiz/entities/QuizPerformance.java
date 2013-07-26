@@ -235,7 +235,6 @@ public class QuizPerformance {
 			
 			this.score = this.getIGScore(this.totalanswers, this.getPercentageCorrect(), numberOfMultipleChoiceOptions);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
