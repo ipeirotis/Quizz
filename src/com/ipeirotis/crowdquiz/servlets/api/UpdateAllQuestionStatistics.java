@@ -1,6 +1,7 @@
 package com.ipeirotis.crowdquiz.servlets.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -15,6 +16,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -32,16 +34,25 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(QuizQuestion.class);
-		List<QuizQuestion> list = (List<QuizQuestion>) q.execute();
+		Query query = pm.newQuery(QuizQuestion.class);
+		List<QuizQuestion> list = new ArrayList<QuizQuestion>();
+		int limit = 1000;
+		int i=0;
+		while (true) {
+			query.setRange(i, i+limit);
+			List<QuizQuestion> results = (List<QuizQuestion>) query.execute();
+			if (results.size()==0) break;
+			list.addAll(results);
+			i+=limit;
+		}
 		pm.close();
-
+		
 		for (QuizQuestion quizquestion : list) {
 			queue.add(Builder.withUrl("/api/updateQuestionStatistics")
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 					.param("relation", quizquestion.getRelation())
 					.param("mid", quizquestion.getFreebaseEntityId())
-					.method(TaskOptions.Method.GET));
+					.method(TaskOptions.Method.POST));
 		}
 	}
 

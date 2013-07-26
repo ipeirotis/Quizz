@@ -59,7 +59,7 @@
 
 
 <body>
-	<div class="container" style="text-align: center; max-width:640px">
+	<div class="container" style="text-align: center; max-width:720px">
 
 
 			

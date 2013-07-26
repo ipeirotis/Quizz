@@ -23,7 +23,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
 
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
 		String relation = req.getParameter("relation");
