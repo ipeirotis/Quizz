@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
@@ -20,6 +19,7 @@
 	User user = User.getUseridFromCookie(request, response);
 	String relation = request.getParameter("relation");
 	String mid = request.getParameter("mid");
+	String numoptions = request.getParameter("numoptions");
 
 	PersistenceManager pm = PMF.get().getPersistenceManager();
 	Quiz quiz = null;
@@ -44,142 +44,150 @@
 	
 	
 	pm.close();
+	
+	String useranswer = request.getParameter("useranswer");
+	if (useranswer == null)
+		useranswer = "";
+	String gold_prior = request.getParameter("goldprior");
+	if (gold_prior == null)
+		gold_prior = "";
+	String isCorrect = request.getParameter("iscorrect");
+	if (isCorrect == null)
+		isCorrect = "";
+	
 %>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="<%=quiz.getName()%>" /></jsp:include>
 
 
-
-</head>
 <body>
-	<div class="container pagination-centered">
+	<div class="container" style="text-align: center; max-width:640px">
+
+
+			
+			<h2><a href="/"><span style="color: maroon">Quizz</span>.us</a></h2>
+
 
 
 		
-		<div class="row-fluid">
-			<div class="span12" style="text-align:center"><a href="/"><h2><span style="color: maroon">Quizz</span>.us</h2></a></div>
-		</div>
+		<%
+		if (isCorrect.equals("true")) {
+			%>
+			<div class="alert alert-success" id="showMessage">
+			The answer  <span class="label label-success"><%=useranswer%></span> was <span class="label label-success">correct</span>!
+			</div>
+			<%
+		} else {
+			%>
+			<div class="alert alert-error" id="showMessage">
+			The answer <span class="label label-important"><%=useranswer%></span> was <span class="label label-important"">incorrect</span>!
+			</div>
+			<%
+		}
+		%>
 
-		<div class="row-fluid " id="showMessage">
-				<div  class="span12" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
-				<%
-				String useranswer = request.getParameter("useranswer");
-				if (useranswer==null) useranswer="";
-				String gold_prior = request.getParameter("goldprior");
-				if (gold_prior==null) gold_prior="";
-				String isCorrect = request.getParameter("iscorrect");
-				if (isCorrect==null) isCorrect="";
-				if (isCorrect.equals("true")) {
-					%> The answer  <b><%=useranswer%></b> was <span style="color: green">correct</span>! <%
-				} else { 
-					%> The answer  <b><%=useranswer%></b> was <span style="color: red">incorrect</span>!<%
-				}
-				%>
-				</div>
-			</div><div class="row-fluid" id="showCorrect">	
-				<div  class="span12" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
-				<%
-				if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {
-					%>The correct answer was <span style="color: green"><%=gold_prior %></span>.<%	
-				}
-				if (!user.getsTreatment("showMessage")) {
-					%>The correct answer was <span style="color: green"><%=gold_prior %></span>.<%	
-				}
-				%>
-				</div>
-			</div><div class="row-fluid" id="showCrowdAnswers">		
-				
-				<div  class="span12" style="font-size:small;background-color: #E4E4E4; border-radius: 5px;">
-				<%
-				String totalanswers = request.getParameter("totalanswers");
-				String correctanswers = request.getParameter("correctanswers");
 
-				if (totalanswers!=null && correctanswers!=null) {
-					Integer t = Integer.parseInt(totalanswers)+1;
-					Integer c = Integer.parseInt(correctanswers)+1;
-					Double p = 1.0*c/t;
-					NumberFormat percentFormat = NumberFormat.getPercentInstance();
-					percentFormat.setMaximumFractionDigits(0);
-					String rate = percentFormat.format(p);
-					%> 
-					The success rate in the previous question was <%=rate %>. Out of the <%=t.toString() %> users, <%=c.toString() %> answered correctly. 
-					<%
-				} 
-				%>
-				</div>
-		</div>
+		<%
+		if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {
+			%>
+			<div class="alert alert-success" id="showCorrect">
+			The correct answer was <span class="label label-success"><%=gold_prior%></span>.
+			</div>
+			<%
+		}
+		if (!user.getsTreatment("showMessage")) {
+			%>
+			<div class="alert alert-success" id="showCorrect">
+			The correct answer was <span class="label label-success"><%=gold_prior%></span>.
+			</div>
+			<%		
+		}
 
-<%
+		String totalanswers = request.getParameter("totalanswers");
+		String correctanswers = request.getParameter("correctanswers");
+
+		if (totalanswers != null && correctanswers != null) {
+			Integer t = Integer.parseInt(totalanswers) + 1;
+			Integer c = Integer.parseInt(correctanswers) + 1;
+			Double p = 1.0 * c / t;
+			NumberFormat percentFormat = NumberFormat.getPercentInstance();
+			percentFormat.setMaximumFractionDigits(0);
+			String rate = percentFormat.format(p);
+			%>
+			<div class="alert alert-info" id="showCrowdAnswers">
+			Crowd performance: <span class="label label-info"><%=c.toString()%> out of the <%=t.toString()%> users	 (<%=rate%>) answered correctly.</span>
+			</div>
+			<%
+		} 
+
 	if (performance!=null) {
 %>
-		<div class="row-fluid" style="color:maroon;font-size:small;background-color: #F4F4F4; border-radius: 5px; text-align: center" >
-				<div class="span3" style="display: inline-block" id="showTotalCorrect">#Correct<br><%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%></div>
-				<div class="span3" style="display: inline-block"  id="showPercentageCorrect">Correct (%)<br><%=performance.displayPercentageCorrect()%></div>
-				<div class="span3" style="display: inline-block" id="showPercentageRank">Rank (%correct)<br><%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)</div>
-				<div class="span3" style="display: inline-block" id="showTotalCorrectRank">Rank (#correct)<br><%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)</div>
-		</div>
-<%
+			<div class="alert alert-info" style="text-align: center">
+				<span class="label label-info" id="showTotalCorrect">
+					Correct Answers: <%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%>
+				</span>
+				<span class="label label-info" id="showPercentageCorrect">
+					Correct (%): <%=performance.displayPercentageCorrect()%>
+				</span>
+				<span class="label label-info"  id="showPercentageRank">
+					Rank (%correct): <%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)
+				</span>
+				<span class="label label-info" id="showTotalCorrectRank">
+					Rank (#correct): <%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)
+				</span>
+			</div>
+
+		<%
 	}
 %>
 
-		<div class="row-fluid">
-			<div class="span12">
-				<form id="addUserEntry" action="/processUserAnswer" method="post"
-					style="background-color: #D4D4D4; border-radius: 5px;">
+		<div class="well" style="text-align: center;">
+			<form id="addUserEntry" action="/processUserAnswer" method="post">
 					<fieldset>
-						<legend>
+						<div class="lead">
 							<%=quiz.getQuestionText()%>
 							<a href="http://www.freebase.com<%=mid%>"> 
 							<%=FreebaseSearch.getFreebaseAttribute(mid,"name")%>
 							</a>
-						</legend>
-						
-						<div class="controls">
-						<%
-							int choices = 4;
-
-										Set<String> answers = new TreeSet<String>();
-
-										String gold = question.getRandomGoldAnswer();
-										answers.add(gold);
-
-										Set<String> pyrite = question.getIncorrectAnswers(choices-1);
-										answers.addAll(pyrite);
-										
-										if (answers.size()<2) {
-											String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-											String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), null);
-											response.sendRedirect(nextURL);
-											return;
-										}
-										for (String s: answers) {
-						%>
-							<div class="row-fluid">
-							<div class="span12">
-							<label class="radio" for="radios-<%=s%>" style="text-align:left">
-							<input style="background-color: #EEEEEE; border-radius: 5px;" type="radio" name="useranswer" id="radios-<%=s%>" value="<%=s%>"><%=s%>
-							</label>
-							</div>
-							</div>
-							<%
-						}
-						%>
 						</div>
+						
+						<%
+							Set<String> answers = new TreeSet<String>();
+
+							String gold = question.getRandomGoldAnswer();
+							answers.add(gold);
+
+							int choices = Integer.parseInt(numoptions);
+							Set<String> pyrite = question.getIncorrectAnswers(choices-1);
+							answers.addAll(pyrite);
+							
+							if (answers.size()<2) {
+								String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+								String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), null);
+								response.sendRedirect(nextURL);
+								return;
+							}
+							
+							int i=0;
+							for (String s: answers) {
+							%>
+							<input name="useranswer-<%=i %>" type="submit" class="btn btn-primary btn-block" value="<%=s%>">
+							<%
+							i++;
+							}
+							
+						%>
+						<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don't know">
+						<input id="numoptions" name="numoptions" type="hidden" value="<%= numoptions %>">
 						<input id="relation" name="relation" type="hidden" value="<%= relation %>"> 
 						<input id="mid" name="mid" type="hidden" value="<%= mid %>">
 						<input id="gold" name="gold" type="hidden" value="<%= gold %>"> 
 						
-						<div class="form-actions"
-							style="background-color: #D0D0D0; border-radius: 5px;">
-							<input type="submit" class="btn" name="action" value="Submit">
-							<input type="submit" class="btn" name="action" value="I don't know">
-						</div>
 					</fieldset>
 				</form>
 			</div>
-		</div>
 		
-		
+		<%@ include file="social-sharing.html" %>
 			
 	</div>
 
@@ -209,6 +217,7 @@
 	</script>
 
 <script>
+
 <%
 if (user.getsTreatment("showPercentageRank")) { 
 	%>$('#showPercentageRank').show();<%
@@ -256,7 +265,7 @@ if (user.getsTreatment("showCrowdAnswers")) {
 </script>
 
 
-<%@ include file="social-sharing.html" %>
+
 <%@ include file="google-analytics.html" %>
 
 

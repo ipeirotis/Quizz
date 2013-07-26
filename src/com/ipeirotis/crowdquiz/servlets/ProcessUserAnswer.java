@@ -45,16 +45,25 @@ public class ProcessUserAnswer extends HttpServlet {
 		User user = User.getUseridFromCookie(req, resp);
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
-		String useranswer = req.getParameter("useranswer");
-		if (useranswer == null) {
+		
+		String action, useranswer=null;
+		String idk = req.getParameter("idk");
+		if (idk==null) {
+			action = "Submit";
+			int limit=Integer.parseInt(req.getParameter("numoptions"));
+			for (int i=0; i<limit; i++) {
+				useranswer = req.getParameter("useranswer-"+i);
+				if (useranswer!=null) break;
+			}
+		} else {
+			action = "I don't know";
 			useranswer = "";
 		}
+		
 		String gold = req.getParameter("gold");
 
-		String action = req.getParameter("action");
-		if (action.equals("I don't know")) {
-			useranswer = "";
-		}
+		
+
 
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
@@ -99,7 +108,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (correct == null)
 			correct = 0;
 
-		String baseURL = req.getScheme() + "://" + req.getServerName();
+		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
 		String multChoiceURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), mid);
 		String feedbackURL = multChoiceURL
 				+ "&useranswer=" + URLEncoder.encode(useranswer, "UTF-8") 
@@ -114,7 +123,6 @@ public class ProcessUserAnswer extends HttpServlet {
 		Response result = new Response(showFeedback, multChoiceURL, feedbackURL);
 		Gson gson = new Gson();
 		String json = gson.toJson(result);
-		System.out.println(json);
 		resp.getWriter().println(json);
 
 		//if (showFeedback) {

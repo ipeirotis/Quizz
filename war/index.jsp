@@ -7,12 +7,12 @@
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="List of available quizzes" /></jsp:include>
+<jsp:include page="/header.jsp"><jsp:param name="title" value="Test yourself, Compare yourself, Learn new things" /></jsp:include>
 
 <body>
-	<div class="container pagination-centered">
-		<div class="row span4">
-		<h2>Available <span style="color: maroon">Quizz</span>es</h2>
+	<div class="container" style="text-align: center; max-width:640px">
+
+		<h2><span style="color: maroon">Quizz</span>es</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Quiz</th>
@@ -43,9 +43,9 @@
 				}
 				%>
 			</table>
-			
 
-		</div>
+<%@ include file="social-sharing.html" %>		
+		
 	</div>
 
 	<script type="text/javascript">
@@ -78,7 +78,7 @@
 		});
 		</script>
 	
-<%@ include file="social-sharing.html" %>
+
 <%@ include file="google-analytics.html" %>
 	
 </body>

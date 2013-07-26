@@ -74,7 +74,10 @@ public class Helper {
 			String mid = list.get(rnd);
 			
 			try {
-				nextURL = "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8")  + "&mid=" + URLEncoder.encode(mid, "UTF-8");
+				nextURL = "/multChoice.jsp?" 
+						+ "&numoptions=4" 
+						+ "&relation=" + URLEncoder.encode(relation, "UTF-8")  
+						+ "&mid=" + URLEncoder.encode(mid, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
