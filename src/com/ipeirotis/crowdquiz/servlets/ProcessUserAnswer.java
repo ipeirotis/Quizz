@@ -62,12 +62,10 @@ public class ProcessUserAnswer extends HttpServlet {
 		
 		String gold = req.getParameter("gold");
 
-		
-
-
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
 		String referer = req.getHeader("Referer");
+		if (referer==null) referer="";
 		Long timestamp = (new Date()).getTime();
 
 		Boolean isCorrect = useranswer.equals(gold);
@@ -116,7 +114,7 @@ public class ProcessUserAnswer extends HttpServlet {
 				+ "&iscorrect=" + URLEncoder.encode(isCorrect.toString(), "UTF-8")
 				+ "&totalanswers=" + URLEncoder.encode(total.toString(), "UTF-8") 
 				+ "&correctanswers=" + URLEncoder.encode(correct.toString(), "UTF-8"); 
-				//+ "&url=" + URLEncoder.encode(multChoiceURL, "UTF-8");
+
 
 		Boolean showFeedback = user.getsTreatment("showMessage");
 
@@ -125,11 +123,8 @@ public class ProcessUserAnswer extends HttpServlet {
 		String json = gson.toJson(result);
 		resp.getWriter().println(json);
 
-		//if (showFeedback) {
-			//resp.sendRedirect(feedbackURL);
-		//} else {
-			resp.sendRedirect(feedbackURL);
-		//}
+		resp.sendRedirect(feedbackURL);
+
 		return;
 
 	}

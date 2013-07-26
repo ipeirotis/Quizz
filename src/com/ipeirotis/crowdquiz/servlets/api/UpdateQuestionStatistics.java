@@ -59,7 +59,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
 
 		int c = getNumberOfCorrectUserAnswers(relation, mid);
 		question.setNumberOfCorrentUserAnswers(c);
-		resp.getWriter().print("Number of correct user answers:"+u+"\n");
+		resp.getWriter().print("Number of correct user answers:"+c+"\n");
 		
 		pm.makePersistent(question);
 		pm.close();
@@ -99,12 +99,13 @@ public class UpdateQuestionStatistics extends HttpServlet {
 	private int getNumberOfUserAnswers(String quiz, String mid) {
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
 		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam && action=='Submit'");
-		q.declareParameters("String quizParam, String midParam");
+		q.setFilter("relation == quizParam && mid == midParam && action==submitParam");
+		q.declareParameters("String quizParam, String midParam, String submitParam");
 
 		Map<String,Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quiz);
 		params.put("midParam", mid);
+		params.put("submitParam", "Submit");
   
 		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 		return results.size();
@@ -113,12 +114,14 @@ public class UpdateQuestionStatistics extends HttpServlet {
 	private int getNumberOfCorrectUserAnswers(String quiz, String mid) {
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
 		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam && action=='Submit' && isCorrect");
-		q.declareParameters("String quizParam, String midParam");
+		q.setFilter("relation == quizParam && mid == midParam && action==submitParam && isCorrect==correctParam");
+		q.declareParameters("String quizParam, String midParam, String submitParam, Boolean correctParam");
 
 		Map<String,Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quiz);
 		params.put("midParam", mid);
+		params.put("submitParam", "Submit");
+		params.put("correctParam", Boolean.TRUE);
   
 		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 		return results.size();

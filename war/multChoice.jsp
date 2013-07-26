@@ -49,11 +49,9 @@
 	if (useranswer == null)
 		useranswer = "";
 	String gold_prior = request.getParameter("goldprior");
-	if (gold_prior == null)
-		gold_prior = "";
+
 	String isCorrect = request.getParameter("iscorrect");
-	if (isCorrect == null)
-		isCorrect = "";
+
 	
 %>
 
@@ -71,7 +69,9 @@
 
 		
 		<%
-		if (isCorrect.equals("true")) {
+		if (isCorrect == null) {
+			;
+		} else 	if (isCorrect.equals("true")) {
 			%>
 			<div class="alert alert-success" id="showMessage">
 			The answer  <span class="label label-success"><%=useranswer%></span> was <span class="label label-success">correct</span>!
@@ -88,14 +88,15 @@
 
 
 		<%
-		if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {
+		if (gold_prior == null) {
+			; 
+		} else 	if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {
 			%>
 			<div class="alert alert-success" id="showCorrect">
 			The correct answer was <span class="label label-success"><%=gold_prior%></span>.
 			</div>
 			<%
-		}
-		if (!user.getsTreatment("showMessage")) {
+		} else 	if (!user.getsTreatment("showMessage")) {
 			%>
 			<div class="alert alert-success" id="showCorrect">
 			The correct answer was <span class="label label-success"><%=gold_prior%></span>.
