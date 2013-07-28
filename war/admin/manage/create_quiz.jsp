@@ -27,6 +27,16 @@
 							type="text">
 					</div>
 				</div>
+				
+								
+				<div class="control-group">
+					<label class="control-label" for="category">Category:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="category" name="category"
+							type="text" value="<%="category" %>">
+					</div>
+				</div>		
+				
 				<div class="control-group">
 					<label class="control-label" for="text">Question Text:</label>
 					<div class="controls">

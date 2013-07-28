@@ -26,6 +26,10 @@ public class Quiz {
 
 	// The user-friendly name of the relation that we are targeting
 	@Persistent
+	private String	category;
+	
+	// The user-friendly name of the relation that we are targeting
+	@Persistent
 	private String	name;
 
 	// The name of the relation that we are targeting. 

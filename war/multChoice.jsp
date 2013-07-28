@@ -13,8 +13,6 @@
 <%@ page import="java.util.TreeSet"%>
 <%@ page import="java.text.NumberFormat"%>
 
-
-
 <%
 	User user = User.getUseridFromCookie(request, response);
 	String relation = request.getParameter("relation");
@@ -49,14 +47,11 @@
 	if (useranswer == null)
 		useranswer = "";
 	String gold_prior = request.getParameter("goldprior");
-
 	String isCorrect = request.getParameter("iscorrect");
 
 	
 %>
-
 <jsp:include page="/header.jsp"><jsp:param name="title" value="<%=quiz.getName()%>" /></jsp:include>
-
 
 <body>
 	<div class="container" style="text-align: center; max-width:720px">
@@ -80,7 +75,7 @@
 		} else {
 			%>
 			<div class="alert alert-error" id="showMessage">
-			The answer <span class="label label-important"><%=useranswer%></span> was <span class="label label-important"">incorrect</span>!
+			The answer <span class="label label-important"><%=useranswer%></span> was <span class="label label-important">incorrect</span>!
 			</div>
 			<%
 		}
@@ -172,7 +167,7 @@
 							int i=0;
 							for (String s: answers) {
 							%>
-							<input name="useranswer-<%=i %>" type="submit" class="btn btn-primary btn-block" value="<%=s%>">
+							<input id="useranswer<%=i %>" name="useranswer<%=i %>" type="submit" class="btn btn-primary btn-block" value="<%=s%>">
 							<%
 							i++;
 							}
@@ -188,21 +183,21 @@
 				</form>
 			</div>
 		
-		<%@ include file="social-sharing.html" %>
 			
 	</div>
 
 
+<%@ include file="assets/google-analytics.html" %>
+
 	<script type="text/javascript">
 
 
-    function processJson(data) {
-		
+    function markConversion(type) {
     	// Mark a conversion in Google Analytics
 		ga('send', {
 			  'hitType': 'event', 
 			  'eventCategory': 'quiz-submission', 
-			  'eventAction': 'fill-in', 
+			  'eventAction': type, 
 			  'eventLabel': '<%= quiz.getRelation() %>',
 			  <% if (question.getWeight()!=null) {
 			  	%> 'eventValue': <%= question.getWeight() %>, <%
@@ -210,56 +205,93 @@
 			  	
 			  }
 			  %>
-			  
 			});
     }
 	
+    $(document).ready( function() { <%
+    	i=0;
+    	for (String s: answers) {
+    		if (s.equals(gold)) {
+    		%>
+    			$("#useranswer<%=i %>").click(function(){
+    				markConversion("multiple-choice-correct");
+    			});
+    		<%
+    		} else {
+    		%>
+    			$("#useranswer<%=i %>").click(function(){
+    				markConversion("multiple-choice-incorrect");
+    			});
+    		<%		
+    		}
+    	i++;
+    	}
+    	%>
+    	$("#idk_button").click(function(){
+    		markConversion("multiple-choice-idk");
+    	});
+    });
 
 	</script>
 
 <script>
 
-<%
+
+	<%
 if (user.getsTreatment("showPercentageRank")) { 
-	%>$('#showPercentageRank').show();<%
+	%>$('#showPercentageRank').show();
+	<%
 } else {
-	%>$('#showPercentageRank').hide();<%
+	%>$('#showPercentageRank').hide();
+	<%
 }
 
 if (user.getsTreatment("showTotalCorrectRank")) { 
-	%>$('#showTotalCorrectRank').show();<%
+	%>$('#showTotalCorrectRank').show();
+	<%
 } else {
-	%>$('#showTotalCorrectRank').hide(); <%
+	%>$('#showTotalCorrectRank').hide(); 
+	<%
 }
 
 if (user.getsTreatment("showTotalCorrect")) { 
-	%>$('#showTotalCorrect').show();<%
+	%>$('#showTotalCorrect').show();
+	<%
 } else {
-	%>$('#showTotalCorrect').hide(); <%
+	%>$('#showTotalCorrect').hide(); 
+	<%
 }
 
 if (user.getsTreatment("showPercentageCorrect")) { 
-	%>$('#showPercentageCorrect').show();<%
+	%>$('#showPercentageCorrect').show();
+	<%
 } else {
-	%>$('#showPercentageCorrect').hide();<%
+	%>$('#showPercentageCorrect').hide();
+	<%
 }
 
 if (user.getsTreatment("showMessage")) { 
-	%>$('#showMessage').show();  $('#showMessage').delay(5000).fadeOut();<%
+	%>$('#showMessage').show();  $('#showMessage').delay(5000).fadeOut();
+	<%
 } else {
-	%>$('#showMessage').hide();<%
+	%>$('#showMessage').hide();
+	<%
 }
 
 if (user.getsTreatment("showCorrect")) { 
-	%>$('#showCorrect').show();  $('#showCorrect').delay(5000).fadeOut();<%
+	%>$('#showCorrect').show();  $('#showCorrect').delay(5000).fadeOut();
+	<%
 } else {
-	%>$('#showCorrect').hide();<%
+	%>$('#showCorrect').hide();
+	<%
 }
 
 if (user.getsTreatment("showCrowdAnswers")) { 
-	%>$('#showCrowdAnswers').show(); $('#showCrowdAnswers').delay(5000).fadeOut();<%
+	%>$('#showCrowdAnswers').show(); $('#showCrowdAnswers').delay(5000).fadeOut();
+	<%
 } else {
-	%>$('#showCrowdAnswers').hide();<%
+	%>$('#showCrowdAnswers').hide();
+	<%
 }
 
 %>
@@ -267,7 +299,7 @@ if (user.getsTreatment("showCrowdAnswers")) {
 
 
 
-<%@ include file="google-analytics.html" %>
+
 
 
 </body>

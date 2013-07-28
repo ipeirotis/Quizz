@@ -4,12 +4,13 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="java.util.List"%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="Manage available quizzes" /></jsp:include>
+<jsp:include page="/header.jsp"><jsp:param name="title" value="Admin actions" /></jsp:include>
 
 <body>
-	<div class="container pagination-centered">
-		<div class="row span6 offset3">
-			<table class="table table-striped  table-bordered">
+	<div class="container">
+		<div class="row">
+		
+			<table class="span6 table table-striped  table-bordered">
 				<tr>
 					<th>Available actions</th>
 				</tr>

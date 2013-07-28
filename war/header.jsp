@@ -16,11 +16,18 @@
 
 
 <!-- Fav and touch icons -->
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/logo-144.png">
-<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/logo-114.png">
-<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/logo-72.png">
-<link rel="apple-touch-icon-precomposed" href="/logo-57.png">
-<link rel="shortcut icon" href="/favicon.png">
+<link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/logo-144.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/logo-114.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/logo-72.png">
+<link rel="apple-touch-icon-precomposed" href="/assets/logo-57.png">
+<link rel="shortcut icon" href="/assets/favicon.png">
+
+<meta property="og:title" content="Quizz.us: Test yourself, Compare yourself, Learn new things" />
+<meta property="og:type" content="Quizzes" />
+<meta property="og:url" content="http://www.quizz.us" />
+<meta property="og:image" content="http://www.quizz.us/assets/logo-144.png" />
+<meta property="og:description" content="A set of quizzes that will assess your knowledge in various areas, and allow you to compare against others." />
+<meta property="og:site_name" content="Quizz.us" />
 
 </head>

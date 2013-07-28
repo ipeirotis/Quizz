@@ -23,8 +23,7 @@
 	<div class="container">
 		<form class="form-horizontal" id="createQuiz"
 			action="/addQuiz" method="post"
-			style="background-color: #D4D4D4; border-radius: 5px; padding: 10px"
-			>
+			style="background-color: #D4D4D4; border-radius: 5px; padding: 10px">
 			<fieldset>
 				<legend style="text-align: center">Edit quiz</legend>
 				
@@ -34,7 +33,15 @@
 						<input class="input-xxlarge" id="relation" name="relation"
 							type="text" value="<%=relation %>" readonly>
 					</div>
-				</div>				
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="category">Category:</label>
+					<div class="controls">
+						<input class="input-xxlarge" id="category" name="category"
+							type="text" value="<%="category" %>">
+					</div>
+				</div>			
 				
 				<div class="control-group">
 					<label class="control-label" for="name">Name:</label>

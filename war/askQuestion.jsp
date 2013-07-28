@@ -83,8 +83,8 @@
 		</div>
 	</div>
 
-<%@ include file="social-sharing.html" %>
-<%@ include file="google-analytics.html" %>
+<%@ include file="assets/social-sharing.html" %>
+<%@ include file="assets/google-analytics.html" %>
 
 	<script type="text/javascript">
 		$( document ).ready(function() {

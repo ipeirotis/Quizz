@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
@@ -35,7 +35,7 @@
 						<tr>
 						<td>
 						<a href="/startQuiz?relation=<%=q.getRelation()%>"><%=q.getName()%></a>
-						<br><small>(Your progress: <div style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</div>/<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</small>
+						<br><small>(Your progress: <span style="display: inline" name="num_answered" quiz="<%=q.getRelation()%>">...</span>/<span style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</span>)</small>
 						</td>
 						</tr>
 						<%
@@ -44,13 +44,13 @@
 				%>
 			</table>
 
-<%@ include file="social-sharing.html" %>		
+<%@ include file="assets/social-sharing.html" %>		
 		
 	</div>
 
 	<script type="text/javascript">
 	<!-- For all table cells with the name FreebaseName, take the id of the cell, 	  -->
-		$('div[name^="num_questions"]').each(function(index) {
+		$('span[name^="num_questions"]').each(function(index) {
 			var element = $(this);
 			var quiz = element.attr('quiz');
 			var url = '/api/getNumberOfQuizQuestions';
@@ -63,7 +63,7 @@
 			});
 		});
 		
-		$('div[name^="num_answered"]').each(function(index) {
+		$('span[name^="num_answered"]').each(function(index) {
 			var element = $(this);
 			var quiz = element.attr('quiz');
 			var url = '/api/getNumberOfSubmittedAnswers';
@@ -79,7 +79,7 @@
 		</script>
 	
 
-<%@ include file="google-analytics.html" %>
+<%@ include file="assets/google-analytics.html" %>
 	
 </body>
 </html>

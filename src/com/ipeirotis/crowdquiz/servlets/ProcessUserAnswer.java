@@ -52,7 +52,7 @@ public class ProcessUserAnswer extends HttpServlet {
 			action = "Submit";
 			int limit=Integer.parseInt(req.getParameter("numoptions"));
 			for (int i=0; i<limit; i++) {
-				useranswer = req.getParameter("useranswer-"+i);
+				useranswer = req.getParameter("useranswer"+i);
 				if (useranswer!=null) break;
 			}
 		} else {
