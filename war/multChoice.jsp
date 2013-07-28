@@ -192,20 +192,16 @@
 	<script type="text/javascript">
 
 
-    function markConversion(type) {
+    function markConversion(type, value) {
     	// Mark a conversion in Google Analytics
 		ga('send', {
 			  'hitType': 'event', 
+			  'hitCallback': function(){ },
 			  'eventCategory': 'quiz-submission', 
 			  'eventAction': type, 
 			  'eventLabel': '<%= quiz.getRelation() %>',
-			  <% if (question.getWeight()!=null) {
-			  	%> 'eventValue': <%= question.getWeight() %>, <%
-			  } else {
-			  	
-			  }
-			  %>
-			});
+			  'eventValue': value, 
+			  } );
     }
 	
     $(document).ready( function() { <%
@@ -213,22 +209,22 @@
     	for (String s: answers) {
     		if (s.equals(gold)) {
     		%>
-    			$("#useranswer<%=i %>").click(function(){
-    				markConversion("multiple-choice-correct");
+    			$("#useranswer<%=i %>").mousedown(function(e){
+    				markConversion("multiple-choice-correct", "<%=(performance!=null)?Math.round(performance.getScore()):0 %>");
     			});
     		<%
-    		} else {
+    			} else {
     		%>
-    			$("#useranswer<%=i %>").click(function(){
-    				markConversion("multiple-choice-incorrect");
+    			$("#useranswer<%=i %>").mousedown(function(){
+    				markConversion("multiple-choice-incorrect", "<%=(performance!=null)?Math.round(performance.getScore()):0 %>");
     			});
     		<%		
     		}
     	i++;
     	}
     	%>
-    	$("#idk_button").click(function(){
-    		markConversion("multiple-choice-idk");
+    	$("#idk_button").mousedown(function(){
+    		markConversion("multiple-choice-idk", 0);
     	});
     });
 

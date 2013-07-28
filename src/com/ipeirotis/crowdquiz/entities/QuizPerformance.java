@@ -209,8 +209,12 @@ public class QuizPerformance {
 		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 		
 		int c = 0;
+		int t = 0;
 		for (UserAnswer ua : results) {
 			Boolean correct = ua.getIsCorrect();
+			if (ua.getAction().equals("Submit")) {
+				t++;
+			}
 			if (correct == null) {
 				ArrayList<String> gold = QuizQuestion.getGoldAnswers(ua.getRelation(), ua.getMid());
 				correct = gold.contains(ua.getUseranswer());
@@ -222,7 +226,7 @@ public class QuizPerformance {
 			}
 		}
 		this.correctanswers = c;
-		this.totalanswers = results.size();
+		this.totalanswers = t;
 		
 		int numberOfMultipleChoiceOptions = 4;
 		try {
