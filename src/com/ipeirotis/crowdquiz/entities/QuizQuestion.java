@@ -28,6 +28,7 @@ import net.sf.jsr107cache.CacheManager;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -154,47 +155,12 @@ public class QuizQuestion {
 	}
 
 	public static ArrayList<String> getGoldAnswers(String relation) {
-
-		Cache cache;
-
-		try {
-			CacheFactory cacheFactory = CacheManager.getInstance()
-					.getCacheFactory();
-			cache = cacheFactory.createCache(Collections.emptyMap());
-		} catch (CacheException e) {
-			cache = null;
-		}
-
 		String key = "getgoldanswers_" + relation;
-
-		ArrayList<String> result = new ArrayList<String>();
-		if (cache != null && cache.containsKey(key)) {
-			byte[] value = (byte[]) cache.get(key);
-			ObjectInputStream in;
-			try {
-				in = new ObjectInputStream(new ByteArrayInputStream(value));
-				result = (ArrayList<String>) in.readObject();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} else {
-
+		ArrayList<String> result = CachePMF.get(key, ArrayList.class);
+		if (result == null) {
 			result = getGoldAnswersNoCache(relation);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream out;
-			try {
-				out = new ObjectOutputStream(bos);
-				out.writeObject(result);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			cache.put(key, bos.toByteArray());
+			CachePMF.put(key, result);
 		}
-
 		return result;
 	}
 

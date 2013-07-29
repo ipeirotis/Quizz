@@ -3,6 +3,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="java.util.List"%>
+<%@ page import="javax.jdo.Query"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Manage available quizzes" /></jsp:include>
 
@@ -21,8 +22,8 @@
 
 				<%
 					PersistenceManager pm = PMF.get().getPersistenceManager();
-					String query = "select from " + Quiz.class.getName();
-					List<Quiz> questions = (List<Quiz>) pm.newQuery(query).execute();
+					Query query = pm.newQuery(Quiz.class);
+					List<Quiz> questions = (List<Quiz>) query.execute();
 					if (questions.isEmpty()) {
 						;
 					} else {

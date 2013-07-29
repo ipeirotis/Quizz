@@ -5,7 +5,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="java.util.List"%>
-
+<%@ page import="javax.jdo.Query"%>
 <%
 	Quiz quiz = null;
 	PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -32,10 +32,13 @@
 
 			</tr>
 			<%
-				String query = "select from " + QuizQuestion.class.getName() + " where relation=='"+relation+	"'" 
-									+"  order by weight DESC";
-				System.out.println(query);
-				List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();
+
+				Query query = pm.newQuery(QuizQuestion.class);
+				query.setFilter("relation == relationParam");
+				query.declareParameters("String lastNameParam");
+				query.setOrdering("weight DESC");
+				List<QuizQuestion> questions = (List<QuizQuestion>) query.execute(quiz);
+		
 				if (questions.isEmpty()) {
 			%>
 			<tr>

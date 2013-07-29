@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
+import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -42,7 +43,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		}
 		
 		qp.computePercentageRank();
-		//resp.getWriter().print("Persisting...\n");
+		CachePMF.put("qp_"+userid+"_"+quiz, qp);
 		pm.makePersistent(qp);
 		pm.close();
 		

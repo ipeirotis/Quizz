@@ -23,8 +23,7 @@ public class StartQuiz extends HttpServlet {
 		String userid = user.getUserid();
 		storeUserReferal(req, userid);
 
-		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
-		String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, userid, null);
+		String nextURL = Helper.getNextMultipleChoiceURL(req, relation, userid, null);
 
 		resp.sendRedirect(nextURL);
 	}

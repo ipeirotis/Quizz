@@ -14,6 +14,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.entities.Quiz;
+import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -134,7 +135,7 @@ public class AddQuiz extends HttpServlet {
 					.etaMillis(etaMillis));
 
 			resp.setContentType("text/plain");
-			String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort(); 
+			String baseURL = Helper.getBaseURL(req);
 			String url = baseURL + "/admin/manage/";
 			resp.sendRedirect(url); 
 			

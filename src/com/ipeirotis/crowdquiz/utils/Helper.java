@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.jdo.PersistenceManager;
+import javax.servlet.http.HttpServletRequest;
 
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
@@ -16,6 +17,11 @@ import com.ipeirotis.crowdquiz.entities.UserAnswer;
 public class Helper {
 
 
+	public static String getBaseURL(HttpServletRequest req) {
+		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
+		return baseURL;
+	}
+	
 
 	
 	/**
@@ -31,21 +37,27 @@ public class Helper {
 	 * @param pm
 	 * @return
 	 */
-	public static String getNextMultipleChoiceURL(String relation, String userid, String justAddedMid) {
+	public static String getNextMultipleChoiceURL(HttpServletRequest req, String relation, String userid, String justAddedMid) {
 		
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
 		
-		String query = "SELECT FROM " + QuizQuestion.class.getName() 
-							+ " WHERE relation=='" + relation + "'"
-							+ " && hasGoldAnswer==true";
-
-		@SuppressWarnings("unchecked")
-		List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();
-		Set<String> availableQuestions = new HashSet<String>();
-		for (QuizQuestion q : questions) {
-			availableQuestions.add(q.getFreebaseEntityId());
+		String key = "quizquestions_"+relation;
+		Set<String> availableQuestions = CachePMF.get(key, Set.class);
+		if (availableQuestions==null) {
+			String query = "SELECT FROM " + QuizQuestion.class.getName() 
+								+ " WHERE relation=='" + relation + "'"
+								+ " && hasGoldAnswer==true";
+	
+			@SuppressWarnings("unchecked")
+			List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();
+			availableQuestions = new HashSet<String>();
+			for (QuizQuestion q : questions) {
+				availableQuestions.add(q.getFreebaseEntityId());
+			}
+			CachePMF.put(key,availableQuestions);
 		}
 
+		/*
 		String queryGivenAnswers = "SELECT FROM " + UserAnswer.class.getName() + " WHERE userid=='" + userid
 				+ "' && relation=='" + relation + "'";
 
@@ -58,15 +70,19 @@ public class Helper {
 		if (justAddedMid!=null) {
 			alreadyAnswered.add(justAddedMid);
 		}
+		availableQuestions.removeAll(alreadyAnswered);
+		*/
 		
 		pm.close();
 		
-		availableQuestions.removeAll(alreadyAnswered);
+		
 		
 		String nextURL = "/";
 		if (availableQuestions.isEmpty()) {
 			return nextURL;
-		} else {
+		}
+		
+		
 			ArrayList<String> list = new ArrayList<String>(availableQuestions);
 			int rnd = (int)Math.round(Math.random()*availableQuestions.size());
 			if (rnd<0) rnd=0;
@@ -81,9 +97,9 @@ public class Helper {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-			return nextURL;
+			return getBaseURL(req) + nextURL;
 			
-		}
+
 	}
 
 	

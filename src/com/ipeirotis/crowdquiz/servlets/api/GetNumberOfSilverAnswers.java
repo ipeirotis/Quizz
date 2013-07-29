@@ -1,7 +1,6 @@
 package com.ipeirotis.crowdquiz.servlets.api;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -10,13 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheException;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
-
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
+import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -35,30 +30,19 @@ public class GetNumberOfSilverAnswers extends HttpServlet {
 		@Override
 		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-      Cache cache;
-
-      try {
-          CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-          cache = cacheFactory.createCache(Collections.emptyMap());
-      } catch (CacheException e) {
-          cache = null;
-      }
-      
-			String quiz = req.getParameter("quiz");
-			String key = "silveranswers_"+quiz;
 			String nocache = req.getParameter("nocache");
 			boolean useCache = true;
 			if (nocache!=null && nocache.equals("yes")) {
 				useCache = false;
 			}
 			
-			String questions;
-			if (cache!=null && useCache && cache.containsKey(key)) {
-				byte[] value = (byte[])cache.get(key);
-				questions = new String(value);
-			} else {
+			String quiz = req.getParameter("quiz");
+			String key = "silveranswers_"+quiz;
+			
+			String questions = CachePMF.get(key, String.class);
+			if (questions == null || !useCache) {
 				questions = getNumberOfQuizQuestions(quiz);
-				cache.put(key, questions.getBytes());
+				CachePMF.put(key, questions);
 			}
 			
 			resp.setContentType("application/json");

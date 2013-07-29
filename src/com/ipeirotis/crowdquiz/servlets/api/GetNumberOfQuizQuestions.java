@@ -45,7 +45,7 @@ public class GetNumberOfQuizQuestions extends HttpServlet {
       }
 			
 			String quiz = req.getParameter("quiz");
-			String key = "quizquestions_"+quiz;
+			String key = "numquizquestions_"+quiz;
 			String nocache = req.getParameter("nocache");
 			boolean useCache = true;
 			if (nocache!=null && nocache.equals("yes")) {

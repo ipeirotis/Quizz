@@ -25,6 +25,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.ipeirotis.crowdquiz.utils.Helper;
 
 @SuppressWarnings("serial")
 public class UploadGoldAnswers extends HttpServlet {
@@ -37,7 +38,7 @@ public class UploadGoldAnswers extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
+		String baseURL = Helper.getBaseURL(req);
 		String url = baseURL + "/admin/manage/";
 		resp.sendRedirect(url); 
 

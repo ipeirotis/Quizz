@@ -17,25 +17,12 @@ import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.User;
+import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class ProcessUserAnswer extends HttpServlet {
-
-	class Response {
-
-		Boolean	showFeedbackURL;
-		String	nextMultChoiceURL;
-		String	feedbackURL;
-
-		Response(Boolean showFeedbackURL, String nextMultChoiceURL, String feedbackURL) {
-
-			this.showFeedbackURL = showFeedbackURL;
-			this.nextMultChoiceURL = nextMultChoiceURL;
-			this.feedbackURL = feedbackURL;
-		}
-	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -70,21 +57,9 @@ public class ProcessUserAnswer extends HttpServlet {
 
 		Boolean isCorrect = useranswer.equals(gold);
 
-		Queue queueAnswers = QueueFactory.getQueue("answers");
-		queueAnswers.add(Builder.withUrl("/addUserAnswer")
-				.param("relation", relation)
-				.param("userid", user.getUserid())
-				.param("action", action)
-				.param("mid", mid)
-				.param("useranswer", useranswer)
-				.param("correct", isCorrect.toString())
-				.param("browser", browser)
-				.param("ipAddress", ipAddress)
-				.param("referer", referer)
-				.param("timestamp", timestamp.toString())
-				.method(TaskOptions.Method.POST));
-
-		updateQuizPerformance(user, relation, isCorrect);
+		updateQuizPerformance(user, relation, isCorrect, action);
+		
+		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser, referer, timestamp, isCorrect);
 
 		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
@@ -106,8 +81,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (correct == null)
 			correct = 0;
 
-		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
-		String multChoiceURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), mid);
+		String multChoiceURL = Helper.getNextMultipleChoiceURL(req, relation, user.getUserid(), mid);
 		String feedbackURL = multChoiceURL
 				+ "&useranswer=" + URLEncoder.encode(useranswer, "UTF-8") 
 				+ "&goldprior=" + URLEncoder.encode(gold, "UTF-8") 
@@ -115,21 +89,43 @@ public class ProcessUserAnswer extends HttpServlet {
 				+ "&totalanswers=" + URLEncoder.encode(total.toString(), "UTF-8") 
 				+ "&correctanswers=" + URLEncoder.encode(correct.toString(), "UTF-8"); 
 
-
-		Boolean showFeedback = user.getsTreatment("showMessage");
-
-		Response result = new Response(showFeedback, multChoiceURL, feedbackURL);
-		Gson gson = new Gson();
-		String json = gson.toJson(result);
-		resp.getWriter().println(json);
-
 		resp.sendRedirect(feedbackURL);
 
 		return;
 
 	}
 
-	private void updateQuizPerformance(User user, String relation, Boolean isCorrect) {
+	/**
+	 * @param user
+	 * @param relation
+	 * @param mid
+	 * @param action
+	 * @param useranswer
+	 * @param ipAddress
+	 * @param browser
+	 * @param referer
+	 * @param timestamp
+	 * @param isCorrect
+	 */
+	private void storeUserAnswer(User user, String relation, String mid, String action, String useranswer,
+			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
+
+		Queue queueAnswers = QueueFactory.getQueue("answers");
+		queueAnswers.add(Builder.withUrl("/addUserAnswer")
+				.param("relation", relation)
+				.param("userid", user.getUserid())
+				.param("action", action)
+				.param("mid", mid)
+				.param("useranswer", useranswer)
+				.param("correct", isCorrect.toString())
+				.param("browser", browser)
+				.param("ipAddress", ipAddress)
+				.param("referer", referer)
+				.param("timestamp", timestamp.toString())
+				.method(TaskOptions.Method.POST));
+	}
+
+	private void updateQuizPerformance(User user, String relation, Boolean isCorrect, String action) {
 
 		QuizPerformance qp = null;
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -141,7 +137,10 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (isCorrect) {
 			qp.increaseCorrect();
 		}
-		qp.increaseTotal();
+		if (action.equals("Submit")) {
+			qp.increaseTotal();
+		}
+		CachePMF.put("qp_"+user.getUserid()+"_"+relation, qp);
 		pm.makePersistentAll(qp);
 		pm.close();
 	}

@@ -1,12 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.*"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
+
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
@@ -18,6 +17,7 @@
 	String relation = request.getParameter("relation");
 	String mid = request.getParameter("mid");
 	String numoptions = request.getParameter("numoptions");
+	if (numoptions == null) numoptions = "4";
 
 	PersistenceManager pm = PMF.get().getPersistenceManager();
 	Quiz quiz = null;
@@ -28,13 +28,14 @@
 		quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
 		question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
 	} catch (Exception e) {
-		String baseURL = request.getScheme() + "://" + request.getServerName(); 
-		String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), null);
+		String nextURL = Helper.getNextMultipleChoiceURL(request, relation, user.getUserid(), null);
 		response.sendRedirect(nextURL);
 	}
 	
 	try {
-		performance = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, user.getUserid()));
+		performance = CachePMF.get("qp_"+user.getUserid()+"_"+relation, QuizPerformance.class);
+		if (performance == null) 
+			performance = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, user.getUserid()));
 	} catch (Exception e) {
 		//performance = new QuizPerformance(relation, u.getUserid());
 		//pm.makePersistent(performance);
@@ -158,8 +159,7 @@
 							answers.addAll(pyrite);
 							
 							if (answers.size()<2) {
-								String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-								String nextURL = baseURL + Helper.getNextMultipleChoiceURL(relation, user.getUserid(), null);
+								String nextURL = Helper.getNextMultipleChoiceURL(request, relation, user.getUserid(), null);
 								response.sendRedirect(nextURL);
 								return;
 							}

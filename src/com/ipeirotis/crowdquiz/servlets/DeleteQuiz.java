@@ -16,6 +16,7 @@ import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
+import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -26,7 +27,7 @@ public class DeleteQuiz extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		String baseURL = req.getScheme() + "://" + req.getServerName(); 
+		String baseURL = Helper.getBaseURL(req);
 		String url = baseURL + "/admin/";
 		resp.sendRedirect(url); 
 		
