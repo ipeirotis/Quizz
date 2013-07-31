@@ -16,6 +16,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 /**
@@ -237,7 +238,7 @@ public class QuizPerformance {
 			double quality = this.getPercentageCorrect();
 			if (quality<1.0/numberOfMultipleChoiceOptions) quality = 1.0/numberOfMultipleChoiceOptions;
 			
-			this.score = this.getIGScore(this.totalanswers, this.getPercentageCorrect(), numberOfMultipleChoiceOptions);
+			this.score = this.totalanswers * Helper.getInformationGain(this.getPercentageCorrect(), numberOfMultipleChoiceOptions);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -304,20 +305,7 @@ public class QuizPerformance {
 		return format.format(this.getScore());
 	}
 	
-	/**
-	 * The score is the total amount of information contributed by the user.
-	 * 
-	 * We compute the information gain for a single answer of quality q,
-	 * and multiply with the total number of answers given
-	 * @throws Exception 
-	 * 
-	 * 
-	 */
-	private double getIGScore(int answers, double q, int n) throws Exception {
-		double informationGain = entropy(q,n) - entropy(1.0/n, n);
-		return answers * informationGain;
-	}
-	
+
 	public Double getScore() {
 		if (this.score==null) return 0.0;
 		return score;
@@ -335,20 +323,5 @@ public class QuizPerformance {
 		this.rankScore = rankScore;
 	}
 
-	/**
-	 * Computing the entropy of an answer given by a user with quality q (quality=probability of correct)
-	 * and n available options in the multiple choice question
-	 * @throws Exception 
-	 * 
-	 */
-	private double entropy(double q, int n) throws Exception {
-		if (q==1.0) return 0;
-		if (q==0.0) return Math.log(1.0/(n-1))/Math.log(2);
-		if (n==1) return 0;
-		if (n<1) throw new Exception("Invalid value for n in entropy calculation");
-		if (q<0.0 || q>1.0) throw new Exception("Invalid value for q in entropy calculation");
-		double entropy = (1-q) * Math.log((1-q)/(n-1))/Math.log(2)+ q*Math.log(q)/Math.log(2);
-		return entropy;
-	}
 	
 }
