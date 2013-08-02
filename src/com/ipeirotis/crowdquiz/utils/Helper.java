@@ -165,6 +165,32 @@ public class Helper {
 		
 	}
 	
+	/**
+	 * Computes a Bayesian version of Information Gain
+	 * 
+	 * @param a The number of correct answers (plus the prior)
+	 * @param b The number of incorrect answers (plus the prior)
+	 * @param n The number of multiple options in the quiz
+	 * @return
+	 * @throws Exception
+	 */
+	public static double getBayesianVarianceInformationGain(double a, double b, int n) throws Exception {
+	
 
+		double coef_ab = (a*b)/((a+b)*(a+b+1));
+		double coef_a = a*(a+1)/((a+b+1)*(a+b));
+		double coef_b = b*(b+1)/((a+b+1)*(a+b));
+		
+		double Ja = Math.pow(Gamma.digamma(a+2) - Gamma.digamma(a+b+2), 2) + Gamma.trigamma(a+2) - Gamma.trigamma(a+b+2); 
+		double Jb = Math.pow(Gamma.digamma(b+2) - Gamma.digamma(a+b+2), 2) + Gamma.trigamma(b+2) - Gamma.trigamma(a+b+2); 
+		double Iab = (Gamma.digamma(a+1) - Gamma.digamma(a+b+2)) * (Gamma.digamma(b+1) - Gamma.digamma(a+b+2)) - Gamma.trigamma(a+b+2);
+		
+		double result = coef_a * Ja + coef_b * Jb + coef_ab * Iab;
+		
+		return result;
+		
+	}
+	
+	
 
 }
