@@ -238,7 +238,13 @@ public class QuizPerformance {
 			double quality = this.getPercentageCorrect();
 			if (quality<1.0/numberOfMultipleChoiceOptions) quality = 1.0/numberOfMultipleChoiceOptions;
 			
-			this.score = this.totalanswers * Helper.getInformationGain(this.getPercentageCorrect(), numberOfMultipleChoiceOptions);
+			double meanInfoGain = Helper.getBayesianInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
+			//double varInfoGain = Helper.getBayesianVarianceInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
+			
+			// this.score = this.totalanswers * meanInfoGain-Math.sqrt(varInfoGain);
+			this.score = this.totalanswers * meanInfoGain;
+			if (this.score<0) this.score=0.0;
+					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -300,9 +306,9 @@ public class QuizPerformance {
 	
 	public String displayScore() {
 		NumberFormat format = NumberFormat.getInstance();
-		format.setMinimumFractionDigits(2);
-		format.setMaximumFractionDigits(2);
-		return format.format(this.getScore());
+		format.setMinimumFractionDigits(0);
+		format.setMaximumFractionDigits(0);
+		return format.format(100*this.getScore());
 	}
 	
 

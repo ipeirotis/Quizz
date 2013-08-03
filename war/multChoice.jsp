@@ -120,6 +120,10 @@
 	if (performance!=null) {
 %>
 			<div class="alert alert-info" style="text-align: center">
+				<span class="label label-info" id="showScore">
+					Score: <%=performance.displayScore()%> points
+				</span>
+			
 				<span class="label label-info" id="showTotalCorrect">
 					Correct Answers: <%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%>
 				</span>
@@ -132,6 +136,8 @@
 				<span class="label label-info" id="showTotalCorrectRank">
 					Rank (#correct): <%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)
 				</span>
+
+				
 			</div>
 
 		<%

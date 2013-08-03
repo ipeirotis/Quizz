@@ -185,7 +185,11 @@ public class Helper {
 		double Jb = Math.pow(Gamma.digamma(b+2) - Gamma.digamma(a+b+2), 2) + Gamma.trigamma(b+2) - Gamma.trigamma(a+b+2); 
 		double Iab = (Gamma.digamma(a+1) - Gamma.digamma(a+b+2)) * (Gamma.digamma(b+1) - Gamma.digamma(a+b+2)) - Gamma.trigamma(a+b+2);
 		
-		double result = coef_a * Ja + coef_b * Jb + coef_ab * Iab;
+		//double f1 = Math.log(n-1)*Math.log(n-1)*b*(b+1)/((a+b)*(a+b+1));
+		
+		double h2 = coef_a * Ja + coef_b * Jb + coef_ab * Iab; // + f1;
+		double ig = getBayesianInformationGain(a, b, n);
+		double result = h2 - ig*ig;
 		
 		return result;
 		
