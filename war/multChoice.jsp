@@ -41,7 +41,6 @@
 		//pm.makePersistent(performance);
 	}
 	
-	
 	pm.close();
 	
 	String useranswer = request.getParameter("useranswer");

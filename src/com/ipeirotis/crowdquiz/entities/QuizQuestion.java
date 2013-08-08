@@ -193,6 +193,11 @@ public class QuizQuestion {
 	}
 
 	public String getRandomGoldAnswer() {
+		
+		String cachekey = "quizquestion-gold-"+this.relation+this.freebaseEntityId;
+		String result = CachePMF.get(cachekey, String.class);
+		if (result != null) return result;
+		
 		// First we need to put one correct result
 		ArrayList<String> gold = getGoldAnswers();
 		if (gold.size() == 0) {
@@ -204,11 +209,20 @@ public class QuizQuestion {
 		if (r >= gold.size()) {
 			r = gold.size() - 1;
 		}
-		return gold.get(r);
+		
+		result = gold.get(r);
+		CachePMF.put(cachekey, result);
+		
+		return result;
 	}
 	
 	public Set<String> getIncorrectAnswers(int size) {
-		Set<String> results = new TreeSet<String>();
+		
+		String cachekey = "quizquestion-pyrite-"+this.relation+this.freebaseEntityId;
+		Set<String> results = CachePMF.get(cachekey, Set.class);
+		if (results != null) return results;
+		
+		results = new TreeSet<String>();
 
 		// Get a set of potential answers from other questions
 		List<String> wrongAnswers = getGoldAnswers(this.relation);
@@ -235,21 +249,32 @@ public class QuizQuestion {
 			results.add(candidate);
 		}
 
+		CachePMF.put(cachekey, results);
+		
 		return results;
 	}
 	
 	
+	/*
 	public Set<String> getMultipleChoice(int size) {
-		Set<String> results = new TreeSet<String>();
-
+		
+		String cachekey = "quizquestion-choices-"+this.relation+this.freebaseEntityId;
+		Set<String> results = CachePMF.get(cachekey, Set.class);
+		if (results != null) return results;
+		
+		results = new TreeSet<String>();
+		
 		String gold = getRandomGoldAnswer();
 		results.add(gold);
 		
 		Set<String> pyrite = getIncorrectAnswers(size-1);
 		results.addAll(pyrite);
 		
+		CachePMF.put("quizquestion-choices-"+this.relation+this.freebaseEntityId, results);
+		
 		return results;
 	}
+	*/
 
 	/**
 	 * @return the numberOfGoldAnswers
