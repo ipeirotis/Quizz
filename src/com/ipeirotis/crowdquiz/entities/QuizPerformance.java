@@ -14,13 +14,23 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import us.quizz.repository.QuizQuestionRepository;
+
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 /**
- * Keeps track of the performance of a user within a Quiz
+ * Keeps track of the performance of a user within a Quiz. This is a "caching" object that aggregates the results
+ * from the underlying UserAnswer objects. In this object, we keep track of the number of total and correct answers that 
+ * a given user submitted for the quiz, the "score" of the user (the Bayesian Information Gain compared to random choice)
+ * and the relative rank of the user compared to other users.
+ * 
+ * The two key functions are the compute and computeRank. The first one is a relatively lightweight function that goes
+ * through all the "UserAnswer" objects for the user-quiz combination, and examine the number of correct and incorrect
+ * answers, and the computes the user score. The computeRank performs a comparison of the user scores against the scores
+ * of all the other users that participated in the quiz, and computes the relative rank of the user within the group.
  * 
  * @author ipeirotis
  * 
@@ -48,7 +58,8 @@ public class QuizPerformance {
 	@Persistent
 	Integer correctanswers;
 	
-	// The total information gain by this user
+	// The total information gain by this user. This is the total number of answers given (excluding the "I do not know" answers)
+	// multiplied with the Bayesian Information Gain.
 	@Persistent
 	Double score;
 	
@@ -136,7 +147,7 @@ public class QuizPerformance {
 			return 0.0;
 	}
 	
-	public void computePercentageRank() {
+	public void computeRank() {
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
@@ -217,7 +228,7 @@ public class QuizPerformance {
 				t++;
 			}
 			if (correct == null) {
-				ArrayList<String> gold = QuizQuestion.getGoldAnswers(ua.getRelation(), ua.getMid());
+				ArrayList<String> gold = QuizQuestionRepository.getGoldAnswers(ua.getRelation(), ua.getMid());
 				correct = gold.contains(ua.getUseranswer());
 				ua.setIsCorrect(correct);
 				pm.makePersistent(ua);

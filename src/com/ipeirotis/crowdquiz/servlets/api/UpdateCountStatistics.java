@@ -3,18 +3,17 @@ package com.ipeirotis.crowdquiz.servlets.api;
 import java.io.IOException;
 import java.util.List;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import us.quizz.repository.QuizRepository;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.entities.Quiz;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class UpdateCountStatistics extends HttpServlet {
@@ -24,10 +23,7 @@ public class UpdateCountStatistics extends HttpServlet {
 		resp.setContentType("text/plain");
 
 		Queue queue = QueueFactory.getQueue("default");
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(Quiz.class);
-		List<Quiz> list = (List<Quiz>) q.execute();
-		pm.close();
+		List<Quiz> list = QuizRepository.getQuizzes();
 
 		for (Quiz quiz : list) {
 			

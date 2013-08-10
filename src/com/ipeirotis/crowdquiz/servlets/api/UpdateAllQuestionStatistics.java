@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizQuestionRepository;
+
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -32,21 +34,10 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query query = pm.newQuery(QuizQuestion.class);
-		List<QuizQuestion> list = new ArrayList<QuizQuestion>();
-		int limit = 1000;
-		int i=0;
-		while (true) {
-			query.setRange(i, i+limit);
-			List<QuizQuestion> results = (List<QuizQuestion>) query.execute();
-			if (results.size()==0) break;
-			list.addAll(results);
-			i+=limit;
-		}
-		pm.close();
 		
-		for (QuizQuestion quizquestion : list) {
+		List<QuizQuestion> quizquestions = QuizQuestionRepository.getQuizQuestions();
+		
+		for (QuizQuestion quizquestion : quizquestions) {
 			queue.add(Builder.withUrl("/api/updateQuestionStatistics")
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 					.param("relation", quizquestion.getRelation())

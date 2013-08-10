@@ -7,6 +7,8 @@
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
+<%@ page import="us.quizz.repository.QuizRepository"%>
+<%@ page import="us.quizz.repository.QuizQuestionRepository"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -35,19 +37,11 @@
 			String relation = request.getParameter("relation");
 			String mid = request.getParameter("mid");
 
-			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Quiz q = null;
-			QuizQuestion eq = null;
+			
+			Quiz q = QuizRepository.getQuiz(relation);
+			QuizQuestion eq = QuizQuestionRepository.getQuizQuestion(relation, mid);
 
-			try {
-				q = pm.getObjectById(Quiz.class,
-						Quiz.generateKeyFromID(relation));
-				eq = pm.getObjectById(QuizQuestion.class,
-						QuizQuestion.generateKeyFromID(relation, mid));
-			} catch (Exception e) {
-				q = null;
-				eq = null;
-			}
+
 		%>
 		<div class="row">
 			<div class="span8 offset2">

@@ -11,6 +11,15 @@ import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
+/**
+ * 
+ * Takes as input a userid and a quiz, updates the user scores for the quiz, and then computes
+ * the rank of the user within the set of all other users. Finally, it puts the QuizPerformance object
+ * in the memcache for quick retrieval.
+ * 
+ * @author ipeirotis
+ *
+ */
 @SuppressWarnings("serial")
 public class UpdateUserQuizStatistics extends HttpServlet {
 
@@ -42,7 +51,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 			pm.makePersistent(qp);
 		}
 		
-		qp.computePercentageRank();
+		qp.computeRank();
 		CachePMF.put("qp_"+userid+"_"+quiz, qp);
 		pm.makePersistent(qp);
 		pm.close();
@@ -50,9 +59,5 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		
 
 	}
-	
-
-
-	
 	
 }

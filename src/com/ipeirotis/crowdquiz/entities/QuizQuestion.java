@@ -1,35 +1,19 @@
 package com.ipeirotis.crowdquiz.entities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheException;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
+import us.quizz.repository.QuizQuestionRepository;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.ipeirotis.crowdquiz.utils.CachePMF;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class QuizQuestion {
@@ -111,62 +95,7 @@ public class QuizQuestion {
 		return freebaseEntityId;
 	}
 
-	public static ArrayList<String> getGoldAnswers(String relation, String mid) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		Query q = pm.newQuery(GoldAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam");
-		q.declareParameters("String quizParam, String midParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", relation);
-		params.put("midParam", mid);
-
-		List<GoldAnswer> qresults = (List<GoldAnswer>) q.executeWithMap(params);
-		pm.close();
-
-		ArrayList<String> result = new ArrayList<String>();
-		for (GoldAnswer ga : qresults) {
-			result.add(ga.getAnswer());
-		}
-
-		return result;
-	}
-
-	private static ArrayList<String> getGoldAnswersNoCache(String relation) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-
-		Query q = pm.newQuery(GoldAnswer.class);
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", relation);
-
-		List<GoldAnswer> qresults = (List<GoldAnswer>) q.executeWithMap(params);
-		pm.close();
-
-		ArrayList<String> result = new ArrayList<String>();
-		for (GoldAnswer ga : qresults) {
-			result.add(ga.getAnswer());
-		}
-
-		return result;
-	}
-
-	public static ArrayList<String> getGoldAnswers(String relation) {
-		String key = "getgoldanswers_" + relation;
-		ArrayList<String> result = CachePMF.get(key, ArrayList.class);
-		if (result == null) {
-			result = getGoldAnswersNoCache(relation);
-			CachePMF.put(key, result);
-		}
-		return result;
-	}
-
-	public ArrayList<String> getGoldAnswers() {
-		return QuizQuestion.getGoldAnswers(this.relation, this.freebaseEntityId);
-	}
 
 	/**
 	 * @return the hasGoldAnswer
@@ -193,67 +122,21 @@ public class QuizQuestion {
 	}
 
 	public String getRandomGoldAnswer() {
-		
-		String cachekey = "quizquestion-gold-"+this.relation+this.freebaseEntityId;
-		String result = CachePMF.get(cachekey, String.class);
-		if (result != null) return result;
-		
-		// First we need to put one correct result
-		ArrayList<String> gold = getGoldAnswers();
-		if (gold.size() == 0) {
-			return null;
-		}
-
-		// Select one gold answer at random and put it in the results
-		int r = (int) Math.round(Math.random() * gold.size());
-		if (r >= gold.size()) {
-			r = gold.size() - 1;
-		}
-		
-		result = gold.get(r);
-		CachePMF.put(cachekey, result);
-		
-		return result;
+		return QuizQuestionRepository.getRandomGoldAnswer(this.relation, this.freebaseEntityId);
 	}
 	
 	public Set<String> getIncorrectAnswers(int size) {
-		
-		String cachekey = "quizquestion-pyrite-"+this.relation+this.freebaseEntityId;
-		Set<String> results = CachePMF.get(cachekey, Set.class);
-		if (results != null) return results;
-		
-		results = new TreeSet<String>();
-
-		// Get a set of potential answers from other questions
-		List<String> wrongAnswers = getGoldAnswers(this.relation);
-		
-		// Remove any self-reference
-		wrongAnswers.remove(this.name);
-		
-		// Remove all gold answers
-		ArrayList<String> gold = getGoldAnswers();
-		wrongAnswers.removeAll(gold);
-
-		// Get a list of potential good answers from KV and remove them
-		// from the list of results. We want only clearly incorrect answers
-		List<String> good_silver = getSilverAnswers(true, 0.5);
-		wrongAnswers.removeAll(good_silver);
-
-		while (results.size() < size && wrongAnswers.size()>0) {
-			int rnd = (int) Math.round(Math.random() * wrongAnswers.size());
-			if (rnd >= wrongAnswers.size()) {
-				rnd = wrongAnswers.size() - 1;
-			}
-			String candidate = wrongAnswers.get(rnd);
-			wrongAnswers.remove(rnd);
-			results.add(candidate);
-		}
-
-		CachePMF.put(cachekey, results);
-		
-		return results;
+		return QuizQuestionRepository.getIncorrectAnswers(this.relation, this.freebaseEntityId, this.name, size);
 	}
 	
+	public List<String> getUserAnswers() {
+		return QuizQuestionRepository.getUserAnswers(this.relation, this.freebaseEntityId);
+	}
+
+	public ArrayList<String> getGoldAnswers() {
+		return QuizQuestionRepository.getGoldAnswers(this.relation, this.freebaseEntityId);
+	}
+
 	
 	/*
 	public Set<String> getMultipleChoice(int size) {
@@ -300,65 +183,6 @@ public class QuizQuestion {
 		return relation;
 	}
 
-	public List<String> getSilverAnswers(boolean highprobability,
-			double prob_threshold) {
-
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(SilverAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam");
-		q.declareParameters("String quizParam, String midParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", this.relation);
-		params.put("midParam", this.freebaseEntityId);
-		List<SilverAnswer> answers = (List<SilverAnswer>) q
-				.executeWithMap(params);
-		pm.close();
-
-		List<String> result = new ArrayList<String>();
-		for (SilverAnswer ue : answers) {
-			if (highprobability) {
-				if (ue.getProbability() >= prob_threshold) {
-					result.add(ue.getAnswer());
-				}
-			} else {
-				if (ue.getProbability() <= prob_threshold) {
-					result.add(ue.getAnswer());
-				}
-			}
-			// if (ue.getUserid().equals(ignoreUser)) {
-			// continue;
-			// }
-
-		}
-		return result;
-
-	}
-
-	public List<String> getUserAnswers() {
-
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam");
-		q.declareParameters("String quizParam, String midParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", this.relation);
-		params.put("midParam", this.freebaseEntityId);
-		List<UserAnswer> answers = (List<UserAnswer>) q.executeWithMap(params);
-		pm.close();
-
-		List<String> result = new ArrayList<String>();
-		for (UserAnswer ue : answers) {
-			// if (ue.getUserid().equals(ignoreUser)) {
-			// continue;
-			// }
-			result.add(ue.getUseranswer());
-
-		}
-		return result;
-
-	}
 
 	/**
 	 * @return the weight

@@ -118,6 +118,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/freebase-v1r40lv1.15.0-rc"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/commons-math3-3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/commons-math3-3.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

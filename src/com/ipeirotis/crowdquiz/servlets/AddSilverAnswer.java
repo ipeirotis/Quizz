@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizQuestionRepository;
+
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -62,28 +64,23 @@ public class AddSilverAnswer extends HttpServlet {
 				return;
 			}
 	
+			// We only add the silver question, if there is a corresponding quizquestion.
+			// Otherwise, we ignore the addition
+			QuizQuestion qq = QuizQuestionRepository.getQuizQuestion(relation, mid);
+			if (qq==null) return;
+			qq.setHasSilverAnswers(true);
+			QuizQuestionRepository.storeQuizQuestion(qq);
+			SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
+			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
-				// We only add the gold question, if there is a corresponding quizquestion.
-				// Otherwise, we ignore the addition
-				QuizQuestion qq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-				qq.setHasSilverAnswers(true);
-				pm.makePersistent(qq);
-				
-				SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
 				pm.makePersistent(sa);
 			} catch (Exception e) {
-				//resp.setStatus(409);
+				;
+			} finally {
 				pm.close();
-				return;
 			}
 			
-			
-			
-			
-			
-			pm.close();
-
 			resp.getWriter().println("OK");
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {

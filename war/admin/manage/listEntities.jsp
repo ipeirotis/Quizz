@@ -6,17 +6,13 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="java.util.List"%>
 <%@ page import="javax.jdo.Query"%>
+
+<%@ page import="us.quizz.repository.QuizRepository"%>
 <%
-	Quiz quiz = null;
-	PersistenceManager pm = PMF.get().getPersistenceManager();
-		String relation = request.getParameter("relation");
-		String name = "";
-		try {
-	quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-	name = quiz.getName();
-		} catch (Exception e) {
+	String relation = request.getParameter("relation");
+	Quiz quiz = QuizRepository.getQuiz(relation);
+	String name = quiz.getName();
 	
-		}
 %>
 
 <jsp:include page="/header.jsp"><jsp:param name="title"
@@ -32,7 +28,7 @@
 
 			</tr>
 			<%
-
+				PersistenceManager pm = PMF.get().getPersistenceManager();
 				Query query = pm.newQuery(QuizQuestion.class);
 				query.setFilter("relation == relationParam");
 				query.declareParameters("String lastNameParam");

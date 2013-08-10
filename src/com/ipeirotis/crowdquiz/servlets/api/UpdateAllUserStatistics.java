@@ -15,8 +15,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.ipeirotis.crowdquiz.entities.Quiz;
-import com.ipeirotis.crowdquiz.entities.User;
+import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -41,31 +40,32 @@ public class UpdateAllUserStatistics extends HttpServlet {
 
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query query = pm.newQuery(User.class);
-		List<User> userlist = new ArrayList<User>();
+		
+		Query query = pm.newQuery(QuizPerformance.class);
+		List<QuizPerformance> qplist = new ArrayList<QuizPerformance>();
 		int limit = 1000;
 		int i=0;
 		while (true) {
 			query.setRange(i, i+limit);
-			List<User> results = (List<User>) query.execute();
+			List<QuizPerformance> results = (List<QuizPerformance>) query.execute();
 			if (results.size()==0) break;
-			userlist.addAll(results);
+			qplist.addAll(results);
 			i+=limit;
 		}
 		
-		query = pm.newQuery(Quiz.class);
-		List<Quiz> quizlist = (List<Quiz>) query.execute();
+		//query = pm.newQuery(Quiz.class);
+		//List<Quiz> quizlist = (List<Quiz>) query.execute();
 		
 		pm.close();
 
-		for (User user : userlist) {
-			for (Quiz quiz : quizlist) {
+		for (QuizPerformance qp : qplist) {
+			//for (Quiz quiz : quizlist) {
 				queue.add(Builder.withUrl("/api/updateUserQuizStatistics")
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
-					.param("userid", user.getUserid())
-					.param("quiz", quiz.getRelation())
+					.param("userid", qp.getUserid())
+					.param("quiz", qp.getQuiz())
 					.method(TaskOptions.Method.POST));
-			}
+			//}
 		}
 	}
 

@@ -9,11 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizQuestionRepository;
+
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.User;
@@ -67,13 +68,8 @@ public class ProcessUserAnswer extends HttpServlet {
 				.param("userid", user.getUserid())
 				.method(TaskOptions.Method.POST));
 
-		QuizQuestion question = null;
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try {
-			question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-		} finally {
-			pm.close();
-		}
+		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(relation, mid);
+
 		Integer total = question.getNumberOfUserAnswers();
 		if (total == null)
 			total = 0;

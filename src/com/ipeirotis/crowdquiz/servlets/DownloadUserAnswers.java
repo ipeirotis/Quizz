@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ipeirotis.crowdquiz.entities.Quiz;
+import us.quizz.repository.QuizRepository;
+
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -22,17 +23,10 @@ public class DownloadUserAnswers extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+		String relation = request.getParameter("relation");
+		String name = QuizRepository.getQuiz(relation).getName();
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		String relation = request.getParameter("relation");
-		String name = "";
-		try {
-			Quiz q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-			name = q.getName();
-		} catch (Exception e) {
-
-		}
-
 		Query query = pm.newQuery(UserAnswer.class);
 		query.setFilter("relation == relationParam");
 		query.declareParameters("String relationParam");

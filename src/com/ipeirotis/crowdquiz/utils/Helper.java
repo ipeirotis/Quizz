@@ -3,17 +3,13 @@ package com.ipeirotis.crowdquiz.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.math3.special.Gamma;
 
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
-import com.ipeirotis.crowdquiz.entities.UserAnswer;
+import us.quizz.repository.QuizQuestionRepository;
 
 
 public class Helper {
@@ -41,8 +37,9 @@ public class Helper {
 	 */
 	public static String getNextMultipleChoiceURL(HttpServletRequest req, String relation, String userid, String justAddedMid) {
 		
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		//PersistenceManager	pm = PMF.get().getPersistenceManager();
 		
+		/*
 		String key = "quizquestions_"+relation;
 		Set<String> availableQuestions = CachePMF.get(key, Set.class);
 		if (availableQuestions==null) {
@@ -58,6 +55,9 @@ public class Helper {
 			}
 			CachePMF.put(key,availableQuestions);
 		}
+		*/
+		
+		Set<String> availableQuestions = QuizQuestionRepository.getQuizQuestionsWithGold(relation);
 
 		/*
 		String queryGivenAnswers = "SELECT FROM " + UserAnswer.class.getName() + " WHERE userid=='" + userid
@@ -75,7 +75,7 @@ public class Helper {
 		availableQuestions.removeAll(alreadyAnswered);
 		*/
 		
-		pm.close();
+		//pm.close();
 		
 		
 		
@@ -113,12 +113,12 @@ public class Helper {
 	 */
 	public static double entropy(double q, int n) throws Exception {
 		if (q==1.0) return 0;
-		if (q==0.0) return Math.log(1.0/(n-1))/Math.log(2);
+		if (q==0.0) return -Math.log(1.0/(n-1))/Math.log(2);
 		if (n==1) return 0;
 		if (n<1) throw new Exception("Invalid value for n in entropy calculation");
 		if (q<0.0 || q>1.0) throw new Exception("Invalid value for q in entropy calculation");
 		double entropy = (1-q) * Math.log((1-q)/(n-1))/Math.log(2)+ q*Math.log(q)/Math.log(2);
-		return entropy;
+		return -entropy;
 	}
 	
 	/**

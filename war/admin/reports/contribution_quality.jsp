@@ -5,64 +5,94 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.UserReferal"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.TreeSet"%>
 <%@ page import="java.text.NumberFormat"%>
+<%@ page import="us.quizz.repository.QuizRepository"%>
+
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
 
 <body>
-	<div class="container pagination-centered">
-		<div class="row span10 offset1">
+	<div class="container">
+		<div class="well">
 			<h2>Contribution Quality</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Quiz</th>
-					<th>Users</th>
+					<th>Contributing Users</th>
 					<th>#Correct Answers</th>
 					<th>#Total Answers</th>
 					<th>Avg. User Quality</th>
-					<th>Avg. Answer Quality</th>
+
+					<th>Capacity @ 99%</th>
+					<th>Capacity @ 95%</th>
+					<th>Capacity @ 90%</th>
 				</tr>
 				<%
-				PersistenceManager	pm = PMF.get().getPersistenceManager();
-				Query query = pm.newQuery(Quiz.class);
-				@SuppressWarnings("unchecked")
-				List<Quiz> quizzes = (List<Quiz>) query.execute();
+				
+
+				List<Quiz> quizzes = QuizRepository.getQuizzes();
 				for (Quiz quiz : quizzes) {
-					query = pm.newQuery(QuizPerformance.class);
+					
+					PersistenceManager	pm = PMF.get().getPersistenceManager();
+					Query query = pm.newQuery(QuizPerformance.class);
 					query.setFilter("quiz == quizParam");
 					query.declareParameters("String quizParam");
 					List<QuizPerformance> perf = (List<QuizPerformance>) query.execute(quiz.getRelation());
+					pm.close();
 					
 					int totalUsers = perf.size();
 					int totalCorrect = 0;
 					int totalAnswers = 0;
+					double bits = 0;
 					double avgCorrectness = 0;
+
 					for (QuizPerformance qp: perf) {
 						totalCorrect += qp.getCorrectanswers();
 						totalAnswers += qp.getTotalanswers();
 						avgCorrectness += qp.getPercentageCorrect();
+						bits += qp.getScore();
+						
 					}
 					
 					NumberFormat percentFormat = NumberFormat.getPercentInstance();
 					percentFormat.setMaximumFractionDigits(0);
 					String avgUserCorrectness = percentFormat.format(avgCorrectness/totalUsers);
-					String avgAnswerCorrectness = percentFormat.format(1.0*totalCorrect/totalAnswers);
 					
+					NumberFormat format = NumberFormat.getInstance();
+					format.setMinimumFractionDigits(1);
+					format.setMaximumFractionDigits(1);
+					
+					double capacity100 = (bits/2)/totalUsers;
+					quiz.setCapacity(capacity100);
+					
+					double capacity99 = quiz.getCapacity(0.01);
+					double capacity95 = quiz.getCapacity(0.05);
+					double capacity90 = quiz.getCapacity(0.10);
+
+					quiz.setContributingUsers(totalUsers);
+					quiz.setCorrectAnswers(totalCorrect);
+					quiz.setTotalAnswers(totalAnswers);
+					quiz.setAvgUserCorrectness(avgCorrectness/totalUsers);
+					
+					QuizRepository.storeQuiz(quiz);
 					%>
 					<tr>
 						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getRelation() %>"><%=quiz.getName()%></a></td>
-						<td><%=totalUsers%></td>
-						<td><%=totalCorrect%></td>
-						<td><%=totalAnswers%></td>
-						<td><%=avgUserCorrectness%></td>
-						<td><%=avgAnswerCorrectness%></td>
+						<td><%=quiz.getContributingUsers()%></td>
+						<td><%=quiz.getCorrectAnswers()%></td>
+						<td><%=quiz.getTotalAnswers()%></td>
+						<td><%=quiz.getAvgUserCorrectness()%></td>
+						<td><%=format.format(capacity99*totalUsers) %></td>
+						<td><%=format.format(capacity95*totalUsers) %></td>
+						<td><%=format.format(capacity90*totalUsers) %></td>
 					</tr>
 					<%
 				}
-				pm.close();
+				
 				%>
 
 			</table>

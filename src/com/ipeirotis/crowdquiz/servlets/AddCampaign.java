@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizRepository;
+
 import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
 import com.ipeirotis.crowdquiz.ads.CampaignManagement;
 import com.ipeirotis.crowdquiz.entities.Quiz;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class AddCampaign extends HttpServlet {
@@ -32,10 +32,7 @@ public class AddCampaign extends HttpServlet {
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				// resp.getWriter().println("Adding ad campaign for relation: " + relation);
-
-			} else {
+			if (relation == null) {
 				return;
 			}
 
@@ -52,18 +49,10 @@ public class AddCampaign extends HttpServlet {
 			Campaign campaign = service.createCampaign(campaignName, dailyBudget);
 			Long campaignId = service.publishCampaign(campaign);
 			
-			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Quiz q;
-			try {
-				q = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
-			
+			Quiz q = QuizRepository.getQuiz(relation);
 			q.setCampaignid(campaignId);
-			pm.makePersistent(q);
-			pm.close();
+			QuizRepository.storeQuiz(q);
+
 
 			
 		} catch (Exception e) {

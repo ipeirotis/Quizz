@@ -6,6 +6,9 @@
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
 
+<%@ page import="us.quizz.repository.QuizRepository"%>
+<%@ page import="us.quizz.repository.QuizQuestionRepository"%>
+
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
@@ -20,18 +23,14 @@
 	if (numoptions == null) numoptions = "4";
 
 	PersistenceManager pm = PMF.get().getPersistenceManager();
-	Quiz quiz = null;
-	QuizQuestion question = null;
-	QuizPerformance performance = null;
-
-	try {
-		quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));
-		question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-	} catch (Exception e) {
+	Quiz quiz = QuizRepository.getQuiz(relation);
+	QuizQuestion question = QuizQuestionRepository.getQuizQuestion(relation, mid);
+	if (question==null) {
 		String nextURL = Helper.getNextMultipleChoiceURL(request, relation, user.getUserid(), null);
 		response.sendRedirect(nextURL);
 	}
 	
+	QuizPerformance performance = null;
 	try {
 		performance = CachePMF.get("qp_"+user.getUserid()+"_"+relation, QuizPerformance.class);
 		if (performance == null) 

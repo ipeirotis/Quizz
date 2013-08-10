@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
+
 import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroup;
 import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
 import com.google.appengine.api.taskqueue.Queue;
@@ -80,16 +83,9 @@ public class AddAdGroup extends HttpServlet {
 				return;
 			}
 
-			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Quiz q;
-			Long campaignId = null;
-			try {
-				q = pm.getObjectById(Quiz.class,
-						Quiz.generateKeyFromID(relation));
-				campaignId = q.getCampaignid();
-			} catch (Exception e) {
-			}
-			pm.close();
+			Quiz q = QuizRepository.getQuiz(relation);
+			Long campaignId = q.getCampaignid();
+			
 			
 			if (campaignId == null) {
 				// All relations (should) have a corresponding ad campaign.
@@ -146,18 +142,12 @@ public class AddAdGroup extends HttpServlet {
 			AdGroupAd ad = service.createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
 			Long textAdId = service.publishTextAd(ad);
 
-			if (mid != null) {
-				pm = PMF.get().getPersistenceManager();
-				try {
-					QuizQuestion eq = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(relation, mid));
-					eq.setAdTextId(textAdId);
-					eq.setAdGroupId(adgroupId);
-					pm.makePersistent(eq);
-				} catch (Exception e) {
-					logger.log(Level.WARNING, e.getMessage(), e);
-				}
-				pm.close();
-			}
+			
+			QuizQuestion eq =QuizQuestionRepository.getQuizQuestion(relation, mid);	
+			eq.setAdTextId(textAdId);
+			eq.setAdGroupId(adgroupId);
+			QuizQuestionRepository.storeQuizQuestion(eq);
+			
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
