@@ -2,7 +2,6 @@ package com.ipeirotis.crowdquiz.servlets.api;
 
 import java.io.IOException;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,8 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.QuizPerformanceRepository;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
-import com.ipeirotis.crowdquiz.utils.CachePMF;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 /**
  * 

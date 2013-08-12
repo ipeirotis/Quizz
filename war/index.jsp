@@ -1,11 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
-<%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
+<%@ page import="us.quizz.repository.QuizRepository"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Test yourself, Compare yourself, Learn new things" /></jsp:include>
 
@@ -18,19 +16,15 @@
 					<th>Quiz</th>
 				</tr>
 				<%
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				Query query = pm.newQuery(Quiz.class);
-				@SuppressWarnings("unchecked")
-				List<Quiz> questions = (List<Quiz>) query.execute();
-				pm.close();
-				if (questions.isEmpty()) {
+				List<Quiz> quizzes = QuizRepository.getQuizzes();
+				if (quizzes.isEmpty()) {
 					%>
 					<tr>
 						<td style="text-align: center">No quizzes found!</td>
 					</tr>
 					<%
 				} else {
-					for (Quiz q : questions) {
+					for (Quiz q : quizzes) {
 						%>
 						<tr>
 						<td>
@@ -43,9 +37,6 @@
 				}
 				%>
 			</table>
-
-<%@ include file="assets/social-sharing.html" %>		
-		
 	</div>
 
 	<script type="text/javascript">
@@ -53,7 +44,7 @@
 		$('span[name^="num_questions"]').each(function(index) {
 			var element = $(this);
 			var quiz = element.attr('quiz');
-			var url = '/api/getNumberOfQuizQuestions';
+			var url = '/api/getQuizCounts';
 			var params = {
 				'quiz' : quiz,
 			};
@@ -73,7 +64,7 @@
 			};
 			$.getJSON(url, params)
 			.done(function(response) {
-				element.html(response.questions);
+				element.html(response.answers);
 			});
 		});
 		</script>

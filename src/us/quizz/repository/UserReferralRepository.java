@@ -9,7 +9,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 
-
 import com.ipeirotis.crowdquiz.entities.UserReferal;
 import com.ipeirotis.crowdquiz.utils.PMF;
 

@@ -62,7 +62,7 @@ public class QuizQuestionRepository {
 			PersistenceManager	pm = PMF.get().getPersistenceManager();
 			Query query = pm.newQuery(QuizQuestion.class);
 			query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
-			query.declareParameters("String quizParam, Boolean hasGoldAnswer");
+			query.declareParameters("String quizParam, Boolean hasGoldParam");
 
 			Map<String,Object> params = new HashMap<String, Object>();
 			params.put("quizParam", quizid);

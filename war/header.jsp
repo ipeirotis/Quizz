@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Quizz: ${param.title}</title>
+<title>Quizz.us: ${param.title}</title>
 <meta name="viewport" content="initial-scale=1.0, width=320">
 
 <!--  Add JQuery -->

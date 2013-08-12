@@ -57,22 +57,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.DownloadUserAnswers</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>GetNumberOfQuizQuestions</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfQuizQuestions</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>GetNumberOfGoldAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfGoldAnswers</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>GetNumberOfSilverAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfSilverAnswers</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>GetNumberOfUserAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfUserAnswers</servlet-class>
-	</servlet>
-		
+		<servlet-name>GetQuizCounts</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetQuizCounts</servlet-class>
+	</servlet>		
 	<servlet>
 		<servlet-name>GetNumberOfSubmittedAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfSubmittedAnswers</servlet-class>
@@ -176,23 +163,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AddTreatment</servlet-name>
 		<url-pattern>/addTreatment</url-pattern>
 	</servlet-mapping>
-	
-	
 	<servlet-mapping>
-		<servlet-name>GetNumberOfQuizQuestions</servlet-name>
-		<url-pattern>/api/getNumberOfQuizQuestions</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>GetNumberOfGoldAnswers</servlet-name>
-		<url-pattern>/api/getNumberOfGoldAnswers</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>GetNumberOfSilverAnswers</servlet-name>
-		<url-pattern>/api/getNumberOfSilverAnswers</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>GetNumberOfUserAnswers</servlet-name>
-		<url-pattern>/api/getNumberOfUserAnswers</url-pattern>
+		<servlet-name>GetQuizCounts</servlet-name>
+		<url-pattern>/api/getQuizCounts</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GetNumberOfSubmittedAnswers</servlet-name>

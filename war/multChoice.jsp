@@ -54,13 +54,7 @@
 
 <body>
 	<div class="container" style="text-align: center; max-width:720px">
-
-
-			
 			<h2><a href="/"><span style="color: maroon">Quizz</span>.us</a></h2>
-
-
-
 		
 		<%
 		if (isCorrect == null) {
@@ -78,10 +72,7 @@
 			</div>
 			<%
 		}
-		%>
 
-
-		<%
 		if (gold_prior == null) {
 			; 
 		} else 	if (user.getsTreatment("showMessage") && isCorrect.equals("false")) {

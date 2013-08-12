@@ -30,7 +30,6 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 @SuppressWarnings("serial")
 public class UploadGoldAnswers extends HttpServlet {
 
-	private HttpServletResponse	r;
 	private BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
 
 	final static Logger					logger= Logger.getLogger("com.ipeirotis.adcrowdkg");

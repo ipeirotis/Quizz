@@ -159,13 +159,19 @@ public class QuizRepository {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public static List<Quiz> getQuizzes() {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
+		String key = "list_quizzes";
+		List<Quiz> quizlist = CachePMF.get(key, List.class);
+		if (quizlist != null) return quizlist;
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query query = pm.newQuery(Quiz.class);
-		List<Quiz> quizlist = (List<Quiz>) query.execute();
+		quizlist = (List<Quiz>) query.execute();
 		pm.close();
 		
+		CachePMF.put(key, quizlist);
 		return quizlist;
 	}
 }
