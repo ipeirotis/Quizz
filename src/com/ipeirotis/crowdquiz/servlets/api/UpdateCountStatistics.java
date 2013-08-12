@@ -29,30 +29,11 @@ public class UpdateCountStatistics extends HttpServlet {
 			
 			resp.getWriter().println("Updating quiz: " + quiz.getName());
 			
-			queue.add(Builder.withUrl("/api/getNumberOfQuizQuestions")
+			queue.add(Builder.withUrl("/api/getQuizCounts")
 					.param("quiz", quiz.getRelation())
-					.param("nocache", "yes")
+					.param("cache", "no")
 					.method(TaskOptions.Method.GET));
 			
-			queue.add(Builder.withUrl("/api/getNumberOfGoldAnswers")
-					.param("quiz", quiz.getRelation())
-					.param("nocache", "yes")
-					.method(TaskOptions.Method.GET));
-			
-			queue.add(Builder.withUrl("/api/getNumberOfSilverAnswers")
-					.param("quiz", quiz.getRelation())
-					.param("nocache", "yes")
-					.method(TaskOptions.Method.GET));
-			
-			queue.add(Builder.withUrl("/api/getNumberOfUserAnswers")
-					.param("quiz", quiz.getRelation())
-					.param("nocache", "yes")
-					.method(TaskOptions.Method.GET));
 		}
-		
-		
-		
-		
-
 	}
 }

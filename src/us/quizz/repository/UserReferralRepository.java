@@ -17,8 +17,6 @@ public class UserReferralRepository {
 
 	public static Set<String> getUserIDsByQuiz(String quizid) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		
-		
 		Query query = pm.newQuery(UserReferal.class);
 		query.setFilter("quiz == quizParam");
 		query.declareParameters("String quizParam");

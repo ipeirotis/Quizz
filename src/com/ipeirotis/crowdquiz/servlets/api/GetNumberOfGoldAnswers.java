@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizRepository;
+
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
@@ -34,52 +36,20 @@ public class GetNumberOfGoldAnswers extends HttpServlet {
 
 		@Override
 		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-      Cache cache = null;
-      boolean useCache = true;
-      
-      try {
-          CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-          cache = cacheFactory.createCache(Collections.emptyMap());
-      } catch (CacheException e) {
-          useCache = false;
-      }
       
 			String quiz = req.getParameter("quiz");
-			String nocache = req.getParameter("nocache");
-			
-			if (nocache!=null && nocache.equals("yes")) {
+			String cache = req.getParameter("cache");
+      boolean useCache = true;
+			if (cache!=null && cache.equals("no")) {
 				useCache = false;
 			}
 			
-			String key = "goldanswers_"+quiz;
-			
-			String questions;
-			if (useCache && cache.containsKey(key)) {
-				byte[] value = (byte[])cache.get(key);
-				questions = new String(value);
-			} else {
-				questions = getNumberOfQuizQuestions(quiz);
-				cache.put(key, questions.getBytes());
-			}
-			
+			String questions = QuizRepository.getNumberOfGoldAnswers(quiz, useCache).toString();
 			resp.setContentType("application/json");
 			Gson gson = new Gson();
 			Response result = new Response(quiz, questions);
 			String json = gson.toJson(result);
 			resp.getWriter().println(json);
-			
-
 		}
 		
-		private String getNumberOfQuizQuestions(String quiz) {
-			PersistenceManager	pm = PMF.get().getPersistenceManager();
-			Query q = pm.newQuery(GoldAnswer.class);
-			q.setFilter("relation == lastNameParam");
-			q.declareParameters("String lastNameParam");
-			@SuppressWarnings("unchecked")
-			List<GoldAnswer> results = (List<GoldAnswer>) q.execute(quiz);
-			Integer numQuestions = results.size();
-			return numQuestions.toString();
-		}
 	}

@@ -11,7 +11,7 @@
 <%@ page import="java.util.TreeSet"%>
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="us.quizz.repository.QuizRepository"%>
-
+<%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
 
@@ -26,7 +26,6 @@
 					<th>#Correct Answers</th>
 					<th>#Total Answers</th>
 					<th>Avg. User Quality</th>
-
 					<th>Capacity @ 99%</th>
 					<th>Capacity @ 95%</th>
 					<th>Capacity @ 90%</th>
@@ -37,12 +36,7 @@
 				List<Quiz> quizzes = QuizRepository.getQuizzes();
 				for (Quiz quiz : quizzes) {
 					
-					PersistenceManager	pm = PMF.get().getPersistenceManager();
-					Query query = pm.newQuery(QuizPerformance.class);
-					query.setFilter("quiz == quizParam");
-					query.declareParameters("String quizParam");
-					List<QuizPerformance> perf = (List<QuizPerformance>) query.execute(quiz.getRelation());
-					pm.close();
+					List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformances(quiz.getRelation());
 					
 					int totalUsers = perf.size();
 					int totalCorrect = 0;
@@ -85,7 +79,7 @@
 						<td><%=quiz.getContributingUsers()%></td>
 						<td><%=quiz.getCorrectAnswers()%></td>
 						<td><%=quiz.getTotalAnswers()%></td>
-						<td><%=quiz.getAvgUserCorrectness()%></td>
+						<td><%=percentFormat.format(quiz.getAvgUserCorrectness())%></td>
 						<td><%=format.format(capacity99*totalUsers) %></td>
 						<td><%=format.format(capacity95*totalUsers) %></td>
 						<td><%=format.format(capacity90*totalUsers) %></td>

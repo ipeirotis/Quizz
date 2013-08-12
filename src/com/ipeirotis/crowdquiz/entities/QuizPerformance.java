@@ -2,24 +2,21 @@ package com.ipeirotis.crowdquiz.entities;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.UserAnswerRepository;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.ipeirotis.crowdquiz.utils.Helper;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 /**
  * Keeps track of the performance of a user within a Quiz. This is a "caching" object that aggregates the results
@@ -149,17 +146,7 @@ public class QuizPerformance {
 	
 	public void computeRank() {
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-
-		Query q = pm.newQuery(QuizPerformance.class);
-		q.setFilter("quiz == quizParam");
-		q.declareParameters("String quizParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", this.quiz);
-
-		List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
-		pm.close();
+		List<QuizPerformance> results = QuizPerformanceRepository.getQuizPerformances(this.quiz);
 		
 		int higherPercentage=0;
 		int lowerPercentage=0;
@@ -208,18 +195,9 @@ public class QuizPerformance {
 	}
 	
 	public void computeCorrect() {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && userid == useridParam");
-		q.declareParameters("String quizParam, String useridParam");
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", this.quiz);
-		params.put("useridParam", this.userid);
+		List<UserAnswer> results = UserAnswerRepository.getUserAnswers(this.quiz, this.userid);
 
-		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-		
 		int c = 0;
 		int t = 0;
 		for (UserAnswer ua : results) {
@@ -231,7 +209,7 @@ public class QuizPerformance {
 				ArrayList<String> gold = QuizQuestionRepository.getGoldAnswers(ua.getRelation(), ua.getMid());
 				correct = gold.contains(ua.getUseranswer());
 				ua.setIsCorrect(correct);
-				pm.makePersistent(ua);
+				UserAnswerRepository.storeUserAnswer(ua);
 			}
 			if (correct) {
 				c++;
@@ -247,11 +225,13 @@ public class QuizPerformance {
 			// answers become accidentally informative. So, if the quality drops below random
 			// we set it at a level equal to random.
 			double quality = this.getPercentageCorrect();
-			if (quality<1.0/numberOfMultipleChoiceOptions) quality = 1.0/numberOfMultipleChoiceOptions;
+			if (quality<1.0/numberOfMultipleChoiceOptions) {
+				this.score=0.0;
+				return;
+			}
 			
 			double meanInfoGain = Helper.getBayesianInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
 			//double varInfoGain = Helper.getBayesianVarianceInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
-			
 			// this.score = this.totalanswers * meanInfoGain-Math.sqrt(varInfoGain);
 			this.score = this.totalanswers * meanInfoGain;
 			if (this.score<0) this.score=0.0;
@@ -260,8 +240,9 @@ public class QuizPerformance {
 			e.printStackTrace();
 		}
 		
-		pm.close();
+		
 	}
+
 
 	public Integer getRankPercentCorrect() {
 		return rankPercentCorrect;
