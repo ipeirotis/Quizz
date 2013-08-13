@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 
 import com.google.appengine.api.taskqueue.Queue;
@@ -33,7 +34,6 @@ public class ProcessUserAnswer extends HttpServlet {
 		User user = User.getUseridFromCookie(req, resp);
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
-		
 		String action, useranswer=null;
 		String idk = req.getParameter("idk");
 		if (idk==null) {
@@ -49,24 +49,19 @@ public class ProcessUserAnswer extends HttpServlet {
 		}
 		
 		String gold = req.getParameter("gold");
-
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
 		String referer = req.getHeader("Referer");
 		if (referer==null) referer="";
 		Long timestamp = (new Date()).getTime();
-
 		Boolean isCorrect = useranswer.equals(gold);
 
-		updateQuizPerformance(user, relation, isCorrect, action);
+		
+		quickUpdateQuizPerformance(user, relation, isCorrect, action);
 		
 		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser, referer, timestamp, isCorrect);
 
-		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
-		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
-				.param("quiz", relation)
-				.param("userid", user.getUserid())
-				.method(TaskOptions.Method.POST));
+		updateQuizPerformance(user, relation);
 
 		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(relation, mid);
 
@@ -89,6 +84,14 @@ public class ProcessUserAnswer extends HttpServlet {
 
 		return;
 
+	}
+
+	private void updateQuizPerformance(User user, String relation) {
+		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
+		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
+				.param("quiz", relation)
+				.param("userid", user.getUserid())
+				.method(TaskOptions.Method.POST));
 	}
 
 	/**
@@ -121,24 +124,31 @@ public class ProcessUserAnswer extends HttpServlet {
 				.method(TaskOptions.Method.POST));
 	}
 
-	private void updateQuizPerformance(User user, String relation, Boolean isCorrect, String action) {
+	/**
+	 * With this call, we just update the counts of correct and incorrect answers.
+	 * The full update happens asynchronously from the updateUserStatistics call that is
+	 * placed in the task queue.
+	 * 
+	 * @param user
+	 * @param relation
+	 * @param isCorrect
+	 * @param action
+	 */
+	private void quickUpdateQuizPerformance(User user, String relation, Boolean isCorrect, String action) {
 
-		QuizPerformance qp = null;
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try {
-			qp = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, user.getUserid()));
-		} catch (Exception e) {
+		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(relation, user.getUserid());
+		if (qp==null) {
 			qp = new QuizPerformance(relation, user.getUserid());
 		}
+
 		if (isCorrect) {
 			qp.increaseCorrect();
 		}
 		if (action.equals("Submit")) {
 			qp.increaseTotal();
 		}
-		CachePMF.put("qp_"+user.getUserid()+"_"+relation, qp);
-		pm.makePersistentAll(qp);
-		pm.close();
+		QuizPerformanceRepository.cacheQuizPerformance(qp);
+		
 	}
 
 }

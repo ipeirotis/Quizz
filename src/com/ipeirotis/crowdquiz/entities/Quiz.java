@@ -56,25 +56,28 @@ public class Quiz {
 	private Long	campaignid;
 	
 	// The following numbers are statistics about the quiz
+	
+	// The number of users that arrived in a Quiz page
 	@Persistent
 	private Integer totalUsers;
 	
+	// The number of users that answered at least one non-IDK question
 	@Persistent
 	private Integer contributingUsers;
 
-
+	// The conversion rate = contributingUsers/totalUsers
 	@Persistent
 	private Double conversionRate;
 
-
+	// The number of correct answers submitted
 	@Persistent
 	private Integer correctAnswers;
 
-
+	// The total number of non-IDK answers submitted
 	@Persistent
 	private Integer totalAnswers;
 
-
+	
 	@Persistent
 	private Double avgUserCorrectness;
 
@@ -85,7 +88,58 @@ public class Quiz {
 
 	@Persistent
 	private Double capacity;
+	
+	@Persistent
+	private Integer questions;
+	
+	@Persistent
+	private Integer gold;
+	
+	@Persistent
+	private Integer silver;
+	
+	@Persistent
+	private Integer submitted;
 
+
+	public Integer getQuestions() {
+		return questions;
+	}
+
+
+	public void setQuestions(Integer questions) {
+		this.questions = questions;
+	}
+
+
+	public Integer getGold() {
+		return gold;
+	}
+
+
+	public void setGold(Integer gold) {
+		this.gold = gold;
+	}
+
+
+	public Integer getSilver() {
+		return silver;
+	}
+
+
+	public void setSilver(Integer silver) {
+		this.silver = silver;
+	}
+
+
+	public Integer getSubmitted() {
+		return submitted;
+	}
+
+
+	public void setSubmitted(Integer submitted) {
+		this.submitted = submitted;
+	}
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -120,7 +174,6 @@ public class Quiz {
 		try {
 			return capacity/ (1-Helper.entropy(1-error,2));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return capacity;
 		}
@@ -141,17 +194,12 @@ public class Quiz {
 		return correctAnswers;
 	}
 
-	/**
-	 * @return the freebaseType
-	 */
 	public String getFreebaseType() {
 
 		return freebaseType;
 	}
 	
-	/**
-	 * @return the key
-	 */
+
 	public Key getKey() {
 
 		return key;
@@ -162,17 +210,13 @@ public class Quiz {
 		return name;
 	}
 	
-	/**
-	 * @return the questionText
-	 */
+
 	public String getQuestionText() {
 
 		return questionText;
 	}
 
-	/**
-	 * @return the relation
-	 */
+
 	public String getRelation() {
 
 		return relation;
@@ -187,7 +231,6 @@ public class Quiz {
 	}
 	
 	
-	
 	public void setAvgUserCorrectness(Double avgUserCorrectness) {
 		this.avgUserCorrectness = avgUserCorrectness;
 	}
@@ -200,16 +243,6 @@ public class Quiz {
 	public void setCapacity(Double capacity) {
 		this.capacity = capacity;
 	}
-
-	/**
-	 * @return the freebaseAttribute
-	 */
-	/*
-	public String getFreebaseAttribute() {
-
-		return freebaseAttribute;
-	}
-	*/
 
 	public void setContributingUsers(Integer contributingUsers) {
 		this.contributingUsers = contributingUsers;

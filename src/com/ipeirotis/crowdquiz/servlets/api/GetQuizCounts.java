@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.QuizRepository;
 
 import com.google.gson.Gson;
+import com.ipeirotis.crowdquiz.entities.Quiz;
+
 
 @SuppressWarnings("serial")
 public class GetQuizCounts extends HttpServlet {
@@ -39,10 +41,28 @@ public class GetQuizCounts extends HttpServlet {
 				useCache = false;
 			}
 			
-			Integer questions = QuizRepository.getNumberOfQuizQuestions(quiz, useCache);
-			Integer gold = QuizRepository.getNumberOfGoldAnswers(quiz, useCache);
-			Integer silver = QuizRepository.getNumberOfSilverAnswers(quiz, useCache);
-			Integer submitted = QuizRepository.getNumberOfUserAnswers(quiz, useCache);
+			Quiz q = QuizRepository.getQuiz(quiz);
+			
+			Integer questions, gold, silver, submitted;
+			
+			if (useCache == false) {
+				questions = QuizRepository.getNumberOfQuizQuestions(quiz, useCache);
+				gold = QuizRepository.getNumberOfGoldAnswers(quiz, useCache);
+				silver = QuizRepository.getNumberOfSilverAnswers(quiz, useCache);
+				submitted = QuizRepository.getNumberOfUserAnswers(quiz, useCache);
+				
+				q.setQuestions(questions);
+				q.setGold(gold);
+				q.setSilver(silver);
+				q.setSubmitted(submitted);
+				QuizRepository.storeQuiz(q);
+			} else {
+				questions = q.getQuestions();
+				gold = q.getGold();
+				silver = q.getSilver();
+				submitted = q.getSubmitted();
+			}
+			
 			resp.setContentType("application/json");
 			Gson gson = new Gson();
 			Response result = new Response(quiz, questions, gold, silver, submitted);

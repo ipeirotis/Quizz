@@ -21,16 +21,21 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 public class QuizQuestionRepository {
 
 	public static QuizQuestion getQuizQuestion(String quizid, String mid) {
+		
+		String key = "quizquestion_"+quizid+mid;
+		QuizQuestion question = CachePMF.get(key, QuizQuestion.class);
+		if (question!=null) return question;
+		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		QuizQuestion quiz = null;
 		try {
-			quiz = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(quizid, mid));
+			question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(quizid, mid));
 		} catch (Exception e) {
 			;
 		} finally {
 			pm.close();
 		}
-		return quiz;
+		CachePMF.put(key, question);
+		return question;
 	}
 	
 	public static List<QuizQuestion> getQuizQuestions() {
@@ -57,29 +62,29 @@ public class QuizQuestionRepository {
 		
 		String key = "quizquestions_"+quizid;
 		Set<String> availableQuestions = CachePMF.get(key, Set.class);
-		if (availableQuestions==null) {
-			
-			PersistenceManager	pm = PMF.get().getPersistenceManager();
-			Query query = pm.newQuery(QuizQuestion.class);
-			query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
-			query.declareParameters("String quizParam, Boolean hasGoldParam");
-
-			Map<String,Object> params = new HashMap<String, Object>();
-			params.put("quizParam", quizid);
-			params.put("hasGoldParam", Boolean.TRUE);
-			
-			@SuppressWarnings("unchecked")
-			List<QuizQuestion> questions = (List<QuizQuestion>) query.executeWithMap(params);
-			
-			availableQuestions = new HashSet<String>();
-			for (QuizQuestion q : questions) {
-				availableQuestions.add(q.getFreebaseEntityId());
-			}
-			pm.close();
-			
-			CachePMF.put(key,availableQuestions);
-		}
+		if (availableQuestions!=null) return availableQuestions;
 		
+		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(QuizQuestion.class);
+		query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
+		query.declareParameters("String quizParam, Boolean hasGoldParam");
+
+		Map<String,Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quizid);
+		params.put("hasGoldParam", Boolean.TRUE);
+		
+		@SuppressWarnings("unchecked")
+		List<QuizQuestion> questions = (List<QuizQuestion>) query.executeWithMap(params);
+		
+		availableQuestions = new HashSet<String>();
+		for (QuizQuestion q : questions) {
+			availableQuestions.add(q.getFreebaseEntityId());
+		}
+		pm.close();
+		
+		CachePMF.put(key,availableQuestions);
+
+	
 		return availableQuestions;
 	}
 	
@@ -119,15 +124,8 @@ public class QuizQuestionRepository {
 		
 		@SuppressWarnings("unchecked")
 		ArrayList<String> result = CachePMF.get(key, ArrayList.class);
-		if (result == null) {
-			result = getAllGoldAnswersNoCache(quizid);
-			CachePMF.put(key, result);
-		}
-		return result;
-	}
-
-	
-	private static ArrayList<String> getAllGoldAnswersNoCache(String quizid) {
+		if (result != null) return result;
+		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		Query q = pm.newQuery(GoldAnswer.class);
@@ -140,13 +138,16 @@ public class QuizQuestionRepository {
 		List<GoldAnswer> qresults = (List<GoldAnswer>) q.executeWithMap(params);
 		pm.close();
 
-		ArrayList<String> result = new ArrayList<String>();
+		result = new ArrayList<String>();
 		for (GoldAnswer ga : qresults) {
 			result.add(ga.getAnswer());
 		}
-
+		
+		CachePMF.put(key, result);
 		return result;
+		
 	}
+
 	
 	public static String getRandomGoldAnswer(String quizid, String mid) {
 		
@@ -189,11 +190,7 @@ public class QuizQuestionRepository {
 
 		List<String> result = new ArrayList<String>();
 		for (UserAnswer ue : answers) {
-			// if (ue.getUserid().equals(ignoreUser)) {
-			// continue;
-			// }
 			result.add(ue.getUseranswer());
-
 		}
 		return result;
 
@@ -207,8 +204,7 @@ public class QuizQuestionRepository {
 		Set<String> results = CachePMF.get(cachekey, Set.class);
 		if (results != null) return results;
 		
-		results = new TreeSet<String>();
-
+		
 		// Get a set of potential answers from other questions
 		List<String> wrongAnswers = QuizQuestionRepository.getAllQuizGoldAnswers(quizid);
 		
@@ -224,6 +220,7 @@ public class QuizQuestionRepository {
 		List<String> good_silver = getSilverAnswers(quizid, mid, true, 0.5);
 		wrongAnswers.removeAll(good_silver);
 
+		results = new TreeSet<String>();
 		while (results.size() < size && wrongAnswers.size()>0) {
 			int rnd = (int) Math.round(Math.random() * wrongAnswers.size());
 			if (rnd >= wrongAnswers.size()) {

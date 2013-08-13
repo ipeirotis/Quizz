@@ -15,7 +15,9 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 public class QuizPerformanceRepository {
 
 	public static QuizPerformance getQuizPerformance(String quizid, String userid) {
-		QuizPerformance qp = null;
+		String key = "qp_"+quizid+"_"+userid;
+		QuizPerformance qp = CachePMF.get(key, QuizPerformance.class);
+		if (qp!=null) return qp;
 	
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
@@ -25,7 +27,7 @@ public class QuizPerformanceRepository {
 		} finally {
 			pm.close();
 		}
-		
+		CachePMF.put(key, qp);
 		return qp;
 	} 
 	
@@ -39,6 +41,7 @@ public class QuizPerformanceRepository {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizid);
 
+		@SuppressWarnings("unchecked")
 		List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
 		pm.close();
 		
@@ -46,16 +49,28 @@ public class QuizPerformanceRepository {
 	}
 	
 	public static void storeQuizPerformance(QuizPerformance qp) {
+		String key = "qp_"+qp.getQuiz()+"_"+qp.getUserid();
+		CachePMF.put(key, qp);
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		pm.makePersistent(qp);
-		CachePMF.put("qp_"+qp.getUserid()+"_"+qp.getQuiz(), qp);
 		pm.close();
 	} 
 	
-	public static void deleteQuizPerformance(QuizPerformance qp) {
+	public static void cacheQuizPerformance(QuizPerformance qp) {
+		String key = "qp_"+qp.getQuiz()+"_"+qp.getUserid();
+		CachePMF.put(key, qp);
+	} 
+	
+	public static void deleteQuizPerformance(String quizid, String userid) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		pm.deletePersistent(qp);
-		pm.close();
+		try {
+			QuizPerformance qp = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quizid, userid));
+			pm.deletePersistent(qp);
+		} catch (Exception e) {
+			;
+		} finally {
+			pm.close();
+		}
 	} 
 	
 }

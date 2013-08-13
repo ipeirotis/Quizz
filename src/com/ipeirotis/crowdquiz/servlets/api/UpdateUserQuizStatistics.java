@@ -22,8 +22,6 @@ import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 @SuppressWarnings("serial")
 public class UpdateUserQuizStatistics extends HttpServlet {
 
-
-
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
@@ -33,16 +31,13 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		if (userid == null || quiz ==null) return;
 
 		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(quiz, userid);
-		boolean indatastore = (qp!=null);
-		
-		if (!indatastore) {
+		if (qp==null) {
 			qp = new QuizPerformance(quiz, userid);
 		}	
-		
 		qp.computeCorrect();
 		
 		if (qp.getTotalanswers()==0) {
-			if (indatastore) QuizPerformanceRepository.deleteQuizPerformance(qp);
+			QuizPerformanceRepository.deleteQuizPerformance(quiz, userid);
 			return;
 		}
 		
