@@ -31,7 +31,7 @@ public class QuizPerformanceRepository {
 		return qp;
 	} 
 	
-	public static List<QuizPerformance> getQuizPerformances(String quizid) {
+	public static List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		Query q = pm.newQuery(QuizPerformance.class);
@@ -40,6 +40,23 @@ public class QuizPerformanceRepository {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizid);
+
+		@SuppressWarnings("unchecked")
+		List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
+		pm.close();
+		
+		return results;
+	}
+	
+	public static List<QuizPerformance> getQuizPerformancesByUser(String userid) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+
+		Query q = pm.newQuery(QuizPerformance.class);
+		q.setFilter("userid == useridParam");
+		q.declareParameters("String useridParam");
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("useridParam", userid);
 
 		@SuppressWarnings("unchecked")
 		List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);

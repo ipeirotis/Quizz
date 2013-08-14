@@ -146,7 +146,7 @@ public class QuizPerformance {
 	
 	public void computeRank() {
 		
-		List<QuizPerformance> results = QuizPerformanceRepository.getQuizPerformances(this.quiz);
+		List<QuizPerformance> results = QuizPerformanceRepository.getQuizPerformancesByQuiz(this.quiz);
 		
 		int higherPercentage=0;
 		int lowerPercentage=0;

@@ -19,8 +19,11 @@ import javax.persistence.EntityNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import us.quizz.repository.QuizRepository;
+
 @Api(
-		name = "quiz",
+		name = "quizz",
+		description = "The API for Quizz.us",
 		version = "v1",
 		namespace = @ApiNamespace(
 				ownerDomain = "www.quizz.us", 
@@ -43,8 +46,9 @@ public class QuizEndpoint {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
-		List<Quiz> execute = null;
+		List<Quiz> execute = QuizRepository.getQuizzes();
 
+		/*
 		try {
 			mgr = getPersistenceManager();
 			Query query = mgr.newQuery(Quiz.class);
@@ -71,6 +75,7 @@ public class QuizEndpoint {
 		} finally {
 			mgr.close();
 		}
+		*/
 
 		return CollectionResponse.<Quiz> builder().setItems(execute)
 				.setNextPageToken(cursorString).build();

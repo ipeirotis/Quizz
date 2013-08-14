@@ -7,13 +7,15 @@
 
 <!--  Add JQuery -->
 <script src="/jquery/jquery-2.0.3.min.js"></script>
+<script src="/jquery/jquery.cookie.js"></script>
 
 <!--  Add Twitter Bootstrap -->
 <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 
+<!--  Add Quizz.us javascript functions -->
+<script src="/js/quizz.js"></script>
 
 <!-- Fav and touch icons -->
 <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">

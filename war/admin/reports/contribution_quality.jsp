@@ -36,7 +36,7 @@
 				List<Quiz> quizzes = QuizRepository.getQuizzes();
 				for (Quiz quiz : quizzes) {
 					
-					List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformances(quiz.getRelation());
+					List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getRelation());
 					
 					int totalUsers = perf.size();
 					int totalCorrect = 0;

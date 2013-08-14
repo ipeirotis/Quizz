@@ -224,7 +224,7 @@
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
   <init-param>
    <param-name>services</param-name>
-   <param-value>com.ipeirotis.crowdquiz.entities.QuizEndpoint</param-value>
+   <param-value>com.ipeirotis.crowdquiz.entities.QuizEndpoint,com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint</param-value>
   </init-param>
  </servlet>
  <servlet-mapping>
