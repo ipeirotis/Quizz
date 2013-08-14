@@ -122,6 +122,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/freebase-v1r41lv1.15.0-rc"/>
+	<classpathentry exported="true" kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/freebase-v1r41lv1.15.0-rc"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
