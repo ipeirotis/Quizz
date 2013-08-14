@@ -25,6 +25,7 @@ public class UserReferralRepository {
 		int i=0;
 		while (true) {
 			query.setRange(i, i+limit);
+			@SuppressWarnings("unchecked")
 			List<UserReferal> results = (List<UserReferal>) query.execute(quizid);
 			if (results.size()==0) break;
 			for (UserReferal ur : results) {
