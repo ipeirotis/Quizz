@@ -47,6 +47,7 @@ public class QuizQuestionRepository {
 		int i=0;
 		while (true) {
 			query.setRange(i, i+limit);
+			@SuppressWarnings("unchecked")
 			List<QuizQuestion> results = (List<QuizQuestion>) query.execute();
 			if (results.size()==0) break;
 			list.addAll(results);
@@ -61,6 +62,7 @@ public class QuizQuestionRepository {
 		
 		
 		String key = "quizquestions_"+quizid;
+		@SuppressWarnings("unchecked")
 		Set<String> availableQuestions = CachePMF.get(key, Set.class);
 		if (availableQuestions!=null) return availableQuestions;
 		

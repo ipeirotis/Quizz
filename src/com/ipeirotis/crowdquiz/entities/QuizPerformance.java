@@ -147,18 +147,12 @@ public class QuizPerformance {
 	public void computeRank() {
 		
 		List<QuizPerformance> results = QuizPerformanceRepository.getQuizPerformancesByQuiz(this.quiz);
+		this.totalUsers = results.size();
 		
 		int higherPercentage=0;
-		int lowerPercentage=0;
-		int equalPercentage=0;
-		
 		int higherScore=0;
-		int lowerScore=0;
-		int equalScore=0;
-		
 		int higherCorrect=0;
-		int lowerCorrect=0;
-		int equalCorrect=0;
+
 		
 		for (QuizPerformance qp : results) {
 			if (qp.userid.equals(this.userid)) continue;
@@ -166,32 +160,32 @@ public class QuizPerformance {
 			if (qp.getPercentageCorrect()>this.getPercentageCorrect()) {
 				higherPercentage++;
 			} else if (qp.getPercentageCorrect()<this.getPercentageCorrect()) {
-				lowerPercentage++;
+				//lowerPercentage++;
 			} else {
-				equalPercentage++; // Just in case we want to be more conservative in reporting rank, taking ties into account
+				//equalPercentage++; // Just in case we want to be more conservative in reporting rank, taking ties into account
 			}
 			
 			if (qp.getScore()>this.getScore()) {
 				higherScore++;
 			} else if (qp.getScore()<this.getScore()) {
-				lowerScore++;
+				//lowerScore++;
 			} else {
-				equalScore++; // Just in case we want to be more conservative in reporting rank, taking ties into account
+				//equalScore++; // Just in case we want to be more conservative in reporting rank, taking ties into account
 			}
 			
 			
 			if (qp.getCorrectanswers() > this.getCorrectanswers()) {
 				higherCorrect++;
 			} else if (qp.getCorrectanswers() < this.getCorrectanswers()) {
-				lowerCorrect++;
+				//lowerCorrect++;
 			} else {
-				equalCorrect++; // Just in case we want to be more conservative in reporting rank, taking ties into account
+				//equalCorrect++; // Just in case we want to be more conservative in reporting rank, taking ties into account
 			}
 		}
 		this.rankPercentCorrect = higherPercentage+1;
 		this.rankTotalCorrect = higherCorrect+1;
 		this.rankScore=higherScore+1;
-		this.totalUsers = higherCorrect + lowerCorrect + equalCorrect + 1;
+		
 	}
 	
 	public void computeCorrect() {

@@ -27,6 +27,7 @@ public class UserAnswerRepository {
 		params.put("quizParam", quiz);
 		params.put("useridParam", userid);
 
+		@SuppressWarnings("unchecked")
 		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
 		pm.close();
 		return results;

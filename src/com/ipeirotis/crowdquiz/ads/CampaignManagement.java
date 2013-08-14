@@ -396,7 +396,8 @@ public class CampaignManagement extends HttpServlet {
 			String displayURL = "http://crowd-power.appspot.com";
 			String targetURL = "http://crowd-power.appspot.com";
 			AdGroupAd ad = service.createTextAd(adHeadline, adDescr1, adDescr2, displayURL, targetURL, adgroupId);
-			Long textAdId = service.publishTextAd(ad);
+			//Long textAdId = service.publishTextAd(ad);
+			service.publishTextAd(ad);
 		} catch (Exception e) {
 			//logger.log(Level.SEVERE, "Exception in Testing.", e);
 			e.printStackTrace();

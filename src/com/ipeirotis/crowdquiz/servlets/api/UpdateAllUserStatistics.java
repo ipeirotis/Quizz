@@ -47,6 +47,7 @@ public class UpdateAllUserStatistics extends HttpServlet {
 		int i=0;
 		while (true) {
 			query.setRange(i, i+limit);
+			@SuppressWarnings("unchecked")
 			List<QuizPerformance> results = (List<QuizPerformance>) query.execute();
 			if (results.size()==0) break;
 			qplist.addAll(results);
