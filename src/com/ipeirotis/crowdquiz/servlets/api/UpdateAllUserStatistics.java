@@ -41,7 +41,6 @@ public class UpdateAllUserStatistics extends HttpServlet {
 		resp.setContentType("text/plain");
 
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		
 		List<QuizPerformance> qplist = QuizPerformanceRepository.getQuizPerformances();
 
 		for (QuizPerformance qp : qplist) {
