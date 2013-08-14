@@ -44,8 +44,8 @@
 	<div class="container" style="text-align: center; max-width:720px">
 			<h2><a href="/"><span style="color: maroon">Quizz</span>.us</a></h2>
 			
-			
-			
+
+		<div id="feedback">
 			
 		<%
 		if (isCorrect == null) {
@@ -96,32 +96,16 @@
 			</div>
 			<%
 		} 
-
-	if (performance!=null) {
 %>
+</div>
 			<div class="alert alert-info" style="text-align: center">
-				<span class="label label-info" id="showScore">
-					Score: <%=performance.displayScore()%> points
-				</span>
-			
-				<span class="label label-info" id="showTotalCorrect">
-					Correct Answers: <%=performance.getCorrectanswers()%>/<%=performance.getTotalanswers()%>
-				</span>
-				<span class="label label-info" id="showPercentageCorrect">
-					Correct (%): <%=performance.displayPercentageCorrect()%>
-				</span>
-				<span class="label label-info"  id="showPercentageRank">
-					Rank (%correct): <%=performance.getRankPercentCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankPercentageCorrect()%>)
-				</span>
-				<span class="label label-info" id="showTotalCorrectRank">
-					Rank (#correct): <%=performance.getRankTotalCorrect()%>/<%=performance.getTotalUsers()%> (Top-<%=performance.displayRankTotalCorrect()%>)
-				</span>
-
-				
+				<span class="label label-info" id="showScore"></span>
+				<span class="label label-info" id="showTotalCorrect"></span>
+				<span class="label label-info" id="showPercentageCorrect"></span>
+				<span class="label label-info"  id="showPercentageRank"></span>
+				<span class="label label-info" id="showTotalCorrectRank"></span>
 			</div>
 
-		<%
-	}
 %>
 
 		<div class="well" style="text-align: center;">
@@ -176,19 +160,6 @@
 <%@ include file="assets/google-analytics.html" %>
 
 	<script type="text/javascript">
-
-
-    function markConversion(type, value) {
-    	// Mark a conversion in Google Analytics
-		ga('send', {
-			  'hitType': 'event', 
-			  'hitCallback': function(){ },
-			  'eventCategory': 'quiz-submission', 
-			  'eventAction': type, 
-			  'eventLabel': '<%= quiz.getRelation() %>',
-			  'eventValue': value, 
-			  } );
-    }
 	
     $(document).ready( function() { <%
     	i=0;
@@ -216,73 +187,34 @@
 
 	</script>
 
-<script>
+	<script>
 
-
-	<%
-if (user.getsTreatment("showPercentageRank")) { 
-	%>$('#showPercentageRank').show();
-	<%
-} else {
-	%>$('#showPercentageRank').hide();
-	<%
-}
-
-if (user.getsTreatment("showTotalCorrectRank")) { 
-	%>$('#showTotalCorrectRank').show();
-	<%
-} else {
-	%>$('#showTotalCorrectRank').hide(); 
-	<%
-}
-
-if (user.getsTreatment("showTotalCorrect")) { 
-	%>$('#showTotalCorrect').show();
-	<%
-} else {
-	%>$('#showTotalCorrect').hide(); 
-	<%
-}
-
-if (user.getsTreatment("showPercentageCorrect")) { 
-	%>$('#showPercentageCorrect').show();
-	<%
-} else {
-	%>$('#showPercentageCorrect').hide();
-	<%
-}
-
-if (user.getsTreatment("showMessage")) { 
-	%>$('#showMessage').show();  $('#showMessage').delay(5000).fadeOut();
-	<%
-} else {
-	%>$('#showMessage').hide();
-	<%
-}
-
-if (user.getsTreatment("showCorrect")) { 
-	%>$('#showCorrect').show();  $('#showCorrect').delay(5000).fadeOut();
-	<%
-} else {
-	%>$('#showCorrect').hide();
-	<%
-}
-
-if (user.getsTreatment("showCrowdAnswers")) { 
-	%>$('#showCrowdAnswers').show(); $('#showCrowdAnswers').delay(5000).fadeOut();
-	<%
-} else {
-	%>$('#showCrowdAnswers').hide();
-	<%
-}
-
-%>
-</script>
-
-
-
-
-
+	
+	$(document).ready(function() {
+		
+		$('#feedback').delay(2000).fadeOut();
+		
+		var user = getUsername();
+		var quiz = getURLParameterByName('relation');
+		$.when(getUserTreatments(user), getUserQuizPerformance(quiz, user)).done(function(a1, a2){
+			
+			// Display the performance scores
+			performance = a2[0];
+			displayPerformanceScores(quiz, performance);
+			
+			// Show/hide the various elements, according to the user treatments.
+			userdata = a1[0];
+			$.each(userdata.treatments, function(key, value) {
+				var element = $(document.getElementById(key));
+				if (value == true) {
+					element.show();
+				} else {
+					element.hide();
+				}
+			});
+		});
+	});
+	</script>
 
 </body>
 </html>

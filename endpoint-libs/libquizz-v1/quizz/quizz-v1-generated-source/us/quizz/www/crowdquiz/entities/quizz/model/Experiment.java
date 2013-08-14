@@ -19,7 +19,7 @@
 package us.quizz.www.crowdquiz.entities.quizz.model;
 
 /**
- * Model definition for CollectionResponseQuiz.
+ * Model definition for Experiment.
  *
  * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
  * transmitted over HTTP when working with the . For a detailed explanation see:
@@ -29,64 +29,58 @@ package us.quizz.www.crowdquiz.entities.quizz.model;
  * @author Google, Inc.
  */
 @SuppressWarnings("javadoc")
-public final class CollectionResponseQuiz extends com.google.api.client.json.GenericJson {
+public final class Experiment extends com.google.api.client.json.GenericJson {
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.util.List<Quiz> items;
-
-  static {
-    // hack to force ProGuard to consider Quiz used, since otherwise it would be stripped out
-    // see http://code.google.com/p/google-api-java-client/issues/detail?id=528
-    com.google.api.client.util.Data.nullOf(Quiz.class);
-  }
+  private Key key;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.String nextPageToken;
+  private JsonMap treatments;
 
   /**
    * @return value or {@code null} for none
    */
-  public java.util.List<Quiz> getItems() {
-    return items;
+  public Key getKey() {
+    return key;
   }
 
   /**
-   * @param items items or {@code null} for none
+   * @param key key or {@code null} for none
    */
-  public CollectionResponseQuiz setItems(java.util.List<Quiz> items) {
-    this.items = items;
+  public Experiment setKey(Key key) {
+    this.key = key;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getNextPageToken() {
-    return nextPageToken;
+  public JsonMap getTreatments() {
+    return treatments;
   }
 
   /**
-   * @param nextPageToken nextPageToken or {@code null} for none
+   * @param treatments treatments or {@code null} for none
    */
-  public CollectionResponseQuiz setNextPageToken(java.lang.String nextPageToken) {
-    this.nextPageToken = nextPageToken;
+  public Experiment setTreatments(JsonMap treatments) {
+    this.treatments = treatments;
     return this;
   }
 
   @Override
-  public CollectionResponseQuiz set(String fieldName, Object value) {
-    return (CollectionResponseQuiz) super.set(fieldName, value);
+  public Experiment set(String fieldName, Object value) {
+    return (Experiment) super.set(fieldName, value);
   }
 
   @Override
-  public CollectionResponseQuiz clone() {
-    return (CollectionResponseQuiz) super.clone();
+  public Experiment clone() {
+    return (Experiment) super.clone();
   }
 
 }

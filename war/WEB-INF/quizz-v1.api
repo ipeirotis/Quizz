@@ -255,6 +255,26 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.listQuizPerformanceByUser" : {
+      "path" : "quizperformance/user/{user}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
+      "request" : {
+        "parameters" : {
+          "user" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.getQuizPerformance" : {
       "path" : "quizperformance/quiz/{quiz}/user/{user}",
       "httpMethod" : "GET",
@@ -268,26 +288,6 @@
             "type" : "string",
             "required" : true
           },
-          "user" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.listQuizPerformanceByUser" : {
-      "path" : "quizperformance/user/{user}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
-      "request" : {
-        "parameters" : {
           "user" : {
             "type" : "string",
             "required" : true
@@ -391,6 +391,12 @@
         "id" : "Experiment",
         "type" : "object",
         "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "treatments" : {
+            "$ref" : "JsonMap"
+          }
         }
       },
       "JsonMap" : {
@@ -607,14 +613,14 @@
           "$ref" : "QuizPerformance"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
-        "response" : {
-          "$ref" : "QuizPerformance"
-        }
-      },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser" : {
         "response" : {
           "$ref" : "CollectionResponse_QuizPerformance"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
+        "response" : {
+          "$ref" : "QuizPerformance"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance" : {

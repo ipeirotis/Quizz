@@ -36,12 +36,11 @@ public class User {
 	
 	public User(String userid) {
 		this.userid = userid;
-		this.experiment = new Experiment();
 		this.key = generateKeyFromID(userid);
+		this.experiment = new Experiment();
 	}
 	
 	public static Key generateKeyFromID(String userid) {
-
 		return KeyFactory.createKey(User.class.getSimpleName(), "id_" + userid);
 	}
 	

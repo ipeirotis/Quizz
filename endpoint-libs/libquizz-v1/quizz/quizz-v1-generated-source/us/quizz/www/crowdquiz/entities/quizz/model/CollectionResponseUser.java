@@ -19,7 +19,7 @@
 package us.quizz.www.crowdquiz.entities.quizz.model;
 
 /**
- * Model definition for CollectionResponseQuiz.
+ * Model definition for CollectionResponseUser.
  *
  * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
  * transmitted over HTTP when working with the . For a detailed explanation see:
@@ -29,19 +29,13 @@ package us.quizz.www.crowdquiz.entities.quizz.model;
  * @author Google, Inc.
  */
 @SuppressWarnings("javadoc")
-public final class CollectionResponseQuiz extends com.google.api.client.json.GenericJson {
+public final class CollectionResponseUser extends com.google.api.client.json.GenericJson {
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.util.List<Quiz> items;
-
-  static {
-    // hack to force ProGuard to consider Quiz used, since otherwise it would be stripped out
-    // see http://code.google.com/p/google-api-java-client/issues/detail?id=528
-    com.google.api.client.util.Data.nullOf(Quiz.class);
-  }
+  private java.util.List<User> items;
 
   /**
    * The value may be {@code null}.
@@ -52,14 +46,14 @@ public final class CollectionResponseQuiz extends com.google.api.client.json.Gen
   /**
    * @return value or {@code null} for none
    */
-  public java.util.List<Quiz> getItems() {
+  public java.util.List<User> getItems() {
     return items;
   }
 
   /**
    * @param items items or {@code null} for none
    */
-  public CollectionResponseQuiz setItems(java.util.List<Quiz> items) {
+  public CollectionResponseUser setItems(java.util.List<User> items) {
     this.items = items;
     return this;
   }
@@ -74,19 +68,19 @@ public final class CollectionResponseQuiz extends com.google.api.client.json.Gen
   /**
    * @param nextPageToken nextPageToken or {@code null} for none
    */
-  public CollectionResponseQuiz setNextPageToken(java.lang.String nextPageToken) {
+  public CollectionResponseUser setNextPageToken(java.lang.String nextPageToken) {
     this.nextPageToken = nextPageToken;
     return this;
   }
 
   @Override
-  public CollectionResponseQuiz set(String fieldName, Object value) {
-    return (CollectionResponseQuiz) super.set(fieldName, value);
+  public CollectionResponseUser set(String fieldName, Object value) {
+    return (CollectionResponseUser) super.set(fieldName, value);
   }
 
   @Override
-  public CollectionResponseQuiz clone() {
-    return (CollectionResponseQuiz) super.clone();
+  public CollectionResponseUser clone() {
+    return (CollectionResponseUser) super.clone();
   }
 
 }

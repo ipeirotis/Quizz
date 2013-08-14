@@ -67,8 +67,10 @@ public class UserEndpoint {
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
-			for (User obj : execute)
-				;
+			for (User obj : execute) {
+				obj.getExperiment();
+				obj.getTreatments();
+			}
 		} finally {
 			mgr.close();
 		}
@@ -89,6 +91,8 @@ public class UserEndpoint {
 		User user = null;
 		try {
 			user = mgr.getObjectById(User.class, User.generateKeyFromID(userid));
+			user.getExperiment();
+			user.getTreatments();
 		} finally {
 			mgr.close();
 		}
