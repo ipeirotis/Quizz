@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizPerformanceRepository;
+
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -39,33 +41,15 @@ public class UpdateAllUserStatistics extends HttpServlet {
 		resp.setContentType("text/plain");
 
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
-		Query query = pm.newQuery(QuizPerformance.class);
-		List<QuizPerformance> qplist = new ArrayList<QuizPerformance>();
-		int limit = 1000;
-		int i=0;
-		while (true) {
-			query.setRange(i, i+limit);
-			List<QuizPerformance> results = (List<QuizPerformance>) query.execute();
-			if (results.size()==0) break;
-			qplist.addAll(results);
-			i+=limit;
-		}
-		
-		//query = pm.newQuery(Quiz.class);
-		//List<Quiz> quizlist = (List<Quiz>) query.execute();
-		
-		pm.close();
+		List<QuizPerformance> qplist = QuizPerformanceRepository.getQuizPerformances();
 
 		for (QuizPerformance qp : qplist) {
-			//for (Quiz quiz : quizlist) {
-				queue.add(Builder.withUrl("/api/updateUserQuizStatistics")
-					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
-					.param("userid", qp.getUserid())
-					.param("quiz", qp.getQuiz())
-					.method(TaskOptions.Method.POST));
-			//}
+			queue.add(Builder.withUrl("/api/updateUserQuizStatistics")
+				.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
+				.param("userid", qp.getUserid())
+				.param("quiz", qp.getQuiz())
+				.method(TaskOptions.Method.POST));
 		}
 	}
 

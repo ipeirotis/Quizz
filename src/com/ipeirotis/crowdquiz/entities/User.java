@@ -45,6 +45,22 @@ public class User {
 		return KeyFactory.createKey(User.class.getSimpleName(), "id_" + userid);
 	}
 	
+	public Key getKey() {
+		return key;
+	}
+
+	public void setKey(Key key) {
+		this.key = key;
+	}
+
+	public Experiment getExperiment() {
+		return experiment;
+	}
+
+	public void setExperiment(Experiment experiment) {
+		this.experiment = experiment;
+	}
+
 	public static User getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
 
 		// Get an array of Cookies associated with this domain

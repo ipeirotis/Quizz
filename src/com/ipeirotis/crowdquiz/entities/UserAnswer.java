@@ -13,7 +13,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 public class UserAnswer {
 
 	public static Key generateKeyFromID(String userid, String relation, String mid) {
-
 		return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_" + userid + "_" + relation + "_" + mid);
 	}
 
