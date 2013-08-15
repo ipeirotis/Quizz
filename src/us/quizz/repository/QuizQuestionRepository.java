@@ -13,6 +13,7 @@ import javax.jdo.Query;
 
 import com.ipeirotis.crowdquiz.entities.GoldAnswer;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.QuizQuestionInstance;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
@@ -172,6 +173,20 @@ public class QuizQuestionRepository {
 		result = gold.get(r);
 		CachePMF.put(cachekey, result);
 		
+		return result;
+	}
+	
+	public static QuizQuestionInstance getQuizQuestionInstanceWithGold(String quiz, String mid, String name, int answers) {
+		String key = "qqi_"+quiz+mid;
+		QuizQuestionInstance result = CachePMF.get(key, QuizQuestionInstance.class);
+		if (result != null) return result;
+		
+		Set<String> choices =  QuizQuestionRepository.getIncorrectAnswers(quiz, mid, name, answers-1);
+		String gold = QuizQuestionRepository.getRandomGoldAnswer(quiz, mid);
+		choices.add(gold);
+		
+		result = new QuizQuestionInstance(quiz, mid, choices, gold, true);
+		CachePMF.put(key, result);
 		return result;
 	}
 	

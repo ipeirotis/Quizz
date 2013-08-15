@@ -101,13 +101,9 @@ public class QuizPerformanceEndpoint {
 	@ApiMethod(name = "getQuizPerformance", path = "quizperformance/quiz/{quiz}/user/{user}")
 	public QuizPerformance getQuizPerformance(@Named("quiz") String quiz, @Named("user") String userid) {
 
-		PersistenceManager mgr = getPersistenceManager();
-		QuizPerformance quizperformance = null;
-		try {
-			quizperformance = mgr.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quiz, userid));
-		} finally {
-			mgr.close();
-		}
+		QuizPerformance quizperformance = QuizPerformanceRepository.getQuizPerformance(quiz, userid);
+		if (quizperformance==null) quizperformance = new QuizPerformance(quiz, userid);
+
 		return quizperformance;
 	}
 
@@ -195,3 +191,4 @@ public class QuizPerformanceEndpoint {
 	}
 
 }
+

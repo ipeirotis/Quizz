@@ -1,3 +1,10 @@
+	function getURLParameterByName(name) {
+		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+		return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+
 	function getUsername() {
 		var username = $.cookie("username");
 		if (!username) {
@@ -8,7 +15,7 @@
 	
 	function createUsername() {
 		var username = createUUID();
-		$.cookie("username", username, { expires: 365, path: "/" , domain: "quizz.us"});
+		$.cookie("username", username, { expires: 365, path: "/"});
 		return username;
 	}
 	
@@ -36,10 +43,106 @@
 		return $.getJSON(url, params);
 	}
 	
-	function getUserQuizPerformance(user) {
-		var url2 = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance/user/' + user;
-		var params2 = {
-				'fields' : 'items(quiz, totalanswers)',
+	function getUserQuizPerformances(user) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance/user/' + encodeURIComponent(user);
+		var params = {
+			'fields' : 'items(quiz, totalanswers)',
 		};
-		return $.getJSON(url2, params2);	
+		return $.getJSON(url, params);	
 	}
+	
+	function getUserQuizPerformance(quiz, user) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance';
+		url += '/quiz/' + encodeURIComponent(quiz);
+		url += '/user/' + encodeURIComponent(user);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		return $.getJSON(url, params);	
+	}
+	
+	function getNextQuizQuestion(quiz) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
+		url += '/quiz/' + encodeURIComponent(quiz);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		return $.getJSON(url, params);
+	}
+	
+	function populateQuestion(question, performance) {
+		
+		$('#relation').val(question.quiz);
+		$('#mid').val(question.mid);
+		$('#gold').val(question.correct);
+		$('#questiontext').html(question.quizquestion);
+		$('#midname').html(question.midname);
+		
+		
+		var answers = $("#answers");
+		$.each(question.answers, function(index, value) {
+			answers.append($('<input id="useranswer'+index+'" name="useranswer'+index+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
+			if (value == question.correct) {
+				$('#useranswer'+index).mousedown(function(e){
+					markConversion('multiple-choice-correct', performance.score);
+				});
+			} else {
+				$('#useranswer'+index).mousedown(function(e){
+					markConversion('multiple-choice-incorrect', performance.score);
+				});
+			}
+		});
+		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
+    	$("#idk_button").mousedown(function(){
+    		markConversion("multiple-choice-idk", 0);
+    	});
+	}
+	
+	function getQuizQuestionInstance(quiz, mid) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
+		url += '/quiz/' + encodeURIComponent(quiz);
+		url += '/mid/' + encodeURIComponent(mid);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		return $.getJSON(url, params);	
+	}
+	
+	function getUserTreatments(user) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/user/' + user;
+		var params = {
+			'fields' : 'treatments',
+		};
+		return $.getJSON(url, params);	
+	}
+	
+	function displayPerformanceScores(perfomance) {
+		
+		$('#showScore').html("Score: "+perfomance.score+" points");
+
+		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
+		
+		$('#showPercentageCorrect').html("Correct (%): " + performance.percentageCorrect);
+		
+		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankPercentCorrect/performance.totalUsers)+")");
+		
+		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankTotalCorrect/performance.totalUsers)+")");
+		
+	}
+	
+	function displayFeedback(perfomance) {
+		
+		
+	}
+	
+    function markConversion(type, value) {
+    	// Mark a conversion in Google Analytics
+		ga('send', {
+			  'hitType': 'event', 
+			  'hitCallback': function(){ },
+			  'eventCategory': 'quiz-submission', 
+			  'eventAction': type, 
+			  'eventLabel': getURLParameterByName('relation'),
+			  'eventValue': value, 
+			  } );
+    }

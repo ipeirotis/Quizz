@@ -20,7 +20,7 @@ public class FreebaseSearch {
 
 	
 
-	public static String getFreebaseAttribute(String mid, String freebaseAttribute) throws IOException {
+	public static String getFreebaseAttribute(String mid, String freebaseAttribute) {
 
 		GenericUrl url = new GenericUrl("https://www.googleapis.com/freebase/v1/mqlread");
 
@@ -31,9 +31,16 @@ public class FreebaseSearch {
 		url.put("limit", "1");
 		url.put("key", FreebaseSearch.API_KEY);
 
-		HttpRequest request = requestFactory.buildGetRequest(url);
-		HttpResponse httpResponse = request.execute();
-		String response = httpResponse.parseAsString();
+		String response = "";
+		try {
+			HttpRequest request = requestFactory.buildGetRequest(url);
+			HttpResponse httpResponse = request.execute();
+			response = httpResponse.parseAsString();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		
 		//System.out.println(response);
 

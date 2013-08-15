@@ -25,7 +25,7 @@
 				</tr>
 			
 				<tr><th colspan="4">Treatments</th></tr>
-				<% 
+				<%  
 				Map<String, Boolean> treatments = u.getTreatments();
 				for (String name : treatments.keySet()) {
 					%> 

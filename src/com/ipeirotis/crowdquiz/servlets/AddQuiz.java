@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizRepository;
+
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -50,19 +52,7 @@ public class AddQuiz extends HttpServlet {
 			}
 
 			Quiz q = new Quiz(name, relation, text);
-			PersistenceManager pm = PMF.get().getPersistenceManager();
-			pm.makePersistent(q);
-			pm.close();
-			
-			/*
-			String freebasetype = req.getParameter("fbtype");
-			if (freebasetype != null) {
-				resp.getWriter().println("Answer Freebase-Type: " + freebasetype);
-			} else {
-				return;
-			}
-			*/
-
+			QuizRepository.storeQuiz(q);
 
 			String budget = req.getParameter("budget");
 			if (budget != null) {

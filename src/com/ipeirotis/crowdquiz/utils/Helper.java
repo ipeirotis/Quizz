@@ -37,59 +37,12 @@ public class Helper {
 	 */
 	public static String getNextMultipleChoiceURL(HttpServletRequest req, String relation, String userid, String justAddedMid) {
 		
-		//PersistenceManager	pm = PMF.get().getPersistenceManager();
-		
-		/*
-		String key = "quizquestions_"+relation;
-		Set<String> availableQuestions = CachePMF.get(key, Set.class);
-		if (availableQuestions==null) {
-			String query = "SELECT FROM " + QuizQuestion.class.getName() 
-								+ " WHERE relation=='" + relation + "'"
-								+ " && hasGoldAnswer==true";
-	
-			@SuppressWarnings("unchecked")
-			List<QuizQuestion> questions = (List<QuizQuestion>) pm.newQuery(query).execute();
-			availableQuestions = new HashSet<String>();
-			for (QuizQuestion q : questions) {
-				availableQuestions.add(q.getFreebaseEntityId());
-			}
-			CachePMF.put(key,availableQuestions);
-		}
-		*/
-		
-		Set<String> availableQuestions = QuizQuestionRepository.getQuizQuestionsWithGold(relation);
 
-		/*
-		String queryGivenAnswers = "SELECT FROM " + UserAnswer.class.getName() + " WHERE userid=='" + userid
-				+ "' && relation=='" + relation + "'";
-
-		@SuppressWarnings("unchecked")
-		List<UserAnswer> answers = (List<UserAnswer>) pm.newQuery(queryGivenAnswers).execute();
-		Set<String> alreadyAnswered = new HashSet<String>();
-		for (UserAnswer ue : answers) {
-			alreadyAnswered.add(ue.getMid());
-		}
-		if (justAddedMid!=null) {
-			alreadyAnswered.add(justAddedMid);
-		}
-		availableQuestions.removeAll(alreadyAnswered);
-		*/
 		
-		//pm.close();
-		
-		
-		
-		String nextURL = "/";
-		if (availableQuestions.isEmpty()) {
-			return nextURL;
-		}
-		
-		
-			ArrayList<String> list = new ArrayList<String>(availableQuestions);
-			int rnd = (int)Math.round(Math.random()*availableQuestions.size());
-			if (rnd<0) rnd=0;
-			if (rnd>=availableQuestions.size()) rnd = availableQuestions.size()-1;
-			String mid = list.get(rnd);
+			String mid = getNextQuizQuestion(relation);
+			
+			String nextURL = "/";
+			if (mid == null) return nextURL;
 			
 			try {
 				nextURL = "/multChoice.jsp?" 
@@ -102,6 +55,21 @@ public class Helper {
 			return getBaseURL(req) + nextURL;
 			
 
+	}
+
+
+
+	public static String getNextQuizQuestion(String quiz) {
+		Set<String> availableQuestions = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
+
+		ArrayList<String> list = new ArrayList<String>(availableQuestions);
+		if (list.size()==0) return null;
+		int rnd = (int)Math.round(Math.random()*availableQuestions.size());
+		if (rnd>=availableQuestions.size()) {
+			rnd = availableQuestions.size()-1;
+		}
+		String mid = list.get(rnd);
+		return mid;
 	}
 
 

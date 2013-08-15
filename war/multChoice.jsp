@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="javax.jdo.PersistenceManager"%>
+
 <%@ page import="com.ipeirotis.crowdquiz.utils.*"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
@@ -8,8 +8,8 @@
 
 <%@ page import="us.quizz.repository.QuizRepository"%>
 <%@ page import="us.quizz.repository.QuizQuestionRepository"%>
+<%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
 
-<%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.TreeSet"%>
@@ -22,25 +22,13 @@
 	String numoptions = request.getParameter("numoptions");
 	if (numoptions == null) numoptions = "4";
 
-	PersistenceManager pm = PMF.get().getPersistenceManager();
 	Quiz quiz = QuizRepository.getQuiz(relation);
 	QuizQuestion question = QuizQuestionRepository.getQuizQuestion(relation, mid);
 	if (question==null) {
 		String nextURL = Helper.getNextMultipleChoiceURL(request, relation, user.getUserid(), null);
 		response.sendRedirect(nextURL);
 	}
-	
-	QuizPerformance performance = null;
-	try {
-		performance = CachePMF.get("qp_"+user.getUserid()+"_"+relation, QuizPerformance.class);
-		if (performance == null) 
-			performance = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(relation, user.getUserid()));
-	} catch (Exception e) {
-		//performance = new QuizPerformance(relation, u.getUserid());
-		//pm.makePersistent(performance);
-	}
-	
-	pm.close();
+	QuizPerformance performance = QuizPerformanceRepository.getQuizPerformance(relation, user.getUserid());
 	
 	String useranswer = request.getParameter("useranswer");
 	if (useranswer == null)

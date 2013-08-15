@@ -12,6 +12,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 /**
@@ -42,7 +43,23 @@ public class Experiment {
     	assignTreatments();
 	}
 
-    public boolean getsTreatment(String treatmentName) {
+    public Key getKey() {
+		return key;
+	}
+
+	public void setKey(Key key) {
+		this.key = key;
+	}
+
+	public HashMap<String, Boolean> getTreatments() {
+		return treatments;
+	}
+
+	public void setTreatments(HashMap<String, Boolean> treatments) {
+		this.treatments = treatments;
+	}
+
+	public boolean getsTreatment(String treatmentName) {
     	if (this.treatments == null) {
     		assignTreatments();
     	}

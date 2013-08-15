@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/quizz/v1/20130813201314/java/1.15.0-rc/crowd-power-quizz-v1-20130813201314-java-1.15.0-rc-sources.jar", 
-      "path": "crowd-power-quizz-v1-20130813201314-java-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/quizz/v1/20130815100243/java/1.15.0-rc/crowd-power-quizz-v1-20130815100243-java-1.15.0-rc-sources.jar", 
+      "path": "crowd-power-quizz-v1-20130815100243-java-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-13 20:13"
+      "timestamp": "2013-08-15 10:02"
     }, 
     {
-      "path": "crowd-power-quizz-v1-20130813201314-java-1.15.0-rc.jar.properties", 
+      "path": "crowd-power-quizz-v1-20130815100243-java-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.15.0-rc", 
-  "revision": 20130813201314, 
+  "revision": 20130815100243, 
   "id": "quizz:v1", 
   "modulePath": "us/quizz/www/crowdquiz/entities"
 }

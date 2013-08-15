@@ -19,7 +19,7 @@
 package us.quizz.www.crowdquiz.entities.quizz.model;
 
 /**
- * Model definition for CollectionResponseQuizPerformance.
+ * Model definition for CollectionResponseUser.
  *
  * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
  * transmitted over HTTP when working with the . For a detailed explanation see:
@@ -29,13 +29,13 @@ package us.quizz.www.crowdquiz.entities.quizz.model;
  * @author Google, Inc.
  */
 @SuppressWarnings("javadoc")
-public final class CollectionResponseQuizPerformance extends com.google.api.client.json.GenericJson {
+public final class CollectionResponseUser extends com.google.api.client.json.GenericJson {
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.util.List<QuizPerformance> items;
+  private java.util.List<User> items;
 
   /**
    * The value may be {@code null}.
@@ -46,14 +46,14 @@ public final class CollectionResponseQuizPerformance extends com.google.api.clie
   /**
    * @return value or {@code null} for none
    */
-  public java.util.List<QuizPerformance> getItems() {
+  public java.util.List<User> getItems() {
     return items;
   }
 
   /**
    * @param items items or {@code null} for none
    */
-  public CollectionResponseQuizPerformance setItems(java.util.List<QuizPerformance> items) {
+  public CollectionResponseUser setItems(java.util.List<User> items) {
     this.items = items;
     return this;
   }
@@ -68,19 +68,19 @@ public final class CollectionResponseQuizPerformance extends com.google.api.clie
   /**
    * @param nextPageToken nextPageToken or {@code null} for none
    */
-  public CollectionResponseQuizPerformance setNextPageToken(java.lang.String nextPageToken) {
+  public CollectionResponseUser setNextPageToken(java.lang.String nextPageToken) {
     this.nextPageToken = nextPageToken;
     return this;
   }
 
   @Override
-  public CollectionResponseQuizPerformance set(String fieldName, Object value) {
-    return (CollectionResponseQuizPerformance) super.set(fieldName, value);
+  public CollectionResponseUser set(String fieldName, Object value) {
+    return (CollectionResponseUser) super.set(fieldName, value);
   }
 
   @Override
-  public CollectionResponseQuizPerformance clone() {
-    return (CollectionResponseQuizPerformance) super.clone();
+  public CollectionResponseUser clone() {
+    return (CollectionResponseUser) super.clone();
   }
 
 }

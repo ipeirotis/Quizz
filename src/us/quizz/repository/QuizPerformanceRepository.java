@@ -1,6 +1,7 @@
 package us.quizz.repository;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
+import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -23,7 +25,7 @@ public class QuizPerformanceRepository {
 		try {
 			qp = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quizid, userid));
 		} catch (Exception e) {
-			;
+			// qp = new QuizPerformance(quizid, userid);
 		} finally {
 			pm.close();
 		}
@@ -63,6 +65,26 @@ public class QuizPerformanceRepository {
 		pm.close();
 		
 		return results;
+	}
+	
+	public static List<QuizPerformance> getQuizPerformances() {
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(QuizPerformance.class);
+		List<QuizPerformance> list = new ArrayList<QuizPerformance>();
+		int limit = 1000;
+		int i=0;
+		while (true) {
+			query.setRange(i, i+limit);
+			@SuppressWarnings("unchecked")
+			List<QuizPerformance> results = (List<QuizPerformance>) query.execute();
+			if (results.size()==0) break;
+			list.addAll(results);
+			i+=limit;
+		}
+		pm.close();
+		
+		return list;
 	}
 	
 	public static void storeQuizPerformance(QuizPerformance qp) {

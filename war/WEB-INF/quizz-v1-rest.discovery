@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/H57D17IM9wMNyariauDhd82BLro\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/evaPznzkS9QA7Cu6jV3zxBDlUNY\"",
  "discoveryVersion": "v1",
  "id": "quizz:v1",
  "name": "quizz",
@@ -94,6 +94,37 @@
      "type": "string"
     }
    }
+  },
+  "CollectionResponse_User": {
+   "id": "CollectionResponse_User",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "User"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "Experiment": {
+   "id": "Experiment",
+   "type": "object",
+   "properties": {
+    "key": {
+     "$ref": "Key"
+    },
+    "treatments": {
+     "$ref": "JsonMap"
+    }
+   }
+  },
+  "JsonMap": {
+   "id": "JsonMap",
+   "type": "object"
   },
   "Key": {
    "id": "Key",
@@ -238,9 +269,102 @@
      "type": "string"
     }
    }
+  },
+  "QuizQuestionInstance": {
+   "id": "QuizQuestionInstance",
+   "type": "object",
+   "properties": {
+    "answers": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "correct": {
+     "type": "string"
+    },
+    "correctIsGold": {
+     "type": "boolean"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "mid": {
+     "type": "string"
+    },
+    "midname": {
+     "type": "string"
+    },
+    "quiz": {
+     "type": "string"
+    },
+    "quizquestion": {
+     "type": "string"
+    }
+   }
+  },
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "experiment": {
+     "$ref": "Experiment"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "treatments": {
+     "$ref": "JsonMap"
+    },
+    "userid": {
+     "type": "string"
+    }
+   }
   }
  },
  "methods": {
+  "getNextQuestionInstance": {
+   "id": "quizz.getNextQuestionInstance",
+   "path": "quizquestioninstance/quiz/{quiz}",
+   "httpMethod": "GET",
+   "parameters": {
+    "quiz": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "quiz"
+   ],
+   "response": {
+    "$ref": "QuizQuestionInstance"
+   }
+  },
+  "getQuestionInstance": {
+   "id": "quizz.getQuestionInstance",
+   "path": "quizquestioninstance/quiz/{quiz}/mid/{mid}",
+   "httpMethod": "GET",
+   "parameters": {
+    "mid": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "quiz": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "quiz",
+    "mid"
+   ],
+   "response": {
+    "$ref": "QuizQuestionInstance"
+   }
+  },
   "getQuiz": {
    "id": "quizz.getQuiz",
    "path": "quiz/{id}",
@@ -283,6 +407,24 @@
     "$ref": "QuizPerformance"
    }
   },
+  "getUser": {
+   "id": "quizz.getUser",
+   "path": "user/{userid}",
+   "httpMethod": "GET",
+   "parameters": {
+    "userid": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "userid"
+   ],
+   "response": {
+    "$ref": "User"
+   }
+  },
   "insertQuiz": {
    "id": "quizz.insertQuiz",
    "path": "quiz",
@@ -305,6 +447,18 @@
    },
    "response": {
     "$ref": "QuizPerformance"
+   }
+  },
+  "insertUser": {
+   "id": "quizz.insertUser",
+   "path": "user",
+   "httpMethod": "POST",
+   "request": {
+    "$ref": "User",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "User"
    }
   },
   "listQuiz": {
@@ -363,6 +517,25 @@
     "$ref": "CollectionResponse_QuizPerformance"
    }
   },
+  "listUser": {
+   "id": "quizz.listUser",
+   "path": "user",
+   "httpMethod": "GET",
+   "parameters": {
+    "cursor": {
+     "type": "string",
+     "location": "query"
+    },
+    "limit": {
+     "type": "integer",
+     "format": "int32",
+     "location": "query"
+    }
+   },
+   "response": {
+    "$ref": "CollectionResponse_User"
+   }
+  },
   "removeQuiz": {
    "id": "quizz.removeQuiz",
    "path": "quiz/{id}",
@@ -399,6 +572,21 @@
     "userid"
    ]
   },
+  "removeUser": {
+   "id": "quizz.removeUser",
+   "path": "user/{userid}",
+   "httpMethod": "DELETE",
+   "parameters": {
+    "userid": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "userid"
+   ]
+  },
   "updateQuiz": {
    "id": "quizz.updateQuiz",
    "path": "quiz",
@@ -421,6 +609,18 @@
    },
    "response": {
     "$ref": "QuizPerformance"
+   }
+  },
+  "updateUser": {
+   "id": "quizz.updateUser",
+   "path": "user",
+   "httpMethod": "PUT",
+   "request": {
+    "$ref": "User",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "User"
    }
   }
  }
