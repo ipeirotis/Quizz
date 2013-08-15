@@ -43,7 +43,7 @@
 		return $.getJSON(url, params);
 	}
 	
-	function getUserQuizPerformance(user) {
+	function getUserQuizPerformances(user) {
 		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance/user/' + encodeURIComponent(user);
 		var params = {
 			'fields' : 'items(quiz, totalanswers)',
@@ -61,6 +61,52 @@
 		return $.getJSON(url, params);	
 	}
 	
+	function getNextQuizQuestion(quiz) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
+		url += '/quiz/' + encodeURIComponent(quiz);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		return $.getJSON(url, params);
+	}
+	
+	function populateQuestion(question, performance) {
+		
+		$('#relation').val(question.quiz);
+		$('#mid').val(question.mid);
+		$('#gold').val(question.correct);
+		$('#questiontext').html(question.quizquestion);
+		$('#midname').html(question.midname);
+		
+		
+		var answers = $("#answers");
+		$.each(question.answers, function(index, value) {
+			answers.append($('<input id="useranswer'+index+'" name="useranswer'+index+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
+			if (value == question.correct) {
+				$('#useranswer'+index).mousedown(function(e){
+					markConversion('multiple-choice-correct', performance.score);
+				});
+			} else {
+				$('#useranswer'+index).mousedown(function(e){
+					markConversion('multiple-choice-incorrect', performance.score);
+				});
+			}
+		});
+		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
+    	$("#idk_button").mousedown(function(){
+    		markConversion("multiple-choice-idk", 0);
+    	});
+	}
+	
+	function getQuizQuestionInstance(quiz, mid) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
+		url += '/quiz/' + encodeURIComponent(quiz);
+		url += '/mid/' + encodeURIComponent(mid);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		return $.getJSON(url, params);	
+	}
 	
 	function getUserTreatments(user) {
 		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/user/' + user;

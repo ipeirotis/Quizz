@@ -8,6 +8,7 @@ import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 
 import com.google.api.server.spi.config.Api;
@@ -15,6 +16,8 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.ipeirotis.crowdquiz.utils.FreebaseSearch;
+import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
@@ -94,6 +97,34 @@ public class QuizEndpoint {
 		}
 		return quiz;
 	}
+	
+	/**
+	 * This method generates a next question for the passed quiz
+	 *
+	 * @param quiz the primary key of the quiz
+	 * @return The entity with primary key id.
+	 */
+	@ApiMethod(name = "getNextQuestionInstance", path = "quizquestioninstance/quiz/{quiz}")
+	public QuizQuestionInstance getNextQuestion(@Named("quiz") String quiz) {
+		String mid = Helper.getNextQuizQuestion(quiz);
+		return getQuestionInstance(quiz,mid);
+	}
+
+	/** This method generates a next question for the passed quiz
+	 *
+	 * @param quiz the primary key of the quiz
+	 * @return The entity with primary key id.
+	 */
+	@ApiMethod(name = "getQuestionInstance", path = "quizquestioninstance/quiz/{quiz}/mid/{mid}")
+	public QuizQuestionInstance getQuestionInstance(@Named("quiz") String quiz, @Named("mid") String mid) {
+		String name = FreebaseSearch.getFreebaseAttribute(mid,"name");
+		String question = QuizRepository.getQuiz(quiz).getQuestionText();
+		QuizQuestionInstance result = QuizQuestionRepository.getQuizQuestionInstanceWithGold(quiz, mid, name, 4);
+		result.setMidname(name);
+		result.setQuizquestion(question);
+		return result;
+	}
+
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already

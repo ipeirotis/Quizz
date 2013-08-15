@@ -35,7 +35,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		String idk = req.getParameter("idk");
 		if (idk==null) {
 			action = "Submit";
-			int limit=Integer.parseInt(req.getParameter("numoptions"));
+			int limit=4;
 			for (int i=0; i<limit; i++) {
 				useranswer = req.getParameter("useranswer"+i);
 				if (useranswer!=null) break;

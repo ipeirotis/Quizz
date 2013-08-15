@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/Xhcanvm9-NTicM7uGXIYMjoYLI8\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/evaPznzkS9QA7Cu6jV3zxBDlUNY\"",
  "discoveryVersion": "v1",
  "id": "quizz:v1",
  "name": "quizz",
@@ -268,6 +268,39 @@
     }
    }
   },
+  "QuizQuestionInstance": {
+   "id": "QuizQuestionInstance",
+   "type": "object",
+   "properties": {
+    "answers": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "correct": {
+     "type": "string"
+    },
+    "correctIsGold": {
+     "type": "boolean"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "mid": {
+     "type": "string"
+    },
+    "midname": {
+     "type": "string"
+    },
+    "quiz": {
+     "type": "string"
+    },
+    "quizquestion": {
+     "type": "string"
+    }
+   }
+  },
   "User": {
    "id": "User",
    "type": "object",
@@ -288,6 +321,43 @@
   }
  },
  "methods": {
+  "quizz.getNextQuestionInstance": {
+   "id": "quizz.getNextQuestionInstance",
+   "allowGet": true,
+   "parameters": {
+    "quiz": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "quiz"
+   ],
+   "returns": {
+    "$ref": "QuizQuestionInstance"
+   }
+  },
+  "quizz.getQuestionInstance": {
+   "id": "quizz.getQuestionInstance",
+   "allowGet": true,
+   "parameters": {
+    "mid": {
+     "type": "string",
+     "required": true
+    },
+    "quiz": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "quiz",
+    "mid"
+   ],
+   "returns": {
+    "$ref": "QuizQuestionInstance"
+   }
+  },
   "quizz.getQuiz": {
    "id": "quizz.getQuiz",
    "allowGet": true,

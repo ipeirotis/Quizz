@@ -17,19 +17,10 @@
 
 <%
 	User user = User.getUseridFromCookie(request, response);
-	String relation = request.getParameter("relation");
-	String mid = request.getParameter("mid");
-	String numoptions = request.getParameter("numoptions");
-	if (numoptions == null) numoptions = "4";
-
-	Quiz quiz = QuizRepository.getQuiz(relation);
-	QuizQuestion question = QuizQuestionRepository.getQuizQuestion(relation, mid);
-	if (question==null) {
-		String nextURL = Helper.getNextMultipleChoiceURL(request, relation, user.getUserid(), null);
-		response.sendRedirect(nextURL);
-	}
-	QuizPerformance performance = QuizPerformanceRepository.getQuizPerformance(relation, user.getUserid());
 	
+	String relation = request.getParameter("relation");
+	Quiz quiz = QuizRepository.getQuiz(relation);
+
 	String useranswer = request.getParameter("useranswer");
 	if (useranswer == null)
 		useranswer = "";
@@ -77,7 +68,7 @@
 			<div class="alert alert-success" id="showCorrect">
 			The correct answer was <span class="label label-success"><%=gold_prior%></span>.
 			</div>
-			<%		
+			<%
 		}
 
 		String totalanswers = request.getParameter("totalanswers");
@@ -106,86 +97,27 @@
 				<span class="label label-info" id="showTotalCorrectRank"></span>
 			</div>
 
-%>
+
 
 		<div class="well" style="text-align: center;">
 			<form id="addUserEntry" action="/processUserAnswer" method="post">
 					<fieldset>
 						<div class="lead">
-							<%=quiz.getQuestionText()%>
-							<a href="http://www.freebase.com<%=mid%>"> 
-							<%=FreebaseSearch.getFreebaseAttribute(mid,"name")%>
-							</a>
+							<span id="questiontext"></span> 
+							<a id="midname" href=""></a>
 						</div>
-						
-						<%
-							Set<String> answers = new TreeSet<String>();
-
-							String gold = question.getRandomGoldAnswer();
-							answers.add(gold);
-
-							int choices = Integer.parseInt(numoptions);
-							Set<String> pyrite = question.getIncorrectAnswers(choices-1);
-							answers.addAll(pyrite);
-							
-							if (answers.size()<2) {
-								String nextURL = Helper.getNextMultipleChoiceURL(request, relation, user.getUserid(), null);
-								response.sendRedirect(nextURL);
-								return;
-							}
-							
-							int i=0;
-							for (String s: answers) {
-							%>
-							<input id="useranswer<%=i %>" name="useranswer<%=i %>" type="submit" class="btn btn-primary btn-block" value="<%=s%>">
-							<%
-							i++;
-							}
-							
-						%>
-						<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don't know">
-						<input id="numoptions" name="numoptions" type="hidden" value="<%= numoptions %>">
-						<input id="relation" name="relation" type="hidden" value="<%= relation %>"> 
-						<input id="mid" name="mid" type="hidden" value="<%= mid %>">
-						<input id="gold" name="gold" type="hidden" value="<%= gold %>"> 
-						
+						<div id="answers"></div>
+						<input id="relation" name="relation" type="hidden" value=""> 
+						<input id="mid" name="mid" type="hidden" value="">
+						<input id="gold" name="gold" type="hidden" value=""> 
 					</fieldset>
 				</form>
-			</div>
-		
-			
+			</div>		
 	</div>
 
 
 <%@ include file="assets/google-analytics.html" %>
 
-	<script type="text/javascript">
-	
-    $(document).ready( function() { <%
-    	i=0;
-    	for (String s: answers) {
-    		if (s.equals(gold)) {
-    		%>
-    			$("#useranswer<%=i %>").mousedown(function(e){
-    				markConversion("multiple-choice-correct", "<%=(performance!=null)?Math.round(performance.getScore()):0 %>");
-    			});
-    		<%
-    			} else {
-    		%>
-    			$("#useranswer<%=i %>").mousedown(function(){
-    				markConversion("multiple-choice-incorrect", "<%=(performance!=null)?Math.round(performance.getScore()):0 %>");
-    			});
-    		<%		
-    		}
-    	i++;
-    	}
-    	%>
-    	$("#idk_button").mousedown(function(){
-    		markConversion("multiple-choice-idk", 0);
-    	});
-    });
-
-	</script>
 
 	<script>
 
@@ -196,11 +128,15 @@
 		
 		var user = getUsername();
 		var quiz = getURLParameterByName('relation');
-		$.when(getUserTreatments(user), getUserQuizPerformance(quiz, user)).done(function(a1, a2){
+		
+		// Populate the question elements
+		$.when(getUserTreatments(user),	getUserQuizPerformance(quiz, user), getNextQuizQuestion(quiz)).done(function(a1, a2, a3){
 			
 			// Display the performance scores
 			performance = a2[0];
+			question = a3[0];
 			displayPerformanceScores(quiz, performance);
+			populateQuestion(question, performance);
 			
 			// Show/hide the various elements, according to the user treatments.
 			userdata = a1[0];

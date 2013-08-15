@@ -21,7 +21,7 @@
 	
 	$(document).ready(function() {
 		var user = getUsername();
-		$.when(getQuizzes(), getUserQuizPerformance(user)).done(function(a1, a2){
+		$.when(getQuizzes(), getUserQuizPerformances(user)).done(function(a1, a2){
 			
 			// The a1, a2 contain the return values from the getJSON as an array with three elements
 			// The [0] element contains the data 
@@ -45,7 +45,6 @@
 		});
 	});
 	</script>
-
 
 	<%@ include file="assets/google-analytics.html"%>
 
