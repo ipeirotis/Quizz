@@ -260,21 +260,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "quizz.insertQuizPerformance" : {
-      "path" : "quizperformance",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "quizz.removeQuizPerformance" : {
       "path" : "quizperformance/{quizid}/{userid}",
       "httpMethod" : "DELETE",
@@ -299,21 +284,16 @@
         "body" : "empty"
       }
     },
-    "quizz.listQuizPerformanceByUser" : {
-      "path" : "quizperformance/user/{user}",
-      "httpMethod" : "GET",
+    "quizz.insertQuizPerformance" : {
+      "path" : "quizperformance",
+      "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance",
       "request" : {
-        "parameters" : {
-          "user" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -332,6 +312,26 @@
             "type" : "string",
             "required" : true
           },
+          "user" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.listQuizPerformanceByUser" : {
+      "path" : "quizperformance/user/{user}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
+      "request" : {
+        "parameters" : {
           "user" : {
             "type" : "string",
             "required" : true
@@ -690,6 +690,8 @@
           "$ref" : "QuizQuestionInstance"
         }
       },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {
+      },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance" : {
         "request" : {
           "$ref" : "QuizPerformance"
@@ -698,16 +700,14 @@
           "$ref" : "QuizPerformance"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
+        "response" : {
+          "$ref" : "QuizPerformance"
+        }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser" : {
         "response" : {
           "$ref" : "CollectionResponse_QuizPerformance"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
-        "response" : {
-          "$ref" : "QuizPerformance"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {

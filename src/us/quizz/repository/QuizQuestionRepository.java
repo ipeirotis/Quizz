@@ -181,7 +181,6 @@ public class QuizQuestionRepository {
 		QuizQuestionInstance result = CachePMF.get(key, QuizQuestionInstance.class);
 		if (result != null) return result;
 		
-		
 		Set<String> choices =  QuizQuestionRepository.getIncorrectAnswers(quiz, mid, name, answers-1);
 		String gold = QuizQuestionRepository.getRandomGoldAnswer(quiz, mid);
 		choices.add(gold);
