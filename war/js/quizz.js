@@ -136,14 +136,14 @@
 			//'fields' : 'items(quiz, totalanswers)',
 		};
 		return $.getJSON(url, params)
-			.done(function(performance) { displayPerformanceScores(quiz, performance); });
+			.done(function(performance) { displayPerformanceScores(performance); });
 		
 	}
 	
 	
-	function displayPerformanceScores(perfomance) {
+	function displayPerformanceScores(performance) {
 		
-		$('#showScore').html("Score: "+perfomance.score+" points");
+		$('#showScore').html("Score: "+performance.score+" points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);	
 		$('#showPercentageCorrect').html("Correct (%): " + performance.percentageCorrect);
 		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankPercentCorrect/performance.totalUsers)+")");

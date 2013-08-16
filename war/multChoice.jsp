@@ -8,13 +8,13 @@
 			<a href="/"><span style="color: maroon">Quizz</span>.us</a>
 		</h2>
 	
-		<div id="feedback">
+		<div id="feedback" style="display: none;">
 			<div class="alert alert-success" id="showMessage"></div>
 			<div class="alert alert-success" id="showCorrect"></div>
 			<div class="alert alert-info" id="showCrowdAnswers"></div>
 		</div>
 		
-		<div class="alert alert-info" style="text-align: center">
+		<div id="scores" class="alert alert-info" style="text-align: center; display: none;">
 			<span class="label label-info" id="showScore"></span>
 			<span class="label label-info" id="showTotalCorrect"></span>
 			<span class="label label-info" id="showPercentageCorrect"></span>
@@ -22,7 +22,7 @@
 			<span class="label label-info" id="showTotalCorrectRank"></span>
 		</div>
 	
-		<div class="well" style="text-align: center;">
+		<div id="form" class="well" style="text-align: center;">
 			<form id="addUserEntry" action="/processUserAnswer" method="post">
 				<fieldset>
 					<div class="lead">
@@ -40,31 +40,33 @@
 		</div>		
 	</div>
 
-
-<%@ include file="assets/google-analytics.html" %>
-
-
 	<script>
-
-	
 	$(document).ready(function() {
+		
+		$('#feedback').hide();
+		$('#scores').hide();
+		$('#form').hide();
 		
 		var user = getUsername();
 		var quiz = getURLParameterByName('relation');
 		var mid = getURLParameterByName('mid');
 		var prior = getURLParameterByName('prior');
-		
-		hideDivs();
-		
+				
 		getUserTreatments(user);
 		getUserQuizPerformance(quiz, user); 
 		getNextQuizQuestion(quiz);
 		getFeedbackForPriorAnswer(user, quiz, prior);
 		
 		$('#feedback').show();
-		$('#feedback').delay(2000).fadeOut();
+		$('#scores').show();
+		$('#form').show();
+		$('#feedback').delay(5000).fadeOut();
+
 	});
 	</script>
+
+<%@ include file="assets/google-analytics.html" %>
+
 
 </body>
 </html>
