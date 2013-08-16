@@ -19,7 +19,7 @@
 package us.quizz.www.crowdquiz.entities.quizz.model;
 
 /**
- * Model definition for QuizQuestionInstance.
+ * Model definition for UserAnswerFeedback.
  *
  * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
  * transmitted over HTTP when working with the . For a detailed explanation see:
@@ -29,31 +29,25 @@ package us.quizz.www.crowdquiz.entities.quizz.model;
  * @author Google, Inc.
  */
 @SuppressWarnings("javadoc")
-public final class QuizQuestionInstance extends com.google.api.client.json.GenericJson {
+public final class UserAnswerFeedback extends com.google.api.client.json.GenericJson {
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.util.List<java.lang.String> answers;
+  private java.lang.String correctAnswer;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.String correct;
+  private java.lang.String difficulty;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.Boolean correctIsGold;
-
-  /**
-   * The value may be {@code null}.
-   */
-  @com.google.api.client.util.Key
-  private java.lang.Integer correctanswers;
+  private java.lang.Boolean isCorrect;
 
   /**
    * The value may be {@code null}.
@@ -71,7 +65,13 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.String midname;
+  private java.lang.Integer numCorrectAnswers;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private java.lang.Integer numTotalAnswers;
 
   /**
    * The value may be {@code null}.
@@ -83,71 +83,56 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.String quizquestion;
+  private java.lang.String userAnswer;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.Integer totalanswers;
+  private java.lang.String userid;
 
   /**
    * @return value or {@code null} for none
    */
-  public java.util.List<java.lang.String> getAnswers() {
-    return answers;
+  public java.lang.String getCorrectAnswer() {
+    return correctAnswer;
   }
 
   /**
-   * @param answers answers or {@code null} for none
+   * @param correctAnswer correctAnswer or {@code null} for none
    */
-  public QuizQuestionInstance setAnswers(java.util.List<java.lang.String> answers) {
-    this.answers = answers;
+  public UserAnswerFeedback setCorrectAnswer(java.lang.String correctAnswer) {
+    this.correctAnswer = correctAnswer;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getCorrect() {
-    return correct;
+  public java.lang.String getDifficulty() {
+    return difficulty;
   }
 
   /**
-   * @param correct correct or {@code null} for none
+   * @param difficulty difficulty or {@code null} for none
    */
-  public QuizQuestionInstance setCorrect(java.lang.String correct) {
-    this.correct = correct;
+  public UserAnswerFeedback setDifficulty(java.lang.String difficulty) {
+    this.difficulty = difficulty;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.Boolean getCorrectIsGold() {
-    return correctIsGold;
+  public java.lang.Boolean getIsCorrect() {
+    return isCorrect;
   }
 
   /**
-   * @param correctIsGold correctIsGold or {@code null} for none
+   * @param isCorrect isCorrect or {@code null} for none
    */
-  public QuizQuestionInstance setCorrectIsGold(java.lang.Boolean correctIsGold) {
-    this.correctIsGold = correctIsGold;
-    return this;
-  }
-
-  /**
-   * @return value or {@code null} for none
-   */
-  public java.lang.Integer getCorrectanswers() {
-    return correctanswers;
-  }
-
-  /**
-   * @param correctanswers correctanswers or {@code null} for none
-   */
-  public QuizQuestionInstance setCorrectanswers(java.lang.Integer correctanswers) {
-    this.correctanswers = correctanswers;
+  public UserAnswerFeedback setIsCorrect(java.lang.Boolean isCorrect) {
+    this.isCorrect = isCorrect;
     return this;
   }
 
@@ -161,7 +146,7 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
   /**
    * @param key key or {@code null} for none
    */
-  public QuizQuestionInstance setKey(Key key) {
+  public UserAnswerFeedback setKey(Key key) {
     this.key = key;
     return this;
   }
@@ -176,7 +161,7 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
   /**
    * @param mid mid or {@code null} for none
    */
-  public QuizQuestionInstance setMid(java.lang.String mid) {
+  public UserAnswerFeedback setMid(java.lang.String mid) {
     this.mid = mid;
     return this;
   }
@@ -184,15 +169,30 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getMidname() {
-    return midname;
+  public java.lang.Integer getNumCorrectAnswers() {
+    return numCorrectAnswers;
   }
 
   /**
-   * @param midname midname or {@code null} for none
+   * @param numCorrectAnswers numCorrectAnswers or {@code null} for none
    */
-  public QuizQuestionInstance setMidname(java.lang.String midname) {
-    this.midname = midname;
+  public UserAnswerFeedback setNumCorrectAnswers(java.lang.Integer numCorrectAnswers) {
+    this.numCorrectAnswers = numCorrectAnswers;
+    return this;
+  }
+
+  /**
+   * @return value or {@code null} for none
+   */
+  public java.lang.Integer getNumTotalAnswers() {
+    return numTotalAnswers;
+  }
+
+  /**
+   * @param numTotalAnswers numTotalAnswers or {@code null} for none
+   */
+  public UserAnswerFeedback setNumTotalAnswers(java.lang.Integer numTotalAnswers) {
+    this.numTotalAnswers = numTotalAnswers;
     return this;
   }
 
@@ -206,7 +206,7 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
   /**
    * @param quiz quiz or {@code null} for none
    */
-  public QuizQuestionInstance setQuiz(java.lang.String quiz) {
+  public UserAnswerFeedback setQuiz(java.lang.String quiz) {
     this.quiz = quiz;
     return this;
   }
@@ -214,41 +214,41 @@ public final class QuizQuestionInstance extends com.google.api.client.json.Gener
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getQuizquestion() {
-    return quizquestion;
+  public java.lang.String getUserAnswer() {
+    return userAnswer;
   }
 
   /**
-   * @param quizquestion quizquestion or {@code null} for none
+   * @param userAnswer userAnswer or {@code null} for none
    */
-  public QuizQuestionInstance setQuizquestion(java.lang.String quizquestion) {
-    this.quizquestion = quizquestion;
+  public UserAnswerFeedback setUserAnswer(java.lang.String userAnswer) {
+    this.userAnswer = userAnswer;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.Integer getTotalanswers() {
-    return totalanswers;
+  public java.lang.String getUserid() {
+    return userid;
   }
 
   /**
-   * @param totalanswers totalanswers or {@code null} for none
+   * @param userid userid or {@code null} for none
    */
-  public QuizQuestionInstance setTotalanswers(java.lang.Integer totalanswers) {
-    this.totalanswers = totalanswers;
+  public UserAnswerFeedback setUserid(java.lang.String userid) {
+    this.userid = userid;
     return this;
   }
 
   @Override
-  public QuizQuestionInstance set(String fieldName, Object value) {
-    return (QuizQuestionInstance) super.set(fieldName, value);
+  public UserAnswerFeedback set(String fieldName, Object value) {
+    return (UserAnswerFeedback) super.set(fieldName, value);
   }
 
   @Override
-  public QuizQuestionInstance clone() {
-    return (QuizQuestionInstance) super.clone();
+  public UserAnswerFeedback clone() {
+    return (UserAnswerFeedback) super.clone();
   }
 
 }

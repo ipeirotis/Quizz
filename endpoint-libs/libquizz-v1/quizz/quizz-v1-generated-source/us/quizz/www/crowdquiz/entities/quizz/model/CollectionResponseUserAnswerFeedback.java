@@ -19,7 +19,7 @@
 package us.quizz.www.crowdquiz.entities.quizz.model;
 
 /**
- * Model definition for CollectionResponseQuiz.
+ * Model definition for CollectionResponseUserAnswerFeedback.
  *
  * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
  * transmitted over HTTP when working with the . For a detailed explanation see:
@@ -29,18 +29,18 @@ package us.quizz.www.crowdquiz.entities.quizz.model;
  * @author Google, Inc.
  */
 @SuppressWarnings("javadoc")
-public final class CollectionResponseQuiz extends com.google.api.client.json.GenericJson {
+public final class CollectionResponseUserAnswerFeedback extends com.google.api.client.json.GenericJson {
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.util.List<Quiz> items;
+  private java.util.List<UserAnswerFeedback> items;
 
   static {
-    // hack to force ProGuard to consider Quiz used, since otherwise it would be stripped out
+    // hack to force ProGuard to consider UserAnswerFeedback used, since otherwise it would be stripped out
     // see http://code.google.com/p/google-api-java-client/issues/detail?id=528
-    com.google.api.client.util.Data.nullOf(Quiz.class);
+    com.google.api.client.util.Data.nullOf(UserAnswerFeedback.class);
   }
 
   /**
@@ -52,14 +52,14 @@ public final class CollectionResponseQuiz extends com.google.api.client.json.Gen
   /**
    * @return value or {@code null} for none
    */
-  public java.util.List<Quiz> getItems() {
+  public java.util.List<UserAnswerFeedback> getItems() {
     return items;
   }
 
   /**
    * @param items items or {@code null} for none
    */
-  public CollectionResponseQuiz setItems(java.util.List<Quiz> items) {
+  public CollectionResponseUserAnswerFeedback setItems(java.util.List<UserAnswerFeedback> items) {
     this.items = items;
     return this;
   }
@@ -74,19 +74,19 @@ public final class CollectionResponseQuiz extends com.google.api.client.json.Gen
   /**
    * @param nextPageToken nextPageToken or {@code null} for none
    */
-  public CollectionResponseQuiz setNextPageToken(java.lang.String nextPageToken) {
+  public CollectionResponseUserAnswerFeedback setNextPageToken(java.lang.String nextPageToken) {
     this.nextPageToken = nextPageToken;
     return this;
   }
 
   @Override
-  public CollectionResponseQuiz set(String fieldName, Object value) {
-    return (CollectionResponseQuiz) super.set(fieldName, value);
+  public CollectionResponseUserAnswerFeedback set(String fieldName, Object value) {
+    return (CollectionResponseUserAnswerFeedback) super.set(fieldName, value);
   }
 
   @Override
-  public CollectionResponseQuiz clone() {
-    return (CollectionResponseQuiz) super.clone();
+  public CollectionResponseUserAnswerFeedback clone() {
+    return (CollectionResponseUserAnswerFeedback) super.clone();
   }
 
 }

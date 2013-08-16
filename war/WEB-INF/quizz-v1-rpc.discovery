@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/evaPznzkS9QA7Cu6jV3zxBDlUNY\"",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/ajm4KHklcxovVpUmiz1YRn1Oioc\"",
  "discoveryVersion": "v1",
  "id": "quizz:v1",
  "name": "quizz",
@@ -101,6 +101,21 @@
      "type": "array",
      "items": {
       "$ref": "User"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "CollectionResponse_UserAnswerFeedback": {
+   "id": "CollectionResponse_UserAnswerFeedback",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "UserAnswerFeedback"
      }
     },
     "nextPageToken": {
@@ -284,6 +299,10 @@
     "correctIsGold": {
      "type": "boolean"
     },
+    "correctanswers": {
+     "type": "integer",
+     "format": "int32"
+    },
     "key": {
      "$ref": "Key"
     },
@@ -298,6 +317,10 @@
     },
     "quizquestion": {
      "type": "string"
+    },
+    "totalanswers": {
+     "type": "integer",
+     "format": "int32"
     }
    }
   },
@@ -313,6 +336,44 @@
     },
     "treatments": {
      "$ref": "JsonMap"
+    },
+    "userid": {
+     "type": "string"
+    }
+   }
+  },
+  "UserAnswerFeedback": {
+   "id": "UserAnswerFeedback",
+   "type": "object",
+   "properties": {
+    "correctAnswer": {
+     "type": "string"
+    },
+    "difficulty": {
+     "type": "string"
+    },
+    "isCorrect": {
+     "type": "boolean"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "mid": {
+     "type": "string"
+    },
+    "numCorrectAnswers": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "numTotalAnswers": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "quiz": {
+     "type": "string"
+    },
+    "userAnswer": {
+     "type": "string"
     },
     "userid": {
      "type": "string"
@@ -411,6 +472,32 @@
     "$ref": "User"
    }
   },
+  "quizz.getUserAnswerFeedback": {
+   "id": "quizz.getUserAnswerFeedback",
+   "allowGet": true,
+   "parameters": {
+    "mid": {
+     "type": "string",
+     "required": true
+    },
+    "quiz": {
+     "type": "string",
+     "required": true
+    },
+    "userid": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "quiz",
+    "userid",
+    "mid"
+   ],
+   "returns": {
+    "$ref": "UserAnswerFeedback"
+   }
+  },
   "quizz.insertQuiz": {
    "id": "quizz.insertQuiz",
    "parameters": {
@@ -451,6 +538,20 @@
    ],
    "returns": {
     "$ref": "User"
+   }
+  },
+  "quizz.insertUserAnswerFeedback": {
+   "id": "quizz.insertUserAnswerFeedback",
+   "parameters": {
+    "resource": {
+     "$ref": "UserAnswerFeedback"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "UserAnswerFeedback"
    }
   },
   "quizz.listQuiz": {
@@ -517,6 +618,22 @@
     "$ref": "CollectionResponse_User"
    }
   },
+  "quizz.listUserAnswerFeedback": {
+   "id": "quizz.listUserAnswerFeedback",
+   "allowGet": true,
+   "parameters": {
+    "cursor": {
+     "type": "string"
+    },
+    "limit": {
+     "type": "integer",
+     "format": "int32"
+    }
+   },
+   "returns": {
+    "$ref": "CollectionResponse_UserAnswerFeedback"
+   }
+  },
   "quizz.removeQuiz": {
    "id": "quizz.removeQuiz",
    "parameters": {
@@ -556,6 +673,19 @@
    },
    "parameterOrder": [
     "userid"
+   ]
+  },
+  "quizz.removeUserAnswerFeedback": {
+   "id": "quizz.removeUserAnswerFeedback",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64"
+    }
+   },
+   "parameterOrder": [
+    "id"
    ]
   },
   "quizz.updateQuiz": {
@@ -598,6 +728,20 @@
    ],
    "returns": {
     "$ref": "User"
+   }
+  },
+  "quizz.updateUserAnswerFeedback": {
+   "id": "quizz.updateUserAnswerFeedback",
+   "parameters": {
+    "resource": {
+     "$ref": "UserAnswerFeedback"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "UserAnswerFeedback"
    }
   }
  }

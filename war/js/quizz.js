@@ -49,46 +49,43 @@
 			'fields' : 'items(quiz, totalanswers)',
 		};
 		return $.getJSON(url, params);	
+		
+		
 	}
 	
-	function getUserQuizPerformance(quiz, user) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance';
-		url += '/quiz/' + encodeURIComponent(quiz);
-		url += '/user/' + encodeURIComponent(user);
-		var params = {
-			//'fields' : 'items(quiz, totalanswers)',
-		};
-		return $.getJSON(url, params);	
-	}
-	
+
 	function getNextQuizQuestion(quiz) {
 		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
 		url += '/quiz/' + encodeURIComponent(quiz);
 		var params = {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
-		return $.getJSON(url, params);
+		return $.getJSON(url, params)
+			.done(function(question) { populateQuestion(question); });
+		
+		
 	}
 	
-	function populateQuestion(question, performance) {
+	function populateQuestion(question) {
 		
 		$('#relation').val(question.quiz);
 		$('#mid').val(question.mid);
 		$('#gold').val(question.correct);
 		$('#questiontext').html(question.quizquestion);
 		$('#midname').html(question.midname);
-		
+		$('#correctanswers').val(question.correctanswers);
+		$('#totalanswers').val(question.totalanswers);
 		
 		var answers = $("#answers");
 		$.each(question.answers, function(index, value) {
 			answers.append($('<input id="useranswer'+index+'" name="useranswer'+index+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
 			if (value == question.correct) {
 				$('#useranswer'+index).mousedown(function(e){
-					markConversion('multiple-choice-correct', performance.score);
+					markConversion('multiple-choice-correct', 1);
 				});
 			} else {
 				$('#useranswer'+index).mousedown(function(e){
-					markConversion('multiple-choice-incorrect', performance.score);
+					markConversion('multiple-choice-incorrect', 0);
 				});
 			}
 		});
@@ -108,31 +105,82 @@
 		return $.getJSON(url, params);	
 	}
 	
+	function getFeedbackForPriorAnswer(user, quiz, mid) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/useranswerfeedback';
+		url += '/' + encodeURIComponent(quiz);
+		url += '/' + encodeURIComponent(user);
+		url += '/' + encodeURIComponent(mid);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		$.getJSON(url, params)
+			.done(function(feedback) { displayFeedback(feedback); });
+		
+	}
+	
 	function getUserTreatments(user) {
 		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/user/' + user;
 		var params = {
 			'fields' : 'treatments',
 		};
-		return $.getJSON(url, params);	
+		$.getJSON(url, params)
+			.done(function(userdata) { applyTreatments(userdata); });
 	}
+	
+	
+	function getUserQuizPerformance(quiz, user) {
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance';
+		url += '/quiz/' + encodeURIComponent(quiz);
+		url += '/user/' + encodeURIComponent(user);
+		var params = {
+			//'fields' : 'items(quiz, totalanswers)',
+		};
+		return $.getJSON(url, params)
+			.done(function(performance) { displayPerformanceScores(quiz, performance); });
+		
+	}
+	
 	
 	function displayPerformanceScores(perfomance) {
 		
 		$('#showScore').html("Score: "+perfomance.score+" points");
-
-		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
-		
+		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);	
 		$('#showPercentageCorrect').html("Correct (%): " + performance.percentageCorrect);
-		
 		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankPercentCorrect/performance.totalUsers)+")");
-		
 		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankTotalCorrect/performance.totalUsers)+")");
-		
 	}
 	
-	function displayFeedback(perfomance) {
-		
-		
+	function displayFeedback(feedback) {
+		if (feedback.isCorrect) {
+			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswer+'</span> was <span class="label label-success">correct</span>!');
+			$('#showMessage').attr('class', 'alert alert-success');
+		} else {
+			$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswer+'</span> was <span class="label label-important">incorrect</span>!');
+			$('#showMessage').attr('class', 'alert alert-error');
+		}
+		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswer+'</span>.');
+		$('#showCrowdAnswers').html('Crowd performance: <span class="label label-info">'+feedback.numCorrectAnswers+' out of the '+feedback.numTotalAnswers+' users	 ('+feedback.difficulty+') answered correctly.</span>');
+	}
+	
+	function hideDivs() {
+		$('#feedback').hide();
+		$('#showScore').hide();
+		$('#showTotalCorrect').hide();	
+		$('#showPercentageCorrect').hide();
+		$('#showPercentageRank').hide();
+		$('#showTotalCorrectRank').hide();
+	}
+	
+	function applyTreatments(userdata) {
+		// Show/hide the various elements, according to the user treatments.
+		$.each(userdata.treatments, function(key, value) {
+			var element = $(document.getElementById(key));
+			if (value == true) {
+				element.show();
+			} else {
+				element.hide();
+			}
+		});
 	}
 	
     function markConversion(type, value) {

@@ -21,26 +21,59 @@ public class QuizQuestionInstance {
 				+ relation + "_" + mid);
 	}
 
+	// The Freebase mid for which we ask the question
 	@Persistent
 	private String mid;
 	
+	// Caching the Freebase entity name
 	@Persistent
 	private String midname;
 
+	// The quiz id for this question
 	@Persistent
 	private String quiz;
 	
+	// The text of the question, from the Quiz entity
 	@Persistent
 	private String quizquestion;
 
+	// The set of answers
 	@Persistent
 	private Set<String> answers;
 	
+	// The correct answer among the choices
 	@Persistent
 	private String correct;
 	
+	// Whether the correct one is a gold (if false, then it is a silver answer from the Knowledge Vault)
 	@Persistent
 	private Boolean correctIsGold;
+	
+	// Total number of times the question has been asked
+	@Persistent
+	private Integer totalanswers;
+	
+	// Number of times the given answer was correct
+	@Persistent
+	private Integer correctanswers;
+	
+	public Integer getTotalanswers() {
+		return totalanswers;
+	}
+
+	public void setTotalanswers(Integer totalanswers) {
+		this.totalanswers = totalanswers;
+	}
+
+	public Integer getCorrectanswers() {
+		return correctanswers;
+	}
+
+	public void setCorrectanswers(Integer correctanswers) {
+		this.correctanswers = correctanswers;
+	}
+
+
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -120,6 +153,7 @@ public class QuizQuestionInstance {
 	public void setKey(Key key) {
 		this.key = key;
 	}
+	
 	
 
 }

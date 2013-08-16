@@ -166,128 +166,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "quizz.insertQuizPerformance" : {
-      "path" : "quizperformance",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.removeQuizPerformance" : {
-      "path" : "quizperformance/{quizid}/{userid}",
-      "httpMethod" : "DELETE",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance",
-      "request" : {
-        "parameters" : {
-          "quizid" : {
-            "type" : "string",
-            "required" : true
-          },
-          "userid" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
-    "quizz.getQuizPerformance" : {
-      "path" : "quizperformance/quiz/{quiz}/user/{user}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance",
-      "request" : {
-        "parameters" : {
-          "quiz" : {
-            "type" : "string",
-            "required" : true
-          },
-          "user" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.listQuizPerformanceByUser" : {
-      "path" : "quizperformance/user/{user}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
-      "request" : {
-        "parameters" : {
-          "user" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.updateQuizPerformance" : {
-      "path" : "quizperformance",
-      "httpMethod" : "PUT",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.listQuizPerformance" : {
-      "path" : "quizperformance",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance",
-      "request" : {
-        "parameters" : {
-          "cursor" : {
-            "type" : "string",
-            "required" : false
-          },
-          "limit" : {
-            "type" : "int32",
-            "required" : false
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "quizz.getUser" : {
       "path" : "user/{userid}",
       "httpMethod" : "GET",
@@ -377,6 +255,230 @@
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.updateUserAnswerFeedback" : {
+      "path" : "useranswerfeedback",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.updateUserAnswerFeedback",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.insertUserAnswerFeedback" : {
+      "path" : "useranswerfeedback",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.insertUserAnswerFeedback",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.listUserAnswerFeedback" : {
+      "path" : "useranswerfeedback",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.listUserAnswerFeedback",
+      "request" : {
+        "parameters" : {
+          "cursor" : {
+            "type" : "string",
+            "required" : false
+          },
+          "limit" : {
+            "type" : "int32",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.removeUserAnswerFeedback" : {
+      "path" : "useranswerfeedback/{id}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.removeUserAnswerFeedback",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "quizz.getUserAnswerFeedback" : {
+      "path" : "useranswerfeedback/{quiz}/{userid}/{mid}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.getUserAnswerFeedback",
+      "request" : {
+        "parameters" : {
+          "quiz" : {
+            "type" : "string",
+            "required" : true
+          },
+          "userid" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mid" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.removeQuizPerformance" : {
+      "path" : "quizperformance/{quizid}/{userid}",
+      "httpMethod" : "DELETE",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance",
+      "request" : {
+        "parameters" : {
+          "quizid" : {
+            "type" : "string",
+            "required" : true
+          },
+          "userid" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "quizz.insertQuizPerformance" : {
+      "path" : "quizperformance",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.getQuizPerformance" : {
+      "path" : "quizperformance/quiz/{quiz}/user/{user}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance",
+      "request" : {
+        "parameters" : {
+          "quiz" : {
+            "type" : "string",
+            "required" : true
+          },
+          "user" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.listQuizPerformanceByUser" : {
+      "path" : "quizperformance/user/{user}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
+      "request" : {
+        "parameters" : {
+          "user" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.updateQuizPerformance" : {
+      "path" : "quizperformance",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.listQuizPerformance" : {
+      "path" : "quizperformance",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance",
+      "request" : {
+        "parameters" : {
+          "cursor" : {
+            "type" : "string",
+            "required" : false
+          },
+          "limit" : {
+            "type" : "int32",
+            "required" : false
+          }
+        },
+        "body" : "empty"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -499,6 +601,12 @@
           "correctIsGold" : {
             "type" : "boolean"
           },
+          "totalanswers" : {
+            "type" : "integer"
+          },
+          "correctanswers" : {
+            "type" : "integer"
+          },
           "key" : {
             "$ref" : "Key"
           }
@@ -512,6 +620,106 @@
             "type" : "array",
             "items" : {
               "$ref" : "Quiz"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      },
+      "User" : {
+        "id" : "User",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "userid" : {
+            "type" : "string"
+          },
+          "experiment" : {
+            "$ref" : "Experiment"
+          },
+          "treatments" : {
+            "$ref" : "JsonMap"
+          }
+        }
+      },
+      "Experiment" : {
+        "id" : "Experiment",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "treatments" : {
+            "$ref" : "JsonMap"
+          }
+        }
+      },
+      "JsonMap" : {
+        "id" : "JsonMap",
+        "type" : "object"
+      },
+      "CollectionResponse_User" : {
+        "id" : "CollectionResponse_User",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "User"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UserAnswerFeedback" : {
+        "id" : "UserAnswerFeedback",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "quiz" : {
+            "type" : "string"
+          },
+          "userid" : {
+            "type" : "string"
+          },
+          "mid" : {
+            "type" : "string"
+          },
+          "userAnswer" : {
+            "type" : "string"
+          },
+          "isCorrect" : {
+            "type" : "boolean"
+          },
+          "correctAnswer" : {
+            "type" : "string"
+          },
+          "numCorrectAnswers" : {
+            "type" : "integer"
+          },
+          "numTotalAnswers" : {
+            "type" : "integer"
+          },
+          "difficulty" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CollectionResponse_UserAnswerFeedback" : {
+        "id" : "CollectionResponse_UserAnswerFeedback",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "UserAnswerFeedback"
             }
           },
           "nextPageToken" : {
@@ -572,55 +780,6 @@
             "type" : "string"
           }
         }
-      },
-      "User" : {
-        "id" : "User",
-        "type" : "object",
-        "properties" : {
-          "key" : {
-            "$ref" : "Key"
-          },
-          "userid" : {
-            "type" : "string"
-          },
-          "experiment" : {
-            "$ref" : "Experiment"
-          },
-          "treatments" : {
-            "$ref" : "JsonMap"
-          }
-        }
-      },
-      "Experiment" : {
-        "id" : "Experiment",
-        "type" : "object",
-        "properties" : {
-          "key" : {
-            "$ref" : "Key"
-          },
-          "treatments" : {
-            "$ref" : "JsonMap"
-          }
-        }
-      },
-      "JsonMap" : {
-        "id" : "JsonMap",
-        "type" : "object"
-      },
-      "CollectionResponse_User" : {
-        "id" : "CollectionResponse_User",
-        "type" : "object",
-        "properties" : {
-          "items" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "User"
-            }
-          },
-          "nextPageToken" : {
-            "type" : "string"
-          }
-        }
       }
     },
     "methods" : {
@@ -662,39 +821,6 @@
           "$ref" : "QuizQuestionInstance"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance" : {
-        "request" : {
-          "$ref" : "QuizPerformance"
-        },
-        "response" : {
-          "$ref" : "QuizPerformance"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
-        "response" : {
-          "$ref" : "QuizPerformance"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser" : {
-        "response" : {
-          "$ref" : "CollectionResponse_QuizPerformance"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance" : {
-        "request" : {
-          "$ref" : "QuizPerformance"
-        },
-        "response" : {
-          "$ref" : "QuizPerformance"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {
-        "response" : {
-          "$ref" : "CollectionResponse_QuizPerformance"
-        }
-      },
       "com.ipeirotis.crowdquiz.entities.UserEndpoint.getUser" : {
         "response" : {
           "$ref" : "User"
@@ -721,6 +847,67 @@
         },
         "response" : {
           "$ref" : "User"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.updateUserAnswerFeedback" : {
+        "request" : {
+          "$ref" : "UserAnswerFeedback"
+        },
+        "response" : {
+          "$ref" : "UserAnswerFeedback"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.insertUserAnswerFeedback" : {
+        "request" : {
+          "$ref" : "UserAnswerFeedback"
+        },
+        "response" : {
+          "$ref" : "UserAnswerFeedback"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.listUserAnswerFeedback" : {
+        "response" : {
+          "$ref" : "CollectionResponse_UserAnswerFeedback"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.removeUserAnswerFeedback" : {
+      },
+      "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.getUserAnswerFeedback" : {
+        "response" : {
+          "$ref" : "UserAnswerFeedback"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance" : {
+        "request" : {
+          "$ref" : "QuizPerformance"
+        },
+        "response" : {
+          "$ref" : "QuizPerformance"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
+        "response" : {
+          "$ref" : "QuizPerformance"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser" : {
+        "response" : {
+          "$ref" : "CollectionResponse_QuizPerformance"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance" : {
+        "request" : {
+          "$ref" : "QuizPerformance"
+        },
+        "response" : {
+          "$ref" : "QuizPerformance"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {
+        "response" : {
+          "$ref" : "CollectionResponse_QuizPerformance"
         }
       }
     }

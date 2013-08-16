@@ -8,8 +8,8 @@
 
   <groupId>com.google.apis</groupId>
   <artifactId>google-api-services-quizz</artifactId>
-  <version>v1-rev20130815100243-1.15.0-rc</version>
-  <name> v1 (revision 20130815100243)</name>
+  <version>v1-rev20130816063807-1.15.0-rc</version>
+  <name> v1 (revision 20130816063807)</name>
   <packaging>jar</packaging>
 
   <inceptionYear>2011</inceptionYear>
