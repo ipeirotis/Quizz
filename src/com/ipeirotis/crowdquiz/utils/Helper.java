@@ -1,7 +1,5 @@
 package com.ipeirotis.crowdquiz.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -35,30 +33,7 @@ public class Helper {
 	 * @param pm
 	 * @return
 	 */
-	public static String getNextMultipleChoiceURL(HttpServletRequest req, String relation, String userid, String justAddedMid) {
-		
-
-		
-			String mid = getNextQuizQuestion(relation);
-			
-			String nextURL = "/";
-			if (mid == null) return nextURL;
-			
-			try {
-				nextURL = "/multChoice.jsp?" 
-						+ "&numoptions=4" 
-						+ "&relation=" + URLEncoder.encode(relation, "UTF-8")  
-						+ "&mid=" + URLEncoder.encode(mid, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			return getBaseURL(req) + nextURL;
-			
-
-	}
-
-
-
+	
 	public static String getNextQuizQuestion(String quiz) {
 		Set<String> availableQuestions = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
 

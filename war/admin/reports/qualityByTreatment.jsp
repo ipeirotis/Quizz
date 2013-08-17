@@ -65,7 +65,7 @@
 						%>
 						<tr>
 							<td nowrap><%=user.getUserid()%></td>
-							<td nowrap><%=qp.getQuiz()%></a></td>
+							<td nowrap><%=qp.getQuiz()%></td>
 							<%
 							for (Treatment t : treatments) {
 								%><td><%=user.getsTreatment(t.getName())%></td><%

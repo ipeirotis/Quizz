@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Date;
 
-import javax.jdo.annotations.Persistent;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 
 import com.google.appengine.api.taskqueue.Queue;
@@ -18,7 +16,6 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
 import com.ipeirotis.crowdquiz.utils.Helper;
@@ -58,37 +55,16 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long timestamp = (new Date()).getTime();
 		Boolean isCorrect = useranswer.equals(gold);
 
-		//createUserAnswerFeedback(quiz, userid, mid, userAnswer)
-					
 		storeUserAnswerFeedback(user, relation, mid, useranswer, gold, numCorrectAnswers, numTotalAnswers);
-		
 		quickUpdateQuizPerformance(user, relation, isCorrect, action);
-		
 		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser, referer, timestamp, isCorrect);
-
-		// This should be removed once we switch to the new multChoice.jsp model
-		if (numCorrectAnswers==null || numTotalAnswers==null) {
-			QuizQuestion question = QuizQuestionRepository.getQuizQuestion(relation, mid);
-			Integer total = question.getNumberOfUserAnswers();
-			if (total == null) 	total = 0;
-			Integer correct = question.getNumberOfCorrentUserAnswers();
-			if (correct == null) correct = 0;
-			numCorrectAnswers = correct.toString();
-			numTotalAnswers = total.toString();
-		}
 		updateQuizPerformance(user, relation);
 
-		String multChoiceURL = Helper.getNextMultipleChoiceURL(req, relation, user.getUserid(), mid);
-		String feedbackURL = multChoiceURL
-				+ "&useranswer=" + URLEncoder.encode(useranswer, "UTF-8") 
-				+ "&goldprior=" + URLEncoder.encode(gold, "UTF-8") 
-				+ "&iscorrect=" + URLEncoder.encode(isCorrect.toString(), "UTF-8")
-				+ "&totalanswers=" + URLEncoder.encode(numTotalAnswers, "UTF-8") 
-				+ "&correctanswers=" + URLEncoder.encode(numCorrectAnswers, "UTF-8")
-				+ "&prior=" + URLEncoder.encode(mid, "UTF-8"); 
+		String url = Helper.getBaseURL(req)
+				+ "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") 
+				+ "&prior=" + URLEncoder.encode(mid, "UTF-8");
 
-
-		resp.sendRedirect(feedbackURL);
+		resp.sendRedirect(url);
 
 		return;
 

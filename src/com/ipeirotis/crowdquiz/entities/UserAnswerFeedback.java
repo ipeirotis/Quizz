@@ -10,7 +10,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.ipeirotis.crowdquiz.utils.Helper;
 
 /** 
  * The Quiz is the basic unit of the application. Each quiz contains 

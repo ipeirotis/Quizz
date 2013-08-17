@@ -151,7 +151,9 @@
 	}
 	
 	function displayFeedback(feedback) {
+		
 		if (feedback.isCorrect) {
+			
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswer+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
 		} else {
@@ -164,6 +166,9 @@
 	
 	function hideDivs() {
 		$('#feedback').hide();
+		$('#showMessage').hide();
+		$('#showCorrect').hide();
+		$('#showCrowdAnswers')
 		$('#showScore').hide();
 		$('#showTotalCorrect').hide();	
 		$('#showPercentageCorrect').hide();

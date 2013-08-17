@@ -10,7 +10,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 

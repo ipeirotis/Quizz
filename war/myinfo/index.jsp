@@ -9,6 +9,8 @@
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.HashMap"%>
 
+<%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
+
 <jsp:include page="/header.jsp"><jsp:param name="title" value="User info" /></jsp:include>
 
 <body>
@@ -39,14 +41,8 @@
 			
 				<tr><th colspan="4">Quiz Performance</th></tr>
 				<%
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				Query query = pm.newQuery(QuizPerformance.class);
-				query.setFilter("userid == useridParam");
-				query.declareParameters("String useridParam");
-				Map<String,Object> params = new HashMap<String, Object>();
-				params.put("useridParam", u.getUserid());
-				List<QuizPerformance> results = (List<QuizPerformance>) query.executeWithMap(params);
-				pm.close();
+				List<QuizPerformance> results = QuizPerformanceRepository.getQuizPerformancesByUser(u.getUserid());				
+			
 				for (QuizPerformance qp : results) {
 					%> 
 					<tr>

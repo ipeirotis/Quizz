@@ -8,13 +8,9 @@
 			<a href="/"><span style="color: maroon">Quizz</span>.us</a>
 		</h2>
 	
-		<div id="feedback" style="display: none;">
-			<div class="alert alert-success" id="showMessage"></div>
-			<div class="alert alert-success" id="showCorrect"></div>
-			<div class="alert alert-info" id="showCrowdAnswers"></div>
-		</div>
+		<div id="feedback"></div>
 		
-		<div id="scores" class="alert alert-info" style="text-align: center; display: none;">
+		<div id="scores" class="alert alert-info" style="text-align: center;">
 			<span class="label label-info" id="showScore"></span>
 			<span class="label label-info" id="showTotalCorrect"></span>
 			<span class="label label-info" id="showPercentageCorrect"></span>
@@ -43,24 +39,32 @@
 	<script>
 	$(document).ready(function() {
 		
-		$('#feedback').hide();
-		$('#scores').hide();
-		$('#form').hide();
-		
 		var user = getUsername();
 		var quiz = getURLParameterByName('relation');
 		var mid = getURLParameterByName('mid');
 		var prior = getURLParameterByName('prior');
+		
+		if (prior) {
+			var feedbackdiv = $('#feedback');
+			feedbackdiv.append($('<div id="showMessage"></div>'));
+			feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));
+			feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
+			getFeedbackForPriorAnswer(user, quiz, prior);
+		}
+		
+		hideDivs();
 				
 		getUserTreatments(user);
 		getUserQuizPerformance(quiz, user); 
 		getNextQuizQuestion(quiz);
-		getFeedbackForPriorAnswer(user, quiz, prior);
 		
-		$('#feedback').show();
+		if (prior) {
+			$('#feedback').show();
+			$('#feedback').delay(3000).fadeOut();
+		}
 		$('#scores').show();
 		$('#form').show();
-		$('#feedback').delay(5000).fadeOut();
+		
 
 	});
 	</script>

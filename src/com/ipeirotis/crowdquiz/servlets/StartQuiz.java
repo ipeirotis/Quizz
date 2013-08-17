@@ -1,6 +1,7 @@
 package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +23,7 @@ public class StartQuiz extends HttpServlet {
 		String userid = user.getUserid();
 		UserReferralRepository.createAndStoreUserReferal(req, userid);
 
-		String nextURL = Helper.getNextMultipleChoiceURL(req, relation, userid, null);
-
+		String nextURL = Helper.getBaseURL(req) + "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") ;
 		resp.sendRedirect(nextURL);
 	}
 

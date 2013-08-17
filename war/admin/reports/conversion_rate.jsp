@@ -12,6 +12,7 @@
 <%@ page import="java.text.NumberFormat"%>
 
 <%@ page import="us.quizz.repository.QuizRepository"%>
+<%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
 <%@ page import="us.quizz.repository.UserReferralRepository"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
@@ -34,14 +35,7 @@
 				for (Quiz quiz : quizzes) {
 					
 					int users = UserReferralRepository.getUserIDsByQuiz(quiz.getRelation()).size();
-					
-					PersistenceManager	pm = PMF.get().getPersistenceManager();
-					Query query = pm.newQuery(QuizPerformance.class);
-					query.setFilter("quiz == quizParam");
-					query.declareParameters("String quizParam");
-					List<QuizPerformance> qp = (List<QuizPerformance>) query.execute(quiz.getRelation());
-					pm.close();
-
+					List<QuizPerformance> qp = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getRelation());
 					NumberFormat percentFormat = NumberFormat.getPercentInstance();
 					percentFormat.setMaximumFractionDigits(0);
 					String rate = percentFormat.format(1.0*(qp.size()+1)/(users+1));
