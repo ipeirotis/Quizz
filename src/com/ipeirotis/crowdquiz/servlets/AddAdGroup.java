@@ -35,50 +35,27 @@ public class AddAdGroup extends HttpServlet {
 			throws IOException {
 
 		r = resp;
-
 		r.setContentType("application/json");
+		try {
+			Utils.ensureParameters(req, "relation", "cpcbid", "keywords", "adheadline",
+					"adline1", "adline2");
+		} catch (IllegalArgumentException ex) {
+			resp.setStatus(422); // 422 (Unprocessable Entity)
+			return;
+		}
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation == null) {
-				resp.setStatus(422); // 422 (Unprocessable Entity)
-				return;
-			}
-
+			String cpcbid = req.getParameter("cpcbid");
+			String keywords = req.getParameter("keywords");
+			String adheadline = req.getParameter("adheadline");
+			String adline1 = req.getParameter("adline1");
+			String adline2 = req.getParameter("adline2");
+			
 			String mid = req.getParameter("mid");
 			if (mid == null) {
 				// In this case, we create the "default" ad for the quiz
 				// return;
-			}
-
-			String cpcbid = req.getParameter("cpcbid");
-			if (cpcbid == null) {
-				resp.setStatus(422); // 422 (Unprocessable Entity)
-				return;
-			}
-
-			String keywords = req.getParameter("keywords");
-			if (keywords == null) {
-				resp.setStatus(422); // 422 (Unprocessable Entity)
-				return;
-			}
-
-			String adheadline = req.getParameter("adheadline");
-			if (adheadline == null) {
-				resp.setStatus(422); // 422 (Unprocessable Entity)
-				return;
-			}
-
-			String adline1 = req.getParameter("adline1");
-			if (adline1 == null) {
-				resp.setStatus(422); // 422 (Unprocessable Entity)
-				return;
-			}
-
-			String adline2 = req.getParameter("adline2");
-			if (adline2 == null) {
-				resp.setStatus(422); // 422 (Unprocessable Entity)
-				return;
 			}
 
 			Quiz q = QuizRepository.getQuiz(relation);
@@ -94,27 +71,19 @@ public class AddAdGroup extends HttpServlet {
 				Queue queueAdgroup = QueueFactory.getQueue("adgroup");
 				long delay = 10; // in seconds
 				long etaMillis = System.currentTimeMillis() + delay * 1000L;
-				
-				if (mid==null) {
-				queueAdgroup.add(Builder.withUrl("/addAdGroup")
+				TaskOptions taskOptions = Builder.withUrl("/addAdGroup")
 						.param("relation", relation)
 						.param("cpcbid", cpcbid)
 						.param("keywords", keywords)
 						.param("adheadline", adheadline)
 						.param("adline1", adline1)
 						.param("adline2", adline2)
-						.method(TaskOptions.Method.POST).etaMillis(etaMillis));
-				} else {
-					queueAdgroup.add(Builder.withUrl("/addAdGroup")
-							.param("relation", relation)
-							.param("mid", mid)
-							.param("cpcbid", cpcbid)
-							.param("keywords", keywords)
-							.param("adheadline", adheadline)
-							.param("adline1", adline1)
-							.param("adline2", adline2)
-							.method(TaskOptions.Method.POST).etaMillis(etaMillis));
+						.method(TaskOptions.Method.POST)
+						.etaMillis(etaMillis);
+				if (mid != null) {
+					taskOptions.param("mid", mid);
 				}
+				queueAdgroup.add(taskOptions);
 				resp.setStatus(202); // The request has been accepted for
 										// processing, but the processing has
 										// not been completed

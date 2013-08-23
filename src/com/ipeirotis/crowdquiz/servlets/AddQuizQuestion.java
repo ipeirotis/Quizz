@@ -21,45 +21,25 @@ public class AddQuizQuestion extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("text/plain");
+		Utils.ensureParameters(req, "relation", "mid", "name", "weight");
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Relation: " + relation);
-
-			} else {
-				return;
-			}
+			resp.getWriter().println("Adding Relation: " + relation);
 
 			String mid = req.getParameter("mid");
-			if (mid != null) {
-				resp.getWriter().println("Entity ID: " + mid);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Entity ID: " + mid);
 			
 			String name = req.getParameter("name");
-			if (name != null) {
-				resp.getWriter().println("Entity name: " + name);
-			} else {
-				return;
-			}
-
+			resp.getWriter().println("Entity name: " + name);
+			
 			Double weight = Double.parseDouble(req.getParameter("weight"));
-			if (weight != null) {
-				resp.getWriter().println("Weight: " + weight);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Weight: " + weight);
 
 			QuizQuestion q = new QuizQuestion(relation, mid, name, weight);
-
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			pm.makePersistent(q);
 			pm.close();
-			
-			
-			
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
