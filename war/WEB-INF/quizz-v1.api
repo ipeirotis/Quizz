@@ -294,6 +294,26 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.getQuiz" : {
+      "path" : "quiz/{id}",
+      "httpMethod" : "GET",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.listQuiz" : {
       "path" : "quiz",
       "httpMethod" : "GET",
@@ -310,26 +330,6 @@
           "limit" : {
             "type" : "int32",
             "required" : false
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.getQuiz" : {
-      "path" : "quiz/{id}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz",
-      "request" : {
-        "parameters" : {
-          "id" : {
-            "type" : "string",
-            "required" : true
           }
         },
         "body" : "empty"
@@ -862,14 +862,14 @@
           "$ref" : "Quiz"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz" : {
-        "response" : {
-          "$ref" : "CollectionResponse_Quiz"
-        }
-      },
       "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz" : {
         "response" : {
           "$ref" : "Quiz"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz" : {
+        "response" : {
+          "$ref" : "CollectionResponse_Quiz"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuestionInstance" : {

@@ -29,6 +29,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		resp.setContentType("application/json");
 
 		User user = User.getUseridFromCookie(req, resp);
+		String gclid = req.getParameter("gclid");
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
 		String action, useranswer=null;
@@ -63,6 +64,10 @@ public class ProcessUserAnswer extends HttpServlet {
 		String url = Helper.getBaseURL(req)
 				+ "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") 
 				+ "&prior=" + URLEncoder.encode(mid, "UTF-8");
+		
+		if (gclid != null) {
+			url += "&gclid="+gclid;
+		}
 
 		resp.sendRedirect(url);
 

@@ -31,6 +31,7 @@
 					<input id="totalanswers" name="totalanswers" type="hidden" value=""> 
 					<input id="correctanswers" name="correctanswers" type="hidden" value=""> 
 					<input id="gold" name="gold" type="hidden" value=""> 
+					<input id="gclid" name="gclid" type="hidden" value=""> 
 				</fieldset>
 			</form>
 		</div>		
@@ -43,6 +44,8 @@
 		var quiz = getURLParameterByName('relation');
 		var mid = getURLParameterByName('mid');
 		var prior = getURLParameterByName('prior');
+		var gclid = getURLParameterByName('gclid');
+		$('#gclid').val(gclid);
 		
 		if (prior) {
 			var feedbackdiv = $('#feedback');
@@ -60,7 +63,7 @@
 		
 		if (prior) {
 			$('#feedback').show();
-			$('#feedback').delay(3000).fadeOut();
+			$('#feedback').delay(5000).fadeOut(600);
 		}
 		$('#scores').show();
 		$('#form').show();

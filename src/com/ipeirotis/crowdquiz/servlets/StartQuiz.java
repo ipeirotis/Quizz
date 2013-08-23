@@ -19,11 +19,17 @@ public class StartQuiz extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		String relation = req.getParameter("relation");
+		
+		String gclid = req.getParameter("gclid");
+		
 		User user = User.getUseridFromCookie(req, resp);
 		String userid = user.getUserid();
 		UserReferralRepository.createAndStoreUserReferal(req, userid);
 
 		String nextURL = Helper.getBaseURL(req) + "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") ;
+		if (gclid != null) {
+			nextURL += "&gclid="+gclid;
+		}
 		resp.sendRedirect(nextURL);
 	}
 
