@@ -25,29 +25,16 @@ public class AddQuiz extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-
-
+		Utils.ensureParameters(req, "relation", "name", "text");
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Quiz ID: " + relation);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Adding Quiz ID: " + relation);
 			
 			String name = req.getParameter("name");
-			if (name != null) {
-				resp.getWriter().println("Quiz Name: " + name);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Quiz Name: " + name);
 
 			String text = req.getParameter("text");
-			if (text != null) {
-				resp.getWriter().println("Question Text: " + text);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Question Text: " + text);
 
 			Quiz q = new Quiz(name, relation, text);
 			QuizRepository.storeQuiz(q);
