@@ -36,7 +36,7 @@
 	
 	
 	function getQuizzes() {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quiz/v1/quiz';
+		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quiz';
 		var params = {
 			'fields' : 'items(relation, name, questions)',
 		};
