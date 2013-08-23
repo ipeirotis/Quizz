@@ -23,34 +23,14 @@ public class AddSilverAnswer extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
+		Utils.ensureParameters(req, "relation", "mid", "source", "answer");
 		try {
 
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-			} else {
-				return;
-			}
-
 			String mid = req.getParameter("mid");
-			if (mid != null) {
-			} else {
-				return;
-			}
-			
 			String source = req.getParameter("source");
-			if (source != null) {
-
-			} else {
-				return;
-			}
-			
 			String answer = req.getParameter("answer");
-			if (answer != null) {
-
-			} else {
-				return;
-			}
-
+			
 			String prob = req.getParameter("probability");
 			Double probability = -1.0;
 			if (prob != null) {
@@ -76,7 +56,7 @@ public class AddSilverAnswer extends HttpServlet {
 			try {
 				pm.makePersistent(sa);
 			} catch (Exception e) {
-				;
+				logger.log(Level.WARNING, "Error when making persistent silver answer", e);
 			} finally {
 				pm.close();
 			}

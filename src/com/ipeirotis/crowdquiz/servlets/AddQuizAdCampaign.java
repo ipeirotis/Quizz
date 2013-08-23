@@ -27,37 +27,21 @@ public class AddQuizAdCampaign extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		r = resp;
-
 		r.setContentType("text/plain");
+		Utils.ensureParameters(req, "relation", "name", "text", "fbtype");
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-				resp.getWriter().println("Adding Relation: " + relation);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Adding Relation: " + relation);
 			
 			String name = req.getParameter("name");
-			if (name != null) {
-				resp.getWriter().println("Name: " + name);
-			} else {
-				return;
-			}
-
+			resp.getWriter().println("Name: " + name);
+			
 			String text = req.getParameter("text");
-			if (text != null) {
-				resp.getWriter().println("Question Text: " + text);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Question Text: " + text);
 
 			String freebasetype = req.getParameter("fbtype");
-			if (freebasetype != null) {
-				resp.getWriter().println("Freebase Type: " + freebasetype);
-			} else {
-				return;
-			}
+			resp.getWriter().println("Freebase Type: " + freebasetype);
 
 			/*
 			String freebaseattr = req.getParameter("fbattr");

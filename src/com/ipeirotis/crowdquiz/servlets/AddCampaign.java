@@ -29,20 +29,12 @@ public class AddCampaign extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 	
 		resp.setContentType("application/json");
+		
+		Utils.ensureParameters(req, "relation", "budget");
 
 		try {
 			String relation = req.getParameter("relation");
-			if (relation == null) {
-				return;
-			}
-
-			String budgetParam = req.getParameter("budget");
-			Integer dailyBudget = null;
-			if (budgetParam != null) {
-				dailyBudget = Integer.parseInt(budgetParam);
-			} else {
-				return;
-			}
+			Integer dailyBudget = Integer.parseInt(req.getParameter("budget"));
 
 			CampaignManagement service = new CampaignManagement();
 			String campaignName = relation;
@@ -53,8 +45,6 @@ public class AddCampaign extends HttpServlet {
 			q.setCampaignid(campaignId);
 			QuizRepository.storeQuiz(q);
 
-
-			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 

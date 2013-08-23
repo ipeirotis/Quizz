@@ -23,26 +23,12 @@ public class AddGoldAnswer extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
+		Utils.ensureParameters(req, "relation", "mid", "answer");
 		try {
 
 			String relation = req.getParameter("relation");
-			if (relation != null) {
-			} else {
-				return;
-			}
-
 			String mid = req.getParameter("mid");
-			if (mid != null) {
-			} else {
-				return;
-			}
-			
 			String answer = req.getParameter("answer");
-			if (answer != null) {
-
-			} else {
-				return;
-			}
 
 			// We only add the gold question, if there is a corresponding quizquestion.
 			// Otherwise, we ignore the addition
@@ -52,19 +38,16 @@ public class AddGoldAnswer extends HttpServlet {
 			QuizQuestionRepository.storeQuizQuestion(qq);
 			GoldAnswer ga = new GoldAnswer(relation, mid, answer);
 			
-			
-	
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
 				pm.makePersistent(ga);
 			} catch (Exception e) {
+				logger.log(Level.WARNING, "Error when making persistent gold answer", e);
 
 			} finally {
 				pm.close();
 			}
 			
-			
-
 			resp.getWriter().println("OK");
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
