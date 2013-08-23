@@ -1,3 +1,5 @@
+URL="http://www.quizz.us"
+
 # PARAM1: The KP relation
 # PARAM2: The KV predicate
 # PARAM3: Friendly quiz name
@@ -13,8 +15,14 @@ echo `cat $3-questions.csv | wc -l` "questions to upload"
 tail -n+2 $3-questions.csv > tmp
 while read NAME
 do
-    entries=(${NAME//,/ })
-    curl --data "relation=$1&mid=${entries[0]}&weight=${entries[1]}" http://www.quizz.us/addQuizQuestion
+    weight=`echo "$NAME" | rev | cut -d, -f1 | rev`
+    mid=`echo "$NAME" | rev | cut -d, -f2 | rev`
+    name=`echo "$NAME" | rev | cut -d, -f3- | rev`
+    curl --data-urlencode "relation=$1" \
+         --data-urlencode "name=$name" \
+         --data-urlencode "mid=$mid" \
+         --data-urlencode "weight=$weight" \
+         $URL/addQuizQuestion
 done < tmp
 rm tmp
 
