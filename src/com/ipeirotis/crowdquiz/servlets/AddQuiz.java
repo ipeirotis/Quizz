@@ -59,53 +59,20 @@ public class AddQuiz extends HttpServlet {
 					.etaMillis(etaMillis));
 			
 			
+			EasyParamManager paramManager =
+					new EasyParamManager(Builder.withUrl("/addAdGroup"), req, resp);
+			paramManager
+				.param("adheadline", "adText")
+				.param("adline1", "adText")
+				.param("adline2", "adText")
+				.param("cpcbid", "CPC bid")
+				.param("keywords", "AdKeywords");
 			
-			String adheadline = req.getParameter("adheadline");
-			if (adheadline != null) {
-				resp.getWriter().println("adText: " + adheadline);
-			} else {
-				// return;
-			}
-			
-			String adline1 = req.getParameter("adline1");
-			if (adline1 != null) {
-				resp.getWriter().println("adText: " + adline1);
-			} else {
-				// return;
-			}
-			
-			String adline2 = req.getParameter("adline2");
-			if (adline2 != null) {
-				resp.getWriter().println("adText: " + adline2);
-			} else {
-				// return;
-			}
-			
-			
-			String cpcbid = req.getParameter("cpcbid");
-			if (cpcbid != null) {
-				resp.getWriter().println("CPC bid: " + cpcbid);
-			} else {
-				// return;
-			}
-			
-			String keywords = req.getParameter("keywords");
-			if (keywords != null) {
-				resp.getWriter().println("AdKeywords: " + keywords);
-			} else {
-				// return;
-			}
-
 			Queue queueAdgroup  = QueueFactory.getQueue("adgroup");
 			delay = 10; // in seconds
 			etaMillis = System.currentTimeMillis() + delay * 1000L;
-			queueAdgroup.add(Builder.withUrl("/addAdGroup")
+			queueAdgroup.add(paramManager.getTaskOptions()
 					.param("relation", relation)
-					.param("cpcbid", cpcbid)
-					.param("keywords", keywords)
-						.param("adheadline", adheadline)
-						.param("adline1", adline1)
-						.param("adline2", adline2)
 					.method(TaskOptions.Method.POST)
 					.etaMillis(etaMillis));
 
@@ -118,5 +85,34 @@ public class AddQuiz extends HttpServlet {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
 		}
 	}
-
+	
+	protected static class EasyParamManager {
+		protected TaskOptions taskOptions;
+		protected HttpServletRequest req;
+		protected HttpServletResponse resp;
+		
+		public EasyParamManager(TaskOptions taskOptions, HttpServletRequest req, HttpServletResponse resp){
+			this.taskOptions = taskOptions;
+			this.req = req;
+			this.resp = resp;
+		}
+		
+		public EasyParamManager param(String paramName, String outputName) throws IOException{
+			return param(paramName, paramName, outputName);
+		}
+		
+		public EasyParamManager param(String reqParamName, String paramName, String outputName) throws IOException{
+			String paramValue = req.getParameter(reqParamName);
+			if (paramValue != null) {
+				resp.getWriter().println(outputName + ": " + paramValue);
+			}
+			// TODO: shall we add this despite being null?
+			taskOptions.param(paramName, paramValue);
+			return this;
+		}
+		
+		public TaskOptions getTaskOptions(){
+			return taskOptions;
+		}
+	}
 }
