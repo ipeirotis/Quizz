@@ -146,7 +146,7 @@
 
 
 	function toPercentage(fValue) {
-		return (100. * fValue).toFixed(2) + "%"
+		return (100. * fValue).toFixed(0) + "%"
 	}
 
 
