@@ -1,3 +1,7 @@
+	function getAPIURL() {
+		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/'
+	}
+
 	function getURLParameterByName(name) {
 		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
 		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -12,13 +16,13 @@
 		}
 		return username;
 	}
-	
+
 	function createUsername() {
 		var username = createUUID();
 		$.cookie("username", username, { expires: 365, path: "/"});
 		return username;
 	}
-	
+
 	function createUUID() {
 	    // http://www.ietf.org/rfc/rfc4122.txt
 	    var s = [];
@@ -33,41 +37,41 @@
 	    var uuid = s.join("");
 	    return uuid;
 	}
-	
-	
+
+
 	function getQuizzes() {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quiz';
+		var url = getAPIURL() + 'quiz';
 		var params = {
 			'fields' : 'items(relation, name, questions)',
 		};
 		return $.getJSON(url, params);
 	}
-	
+
 	function getUserQuizPerformances(user) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance/user/' + encodeURIComponent(user);
+		var url = getAPIURL() + 'quizperformance/user/' + encodeURIComponent(user);
 		var params = {
 			'fields' : 'items(quiz, totalanswers)',
 		};
-		return $.getJSON(url, params);	
-		
-		
+		return $.getJSON(url, params);
+
+
 	}
-	
+
 
 	function getNextQuizQuestion(quiz) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
+		var url = getAPIURL() + 'quizquestioninstance';
 		url += '/quiz/' + encodeURIComponent(quiz);
 		var params = {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
 		return $.getJSON(url, params)
 			.done(function(question) { populateQuestion(question); });
-		
-		
+
+
 	}
-	
+
 	function populateQuestion(question) {
-		
+
 		$('#relation').val(question.quiz);
 		$('#mid').val(question.mid);
 		$('#gold').val(question.correct);
@@ -75,7 +79,7 @@
 		$('#midname').html(question.midname);
 		$('#correctanswers').val(question.correctanswers);
 		$('#totalanswers').val(question.totalanswers);
-		
+
 		var answers = $("#answers");
 		$.each(question.answers, function(index, value) {
 			answers.append($('<input id="useranswer'+index+'" name="useranswer'+index+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
@@ -94,19 +98,19 @@
     		markConversion("multiple-choice-idk", 0);
     	});
 	}
-	
+
 	function getQuizQuestionInstance(quiz, mid) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestioninstance';
+		var url = getAPIURL() + 'quizquestioninstance';
 		url += '/quiz/' + encodeURIComponent(quiz);
 		url += '/mid/' + encodeURIComponent(mid);
 		var params = {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
-		return $.getJSON(url, params);	
+		return $.getJSON(url, params);
 	}
-	
+
 	function getFeedbackForPriorAnswer(user, quiz, mid) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/useranswerfeedback';
+		var url = getAPIURL() + 'useranswerfeedback';
 		url += '/' + encodeURIComponent(quiz);
 		url += '/' + encodeURIComponent(user);
 		url += '/' + encodeURIComponent(mid);
@@ -115,21 +119,21 @@
 		};
 		$.getJSON(url, params)
 			.done(function(feedback) { displayFeedback(feedback); });
-		
+
 	}
-	
+
 	function getUserTreatments(user) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/user/' + user;
+		var url = getAPIURL() + 'user/' + user;
 		var params = {
 			'fields' : 'treatments',
 		};
 		$.getJSON(url, params)
 			.done(function(userdata) { applyTreatments(userdata); });
 	}
-	
-	
+
+
 	function getUserQuizPerformance(quiz, user) {
-		var url = 'https://crowd-power.appspot.com/_ah/api/quizz/v1/quizperformance';
+		var url = getAPIURL() + 'quizperformance';
 		url += '/quiz/' + encodeURIComponent(quiz);
 		url += '/user/' + encodeURIComponent(user);
 		var params = {
@@ -137,23 +141,28 @@
 		};
 		return $.getJSON(url, params)
 			.done(function(performance) { displayPerformanceScores(performance); });
-		
+
 	}
-	
-	
+
+
+	function toPercentage(fValue) {
+		return (100. * fValue).toFixed(2) + "%"
+	}
+
+
 	function displayPerformanceScores(performance) {
-		
+
 		$('#showScore').html("Score: "+performance.score+" points");
-		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);	
+		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
 		$('#showPercentageCorrect').html("Correct (%): " + performance.percentageCorrect);
 		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankPercentCorrect/performance.totalUsers)+")");
-		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankTotalCorrect/performance.totalUsers)+")");
+		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankTotalCorrect/performance.totalUsers)+")");
 	}
-	
+
 	function displayFeedback(feedback) {
-		
+
 		if (feedback.isCorrect) {
-			
+
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswer+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
 		} else {
@@ -163,19 +172,19 @@
 		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswer+'</span>.');
 		$('#showCrowdAnswers').html('Crowd performance: <span class="label label-info">'+feedback.numCorrectAnswers+' out of the '+feedback.numTotalAnswers+' users	 ('+feedback.difficulty+') answered correctly.</span>');
 	}
-	
+
 	function hideDivs() {
 		$('#feedback').hide();
 		$('#showMessage').hide();
 		$('#showCorrect').hide();
 		$('#showCrowdAnswers')
 		$('#showScore').hide();
-		$('#showTotalCorrect').hide();	
+		$('#showTotalCorrect').hide();
 		$('#showPercentageCorrect').hide();
 		$('#showPercentageRank').hide();
 		$('#showTotalCorrectRank').hide();
 	}
-	
+
 	function applyTreatments(userdata) {
 		// Show/hide the various elements, according to the user treatments.
 		$.each(userdata.treatments, function(key, value) {
@@ -187,15 +196,15 @@
 			}
 		});
 	}
-	
+
     function markConversion(type, value) {
     	// Mark a conversion in Google Analytics
 		ga('send', {
-			  'hitType': 'event', 
+			  'hitType': 'event',
 			  'hitCallback': function(){ },
-			  'eventCategory': 'quiz-submission', 
-			  'eventAction': type, 
+			  'eventCategory': 'quiz-submission',
+			  'eventAction': type,
 			  'eventLabel': getURLParameterByName('relation'),
-			  'eventValue': value, 
+			  'eventValue': value,
 			  } );
     }
