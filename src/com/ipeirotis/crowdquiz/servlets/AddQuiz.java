@@ -105,9 +105,10 @@ public class AddQuiz extends HttpServlet {
 			String paramValue = req.getParameter(reqParamName);
 			if (paramValue != null) {
 				resp.getWriter().println(outputName + ": " + paramValue);
+				taskOptions.param(paramName, paramValue);
+			} else {
+				resp.getWriter().println("Missed: " + reqParamName + "/" + outputName + "  IGNORING");
 			}
-			// TODO: shall we add this despite being null?
-			taskOptions.param(paramName, paramValue);
 			return this;
 		}
 		
