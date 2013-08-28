@@ -76,88 +76,40 @@ public class QuizRepository {
 		pm.close();
 	}
 	
-	public static Integer getNumberOfGoldAnswers(String quiz, boolean usecache) {
+	protected static <T> Integer getNumberOf(String keyPrefix, boolean useCache, String quiz, Class<T> queryClass) {
+		String key = keyPrefix + "_"+quiz;
 		
-		String key = "goldanswers_"+quiz;
-		
-		if (usecache) {
+		if (useCache) {
 			Integer result = CachePMF.get(key, Integer.class);
 			if (result != null) return result;
 		}
 		
 		PersistenceManager	pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(GoldAnswer.class);
+		Query q = pm.newQuery(queryClass);
 		q.setFilter("relation == quizParam");
 		q.declareParameters("String quizParam");
 		@SuppressWarnings("unchecked")
-		List<GoldAnswer> results = (List<GoldAnswer>) q.execute(quiz);
+		List<T> results = (List<T>) q.execute(quiz);
 		Integer result = results.size();
 		CachePMF.put(key, result);
 		return result;
+	}
+	
+	public static Integer getNumberOfGoldAnswers(String quiz, boolean usecache) {
+		return getNumberOf("goldanswers", usecache, quiz, GoldAnswer.class);
 	}
 	
 	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
-		
-		String key = "numquizquestions_"+quiz;
-		
-		if (usecache) {
-			Integer result = CachePMF.get(key, Integer.class);
-			if (result != null) return result;
-		}
-		
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(QuizQuestion.class);
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-		@SuppressWarnings("unchecked")
-		List<QuizQuestion> results = (List<QuizQuestion>) q.execute(quiz);
-		Integer result = results.size();
-		CachePMF.put(key, result);
-		return result;
+		return getNumberOf("numquizquestions", usecache, quiz, QuizQuestion.class);
 	}
 	
 	public static Integer getNumberOfSilverAnswers(String quiz, boolean usecache) {
-		
-		String key = "silveranswers_"+quiz;
-		
-		if (usecache) {
-			Integer result = CachePMF.get(key, Integer.class);
-			if (result != null) return result;
-		}
-		
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(SilverAnswer.class);
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-		@SuppressWarnings("unchecked")
-		List<SilverAnswer> results = (List<SilverAnswer>) q.execute(quiz);
-		Integer result = results.size();
-		CachePMF.put(key, result);
-		return result;
+		return getNumberOf("silveranswers", usecache, quiz, SilverAnswer.class);
 	}
 	
 	public static Integer getNumberOfUserAnswers(String quiz, boolean usecache) {
-		
-		String key = "quizuseranswers_"+quiz;
-		
-		if (usecache) {
-			Integer result = CachePMF.get(key, Integer.class);
-			if (result != null) return result;
-		}
-		
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-		@SuppressWarnings("unchecked")
-		List<UserAnswer> results = (List<UserAnswer>) q.execute(quiz);
-		Integer result = results.size();
-		CachePMF.put(key, result);
-		return result;
+		return getNumberOf("quizuseranswers", usecache, quiz, UserAnswer.class);
 	}
-	
-	
-	
 	
 	@SuppressWarnings("unchecked")
 	public static List<Quiz> getQuizzes() {
