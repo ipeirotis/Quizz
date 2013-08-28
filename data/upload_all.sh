@@ -17,7 +17,7 @@ function upload {
     echo 'Making quizz'
     curl --data-urlencode "relation=$1" \
          --data-urlencode "name=$3" \
-         --data-urlencode "text=tekscik_$1" \
+         --data-urlencode "text=some_text_$1" \
          --data-urlencode "budget=1000" \
          $URL/addQuiz
 
@@ -38,6 +38,39 @@ function upload {
              $URL/addQuizQuestion
     done < tmp
     rm tmp
+
+    echo `cat $3-gold.csv | wc -l` "golds to upload"
+    # Skip the header line
+    tail -n+2 $3-gold.csv > tmp
+    while read NAME
+    do
+        mid=`echo "$NAME" | cut -d, -f1`
+        answer=`echo "$NAME" | cut -d, -f2-`
+        curl --data-urlencode "relation=$1" \
+             --data-urlencode "mid=$mid" \
+             --data-urlencode "answer=$answer" \
+             $URL/addGoldAnswer
+    done < tmp
+    rm tmp
+
+    echo `cat $3-silver.csv | wc -l` "silvers to upload"
+    # Skip the header line
+    tail -n+2 $3-silver.csv > tmp
+    while read NAME
+    do
+        mid=`echo "$NAME" | cut -d, -f1`
+        answer=`echo "$NAME" | cut -d, -f2- | rev | cut -d, -f3- | rev`
+        probability=`echo "$NAME" | rev | cut -d, -f2 | rev`
+        sourcee=`echo "$NAME" | rev | cut -d, -f1 | rev`
+        curl --data-urlencode "relation=$1" \
+             --data-urlencode "mid=$mid" \
+             --data-urlencode "answer=$answer" \
+             --data-urlencode "source=$sourcee" \
+             --data-urlencode "probability=$probability" \
+             $URL/addGoldAnswer
+    done < tmp
+    rm tmp
+
     curl --get --data-urlencode "cache=no" \
          --data-urlencode "quiz=$1" \
          $URL/api/getQuizCounts
