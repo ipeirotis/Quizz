@@ -193,16 +193,12 @@ public class QuizQuestionRepository {
 		params.put("quizParam", quizid);
 		params.put("midParam", mid);
 		
+		q.setResult("useranswer");
+		
 		@SuppressWarnings("unchecked")
-		List<UserAnswer> answers = (List<UserAnswer>) q.executeWithMap(params);
+		List<String> result = (List<String>) q.executeWithMap(params);
 		pm.close();
-
-		List<String> result = new ArrayList<String>();
-		for (UserAnswer ue : answers) {
-			result.add(ue.getUseranswer());
-		}
 		return result;
-
 	}
 	
 	public static Set<String> getIncorrectAnswers(String quizid, String mid, String name, int size) {
