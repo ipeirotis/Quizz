@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
@@ -110,7 +111,7 @@ public class UserEndpoint {
 	public User insertUser(User user) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (containsUser(user)) {
+			if (containsUser(mgr, user)) {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(user);
@@ -132,7 +133,7 @@ public class UserEndpoint {
 	public User updateUser(User user) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (!containsUser(user)) {
+			if (!containsUser(mgr, user)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 			mgr.makePersistent(user);
@@ -159,17 +160,13 @@ public class UserEndpoint {
 		}
 	}
 
-	private boolean containsUser(User user) {
-		PersistenceManager mgr = getPersistenceManager();
-		boolean contains = true;
+	private boolean containsUser(PersistenceManager mgr, User user) {
 		try {
 			mgr.getObjectById(User.class, user.getKey());
-		} catch (javax.jdo.JDOObjectNotFoundException ex) {
-			contains = false;
-		} finally {
-			mgr.close();
+			return true;
+		} catch (JDOObjectNotFoundException ex) {
+			return false;
 		}
-		return contains;
 	}
 
 	private static PersistenceManager getPersistenceManager() {
