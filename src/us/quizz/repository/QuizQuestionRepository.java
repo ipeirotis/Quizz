@@ -27,14 +27,8 @@ public class QuizQuestionRepository {
 		QuizQuestion question = CachePMF.get(key, QuizQuestion.class);
 		if (question!=null) return question;
 		
-		PersistenceManager pm = PMF.getPM();
-		try {
-			question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(quizid, mid));
-		} catch (Exception e) {
-			;
-		} finally {
-			pm.close();
-		}
+		question = PMF.singleGetObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(quizid, mid));
+		
 		CachePMF.put(key, question);
 		return question;
 	}
