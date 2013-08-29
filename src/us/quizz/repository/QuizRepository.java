@@ -29,9 +29,15 @@ public class QuizRepository {
 	}
 	
 	public static void storeQuiz(Quiz q) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		pm.makePersistent(q);
-		pm.close();
+		PMF.singleStore(q);
+	}
+	
+	protected static <T> void deleteAll(PersistenceManager pm, String id, Class<T> itemsClass){
+		Query q = pm.newQuery(itemsClass);
+		q.setFilter("relation == relationParam");
+		q.declareParameters("String relationParam");
+		List<?> items = (List<?>) q.execute(id);
+		pm.deletePersistentAll(items);
 	}
 	
 	public static void deleteQuiz(String id) {
@@ -44,35 +50,11 @@ public class QuizRepository {
 		}
 		pm.deletePersistent(quiz);
 		
-		Query q = pm.newQuery(QuizQuestion.class);
-		q.setFilter("relation == relationParam");
-		q.declareParameters("String relationParam");
-		@SuppressWarnings("unchecked")
-		List<QuizQuestion> questions = (List<QuizQuestion>) q.execute(id);
-		pm.deletePersistentAll(questions);
-		
-		q = pm.newQuery(GoldAnswer.class);
-		q.setFilter("relation == relationParam");
-		q.declareParameters("String relationParam");
-		@SuppressWarnings("unchecked")
-		List<GoldAnswer> gold = (List<GoldAnswer>) q.execute(id);
-		pm.deletePersistentAll(gold);
-		
-		
-		q = pm.newQuery(SilverAnswer.class);
-		q.setFilter("relation == relationParam");
-		q.declareParameters("String relationParam");
-		@SuppressWarnings("unchecked")
-		List<SilverAnswer> silver = (List<SilverAnswer>) q.execute(id);
-		pm.deletePersistentAll(silver);
-		
-		q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == relationParam");
-		q.declareParameters("String relationParam");
-		@SuppressWarnings("unchecked")
-		List<UserAnswer> useranswers = (List<UserAnswer>) q.execute(id);
-		pm.deletePersistentAll(useranswers);
-		
+		Class<?>[] itemsClasses = new Class<?>[]{QuizQuestion.class,
+				GoldAnswer.class, SilverAnswer.class, UserAnswer.class};
+		for (Class<?> cls: itemsClasses) {
+			deleteAll(pm, id, cls);
+		}
 		pm.close();
 	}
 	
