@@ -37,7 +37,7 @@ public class ScanUserAnswersAndCreateUsers extends HttpServlet {
 	
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(UserAnswer.class);
 
 		@SuppressWarnings("unchecked")

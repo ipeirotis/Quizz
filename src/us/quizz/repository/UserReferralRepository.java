@@ -14,7 +14,7 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 public class UserReferralRepository {
 
 	public static Set<String> getUserIDsByQuiz(String quizid) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(UserReferal.class);
 		query.setFilter("quiz == quizParam");
 		query.declareParameters("String quizParam");
@@ -45,7 +45,7 @@ public class UserReferralRepository {
 		ur.setIpaddress(req.getRemoteAddr());
 		ur.setBrowser(req.getHeader("User-Agent"));
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		pm.makePersistent(ur);
 		pm.close();
 	}

@@ -38,7 +38,7 @@ public class AddGoldAnswer extends HttpServlet {
 			QuizQuestionRepository.storeQuizQuestion(qq);
 			GoldAnswer ga = new GoldAnswer(relation, mid, answer);
 			
-			PersistenceManager pm = PMF.get().getPersistenceManager();
+			PersistenceManager pm = PMF.getPM();
 			try {
 				pm.makePersistent(ga);
 			} catch (Exception e) {

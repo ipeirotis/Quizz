@@ -27,7 +27,7 @@ public class QuizQuestionRepository {
 		QuizQuestion question = CachePMF.get(key, QuizQuestion.class);
 		if (question!=null) return question;
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		try {
 			question = pm.getObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(quizid, mid));
 		} catch (Exception e) {
@@ -41,7 +41,7 @@ public class QuizQuestionRepository {
 	
 	public static List<QuizQuestion> getQuizQuestions() {
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(QuizQuestion.class);
 		List<QuizQuestion> list = new ArrayList<QuizQuestion>();
 		int limit = 1000;
@@ -67,7 +67,7 @@ public class QuizQuestionRepository {
 		Set<String> availableQuestions = CachePMF.get(key, Set.class);
 		if (availableQuestions!=null) return availableQuestions;
 		
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		PersistenceManager	pm = PMF.getPM();
 		Query query = pm.newQuery(QuizQuestion.class);
 		query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
 		query.declareParameters("String quizParam, Boolean hasGoldParam");
@@ -94,13 +94,13 @@ public class QuizQuestionRepository {
 	
 	
 	public static void storeQuizQuestion(QuizQuestion q) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		pm.makePersistent(q);
 		pm.close();
 	}
 	
 	public static ArrayList<String> getGoldAnswers(String quizid, String mid) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 
 		Query q = pm.newQuery(GoldAnswer.class);
 		q.setFilter("relation == quizParam && mid == midParam");
@@ -129,7 +129,7 @@ public class QuizQuestionRepository {
 		ArrayList<String> result = CachePMF.get(key, ArrayList.class);
 		if (result != null) return result;
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 
 		Query q = pm.newQuery(GoldAnswer.class);
 		q.setFilter("relation == quizParam");
@@ -192,7 +192,7 @@ public class QuizQuestionRepository {
 	
 	public static List<String> getUserAnswers(String quizid, String mid) {
 
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query q = pm.newQuery(UserAnswer.class);
 		q.setFilter("relation == quizParam && mid == midParam");
 		q.declareParameters("String quizParam, String midParam");
@@ -255,7 +255,7 @@ public class QuizQuestionRepository {
 	
 	public static List<String> getSilverAnswers(String quizid, String mid, boolean highprobability, 	double prob_threshold) {
 
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query q = pm.newQuery(SilverAnswer.class);
 		q.setFilter("relation == quizParam && mid == midParam");
 		q.declareParameters("String quizParam, String midParam");
@@ -286,7 +286,7 @@ public class QuizQuestionRepository {
 	}
 	
 	public static int getNumberOfUserAnswersExcludingIDK(String quiz, String mid) {
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		PersistenceManager	pm = PMF.getPM();
 		Query q = pm.newQuery(UserAnswer.class);
 		q.setFilter("relation == quizParam && mid == midParam && action==submitParam");
 		q.declareParameters("String quizParam, String midParam, String submitParam");
@@ -302,7 +302,7 @@ public class QuizQuestionRepository {
 	}
 	
 	public static int getNumberOfCorrectUserAnswers(String quiz, String mid) {
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		PersistenceManager	pm = PMF.getPM();
 		Query q = pm.newQuery(UserAnswer.class);
 		q.setFilter("relation == quizParam && mid == midParam && action==submitParam && isCorrect==correctParam");
 		q.declareParameters("String quizParam, String midParam, String submitParam, Boolean correctParam");

@@ -7,7 +7,7 @@
 
 	<%
 	Quiz quiz = null;
-	PersistenceManager pm = PMF.get().getPersistenceManager();
+	PersistenceManager pm = PMF.getPM();
 	String relation = request.getParameter("relation");
 	try {
 		quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(relation));

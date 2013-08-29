@@ -38,7 +38,7 @@ public class AddTreatment extends HttpServlet {
 				resp.getWriter().print("Assigning default probability value of 0.0\n");
 			}
 			
-			PersistenceManager pm = PMF.get().getPersistenceManager();
+			PersistenceManager pm = PMF.getPM();
 			Treatment treatment = new Treatment(name, p);
 			pm.makePersistent(treatment);
 			pm.close();

@@ -47,7 +47,7 @@ public class AddUserAnswer extends HttpServlet {
 		ue.setAction(action);
 		if (isCorrect!=null) ue.setIsCorrect(isCorrect);
 
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		pm.makePersistent(ue);
 		pm.close();
 

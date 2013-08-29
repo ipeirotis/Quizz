@@ -20,7 +20,7 @@
 		<div class="row">
 			<h2>Contribution Quality by Treatment</h2>
 				<%
-				PersistenceManager	pm = PMF.get().getPersistenceManager();
+				PersistenceManager	pm = PMF.getPM();
 				Query query;
 				query = pm.newQuery(Treatment.class);
 				List<Treatment> treatments = (List<Treatment>) query.execute();

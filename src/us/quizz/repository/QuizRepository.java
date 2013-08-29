@@ -16,7 +16,7 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 public class QuizRepository {
 
 	public static Quiz getQuiz(String id) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Quiz quiz = null;
 		try {
 			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
@@ -36,7 +36,7 @@ public class QuizRepository {
 	
 	public static void deleteQuiz(String id) {
 		Quiz quiz = null;
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		try {
 			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
 		} catch (Exception e) {
@@ -84,7 +84,7 @@ public class QuizRepository {
 			if (result != null) return result;
 		}
 		
-		PersistenceManager	pm = PMF.get().getPersistenceManager();
+		PersistenceManager	pm = PMF.getPM();
 		Query q = pm.newQuery(queryClass);
 		q.setFilter("relation == quizParam");
 		q.declareParameters("String quizParam");
@@ -118,7 +118,7 @@ public class QuizRepository {
 		List<Quiz> quizlist = CachePMF.get(key, List.class);
 		if (quizlist != null) return quizlist;
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(Quiz.class);
 		quizlist = (List<Quiz>) query.execute();
 		pm.close();

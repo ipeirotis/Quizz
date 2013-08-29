@@ -173,7 +173,7 @@ public class UserEndpoint {
 	}
 
 	private static PersistenceManager getPersistenceManager() {
-		return PMF.get().getPersistenceManager();
+		return PMF.getPM();
 	}
 
 }

@@ -20,7 +20,7 @@ public class QuizPerformanceRepository {
 		QuizPerformance qp = CachePMF.get(key, QuizPerformance.class);
 		if (qp!=null) return qp;
 	
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		try {
 			qp = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quizid, userid));
 		} catch (Exception e) {
@@ -33,7 +33,7 @@ public class QuizPerformanceRepository {
 	} 
 	
 	public static List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 
 		Query q = pm.newQuery(QuizPerformance.class);
 		q.setFilter("quiz == quizParam");
@@ -50,7 +50,7 @@ public class QuizPerformanceRepository {
 	}
 	
 	public static List<QuizPerformance> getQuizPerformancesByUser(String userid) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 
 		Query q = pm.newQuery(QuizPerformance.class);
 		q.setFilter("userid == useridParam");
@@ -68,7 +68,7 @@ public class QuizPerformanceRepository {
 	
 	public static List<QuizPerformance> getQuizPerformances() {
 		
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(QuizPerformance.class);
 		List<QuizPerformance> list = new ArrayList<QuizPerformance>();
 		int limit = 1000;
@@ -89,7 +89,7 @@ public class QuizPerformanceRepository {
 	public static void storeQuizPerformance(QuizPerformance qp) {
 		String key = "qp_"+qp.getQuiz()+"_"+qp.getUserid();
 		CachePMF.put(key, qp);
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		pm.makePersistent(qp);
 		pm.close();
 	} 
@@ -100,7 +100,7 @@ public class QuizPerformanceRepository {
 	} 
 	
 	public static void deleteQuizPerformance(String quizid, String userid) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		try {
 			QuizPerformance qp = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quizid, userid));
 			pm.deletePersistent(qp);

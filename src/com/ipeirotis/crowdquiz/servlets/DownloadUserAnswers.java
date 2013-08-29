@@ -26,7 +26,7 @@ public class DownloadUserAnswers extends HttpServlet {
 		String relation = request.getParameter("relation");
 		String name = QuizRepository.getQuiz(relation).getName();
 
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(UserAnswer.class);
 		query.setFilter("relation == relationParam");
 		query.declareParameters("String relationParam");

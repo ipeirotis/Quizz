@@ -28,7 +28,7 @@
 
 			</tr>
 			<%
-				PersistenceManager pm = PMF.get().getPersistenceManager();
+				PersistenceManager pm = PMF.getPM();
 				Query query = pm.newQuery(QuizQuestion.class);
 				query.setFilter("relation == relationParam");
 				query.declareParameters("String lastNameParam");

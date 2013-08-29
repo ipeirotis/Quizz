@@ -37,7 +37,7 @@ public class AddQuizQuestion extends HttpServlet {
 			resp.getWriter().println("Weight: " + weight);
 
 			QuizQuestion q = new QuizQuestion(relation, mid, name, weight);
-			PersistenceManager pm = PMF.get().getPersistenceManager();
+			PersistenceManager pm = PMF.getPM();
 			pm.makePersistent(q);
 			pm.close();
 

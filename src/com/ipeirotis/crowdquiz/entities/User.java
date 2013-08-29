@@ -86,7 +86,7 @@ public class User {
 		resp.addCookie(username);
 		
 		User user = null;
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PMF.getPM();
 		try {
 			user = pm.getObjectById(User.class, User.generateKeyFromID(userid));
 		} catch (Exception e) {

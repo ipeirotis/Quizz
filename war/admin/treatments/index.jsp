@@ -17,7 +17,7 @@
 					<th>Probability</th>
 				</tr>
 				<%
-				PersistenceManager	pm = PMF.get().getPersistenceManager();
+				PersistenceManager	pm = PMF.getPM();
 				Query q = pm.newQuery(Treatment.class);
 				@SuppressWarnings("unchecked")
 				List<Treatment> allTreatments = (List<Treatment>) q.execute();

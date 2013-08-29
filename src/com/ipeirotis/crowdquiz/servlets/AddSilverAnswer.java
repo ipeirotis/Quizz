@@ -52,7 +52,7 @@ public class AddSilverAnswer extends HttpServlet {
 			QuizQuestionRepository.storeQuizQuestion(qq);
 			SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
 			
-			PersistenceManager pm = PMF.get().getPersistenceManager();
+			PersistenceManager pm = PMF.getPM();
 			try {
 				pm.makePersistent(sa);
 			} catch (Exception e) {

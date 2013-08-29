@@ -187,7 +187,7 @@ public class QuizPerformanceEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 
-		return PMF.get().getPersistenceManager();
+		return PMF.getPM();
 	}
 
 }

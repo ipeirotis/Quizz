@@ -106,7 +106,7 @@ public class AddQuizAdCampaign extends HttpServlet {
 			
 			
 			
-			PersistenceManager pm = PMF.get().getPersistenceManager();
+			PersistenceManager pm = PMF.getPM();
 			pm.makePersistent(q);
 			pm.close();
 			
