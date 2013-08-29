@@ -45,9 +45,7 @@ public class UserReferralRepository {
 		ur.setIpaddress(req.getRemoteAddr());
 		ur.setBrowser(req.getHeader("User-Agent"));
 		
-		PersistenceManager pm = PMF.getPM();
-		pm.makePersistent(ur);
-		pm.close();
+		PMF.singleMakePersistent(ur);
 	}
 	
 	

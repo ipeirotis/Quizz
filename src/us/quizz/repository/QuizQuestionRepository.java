@@ -94,9 +94,7 @@ public class QuizQuestionRepository {
 	
 	
 	public static void storeQuizQuestion(QuizQuestion q) {
-		PersistenceManager pm = PMF.getPM();
-		pm.makePersistent(q);
-		pm.close();
+		PMF.singleMakePersistent(q);
 	}
 	
 	public static ArrayList<String> getGoldAnswers(String quizid, String mid) {

@@ -75,28 +75,16 @@ public class UserAnswerRepository {
 		if (answer!=null) CachePMF.put(key, answer);
 		
 		return answer;
-
-		
 	}
-	
-	
-	
-	
-	
+
 	public static void storeUserAnswer(UserAnswer ua) {
-		PersistenceManager pm = PMF.getPM();
-		pm.makePersistent(ua);
-		pm.close();
+		PMF.singleMakePersistent(ua);
 	}
 
 	public static void storeUserAnswerFeedback(UserAnswerFeedback uaf) {
 		String key = "useranswerfeedback_"+uaf.getQuiz()+uaf.getMid()+uaf.getUserid();
 		CachePMF.put(key, uaf);
-		PersistenceManager pm = PMF.getPM();
-		pm.makePersistent(uaf);
-		pm.close();
+		PMF.singleMakePersistent(uaf);
 	}
-
-	
 	
 }

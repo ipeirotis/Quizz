@@ -87,11 +87,8 @@ public class QuizPerformanceRepository {
 	}
 	
 	public static void storeQuizPerformance(QuizPerformance qp) {
-		String key = "qp_"+qp.getQuiz()+"_"+qp.getUserid();
-		CachePMF.put(key, qp);
-		PersistenceManager pm = PMF.getPM();
-		pm.makePersistent(qp);
-		pm.close();
+		cacheQuizPerformance(qp);
+		PMF.singleMakePersistent(qp);
 	} 
 	
 	public static void cacheQuizPerformance(QuizPerformance qp) {

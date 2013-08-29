@@ -2,6 +2,7 @@ package us.quizz.repository;
 
 import java.util.List;
 
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -16,20 +17,11 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 public class QuizRepository {
 
 	public static Quiz getQuiz(String id) {
-		PersistenceManager pm = PMF.getPM();
-		Quiz quiz = null;
-		try {
-			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-		} catch (Exception e) {
-			;
-		} finally {
-			pm.close();
-		}
-		return quiz;
+		return PMF.singleGetObjectById(Quiz.class, Quiz.generateKeyFromID(id));
 	}
 	
 	public static void storeQuiz(Quiz q) {
-		PMF.singleStore(q);
+		PMF.singleMakePersistent(q);
 	}
 	
 	protected static <T> void deleteAll(PersistenceManager pm, String id, Class<T> itemsClass){
@@ -45,8 +37,8 @@ public class QuizRepository {
 		PersistenceManager pm = PMF.getPM();
 		try {
 			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-		} catch (Exception e) {
-
+		} catch (JDOObjectNotFoundException e) {
+			// TODO: shall we ignore or throw exception about wrong quiz id?
 		}
 		pm.deletePersistent(quiz);
 		
