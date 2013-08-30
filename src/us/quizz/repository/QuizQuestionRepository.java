@@ -228,36 +228,24 @@ public class QuizQuestionRepository {
 		return results;
 	}
 	
-	public static List<String> getSilverAnswers(String quizid, String mid, boolean highprobability, 	double prob_threshold) {
+	public static List<String> getSilverAnswers(String quizid, String mid, boolean highprobability, double prob_threshold) {
 
 		PersistenceManager pm = PMF.getPM();
 		Query q = pm.newQuery(SilverAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam");
+		q.setFilter("relation == quizParam && mid == midParam && probability " + ((highprobability)? ">=" : "<=") + " " + prob_threshold);
 		q.declareParameters("String quizParam, String midParam");
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizid);
 		params.put("midParam", mid);
 		
+		q.setResult("answer");
+		
 		@SuppressWarnings("unchecked")
-		List<SilverAnswer> answers = (List<SilverAnswer>) q.executeWithMap(params);
+		List<String> answers = (List<String>) q.executeWithMap(params);
 		
 		pm.close();
-
-		List<String> result = new ArrayList<String>();
-		for (SilverAnswer sa : answers) {
-			if (highprobability) {
-				if (sa.getProbability() >= prob_threshold) {
-					result.add(sa.getAnswer());
-				}
-			} else {
-				if (sa.getProbability() <= prob_threshold) {
-					result.add(sa.getAnswer());
-				}
-			}
-		}
-		return result;
-
+		return answers;
 	}
 	
 	public static int getNumberOfUserAnswersExcludingIDK(String quiz, String mid) {
