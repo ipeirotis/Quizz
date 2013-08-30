@@ -70,18 +70,15 @@ public class QuizQuestionRepository {
 		params.put("quizParam", quizid);
 		params.put("hasGoldParam", Boolean.TRUE);
 		
+		query.setResult("freebaseEntityId");
 		@SuppressWarnings("unchecked")
-		List<QuizQuestion> questions = (List<QuizQuestion>) query.executeWithMap(params);
+		List<String> questions = (List<String>) query.executeWithMap(params);
 		
-		availableQuestions = new HashSet<String>();
-		for (QuizQuestion q : questions) {
-			availableQuestions.add(q.getFreebaseEntityId());
-		}
+		availableQuestions = new HashSet<String>(questions);
+
 		pm.close();
 		
 		CachePMF.put(key,availableQuestions);
-
-	
 		return availableQuestions;
 	}
 	
@@ -101,23 +98,21 @@ public class QuizQuestionRepository {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizid);
 		params.put("midParam", mid);
+		
+		q.setResult("answer");
 		@SuppressWarnings("unchecked")
-		List<GoldAnswer> qresults = (List<GoldAnswer>) q.executeWithMap(params);
+		List<String> qresult = (List<String>) q.executeWithMap(params);
+		ArrayList<String> result = new ArrayList<String>(qresult);
 		pm.close();
-
-		ArrayList<String> result = new ArrayList<String>();
-		for (GoldAnswer ga : qresults) {
-			result.add(ga.getAnswer());
-		}
 
 		return result;
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	private static ArrayList<String> getAllQuizGoldAnswers(String quizid) {
 		String key = "getgoldanswers_" + quizid;
 		
-		@SuppressWarnings("unchecked")
 		ArrayList<String> result = CachePMF.get(key, ArrayList.class);
 		if (result != null) return result;
 		
@@ -129,14 +124,12 @@ public class QuizQuestionRepository {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizid);
-		@SuppressWarnings("unchecked")
-		List<GoldAnswer> qresults = (List<GoldAnswer>) q.executeWithMap(params);
-		pm.close();
+		
+		q.setResult("answer");
 
 		result = new ArrayList<String>();
-		for (GoldAnswer ga : qresults) {
-			result.add(ga.getAnswer());
-		}
+		result.addAll((List<String>) q.executeWithMap(params));
+		pm.close();
 		
 		CachePMF.put(key, result);
 		return result;
