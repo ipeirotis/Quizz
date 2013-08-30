@@ -150,11 +150,8 @@ public class QuizQuestionRepository {
 		}
 
 		// Select one gold answer at random and put it in the results
-		int r = (int) Math.round(Math.random() * gold.size());
-		if (r >= gold.size()) {
-			r = gold.size() - 1;
-		}
-		
+		int r = (int) (Math.random() * gold.size());
+
 		result = gold.get(r);
 		CachePMF.put(cachekey, result);
 		
@@ -220,10 +217,7 @@ public class QuizQuestionRepository {
 
 		results = new TreeSet<String>();
 		while (results.size() < size && wrongAnswers.size()>0) {
-			int rnd = (int) Math.round(Math.random() * wrongAnswers.size());
-			if (rnd >= wrongAnswers.size()) {
-				rnd = wrongAnswers.size() - 1;
-			}
+			int rnd = (int) (Math.random() * wrongAnswers.size());
 			String candidate = wrongAnswers.get(rnd);
 			wrongAnswers.remove(rnd);
 			results.add(candidate);
