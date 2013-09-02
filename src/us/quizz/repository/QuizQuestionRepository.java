@@ -119,6 +119,9 @@ public class QuizQuestionRepository {
 		PersistenceManager pm = PMF.getPM();
 
 		Query q = pm.newQuery(GoldAnswer.class);
+		
+		q.getFetchPlan().setFetchSize(500);
+		
 		q.setFilter("relation == quizParam");
 		q.declareParameters("String quizParam");
 
@@ -127,8 +130,7 @@ public class QuizQuestionRepository {
 		
 		q.setResult("answer");
 
-		result = new ArrayList<String>();
-		result.addAll((List<String>) q.executeWithMap(params));
+		result = new ArrayList<String>((List<String>) q.executeWithMap(params));
 		pm.close();
 		
 		CachePMF.put(key, result);
