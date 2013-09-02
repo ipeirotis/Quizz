@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
+
+import com.google.appengine.api.datastore.Key;
 
 import us.quizz.repository.QuizPerformanceRepository;
 
@@ -18,7 +18,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
 		name = "quizz",
@@ -28,7 +27,11 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 				ownerDomain = "www.quizz.us", 
 				ownerName = "www.quizz.us", 
 				packagePath = "crowdquiz.entities"))
-public class QuizPerformanceEndpoint {
+public class QuizPerformanceEndpoint extends BaseCollectionEndpoint<QuizPerformance>{
+
+	public QuizPerformanceEndpoint() {
+		super(QuizPerformance.class, "Quiz performance");
+	}
 
 	/**
 	 * This method lists all the entities inserted in datastore.
@@ -117,17 +120,7 @@ public class QuizPerformanceEndpoint {
 	 */
 	@ApiMethod(name = "insertQuizPerformance")
 	public QuizPerformance insertQuizPerformance(QuizPerformance quizperformance) {
-
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (containsQuizPerformance(quizperformance)) {
-				throw new EntityExistsException("Object already exists");
-			}
-			mgr.makePersistent(quizperformance);
-		} finally {
-			mgr.close();
-		}
-		return quizperformance;
+		return insert(quizperformance);
 	}
 
 	/**
@@ -140,17 +133,7 @@ public class QuizPerformanceEndpoint {
 	 */
 	@ApiMethod(name = "updateQuizPerformance")
 	public QuizPerformance updateQuizPerformance(QuizPerformance quizperformance) {
-
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (!containsQuizPerformance(quizperformance)) {
-				throw new EntityNotFoundException("Object does not exist");
-			}
-			mgr.makePersistent(quizperformance);
-		} finally {
-			mgr.close();
-		}
-		return quizperformance;
+		return update(quizperformance);
 	}
 
 	/**
@@ -161,24 +144,12 @@ public class QuizPerformanceEndpoint {
 	 */
 	@ApiMethod(name = "removeQuizPerformance")
 	public void removeQuizPerformance(@Named("quizid") String quiz, @Named("userid") String userid) {
-
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			QuizPerformance quizperformance = mgr.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quiz, userid));
-			mgr.deletePersistent(quizperformance);
-		} finally {
-			mgr.close();
-		}
+		remove(QuizPerformance.generateKeyFromID(quiz, userid));
 	}
 
-	private boolean containsQuizPerformance(QuizPerformance quizperformance) {
-		return PMF.singleGetObjectById(QuizPerformance.class, quizperformance.getKey()) != null;
+	@Override
+	protected Key getKey(QuizPerformance item) {
+		return item.getKey();
 	}
-
-	private static PersistenceManager getPersistenceManager() {
-
-		return PMF.getPM();
-	}
-
 }
 

@@ -5,8 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
@@ -16,9 +14,9 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
 import com.ipeirotis.crowdquiz.utils.FreebaseSearch;
 import com.ipeirotis.crowdquiz.utils.Helper;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
 		name = "quizz",
@@ -28,7 +26,11 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 				ownerDomain = "www.quizz.us", 
 				ownerName = "www.quizz.us", 
 				packagePath = "crowdquiz.entities"))
-public class QuizEndpoint {
+public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
+
+	public QuizEndpoint() {
+		super(Quiz.class, "Quizz");
+	}
 
 	/**
 	 * This method lists all the entities inserted in datastore.
@@ -139,16 +141,7 @@ public class QuizEndpoint {
 	 */
 	@ApiMethod(name = "insertQuiz")
 	public Quiz insertQuiz(Quiz quiz) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (containsQuiz(quiz)) {
-				throw new EntityExistsException("Object already exists");
-			}
-			mgr.makePersistent(quiz);
-		} finally {
-			mgr.close();
-		}
-		return quiz;
+		return insert(quiz);
 	}
 
 	/**
@@ -161,16 +154,7 @@ public class QuizEndpoint {
 	 */
 	@ApiMethod(name = "updateQuiz")
 	public Quiz updateQuiz(Quiz quiz) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (!containsQuiz(quiz)) {
-				throw new EntityNotFoundException("Object does not exist");
-			}
-			mgr.makePersistent(quiz);
-		} finally {
-			mgr.close();
-		}
-		return quiz;
+		return update(quiz);
 	}
 
 	/**
@@ -181,21 +165,11 @@ public class QuizEndpoint {
 	 */
 	@ApiMethod(name = "removeQuiz")
 	public void removeQuiz(@Named("id") String id) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			Quiz quiz = mgr.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-			mgr.deletePersistent(quiz);
-		} finally {
-			mgr.close();
-		}
+		remove(Quiz.generateKeyFromID(id));
 	}
 
-	private boolean containsQuiz(Quiz quiz) {
-		return PMF.singleGetObjectById(Quiz.class, quiz.getKey()) != null;
+	@Override
+	protected Key getKey(Quiz item) {
+		return item.getKey();
 	}
-
-	private static PersistenceManager getPersistenceManager() {
-		return PMF.getPM();
-	}
-
 }
