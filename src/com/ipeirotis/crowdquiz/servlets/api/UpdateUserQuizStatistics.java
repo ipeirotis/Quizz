@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.QuizPerformanceRepository;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
+import com.ipeirotis.crowdquiz.servlets.Utils;
 
 /**
  * 
@@ -26,9 +27,9 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
+		Utils.ensureParameters(req, "quiz", "userid");
 		String quiz = req.getParameter("quiz");
 		String userid = req.getParameter("userid");
-		if (userid == null || quiz ==null) return;
 
 		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(quiz, userid);
 		if (qp==null) {
