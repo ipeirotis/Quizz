@@ -1,8 +1,8 @@
 package us.quizz.repository;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -70,19 +70,11 @@ public class QuizPerformanceRepository {
 		
 		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(QuizPerformance.class);
-		List<QuizPerformance> list = new ArrayList<QuizPerformance>();
-		int limit = 1000;
-		int i=0;
-		while (true) {
-			query.setRange(i, i+limit);
-			@SuppressWarnings("unchecked")
-			List<QuizPerformance> results = (List<QuizPerformance>) query.execute();
-			if (results.size()==0) break;
-			list.addAll(results);
-			i+=limit;
-		}
+		query.getFetchPlan().setFetchSize(500);
+		@SuppressWarnings("unchecked")
+		List<QuizPerformance> list = (List<QuizPerformance>) query.execute();
+		list = new LinkedList<QuizPerformance>(list);
 		pm.close();
-		
 		return list;
 	}
 	
