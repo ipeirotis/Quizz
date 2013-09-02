@@ -172,17 +172,7 @@ public class QuizPerformanceEndpoint {
 	}
 
 	private boolean containsQuizPerformance(QuizPerformance quizperformance) {
-
-		PersistenceManager mgr = getPersistenceManager();
-		boolean contains = true;
-		try {
-			mgr.getObjectById(QuizPerformance.class, quizperformance.getKey());
-		} catch (javax.jdo.JDOObjectNotFoundException ex) {
-			contains = false;
-		} finally {
-			mgr.close();
-		}
-		return contains;
+		return PMF.singleGetObjectById(QuizPerformance.class, quizperformance.getKey()) != null;
 	}
 
 	private static PersistenceManager getPersistenceManager() {
