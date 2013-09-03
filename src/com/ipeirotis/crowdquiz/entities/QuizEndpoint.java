@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.ipeirotis.crowdquiz.utils.FreebaseSearch;
 import com.ipeirotis.crowdquiz.utils.Helper;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
 		name = "quizz",
@@ -90,14 +91,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 */
 	@ApiMethod(name = "getQuiz")
 	public Quiz getQuiz(@Named("id") String id) {
-		PersistenceManager mgr = getPersistenceManager();
-		Quiz quiz = null;
-		try {
-			quiz = mgr.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-		} finally {
-			mgr.close();
-		}
-		return quiz;
+		return PMF.singleGetObjectByIdThrowing(Quiz.class, Quiz.generateKeyFromID(id));
 	}
 	
 	/**

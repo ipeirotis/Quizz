@@ -87,15 +87,7 @@ public class UserAnswerFeedbackEndpoint extends BaseCollectionEndpoint<UserAnswe
 	 */
 	@ApiMethod(name = "getUserAnswerFeedback")
 	public UserAnswerFeedback getUserAnswerFeedback(@Named("quiz") String quiz, @Named("userid")  String userid, @Named("mid") String mid) {
-		PersistenceManager mgr = getPersistenceManager();
-		UserAnswerFeedback useranswerfeedback = null;
-		try {
-			useranswerfeedback = mgr
-					.getObjectById(UserAnswerFeedback.class, UserAnswerFeedback.generateKeyFromID(quiz, userid, mid));
-		} finally {
-			mgr.close();
-		}
-		return useranswerfeedback;
+		return PMF.singleGetObjectByIdThrowing(UserAnswerFeedback.class, UserAnswerFeedback.generateKeyFromID(quiz, userid, mid));
 	}
 
 	/**

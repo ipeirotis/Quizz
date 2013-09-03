@@ -15,6 +15,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
 		name = "quizz",
@@ -88,15 +89,9 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	 */
 	@ApiMethod(name = "getUser")
 	public User getUser(@Named("userid") String userid) {
-		PersistenceManager mgr = getPersistenceManager();
-		User user = null;
-		try {
-			user = mgr.getObjectById(User.class, User.generateKeyFromID(userid));
-			user.getExperiment();
-			user.getTreatments();
-		} finally {
-			mgr.close();
-		}
+		User user = PMF.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
+		user.getExperiment();
+		user.getTreatments();
 		return user;
 	}
 
