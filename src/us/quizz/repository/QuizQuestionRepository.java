@@ -10,6 +10,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.ipeirotis.crowdquiz.entities.GoldAnswer;
+import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.QuizQuestionInstance;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
@@ -105,36 +106,6 @@ public class QuizQuestionRepository {
 	}
 
 	
-	@SuppressWarnings("unchecked")
-	private static ArrayList<String> getAllQuizGoldAnswers(String quizid) {
-		String key = "getgoldanswers_" + quizid;
-		
-		ArrayList<String> result = CachePMF.get(key, ArrayList.class);
-		if (result != null) return result;
-		
-		PersistenceManager pm = PMF.getPM();
-
-		Query q = pm.newQuery(GoldAnswer.class);
-		
-		q.getFetchPlan().setFetchSize(500);
-		
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
-		
-		q.setResult("answer");
-
-		result = new ArrayList<String>((List<String>) q.executeWithMap(params));
-		pm.close();
-		
-		CachePMF.put(key, result);
-		return result;
-		
-	}
-
-	
 	public static String getRandomGoldAnswer(String quizid, String mid) {
 		
 		String cachekey = "quizquestion-gold-"+quizid+mid;
@@ -189,6 +160,29 @@ public class QuizQuestionRepository {
 		return result;
 	}
 	
+	protected static ArrayList<String> getSomeQuizGoldAnswers(String quizId, int number) {
+		Quiz quiz = QuizRepository.getQuiz(quizId); 
+		
+		PersistenceManager pm = PMF.getPM();
+		Query q = pm.newQuery(GoldAnswer.class);
+				
+		q.setFilter("relation == quizParam");
+		q.declareParameters("String quizParam");
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quizId);
+		
+		q.setResult("answer");
+		int fstIdx = (int) (Math.random() * Math.max(0, quiz.getGold() - number));
+		q.setRange(fstIdx, Math.min(quiz.getGold(), fstIdx + number));
+
+		@SuppressWarnings("unchecked")
+		ArrayList<String> result = new ArrayList<String>((List<String>) q.executeWithMap(params));
+		pm.close();
+		
+		return result;
+	}
+	
 	public static Set<String> getIncorrectAnswers(String quizid, String mid, String name, int size) {
 		
 		String cachekey = "quizquestion-pyrite-"+quizid+mid;
@@ -197,9 +191,8 @@ public class QuizQuestionRepository {
 		Set<String> results = CachePMF.get(cachekey, Set.class);
 		if (results != null) return results;
 		
-		
 		// Get a set of potential answers from other questions
-		ArrayList<String> wrongAnswers = QuizQuestionRepository.getAllQuizGoldAnswers(quizid);
+		ArrayList<String> wrongAnswers = getSomeQuizGoldAnswers(quizid, 500);
 		
 		// Remove any self-reference
 		wrongAnswers.remove(name);
