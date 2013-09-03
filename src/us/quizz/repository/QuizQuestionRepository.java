@@ -2,7 +2,6 @@ package us.quizz.repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,12 +52,11 @@ public class QuizQuestionRepository {
 		return list;
 	}
 	
-	public static Set<String> getQuizQuestionsWithGold(String quizid) {
-		
+	public static ArrayList<String> getQuizQuestionsWithGold(String quizid) {
 		
 		String key = "quizquestions_"+quizid;
 		@SuppressWarnings("unchecked")
-		Set<String> availableQuestions = CachePMF.get(key, Set.class);
+		ArrayList<String> availableQuestions = CachePMF.get(key, ArrayList.class);
 		if (availableQuestions!=null) return availableQuestions;
 		
 		PersistenceManager	pm = PMF.getPM();
@@ -72,14 +70,12 @@ public class QuizQuestionRepository {
 		
 		query.setResult("freebaseEntityId");
 		@SuppressWarnings("unchecked")
-		List<String> questions = (List<String>) query.executeWithMap(params);
+		ArrayList<String> questions = new ArrayList<String>((List<String>) query.executeWithMap(params));
 		
-		availableQuestions = new HashSet<String>(questions);
-
 		pm.close();
 		
-		CachePMF.put(key,availableQuestions);
-		return availableQuestions;
+		CachePMF.put(key, questions);
+		return questions;
 	}
 	
 	

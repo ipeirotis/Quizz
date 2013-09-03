@@ -1,7 +1,6 @@
 package com.ipeirotis.crowdquiz.utils;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +16,6 @@ public class Helper {
 		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
 		return baseURL;
 	}
-	
 
 	
 	/**
@@ -35,14 +33,10 @@ public class Helper {
 	 */
 	
 	public static String getNextQuizQuestion(String quiz) {
-		Set<String> availableQuestions = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
+		ArrayList<String> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
 
-		ArrayList<String> list = new ArrayList<String>(availableQuestions);
 		if (list.size()==0) return null;
-		int rnd = (int)Math.round(Math.random()*availableQuestions.size());
-		if (rnd>=availableQuestions.size()) {
-			rnd = availableQuestions.size()-1;
-		}
+		int rnd = (int)(Math.random() * list.size());
 		String mid = list.get(rnd);
 		return mid;
 	}
