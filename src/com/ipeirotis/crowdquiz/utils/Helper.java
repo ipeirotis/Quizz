@@ -51,9 +51,8 @@ public class Helper {
 	 * 
 	 */
 	public static double entropy(double q, int n) throws Exception {
-		if (q==1.0) return 0;
+		if (q==1.0 || n==1) return 0;
 		if (q==0.0) return -Math.log(1.0/(n-1))/Math.log(2);
-		if (n==1) return 0;
 		if (n<1) throw new Exception("Invalid value for n in entropy calculation");
 		if (q<0.0 || q>1.0) throw new Exception("Invalid value for q in entropy calculation");
 		double entropy = (1-q) * Math.log((1-q)/(n-1))/Math.log(2)+ q*Math.log(q)/Math.log(2);
