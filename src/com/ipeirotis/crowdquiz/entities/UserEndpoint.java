@@ -5,19 +5,16 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
 		name = "quizz",
@@ -27,8 +24,12 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 				ownerDomain = "www.quizz.us", 
 				ownerName = "www.quizz.us", 
 				packagePath = "crowdquiz.entities"))
-public class UserEndpoint {
+public class UserEndpoint extends BaseCollectionEndpoint<User>{
 
+	public UserEndpoint(){
+		super(User.class, "User");
+	}
+	
 	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
@@ -109,16 +110,7 @@ public class UserEndpoint {
 	 */
 	@ApiMethod(name = "insertUser")
 	public User insertUser(User user) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (containsUser(mgr, user)) {
-				throw new EntityExistsException("Object already exists");
-			}
-			mgr.makePersistent(user);
-		} finally {
-			mgr.close();
-		}
-		return user;
+		return insert(user);
 	}
 
 	/**
@@ -131,16 +123,7 @@ public class UserEndpoint {
 	 */
 	@ApiMethod(name = "updateUser")
 	public User updateUser(User user) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (!containsUser(mgr, user)) {
-				throw new EntityNotFoundException("Object does not exist");
-			}
-			mgr.makePersistent(user);
-		} finally {
-			mgr.close();
-		}
-		return user;
+		return update(user);
 	}
 
 	/**
@@ -151,26 +134,11 @@ public class UserEndpoint {
 	 */
 	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("userid") String userid) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			User user = mgr.getObjectById(User.class, User.generateKeyFromID(userid));
-			mgr.deletePersistent(user);
-		} finally {
-			mgr.close();
-		}
+		remove(User.generateKeyFromID(userid));
 	}
 
-	private boolean containsUser(PersistenceManager mgr, User user) {
-		try {
-			mgr.getObjectById(User.class, user.getKey());
-			return true;
-		} catch (JDOObjectNotFoundException ex) {
-			return false;
-		}
+	@Override
+	protected Key getKey(User item) {
+		return item.getKey();
 	}
-
-	private static PersistenceManager getPersistenceManager() {
-		return PMF.getPM();
-	}
-
 }

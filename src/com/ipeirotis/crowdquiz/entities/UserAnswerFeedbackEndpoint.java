@@ -7,14 +7,13 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -26,8 +25,12 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 				ownerDomain = "www.quizz.us", 
 				ownerName = "www.quizz.us", 
 				packagePath = "crowdquiz.entities"))
-public class UserAnswerFeedbackEndpoint {
+public class UserAnswerFeedbackEndpoint extends BaseCollectionEndpoint<UserAnswerFeedback>{
 
+	public UserAnswerFeedbackEndpoint(){
+		super(UserAnswerFeedback.class, "UserAnswerFeedback");
+	}
+	
 	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
@@ -106,16 +109,7 @@ public class UserAnswerFeedbackEndpoint {
 	@ApiMethod(name = "insertUserAnswerFeedback")
 	public UserAnswerFeedback insertUserAnswerFeedback(
 			UserAnswerFeedback useranswerfeedback) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (containsUserAnswerFeedback(useranswerfeedback)) {
-				throw new EntityExistsException("Object already exists");
-			}
-			mgr.makePersistent(useranswerfeedback);
-		} finally {
-			mgr.close();
-		}
-		return useranswerfeedback;
+		return insert(useranswerfeedback);
 	}
 
 	/**
@@ -129,16 +123,7 @@ public class UserAnswerFeedbackEndpoint {
 	@ApiMethod(name = "updateUserAnswerFeedback")
 	public UserAnswerFeedback updateUserAnswerFeedback(
 			UserAnswerFeedback useranswerfeedback) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (!containsUserAnswerFeedback(useranswerfeedback)) {
-				throw new EntityNotFoundException("Object does not exist");
-			}
-			mgr.makePersistent(useranswerfeedback);
-		} finally {
-			mgr.close();
-		}
-		return useranswerfeedback;
+		return update(useranswerfeedback);
 	}
 
 	/**
@@ -149,33 +134,12 @@ public class UserAnswerFeedbackEndpoint {
 	 */
 	@ApiMethod(name = "removeUserAnswerFeedback")
 	public void removeUserAnswerFeedback(@Named("id") Long id) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			UserAnswerFeedback useranswerfeedback = mgr.getObjectById(
-					UserAnswerFeedback.class, id);
-			mgr.deletePersistent(useranswerfeedback);
-		} finally {
-			mgr.close();
-		}
+		UserAnswerFeedback uaf = PMF.singleGetObjectByIdThrowing(UserAnswerFeedback.class, id);
+		remove(uaf.getKey());
 	}
 
-	private boolean containsUserAnswerFeedback(
-			UserAnswerFeedback useranswerfeedback) {
-		PersistenceManager mgr = getPersistenceManager();
-		boolean contains = true;
-		try {
-			mgr.getObjectById(UserAnswerFeedback.class,
-					useranswerfeedback.getKey());
-		} catch (javax.jdo.JDOObjectNotFoundException ex) {
-			contains = false;
-		} finally {
-			mgr.close();
-		}
-		return contains;
+	@Override
+	protected Key getKey(UserAnswerFeedback item) {
+		return item.getKey();
 	}
-
-	private static PersistenceManager getPersistenceManager() {
-		return PMF.getPM();
-	}
-
 }

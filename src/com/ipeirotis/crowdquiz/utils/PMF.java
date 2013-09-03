@@ -31,13 +31,19 @@ public final class PMF {
 	}
 	
 	public static <T> T singleGetObjectById(Class<T> cls, Object key){
-		PersistenceManager pm = getPM();
 		try {
-			return pm.getObjectById(cls, key);
+			return singleGetObjectByIdThrowing(cls, key);
 		} catch (JDOObjectNotFoundException ex) {
 			logger.warning("PM: Didn't found object: " + cls.getCanonicalName() +
 					" , key: " + key.toString());
 			return null;
+		}
+	}
+	
+	public static <T> T singleGetObjectByIdThrowing(Class<T> cls, Object key) {
+		PersistenceManager pm = getPM();
+		try {
+			return pm.getObjectById(cls, key);
 		} finally {
 			pm.close();
 		}
