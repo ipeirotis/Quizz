@@ -1,6 +1,8 @@
 package com.ipeirotis.crowdquiz.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -172,5 +174,24 @@ public class Helper {
 		
 	}
 	
+	/**
+	 * Selects random elements without replacement, modifies elements order in given array!
+	 */
+	public static <T> Set<T> selectRandomElements(ArrayList<T> elements, int n){
+		Set<T> randomEls = new HashSet<T>(n);
+		int size = elements.size();
+		while (randomEls.size() < n && size > 0) {
+			int rndIdx = (int) (Math.random() * size);
+			T randElement = elements.get(rndIdx);
+			randomEls.add(randElement);
+			size--;
+			elements.set(rndIdx, elements.get(size));
+			elements.set(size, randElement);
+			// swapping with last element to avoid costly remove
+		}
+		
+		if (randomEls.size() < n) throw new IllegalArgumentException("Not enough elements to select uniq random ones");
+		return randomEls;
+	}
 
 }

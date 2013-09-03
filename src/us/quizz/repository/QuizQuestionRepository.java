@@ -16,6 +16,7 @@ import com.ipeirotis.crowdquiz.entities.QuizQuestionInstance;
 import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
+import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 public class QuizQuestionRepository {
@@ -199,7 +200,7 @@ public class QuizQuestionRepository {
 		
 		
 		// Get a set of potential answers from other questions
-		List<String> wrongAnswers = QuizQuestionRepository.getAllQuizGoldAnswers(quizid);
+		ArrayList<String> wrongAnswers = QuizQuestionRepository.getAllQuizGoldAnswers(quizid);
 		
 		// Remove any self-reference
 		wrongAnswers.remove(name);
@@ -213,14 +214,7 @@ public class QuizQuestionRepository {
 		List<String> good_silver = getSilverAnswers(quizid, mid, true, 0.5);
 		wrongAnswers.removeAll(good_silver);
 
-		results = new TreeSet<String>();
-		while (results.size() < size && wrongAnswers.size()>0) {
-			int rnd = (int) (Math.random() * wrongAnswers.size());
-			String candidate = wrongAnswers.get(rnd);
-			wrongAnswers.remove(rnd);
-			results.add(candidate);
-		}
-
+		results = Helper.selectRandomElements(wrongAnswers, size);
 		CachePMF.put(cachekey, results);
 		
 		return results;
