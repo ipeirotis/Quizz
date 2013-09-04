@@ -152,9 +152,9 @@
 
 	function displayPerformanceScores(performance) {
 
-		$('#showScore').html("Score: "+performance.score+" points");
+		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
-		$('#showPercentageCorrect').html("Correct (%): " + performance.percentageCorrect);
+		$('#showPercentageCorrect').html("Correct (%): " + toPercentage(performance.percentageCorrect));
 		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+(performance.rankPercentCorrect/performance.totalUsers)+")");
 		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankTotalCorrect/performance.totalUsers)+")");
 	}
