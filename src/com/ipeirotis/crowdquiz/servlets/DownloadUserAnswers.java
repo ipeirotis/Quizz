@@ -34,39 +34,36 @@ public class DownloadUserAnswers extends HttpServlet {
 		@SuppressWarnings("unchecked")
 		List<UserAnswer> answers = (List<UserAnswer>) query.execute(relation);
 		StringBuffer sb = new StringBuffer();
-		sb.append("userid").append("\t")
-			.append("mid").append("\t")
-			.append("useranswer").append("\t")
-			.append("action").append("\t")
-			.append("ipaddress").append("\t")
-			.append("timestamp").append("\t")
-			.append("browser").append("\t")
-			.append("referer").append("\n");
+		sbApp(sb, "userid");
+		sbApp(sb, "mid");
+		sbApp(sb, "useranswer");
+		sbApp(sb, "action");
+		sbApp(sb, "ipaddress");
+		sbApp(sb, "timestamp");
+		sbApp(sb, "browser");
+		sb.append("referer").append("\n");
 			
 		for (UserAnswer ue : answers) {
-			String userid = (ue.getUserid()==null)?"":ue.getUserid();
-			String mid = (ue.getMid()==null)?"":ue.getMid();
-			String useranswer = (ue.getUseranswer() ==null)?"":ue.getUseranswer(); 
-			String action = (ue.getAction()==null)?"":ue.getAction();
-			String ipaddress = (ue.getIpaddress()==null)?"":ue.getIpaddress();
-			String timestamp = (ue.getTimestamp()==null)?"":ue.getTimestamp().toString();
-			String browser = (ue.getBrowser()==null)?"":ue.getBrowser();
-			String referer = (ue.getReferer()==null)?"":ue.getReferer();
+			String userid = safeStr(ue.getUserid());
+			String mid = safeStr(ue.getMid());
+			String useranswer = safeStr(ue.getUseranswer());
+			String action = safeStr(ue.getAction());
+			String ipaddress = safeStr(ue.getIpaddress());
+			String timestamp = safeStr(ue.getTimestamp());
+			String browser = safeStr(ue.getBrowser());
+			String referer = safeStr(ue.getReferer());
 			
-			
-			sb.append(userid).append("\t")
-			.append(mid).append("\t")
-			.append(useranswer).append("\t")
-			.append(action).append("\t")
-			.append(ipaddress).append("\t")
-			.append(timestamp).append("\t")
-			.append(browser).append("\t")
-			.append(referer)
-			.append("\n");
+			sbApp(sb, userid);
+			sbApp(sb, mid);
+			sbApp(sb, useranswer);
+			sbApp(sb, action);
+			sbApp(sb, ipaddress);
+			sbApp(sb, timestamp);
+			sbApp(sb, browser);
+			sb.append(referer).append("\n");
 		}
 		pm.close();
 		
-
 		response.setContentType("text/tab-separated-values; charset=UTF-8");
 		response.addHeader("cache-control", "must-revalidate");
 		response.addHeader("pragma", "must-revalidate");
@@ -75,6 +72,14 @@ public class DownloadUserAnswers extends HttpServlet {
 		response.setBufferSize(sb.length());
 		response.getOutputStream().print(sb.toString());
 		response.flushBuffer();
+	}
+	
+	protected String safeStr(Object obj) {
+		return (obj == null) ? "" : obj.toString();
+	}
+	
+	protected void sbApp(StringBuffer sb, String text) {
+		sb.append(text).append("\t");
 	}
 
 }
