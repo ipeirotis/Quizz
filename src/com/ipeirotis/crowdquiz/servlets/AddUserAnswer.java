@@ -3,7 +3,6 @@ package com.ipeirotis.crowdquiz.servlets;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,12 +46,9 @@ public class AddUserAnswer extends HttpServlet {
 		ue.setAction(action);
 		if (isCorrect!=null) ue.setIsCorrect(isCorrect);
 
-		PersistenceManager pm = PMF.getPM();
-		pm.makePersistent(ue);
-		pm.close();
+		PMF.singleMakePersistent(ue);
 
 		resp.getWriter().println("OK");
-
 	}
 
 }

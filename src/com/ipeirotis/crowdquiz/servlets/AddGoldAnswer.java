@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,16 +37,7 @@ public class AddGoldAnswer extends HttpServlet {
 			QuizQuestionRepository.storeQuizQuestion(qq);
 			GoldAnswer ga = new GoldAnswer(relation, mid, answer);
 			
-			PersistenceManager pm = PMF.getPM();
-			try {
-				pm.makePersistent(ga);
-			} catch (Exception e) {
-				logger.log(Level.WARNING, "Error when making persistent gold answer", e);
-
-			} finally {
-				pm.close();
-			}
-			
+			PMF.singleMakePersistent(ga);
 			resp.getWriter().println("OK");
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {

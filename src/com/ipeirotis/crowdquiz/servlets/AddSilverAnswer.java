@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,15 +51,7 @@ public class AddSilverAnswer extends HttpServlet {
 			QuizQuestionRepository.storeQuizQuestion(qq);
 			SilverAnswer sa = new SilverAnswer(relation, mid, answer, source,  probability);
 			
-			PersistenceManager pm = PMF.getPM();
-			try {
-				pm.makePersistent(sa);
-			} catch (Exception e) {
-				logger.log(Level.WARNING, "Error when making persistent silver answer", e);
-			} finally {
-				pm.close();
-			}
-			
+			PMF.singleMakePersistent(sa);
 			resp.getWriter().println("OK");
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {

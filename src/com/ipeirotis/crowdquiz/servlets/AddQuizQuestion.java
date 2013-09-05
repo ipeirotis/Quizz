@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,9 +36,7 @@ public class AddQuizQuestion extends HttpServlet {
 			resp.getWriter().println("Weight: " + weight);
 
 			QuizQuestion q = new QuizQuestion(relation, mid, name, weight);
-			PersistenceManager pm = PMF.getPM();
-			pm.makePersistent(q);
-			pm.close();
+			PMF.singleMakePersistent(q);
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,10 +37,8 @@ public class AddTreatment extends HttpServlet {
 				resp.getWriter().print("Assigning default probability value of 0.0\n");
 			}
 			
-			PersistenceManager pm = PMF.getPM();
 			Treatment treatment = new Treatment(name, p);
-			pm.makePersistent(treatment);
-			pm.close();
+			PMF.singleMakePersistent(treatment);
 			
 			resp.getWriter().println("OK");
 			resp.sendRedirect("/admin/treatments/");

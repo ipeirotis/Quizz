@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,12 +102,7 @@ public class AddQuizAdCampaign extends HttpServlet {
 			
 			
 			Quiz q = new Quiz(name, relation, text);
-			
-			
-			
-			PersistenceManager pm = PMF.getPM();
-			pm.makePersistent(q);
-			pm.close();
+			PMF.singleMakePersistent(q);
 			
 			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");
 			
@@ -137,15 +131,8 @@ public class AddQuizAdCampaign extends HttpServlet {
 						.param("adline2", adline2)
 						.method(TaskOptions.Method.GET)
 						.etaMillis(etaMillis));
-				
 
-				
 			}
-			
-
-			
-
-
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);
 		}
