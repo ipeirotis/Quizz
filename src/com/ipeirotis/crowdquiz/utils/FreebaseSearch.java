@@ -8,6 +8,7 @@ import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -39,23 +40,19 @@ public class FreebaseSearch {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
-		
-		//System.out.println(response);
 
 		try {
 			JsonObject jo = jp.parse(response).getAsJsonObject();
-			JsonObject result = jo.get("result").getAsJsonObject();
-
-			String returnedName = result.get(freebaseAttribute).getAsString();
-			if (returnedName != null)
-				return returnedName;
-			else
-				return "";
+			JsonElement jr = jo.get("result");
+			if (jr.isJsonNull()) return "";
+			JsonObject result = jr.getAsJsonObject();
+			if (result.has(freebaseAttribute)) {
+				return result.get(freebaseAttribute).getAsString();
+			}
 		} catch (Exception e) {
-			return "";
+			e.printStackTrace();
 		}
-
+		return "";
 	}
 
 
