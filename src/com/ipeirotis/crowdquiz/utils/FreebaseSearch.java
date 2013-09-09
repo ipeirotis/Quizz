@@ -48,7 +48,7 @@ public class FreebaseSearch {
 				return result.get(freebaseAttribute).getAsString();
 			}
 		} catch (Exception ex) {
-			logger.log(Level.WARNING, "Freebase extracting: " + freebaseAttribute + " for: " + mid);
+			logger.log(Level.WARNING, "FAILED Freebase extracting: " + freebaseAttribute + " for: " + mid);
 		}
 		return "";
 	}
