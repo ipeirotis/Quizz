@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
 
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -54,13 +55,14 @@ public class CleanupFreebaseNames extends HttpServlet{
 		Utils.ensureParameters(req, "mid", "relation");
 		String mid = req.getParameter("mid");
 		String quizId = req.getParameter("relation");
-		QuizQuestion quizQuestion = QuizQuestionRepository.getQuizQuestion(quizId, mid);
 		System.out.println("WORKING ON: " + mid + " : " + quizId);
 		String name = FreebaseSearch.getFreebaseAttribute(mid,"name");
 		System.out.println("GOT NAME: " + name);
 		if (Strings.isNullOrEmpty(name)) {
-			// TODO delete
+			QuizQuestionRepository.removeWithoutUpdates(quizId, mid);
+			QuizRepository.updateQuizCounts(quizId);
 		} else {
+			QuizQuestion quizQuestion = QuizQuestionRepository.getQuizQuestion(quizId, mid);
 			quizQuestion.setName(name);
 			QuizQuestionRepository.storeQuizQuestion(quizQuestion);
 		}
