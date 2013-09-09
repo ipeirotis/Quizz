@@ -85,6 +85,14 @@ public class QuizQuestionRepository {
 		PMF.singleMakePersistent(q);
 	}
 	
+	public static void removeWithoutUpdates(String quizid, String mid) {
+		PersistenceManager pm = PMF.getPM();
+		QuizQuestion qq = pm.getObjectById(QuizQuestion.class,
+				QuizQuestion.generateKeyFromID(quizid, mid));
+		pm.deletePersistent(qq);
+		pm.close();
+	}
+	
 	public static ArrayList<String> getGoldAnswers(String quizid, String mid) {
 		PersistenceManager pm = PMF.getPM();
 

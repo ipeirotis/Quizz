@@ -36,38 +36,17 @@ public class GetQuizCounts extends HttpServlet {
 
 			String quiz = req.getParameter("quiz");
 			String cache = req.getParameter("cache");
-			boolean useCache = true;
 			if (cache!=null && cache.equals("no")) {
-				useCache = false;
+				QuizRepository.updateQuizCounts(quiz);
 			}
-			
+
 			Quiz q = QuizRepository.getQuiz(quiz);
-			
-			Integer questions, gold, silver, submitted;
-			
-			if (useCache == false) {
-				questions = QuizRepository.getNumberOfQuizQuestions(quiz, useCache);
-				gold = QuizRepository.getNumberOfGoldAnswers(quiz, useCache);
-				silver = QuizRepository.getNumberOfSilverAnswers(quiz, useCache);
-				submitted = QuizRepository.getNumberOfUserAnswers(quiz, useCache);
-				
-				q.setQuestions(questions);
-				q.setGold(gold);
-				q.setSilver(silver);
-				q.setSubmitted(submitted);
-				QuizRepository.storeQuiz(q);
-			} else {
-				questions = q.getQuestions();
-				gold = q.getGold();
-				silver = q.getSilver();
-				submitted = q.getSubmitted();
-			}
 			
 			resp.setContentType("application/json");
 			Gson gson = new Gson();
-			Response result = new Response(quiz, questions, gold, silver, submitted);
+			Response result = new Response(quiz, q.getQuestions(),
+					q.getGold(), q.getSilver(), q.getSubmitted());
 			String json = gson.toJson(result);
 			resp.getWriter().println(json);
 		}
-		
-	}
+}
