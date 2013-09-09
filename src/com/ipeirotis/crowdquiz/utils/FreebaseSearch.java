@@ -1,6 +1,8 @@
 package com.ipeirotis.crowdquiz.utils;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
@@ -19,6 +21,7 @@ public class FreebaseSearch {
 	private static HttpTransport			httpTransport		= new NetHttpTransport();
 	private static HttpRequestFactory	requestFactory	= httpTransport.createRequestFactory();
 
+	protected static Logger logger = Logger.getLogger(FreebaseSearch.class.getName());
 	
 
 	public static String getFreebaseAttribute(String mid, String freebaseAttribute) {
@@ -37,11 +40,6 @@ public class FreebaseSearch {
 			HttpRequest request = requestFactory.buildGetRequest(url);
 			HttpResponse httpResponse = request.execute();
 			response = httpResponse.parseAsString();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-
-		try {
 			JsonObject jo = jp.parse(response).getAsJsonObject();
 			JsonElement jr = jo.get("result");
 			if (jr.isJsonNull()) return "";
@@ -49,8 +47,8 @@ public class FreebaseSearch {
 			if (result.has(freebaseAttribute)) {
 				return result.get(freebaseAttribute).getAsString();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Freebase extracting: " + freebaseAttribute + " for: " + mid);
 		}
 		return "";
 	}
