@@ -15,7 +15,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
-import com.ipeirotis.crowdquiz.utils.FreebaseSearch;
 import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -113,11 +112,11 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 */
 	@ApiMethod(name = "getQuestionInstance", path = "quizquestioninstance/quiz/{quiz}/mid/{mid}")
 	public QuizQuestionInstance getQuestionInstance(@Named("quiz") String quiz, @Named("mid") String mid) {
-		String name = FreebaseSearch.getFreebaseAttribute(mid,"name");
 		String questiontext = QuizRepository.getQuiz(quiz).getQuestionText();
 		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(quiz, mid);
-		QuizQuestionInstance result = QuizQuestionRepository.getQuizQuestionInstanceWithGold(quiz, mid, name, 4);
-		result.setMidname(name);
+		QuizQuestionInstance result = QuizQuestionRepository.getQuizQuestionInstanceWithGold(quiz,
+				mid, question.getName(), 4);
+		result.setMidname(question.getName());
 		result.setQuizquestion(questiontext);
 		result.setCorrectanswers(question.getNumberOfCorrentUserAnswers());
 		result.setTotalanswers(question.getNumberOfUserAnswers());
