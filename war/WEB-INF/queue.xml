@@ -4,41 +4,45 @@
     <name>default</name>
     <rate>10/s</rate>
   </queue>
-  
+
   <queue>
     <name>quizquestions</name>
     <rate>10/s</rate>
     <bucket-size>50</bucket-size>
     <max-concurrent-requests>20</max-concurrent-requests>
   </queue>
-  
+
   <queue>
     <name>answers</name>
     <rate>50/s</rate>
     <bucket-size>50</bucket-size>
     <max-concurrent-requests>20</max-concurrent-requests>
   </queue>
-  
+
   <queue>
     <name>updateUserStatistics</name>
     <rate>50/s</rate>
     <bucket-size>50</bucket-size>
     <max-concurrent-requests>20</max-concurrent-requests>
   </queue>
-  
+
   <queue>
     <name>adgroup</name>
     <rate>1/s</rate>
     <bucket-size>2</bucket-size>
     <max-concurrent-requests>2</max-concurrent-requests>
   </queue>
-  
+
     <queue>
     <name>adcampaign</name>
     <rate>1/s</rate>
     <bucket-size>1</bucket-size>
     <max-concurrent-requests>1</max-concurrent-requests>
   </queue>
-  
-  
+
+  <queue>
+    <name>freebaseNamesUpdate</name>
+    <rate>10/s</rate>
+  </queue>
+
 </queue-entries>

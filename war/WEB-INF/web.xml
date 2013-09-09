@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-	
-   
+
+
 	<servlet>
 		<servlet-name>AddQuiz</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuiz</servlet-class>
@@ -56,7 +56,7 @@
 	<servlet>
 		<servlet-name>GetQuizCounts</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetQuizCounts</servlet-class>
-	</servlet>		
+	</servlet>
 	<servlet>
 		<servlet-name>GetNumberOfSubmittedAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfSubmittedAnswers</servlet-class>
@@ -65,7 +65,7 @@
 		<servlet-name>UpdateCountStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateCountStatistics</servlet-class>
 	</servlet>
-	
+
 	<servlet>
 		<servlet-name>DeleteQuiz</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.DeleteQuiz</servlet-class>
@@ -79,16 +79,16 @@
 		<servlet-name>AddAdGroup</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAdGroup</servlet-class>
 	</servlet>
-	
+
 	<servlet>
 		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateAllQuestionStatistics</servlet-class>
 	</servlet>
-	
+
 	<servlet>
 		<servlet-name>UpdateQuestionStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateQuestionStatistics</servlet-class>
-	</servlet>	
+	</servlet>
 	<servlet>
 		<servlet-name>UpdateUserQuizStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateUserQuizStatistics</servlet-class>
@@ -96,11 +96,15 @@
 	<servlet>
 		<servlet-name>UpdateAllUserStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateAllUserStatistics</servlet-class>
-	</servlet>	
+	</servlet>
 	<servlet>
 		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.ScanUserAnswersAndCreateUsers</servlet-class>
-	</servlet>	
+	</servlet>
+	<servlet>
+		<servlet-name>CleanupFreebaseNames</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.CleanupFreebaseNames</servlet-class>
+	</servlet>
 
 
 	<servlet-mapping>
@@ -111,7 +115,7 @@
 		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
 		<url-pattern>/scanUserAnswersAndCreateUsers</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>AddQuiz</servlet-name>
 		<url-pattern>/addQuiz</url-pattern>
@@ -139,7 +143,7 @@
 	<servlet-mapping>
 		<servlet-name>UploadSilverAnswers</servlet-name>
 		<url-pattern>/uploadSilverAnswers</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>AddUserAnswer</servlet-name>
 		<url-pattern>/addUserAnswer</url-pattern>
@@ -179,21 +183,26 @@
 	<servlet-mapping>
 		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
 		<url-pattern>/api/updateAllQuestionStatistics</url-pattern>
-	</servlet-mapping>	
-	
-		<servlet-mapping>
+	</servlet-mapping>
+
+	<servlet-mapping>
 		<servlet-name>UpdateUserQuizStatistics</servlet-name>
 		<url-pattern>/api/updateUserQuizStatistics</url-pattern>
-	</servlet-mapping>		
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UpdateAllUserStatistics</servlet-name>
 		<url-pattern>/api/updateAllUserStatistics</url-pattern>
-	</servlet-mapping>		
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DeleteQuiz</servlet-name>
 		<url-pattern>/api/deleteQuiz</url-pattern>
 	</servlet-mapping>
-		
+
+	<servlet-mapping>
+		<servlet-name>CleanupFreebaseNames</servlet-name>
+		<url-pattern>/api/cleanupFreebaseNames</url-pattern>
+	</servlet-mapping>
+
 
 	<servlet-mapping>
 		<servlet-name>AddCampaign</servlet-name>
@@ -207,18 +216,18 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-	
+
 	<security-constraint>
         <web-resource-collection>
-         	<web-resource-name>Protected Area</web-resource-name> 
+         	<web-resource-name>Protected Area</web-resource-name>
             <url-pattern>/admin/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
-	
-	
+
+
  <servlet>
   <servlet-name>SystemServiceServlet</servlet-name>
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>

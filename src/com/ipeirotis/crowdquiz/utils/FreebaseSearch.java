@@ -1,6 +1,8 @@
 package com.ipeirotis.crowdquiz.utils;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
@@ -8,6 +10,7 @@ import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -18,6 +21,7 @@ public class FreebaseSearch {
 	private static HttpTransport			httpTransport		= new NetHttpTransport();
 	private static HttpRequestFactory	requestFactory	= httpTransport.createRequestFactory();
 
+	protected static Logger logger = Logger.getLogger(FreebaseSearch.class.getName());
 	
 
 	public static String getFreebaseAttribute(String mid, String freebaseAttribute) {
@@ -36,26 +40,18 @@ public class FreebaseSearch {
 			HttpRequest request = requestFactory.buildGetRequest(url);
 			HttpResponse httpResponse = request.execute();
 			response = httpResponse.parseAsString();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		
-		
-		//System.out.println(response);
-
-		try {
 			JsonObject jo = jp.parse(response).getAsJsonObject();
-			JsonObject result = jo.get("result").getAsJsonObject();
-
-			String returnedName = result.get(freebaseAttribute).getAsString();
-			if (returnedName != null)
-				return returnedName;
-			else
-				return "";
-		} catch (Exception e) {
-			return "";
+			JsonElement jr = jo.get("result");
+			if (jr.isJsonNull()) return "";
+			JsonObject result = jr.getAsJsonObject();
+			if (result.has(freebaseAttribute)) {
+				return result.get(freebaseAttribute).getAsString();
+			}
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "FAILED Freebase extracting: " + freebaseAttribute
+					+ " for: " + mid + ". " + ex.getLocalizedMessage());
 		}
-
+		return "";
 	}
 
 
