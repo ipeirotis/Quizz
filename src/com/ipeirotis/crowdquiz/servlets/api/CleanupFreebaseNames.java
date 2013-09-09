@@ -1,7 +1,7 @@
 package com.ipeirotis.crowdquiz.servlets.api;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,28 +26,21 @@ public class CleanupFreebaseNames extends HttpServlet{
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Queue queue = QueueFactory.getQueue("freebaseNamesUpdate");
-		QuizQuestion qq = new QuizQuestion("song", "/m/07rd7", null, 0.5);
-		QuizQuestionRepository.storeQuizQuestion(qq);
-		queue.add(Builder.withUrl("/api/cleanupFreebaseNames")
-				.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
-				.method(TaskOptions.Method.POST));
-	}
-	
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		Queue queue = QueueFactory.getQueue("freebaseNamesUpdate");
-		
-		List<QuizQuestion> quizquestions = QuizQuestionRepository.getQuizQuestions();
-		
-		for (QuizQuestion quizQuestion : quizquestions) {
+		int counts = 0;
+		PrintWriter pw = resp.getWriter();
+		pw.println("Quiz questions with empty names:");
+		for (QuizQuestion quizQuestion : QuizQuestionRepository.getQuizQuestions()) {
 			if (Strings.isNullOrEmpty(quizQuestion.getName())) {
 				queue.add(Builder.withUrl("/api/cleanupFreebaseNames")
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 					.param("relation", quizQuestion.getRelation())
 					.param("mid", quizQuestion.getFreebaseEntityId())
 					.method(TaskOptions.Method.PUT));
+				pw.println(quizQuestion.getRelation() + " : " + quizQuestion.getFreebaseEntityId() + " : ");
+				counts++;
 			}
 		}
+		resp.getWriter().println("Total: " + counts);
 	}
 	
 	@Override
@@ -55,9 +48,7 @@ public class CleanupFreebaseNames extends HttpServlet{
 		Utils.ensureParameters(req, "mid", "relation");
 		String mid = req.getParameter("mid");
 		String quizId = req.getParameter("relation");
-		System.out.println("WORKING ON: " + mid + " : " + quizId);
 		String name = FreebaseSearch.getFreebaseAttribute(mid,"name");
-		System.out.println("GOT NAME: " + name);
 		if (Strings.isNullOrEmpty(name)) {
 			QuizQuestionRepository.removeWithoutUpdates(quizId, mid);
 			QuizRepository.updateQuizCounts(quizId);
