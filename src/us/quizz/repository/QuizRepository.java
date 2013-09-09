@@ -100,4 +100,17 @@ public class QuizRepository {
 		CachePMF.put(key, quizlist);
 		return quizlist;
 	}
+	
+	public static void updateQuizCounts(String quiz){
+		Quiz q = QuizRepository.getQuiz(quiz);
+		Integer count = QuizRepository.getNumberOfQuizQuestions(quiz, false);
+		q.setQuestions(count);
+		count = QuizRepository.getNumberOfGoldAnswers(quiz, false);
+		q.setGold(count);
+		count = QuizRepository.getNumberOfSilverAnswers(quiz, false);
+		q.setSilver(count);
+		count = QuizRepository.getNumberOfUserAnswers(quiz, false);
+		q.setSubmitted(count);
+		storeQuiz(q);
+	}
 }
