@@ -36,14 +36,12 @@ public class Helper {
 	 */
 	
 	public static String getNextQuizQuestion(String quiz) {
-		ArrayList<String> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
+		return getNextQuizQuestions(quiz, 1).iterator().next();
+	}
 
-		int n = list.size();
-		if (n==0) return null;
-		
-		Random r = new Random();
-		String mid = list.get(r.nextInt(n));
-		return mid;
+	public static Set<String> getNextQuizQuestions(String quiz, int n) {
+		ArrayList<String> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
+		return selectRandomElements(list, n);
 	}
 
 
@@ -182,8 +180,8 @@ public class Helper {
 	public static <T> Set<T> selectRandomElements(ArrayList<T> elements, int n){
 		Set<T> randomEls = new HashSet<T>(n);
 		int size = elements.size();
+		Random r = new Random();
 		while (randomEls.size() < n && size > 0) {
-			Random r = new Random();
 			int rndIdx = r.nextInt(size);
 			T randElement = elements.get(rndIdx);
 			randomEls.add(randElement);
