@@ -16,6 +16,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.ipeirotis.crowdquiz.entities.Experiment;
 import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -54,6 +55,9 @@ public class ScanUserAnswersAndCreateUsers extends HttpServlet {
 				user = pm.getObjectById(User.class, User.generateKeyFromID(userid));
 			} catch (Exception e) {
 				user = new User(userid);
+				Experiment exp = new Experiment();
+				exp.assignTreatments();
+				user.setExperiment(exp);
 				pm.makePersistent(user);
 			}
 		}

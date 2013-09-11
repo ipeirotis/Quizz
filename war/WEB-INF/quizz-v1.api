@@ -445,21 +445,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "quizz.updateQuizPerformance" : {
-      "path" : "quizperformance",
-      "httpMethod" : "PUT",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "quizz.listQuizPerformance" : {
       "path" : "quizperformance",
       "httpMethod" : "GET",
@@ -479,6 +464,21 @@
           }
         },
         "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.updateQuizPerformance" : {
+      "path" : "quizperformance",
+      "httpMethod" : "PUT",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -897,17 +897,17 @@
           "$ref" : "CollectionResponse_QuizPerformance"
         }
       },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {
+        "response" : {
+          "$ref" : "CollectionResponse_QuizPerformance"
+        }
+      },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance" : {
         "request" : {
           "$ref" : "QuizPerformance"
         },
         "response" : {
           "$ref" : "QuizPerformance"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {
-        "response" : {
-          "$ref" : "CollectionResponse_QuizPerformance"
         }
       }
     }

@@ -92,6 +92,8 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	public User getUser(@Named("userid") String userid) {
 		User user = PMF.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
 		Experiment e = user.getExperiment();
+		for (String s : e.getTreatments().keySet())
+			 e.getTreatments().get(s);
 		Map<String, Boolean> treatments = user.getTreatments();
 		for (String s : treatments.keySet())
 			treatments.get(s);

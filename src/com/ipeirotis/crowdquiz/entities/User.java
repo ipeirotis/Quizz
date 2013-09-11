@@ -37,7 +37,6 @@ public class User {
 	public User(String userid) {
 		this.userid = userid;
 		this.key = generateKeyFromID(userid);
-		this.experiment = new Experiment();
 	}
 	
 	public static Key generateKeyFromID(String userid) {
@@ -91,7 +90,9 @@ public class User {
 			user = pm.getObjectById(User.class, User.generateKeyFromID(userid));
 		} catch (Exception e) {
 			user = new User(userid);
-			//user.getExperiment().assignTreatments();
+			Experiment exp = new Experiment();
+			exp.assignTreatments();
+			user.setExperiment(exp);
 			pm.makePersistent(user);
 		}
 		
