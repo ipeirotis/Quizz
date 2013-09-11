@@ -2,6 +2,7 @@ package com.ipeirotis.crowdquiz.utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,9 +38,11 @@ public class Helper {
 	public static String getNextQuizQuestion(String quiz) {
 		ArrayList<String> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
 
-		if (list.size()==0) return null;
-		int rnd = (int)(Math.random() * list.size());
-		String mid = list.get(rnd);
+		int n = list.size();
+		if (n==0) return null;
+		
+		Random r = new Random();
+		String mid = list.get(r.nextInt(n));
 		return mid;
 	}
 
@@ -180,7 +183,8 @@ public class Helper {
 		Set<T> randomEls = new HashSet<T>(n);
 		int size = elements.size();
 		while (randomEls.size() < n && size > 0) {
-			int rndIdx = (int) (Math.random() * size);
+			Random r = new Random();
+			int rndIdx = r.nextInt(size);
 			T randElement = elements.get(rndIdx);
 			randomEls.add(randElement);
 			size--;
