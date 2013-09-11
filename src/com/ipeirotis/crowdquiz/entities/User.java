@@ -26,11 +26,11 @@ public class User {
 
 
 	// The id for the user.
-	@Persistent(defaultFetchGroup = "true")
+	@Persistent
 	private String	userid;
 	
 	// The set of treatments assigned to the user
-	@Persistent
+	@Persistent(defaultFetchGroup = "true")
 	private Experiment experiment;
 	
 	
