@@ -2,6 +2,7 @@ package com.ipeirotis.crowdquiz.entities;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -90,8 +91,10 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	@ApiMethod(name = "getUser")
 	public User getUser(@Named("userid") String userid) {
 		User user = PMF.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
-		user.getExperiment();
-		user.getTreatments();
+		Experiment e = user.getExperiment();
+		Map<String, Boolean> treatments = user.getTreatments();
+		for (String s : treatments.keySet())
+			;
 		return user;
 	}
 
