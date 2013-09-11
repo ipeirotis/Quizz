@@ -31,7 +31,7 @@ public class Experiment {
     // A map that shows whether a particular treatment is active or not
     // within the experiment. If a particular treatment does not appear
     // within the map, we assume it is inactive
-    @Persistent
+    @Persistent(serialized = "true")
 	HashMap<String, Boolean> treatments;
 	
     // The user that gets assigned to the treatments in this experiment
@@ -41,6 +41,8 @@ public class Experiment {
     public Experiment() {
     	assignTreatments();
 	}
+    
+    
 
     public Key getKey() {
 		return key;
@@ -74,7 +76,7 @@ public class Experiment {
     	}
     }
     
-	private void assignTreatments() {
+	public void assignTreatments() {
 		// Going over all the active treatments in the datastore and assign 
 		// treatments according to their probabilities.
 		

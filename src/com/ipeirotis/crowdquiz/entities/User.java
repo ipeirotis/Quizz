@@ -26,11 +26,11 @@ public class User {
 
 
 	// The id for the user.
-	@Persistent
+	@Persistent(defaultFetchGroup = "true")
 	private String	userid;
 	
 	// The set of treatments assigned to the user
-	@Persistent(defaultFetchGroup = "true")
+	@Persistent
 	private Experiment experiment;
 	
 	
@@ -91,6 +91,7 @@ public class User {
 			user = pm.getObjectById(User.class, User.generateKeyFromID(userid));
 		} catch (Exception e) {
 			user = new User(userid);
+			//user.getExperiment().assignTreatments();
 			pm.makePersistent(user);
 		}
 		
