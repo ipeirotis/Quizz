@@ -36,18 +36,21 @@ public class QuizRepository {
 		Quiz quiz = null;
 		PersistenceManager pm = PMF.getPM();
 		try {
-			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-		} catch (JDOObjectNotFoundException e) {
-			// TODO: shall we ignore or throw exception about wrong quiz id?
+			try {
+				quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
+			} catch (JDOObjectNotFoundException e) {
+				// TODO: shall we ignore or throw exception about wrong quiz id?
+			}
+			pm.deletePersistent(quiz);
+			
+			Class<?>[] itemsClasses = new Class<?>[]{QuizQuestion.class,
+					GoldAnswer.class, SilverAnswer.class, UserAnswer.class};
+			for (Class<?> cls: itemsClasses) {
+				deleteAll(pm, id, cls);
+			}
+		} finally {
+			pm.close();
 		}
-		pm.deletePersistent(quiz);
-		
-		Class<?>[] itemsClasses = new Class<?>[]{QuizQuestion.class,
-				GoldAnswer.class, SilverAnswer.class, UserAnswer.class};
-		for (Class<?> cls: itemsClasses) {
-			deleteAll(pm, id, cls);
-		}
-		pm.close();
 	}
 	
 	protected static <T> Integer getNumberOf(String keyPrefix, boolean useCache, String quiz, Class<T> queryClass) {
@@ -59,14 +62,18 @@ public class QuizRepository {
 		}
 		
 		PersistenceManager	pm = PMF.getPM();
-		Query q = pm.newQuery(queryClass);
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-		@SuppressWarnings("unchecked")
-		List<T> results = (List<T>) q.execute(quiz);
-		Integer result = results.size();
-		CachePMF.put(key, result);
-		return result;
+		try {
+			Query q = pm.newQuery(queryClass);
+			q.setFilter("relation == quizParam");
+			q.declareParameters("String quizParam");
+			@SuppressWarnings("unchecked")
+			List<T> results = (List<T>) q.execute(quiz);
+			Integer result = results.size();
+			CachePMF.put(key, result);
+			return result;
+		} finally {
+			pm.close();
+		}
 	}
 	
 	public static Integer getNumberOfGoldAnswers(String quiz, boolean usecache) {

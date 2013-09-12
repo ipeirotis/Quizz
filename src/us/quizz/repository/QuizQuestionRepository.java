@@ -36,21 +36,23 @@ public class QuizQuestionRepository {
 	public static List<QuizQuestion> getQuizQuestions() {
 		
 		PersistenceManager pm = PMF.getPM();
-		Query query = pm.newQuery(QuizQuestion.class);
-		List<QuizQuestion> list = new ArrayList<QuizQuestion>();
-		int limit = 1000;
-		int i=0;
-		while (true) {
-			query.setRange(i, i+limit);
-			@SuppressWarnings("unchecked")
-			List<QuizQuestion> results = (List<QuizQuestion>) query.execute();
-			if (results.size()==0) break;
-			list.addAll(results);
-			i+=limit;
+		try {
+			Query query = pm.newQuery(QuizQuestion.class);
+			List<QuizQuestion> list = new ArrayList<QuizQuestion>();
+			int limit = 1000;
+			int i=0;
+			while (true) {
+				query.setRange(i, i+limit);
+				@SuppressWarnings("unchecked")
+				List<QuizQuestion> results = (List<QuizQuestion>) query.execute();
+				if (results.size()==0) break;
+				list.addAll(results);
+				i+=limit;
+			}
+			return list;
+		} finally {
+			pm.close();
 		}
-		pm.close();
-		
-		return list;
 	}
 	
 	public static ArrayList<String> getQuizQuestionsWithGold(String quizid) {
@@ -61,25 +63,25 @@ public class QuizQuestionRepository {
 		if (availableQuestions!=null) return availableQuestions;
 		
 		PersistenceManager	pm = PMF.getPM();
-		Query query = pm.newQuery(QuizQuestion.class);
-		query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
-		query.declareParameters("String quizParam, Boolean hasGoldParam");
+		try {
+			Query query = pm.newQuery(QuizQuestion.class);
+			query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
+			query.declareParameters("String quizParam, Boolean hasGoldParam");
+	
+			Map<String,Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quizid);
+			params.put("hasGoldParam", Boolean.TRUE);
+			
+			query.setResult("freebaseEntityId");
+			@SuppressWarnings("unchecked")
+			ArrayList<String> questions = new ArrayList<String>((List<String>) query.executeWithMap(params));
 
-		Map<String,Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
-		params.put("hasGoldParam", Boolean.TRUE);
-		
-		query.setResult("freebaseEntityId");
-		@SuppressWarnings("unchecked")
-		ArrayList<String> questions = new ArrayList<String>((List<String>) query.executeWithMap(params));
-		
-		pm.close();
-		
-		CachePMF.put(key, questions);
-		return questions;
+			CachePMF.put(key, questions);
+			return questions;
+		} finally {
+			pm.close();
+		}
 	}
-	
-	
 	
 	public static void storeQuizQuestion(QuizQuestion q) {
 		PMF.singleMakePersistent(q);
@@ -87,33 +89,36 @@ public class QuizQuestionRepository {
 	
 	public static void removeWithoutUpdates(String quizid, String mid) {
 		PersistenceManager pm = PMF.getPM();
-		QuizQuestion qq = pm.getObjectById(QuizQuestion.class,
-				QuizQuestion.generateKeyFromID(quizid, mid));
-		pm.deletePersistent(qq);
-		pm.close();
+		try {
+			QuizQuestion qq = pm.getObjectById(QuizQuestion.class,
+					QuizQuestion.generateKeyFromID(quizid, mid));
+			pm.deletePersistent(qq);
+		} finally {
+			pm.close();
+		}
 	}
 	
 	public static ArrayList<String> getGoldAnswers(String quizid, String mid) {
 		PersistenceManager pm = PMF.getPM();
-
-		Query q = pm.newQuery(GoldAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam");
-		q.declareParameters("String quizParam, String midParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
-		params.put("midParam", mid);
-		
-		q.setResult("answer");
-		@SuppressWarnings("unchecked")
-		List<String> qresult = (List<String>) q.executeWithMap(params);
-		ArrayList<String> result = new ArrayList<String>(qresult);
-		pm.close();
-
-		return result;
+		try {
+			Query q = pm.newQuery(GoldAnswer.class);
+			q.setFilter("relation == quizParam && mid == midParam");
+			q.declareParameters("String quizParam, String midParam");
+	
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quizid);
+			params.put("midParam", mid);
+			
+			q.setResult("answer");
+			@SuppressWarnings("unchecked")
+			List<String> qresult = (List<String>) q.executeWithMap(params);
+			ArrayList<String> result = new ArrayList<String>(qresult);
+			return result;
+		} finally {
+			pm.close();
+		}
 	}
 
-	
 	public static String getRandomGoldAnswer(String quizid, String mid) {
 		
 		String cachekey = "quizquestion-gold-"+quizid+mid;
@@ -152,43 +157,49 @@ public class QuizQuestionRepository {
 	public static List<String> getUserAnswers(String quizid, String mid) {
 
 		PersistenceManager pm = PMF.getPM();
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam");
-		q.declareParameters("String quizParam, String midParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
-		params.put("midParam", mid);
-		
-		q.setResult("useranswer");
-		
-		@SuppressWarnings("unchecked")
-		List<String> result = (List<String>) q.executeWithMap(params);
-		pm.close();
-		return result;
+		try {
+			Query q = pm.newQuery(UserAnswer.class);
+			q.setFilter("relation == quizParam && mid == midParam");
+			q.declareParameters("String quizParam, String midParam");
+	
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quizid);
+			params.put("midParam", mid);
+			
+			q.setResult("useranswer");
+			
+			@SuppressWarnings("unchecked")
+			List<String> result = (List<String>) q.executeWithMap(params);
+			return result;
+		} finally {
+			pm.close();
+		}
 	}
 	
 	protected static ArrayList<String> getSomeQuizGoldAnswers(String quizId, int number) {
 		Quiz quiz = QuizRepository.getQuiz(quizId); 
 		
 		PersistenceManager pm = PMF.getPM();
-		Query q = pm.newQuery(GoldAnswer.class);
-				
-		q.setFilter("relation == quizParam");
-		q.declareParameters("String quizParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizId);
-		
-		q.setResult("answer");
-		int fstIdx = (int) (Math.random() * Math.max(0, quiz.getGold() - number));
-		q.setRange(fstIdx, Math.min(quiz.getGold(), fstIdx + number));
-
-		@SuppressWarnings("unchecked")
-		ArrayList<String> result = new ArrayList<String>((List<String>) q.executeWithMap(params));
-		pm.close();
-		
-		return result;
+		try {
+			Query q = pm.newQuery(GoldAnswer.class);
+					
+			q.setFilter("relation == quizParam");
+			q.declareParameters("String quizParam");
+	
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quizId);
+			
+			q.setResult("answer");
+			int fstIdx = (int) (Math.random() * Math.max(0, quiz.getGold() - number));
+			q.setRange(fstIdx, Math.min(quiz.getGold(), fstIdx + number));
+	
+			@SuppressWarnings("unchecked")
+			ArrayList<String> result = new ArrayList<String>((List<String>) q.executeWithMap(params));
+			
+			return result;
+		} finally {
+			pm.close();
+		}
 	}
 	
 	public static Set<String> getIncorrectAnswers(String quizid, String mid, String name, int size) {
@@ -223,54 +234,65 @@ public class QuizQuestionRepository {
 	public static List<String> getSilverAnswers(String quizid, String mid, boolean highprobability, double prob_threshold) {
 
 		PersistenceManager pm = PMF.getPM();
-		Query q = pm.newQuery(SilverAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam && probability " + ((highprobability)? ">=" : "<=") + " " + prob_threshold);
-		q.declareParameters("String quizParam, String midParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
-		params.put("midParam", mid);
-		
-		q.setResult("answer");
-		
-		@SuppressWarnings("unchecked")
-		List<String> answers = (List<String>) q.executeWithMap(params);
-		
-		pm.close();
-		return answers;
+		try {
+			Query q = pm.newQuery(SilverAnswer.class);
+			q.setFilter("relation == quizParam && mid == midParam && probability " + ((highprobability)? ">=" : "<=") + " " + prob_threshold);
+			q.declareParameters("String quizParam, String midParam");
+	
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quizid);
+			params.put("midParam", mid);
+			
+			q.setResult("answer");
+			
+			@SuppressWarnings("unchecked")
+			List<String> answers = (List<String>) q.executeWithMap(params);
+			
+			return answers;
+		} finally {
+			pm.close();
+		}
 	}
 	
 	public static int getNumberOfUserAnswersExcludingIDK(String quiz, String mid) {
 		PersistenceManager	pm = PMF.getPM();
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam && action==submitParam");
-		q.declareParameters("String quizParam, String midParam, String submitParam");
-
-		Map<String,Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quiz);
-		params.put("midParam", mid);
-		params.put("submitParam", "Submit");
-  
-		@SuppressWarnings("unchecked")
-		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-		return results.size();
+		try {
+			Query q = pm.newQuery(UserAnswer.class);
+			q.setFilter("relation == quizParam && mid == midParam && action==submitParam");
+			q.declareParameters("String quizParam, String midParam, String submitParam");
+	
+			Map<String,Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quiz);
+			params.put("midParam", mid);
+			params.put("submitParam", "Submit");
+	  
+			@SuppressWarnings("unchecked")
+			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+			return results.size();
+		} finally {
+			pm.close();
+		}
 	}
 	
 	public static int getNumberOfCorrectUserAnswers(String quiz, String mid) {
 		PersistenceManager	pm = PMF.getPM();
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && mid == midParam && action==submitParam && isCorrect==correctParam");
-		q.declareParameters("String quizParam, String midParam, String submitParam, Boolean correctParam");
-
-		Map<String,Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quiz);
-		params.put("midParam", mid);
-		params.put("submitParam", "Submit");
-		params.put("correctParam", Boolean.TRUE);
-		
-		@SuppressWarnings("unchecked")
-		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-		return results.size();
+		try {
+			Query q = pm.newQuery(UserAnswer.class);
+			q.setFilter("relation == quizParam && mid == midParam && action==submitParam && isCorrect==correctParam");
+			q.declareParameters("String quizParam, String midParam, String submitParam, Boolean correctParam");
+	
+			Map<String,Object> params = new HashMap<String, Object>();
+			params.put("quizParam", quiz);
+			params.put("midParam", mid);
+			params.put("submitParam", "Submit");
+			params.put("correctParam", Boolean.TRUE);
+			
+			@SuppressWarnings("unchecked")
+			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+			return results.size();
+		} finally {
+			pm.close();
+		}
 	}
 
 	
