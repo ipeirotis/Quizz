@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.math3.special.Gamma;
 
-import us.quizz.repository.QuizQuestionRepository;
-
 
 public class Helper {
 
@@ -19,31 +17,6 @@ public class Helper {
 		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
 		return baseURL;
 	}
-
-	
-	/**
-	 * Returns the next question for the user. Checks all the previously given answers by the user
-	 * to avoid returning a question for which we already have an answer from the user. The parameter
-	 * justAddedMid ensures that we do not return the currently asked question, even if the relation
-	 * has not persisted in the datastore yet.
-	 * 
-	 * 
-	 * @param relation
-	 * @param userid
-	 * @param justAddedMid
-	 * @param pm
-	 * @return
-	 */
-	
-	public static String getNextQuizQuestion(String quiz) {
-		return getNextQuizQuestions(quiz, 1).iterator().next();
-	}
-
-	public static Set<String> getNextQuizQuestions(String quiz, int n) {
-		ArrayList<String> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
-		return selectRandomElements(list, n);
-	}
-
 
 	/**
 	 * Computing the entropy of an answer given by a user with quality q (quality=probability of correct)

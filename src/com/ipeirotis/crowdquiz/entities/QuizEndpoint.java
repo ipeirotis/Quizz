@@ -8,6 +8,7 @@ import javax.jdo.PersistenceManager;
 
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
+import us.quizz.repository.QuizesOperations;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -15,7 +16,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
-import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
@@ -101,8 +101,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 */
 	@ApiMethod(name = "getNextQuestionInstance", path = "quizquestioninstance/quiz/{quiz}")
 	public QuizQuestionInstance getNextQuestion(@Named("quiz") String quiz) {
-		String mid = Helper.getNextQuizQuestion(quiz);
-		return getQuestionInstance(quiz,mid);
+		return QuizesOperations.getNextQuizQuestionInstance(quiz);
 	}
 
 	/** This method generates a next question for the passed quiz
