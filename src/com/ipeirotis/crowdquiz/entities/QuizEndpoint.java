@@ -124,8 +124,8 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	
 	/** This method generates a questions for quiz
 	 */
-	@ApiMethod(name = "listQuizQuestionInstance", path = "quizquestions/{quiz}/next/{num}")
-	public List<QuizQuestionInstance> getNextQuestions(@Named("quiz") String quiz, @Named("num") @Nullable Integer num) {
+	@ApiMethod(name = "listNextQuestions", path = "quizquestions/{quiz}")
+	public List<QuizQuestionInstance> getNextQuestions(@Named("quiz") String quiz, @Nullable @Named("num") Integer num) {
 		if (num == null) num = 10;
 		return QuizesOperations.getNextQuizQuestionInstances(quiz, num);
 	}

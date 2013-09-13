@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
 import com.ipeirotis.crowdquiz.entities.QuizQuestionInstance;
 import com.ipeirotis.crowdquiz.utils.Helper;
@@ -27,10 +26,6 @@ public class QuizesOperations {
 
 	public static QuizQuestionInstance getNextQuizQuestionInstance(String quizId) {
 		return getNextQuizQuestionInstances(quizId, 1).get(0);
-	}
-	
-	public static List<QuizQuestionInstance> getNextQuizQuestionInstances(String quizId) {
-		return getNextQuizQuestionInstances(quizId, QUESTION_PACKAGE_SIZE);
 	}
 	
 	/**
