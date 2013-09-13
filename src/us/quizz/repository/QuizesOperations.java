@@ -13,7 +13,6 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 public class QuizesOperations {
 	
 	protected static int ANSWERS_COUNT = 4;
-	protected static int QUESTION_PACKAGE_SIZE = 10;
 
 	public static String getNextQuizQuestion(String quiz) {
 		return getNextQuizQuestions(quiz, 1).iterator().next();

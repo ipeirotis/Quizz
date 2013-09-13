@@ -28,6 +28,8 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 				packagePath = "crowdquiz.entities"))
 public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 
+	protected static int QUESTION_PACKAGE_SIZE = 10;
+
 	public QuizEndpoint() {
 		super(Quiz.class, "Quizz");
 	}
@@ -126,7 +128,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 */
 	@ApiMethod(name = "listNextQuestions", path = "quizquestions/{quiz}")
 	public List<QuizQuestionInstance> getNextQuestions(@Named("quiz") String quiz, @Nullable @Named("num") Integer num) {
-		if (num == null) num = 10;
+		if (num == null) num = QUESTION_PACKAGE_SIZE;
 		return QuizesOperations.getNextQuizQuestionInstances(quiz, num);
 	}
 
