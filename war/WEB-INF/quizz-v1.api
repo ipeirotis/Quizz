@@ -362,30 +362,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "quizz.getQuestionInstance" : {
-      "path" : "quizquestioninstance/quiz/{quiz}/mid/{mid}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuestionInstance",
-      "request" : {
-        "parameters" : {
-          "quiz" : {
-            "type" : "string",
-            "required" : true
-          },
-          "mid" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "quizz.removeQuizPerformance" : {
       "path" : "quizperformance/{quizid}/{userid}",
       "httpMethod" : "DELETE",
@@ -911,11 +887,6 @@
       "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz" : {
         "response" : {
           "$ref" : "CollectionResponse_Quiz"
-        }
-      },
-      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuestionInstance" : {
-        "response" : {
-          "$ref" : "QuizQuestionInstance"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {

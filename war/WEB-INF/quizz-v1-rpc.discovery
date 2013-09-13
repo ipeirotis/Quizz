@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/wKYz26UqJNIT33PZgkD5YkYPyug\"",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/NuKQhx-Qi9U-BggWfAGP2OdWJmA\"",
  "discoveryVersion": "v1",
  "id": "quizz:v1",
  "name": "quizz",
@@ -405,27 +405,6 @@
    },
    "parameterOrder": [
     "quiz"
-   ],
-   "returns": {
-    "$ref": "QuizQuestionInstance"
-   }
-  },
-  "quizz.getQuestionInstance": {
-   "id": "quizz.getQuestionInstance",
-   "allowGet": true,
-   "parameters": {
-    "mid": {
-     "type": "string",
-     "required": true
-    },
-    "quiz": {
-     "type": "string",
-     "required": true
-    }
-   },
-   "parameterOrder": [
-    "quiz",
-    "mid"
    ],
    "returns": {
     "$ref": "QuizQuestionInstance"

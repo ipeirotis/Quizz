@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.QuizesOperations;
 
@@ -104,24 +103,6 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	@ApiMethod(name = "getNextQuestionInstance", path = "quizquestioninstance/quiz/{quiz}")
 	public QuizQuestionInstance getNextQuestion(@Named("quiz") String quiz) {
 		return QuizesOperations.getNextQuizQuestionInstance(quiz);
-	}
-
-	/** This method generates a next question for the passed quiz
-	 *
-	 * @param quiz the primary key of the quiz
-	 * @return The entity with primary key id.
-	 */
-	@ApiMethod(name = "getQuestionInstance", path = "quizquestioninstance/quiz/{quiz}/mid/{mid}")
-	public QuizQuestionInstance getQuestionInstance(@Named("quiz") String quiz, @Named("mid") String mid) {
-		String questiontext = QuizRepository.getQuiz(quiz).getQuestionText();
-		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(quiz, mid);
-		QuizQuestionInstance result = QuizQuestionRepository.getQuizQuestionInstanceWithGold(quiz,
-				mid, question.getName(), 4);
-		result.setMidname(question.getName());
-		result.setQuizquestion(questiontext);
-		result.setCorrectanswers(question.getNumberOfCorrentUserAnswers());
-		result.setTotalanswers(question.getNumberOfUserAnswers());
-		return result;
 	}
 	
 	/** This method generates a questions for quiz
