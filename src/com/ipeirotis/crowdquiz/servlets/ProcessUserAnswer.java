@@ -1,7 +1,6 @@
 package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServlet;
@@ -19,7 +18,6 @@ import com.google.common.base.Strings;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
-import com.ipeirotis.crowdquiz.utils.Helper;
 
 @SuppressWarnings("serial")
 public class ProcessUserAnswer extends HttpServlet {
@@ -33,7 +31,6 @@ public class ProcessUserAnswer extends HttpServlet {
 				"gclid", "relation", "mid", "gold", "correctanswers", "totalanswers");
 
 		User user = User.getUseridFromCookie(req, resp);
-		String gclid = req.getParameter("gclid");
 		String relation = req.getParameter("relation");
 		String mid = req.getParameter("mid");
 		String action, useranswer=null;
@@ -67,18 +64,6 @@ public class ProcessUserAnswer extends HttpServlet {
 		quickUpdateQuizPerformance(user, relation, isCorrect, action);
 		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser, referer, timestamp, isCorrect);
 		updateQuizPerformance(user, relation);
-
-		String url = Helper.getBaseURL(req)
-				+ "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") 
-				+ "&prior=" + URLEncoder.encode(mid, "UTF-8");
-		
-		if (gclid != null) {
-			url += "&gclid="+gclid;
-		}
-
-		resp.sendRedirect(url);
-
-		return;
 
 	}
 
