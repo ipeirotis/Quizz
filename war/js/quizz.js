@@ -139,7 +139,7 @@ function shuffle(array) {
 		$('#addUserEntry').hide();
 		$('#questionsPackProgress').hide();
 		$('#form').html("Thank you for completing quizz. " +
-		 "Refresh page to start egain. Your statistics will soon be updated");
+		 "Refresh page to start egain. Your statistics are now being updated ...");
 	}
 
 
