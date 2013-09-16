@@ -26,7 +26,7 @@ public class StartQuiz extends HttpServlet {
 		String userid = user.getUserid();
 		UserReferralRepository.createAndStoreUserReferal(req, userid);
 
-		String nextURL = Helper.getBaseURL(req) + "/multChoice.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") ;
+		String nextURL = Helper.getBaseURL(req) + "/multiChoiceMulti.jsp?relation=" + URLEncoder.encode(relation, "UTF-8") ;
 		if (gclid != null) {
 			nextURL += "&gclid="+gclid;
 		}

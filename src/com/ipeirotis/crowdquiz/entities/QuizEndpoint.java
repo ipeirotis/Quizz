@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
+import us.quizz.repository.QuizesOperations;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -15,7 +15,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
-import com.ipeirotis.crowdquiz.utils.Helper;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
@@ -27,6 +26,8 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 				ownerName = "www.quizz.us", 
 				packagePath = "crowdquiz.entities"))
 public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
+
+	protected static int QUESTION_PACKAGE_SIZE = 10;
 
 	public QuizEndpoint() {
 		super(Quiz.class, "Quizz");
@@ -101,26 +102,15 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 */
 	@ApiMethod(name = "getNextQuestionInstance", path = "quizquestioninstance/quiz/{quiz}")
 	public QuizQuestionInstance getNextQuestion(@Named("quiz") String quiz) {
-		String mid = Helper.getNextQuizQuestion(quiz);
-		return getQuestionInstance(quiz,mid);
+		return QuizesOperations.getNextQuizQuestionInstance(quiz);
 	}
-
-	/** This method generates a next question for the passed quiz
-	 *
-	 * @param quiz the primary key of the quiz
-	 * @return The entity with primary key id.
+	
+	/** This method generates a questions for quiz
 	 */
-	@ApiMethod(name = "getQuestionInstance", path = "quizquestioninstance/quiz/{quiz}/mid/{mid}")
-	public QuizQuestionInstance getQuestionInstance(@Named("quiz") String quiz, @Named("mid") String mid) {
-		String questiontext = QuizRepository.getQuiz(quiz).getQuestionText();
-		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(quiz, mid);
-		QuizQuestionInstance result = QuizQuestionRepository.getQuizQuestionInstanceWithGold(quiz,
-				mid, question.getName(), 4);
-		result.setMidname(question.getName());
-		result.setQuizquestion(questiontext);
-		result.setCorrectanswers(question.getNumberOfCorrentUserAnswers());
-		result.setTotalanswers(question.getNumberOfUserAnswers());
-		return result;
+	@ApiMethod(name = "listNextQuestions", path = "quizquestions/{quiz}")
+	public List<QuizQuestionInstance> getNextQuestions(@Named("quiz") String quiz, @Nullable @Named("num") Integer num) {
+		if (num == null) num = QUESTION_PACKAGE_SIZE;
+		return QuizesOperations.getNextQuizQuestionInstances(quiz, num);
 	}
 
 

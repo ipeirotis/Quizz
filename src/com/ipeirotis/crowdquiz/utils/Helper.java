@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.math3.special.Gamma;
 
-import us.quizz.repository.QuizQuestionRepository;
-
 
 public class Helper {
 
@@ -19,33 +17,6 @@ public class Helper {
 		String baseURL = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
 		return baseURL;
 	}
-
-	
-	/**
-	 * Returns the next question for the user. Checks all the previously given answers by the user
-	 * to avoid returning a question for which we already have an answer from the user. The parameter
-	 * justAddedMid ensures that we do not return the currently asked question, even if the relation
-	 * has not persisted in the datastore yet.
-	 * 
-	 * 
-	 * @param relation
-	 * @param userid
-	 * @param justAddedMid
-	 * @param pm
-	 * @return
-	 */
-	
-	public static String getNextQuizQuestion(String quiz) {
-		ArrayList<String> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
-
-		int n = list.size();
-		if (n==0) return null;
-		
-		Random r = new Random();
-		String mid = list.get(r.nextInt(n));
-		return mid;
-	}
-
 
 	/**
 	 * Computing the entropy of an answer given by a user with quality q (quality=probability of correct)
@@ -182,8 +153,8 @@ public class Helper {
 	public static <T> Set<T> selectRandomElements(ArrayList<T> elements, int n){
 		Set<T> randomEls = new HashSet<T>(n);
 		int size = elements.size();
+		Random r = new Random();
 		while (randomEls.size() < n && size > 0) {
-			Random r = new Random();
 			int rndIdx = r.nextInt(size);
 			T randElement = elements.get(rndIdx);
 			randomEls.add(randElement);

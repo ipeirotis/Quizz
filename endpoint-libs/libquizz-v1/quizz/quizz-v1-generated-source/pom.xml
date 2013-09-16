@@ -8,8 +8,8 @@
 
   <groupId>com.google.apis</groupId>
   <artifactId>google-api-services-quizz</artifactId>
-  <version>v1-rev20130816063807-1.15.0-rc</version>
-  <name> v1 (revision 20130816063807)</name>
+  <version>v1-rev20130913144258-1.16.0-rc</version>
+  <name>quizz v1 (revision 20130913144258)</name>
   <packaging>jar</packaging>
 
   <inceptionYear>2011</inceptionYear>
@@ -53,16 +53,16 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.7</version>
         <configuration>
-          <doctitle> ${project.version}</doctitle>
-          <windowtitle> ${project.version}</windowtitle>
+          <doctitle>quizz ${project.version}</doctitle>
+          <windowtitle>quizz ${project.version}</windowtitle>
           <links>
             <link>http://docs.oracle.com/javase/7/docs/api</link>
           
-            <link>http://javadoc.google-http-java-client.googlecode.com/hg/1.15.0-rc</link>
+            <link>http://javadoc.google-http-java-client.googlecode.com/hg/1.16.0-rc</link>
           
-            <link>http://javadoc.google-oauth-java-client.googlecode.com/hg/1.15.0-rc</link>
+            <link>http://javadoc.google-oauth-java-client.googlecode.com/hg/1.16.0-rc</link>
           
-            <link>http://javadoc.google-api-java-client.googlecode.com/hg/1.15.0-rc</link>
+            <link>http://javadoc.google-api-java-client.googlecode.com/hg/1.16.0-rc</link>
           </links>
         </configuration>
       </plugin>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
-      <version>1.15.0-rc</version>
+      <version>1.16.0-rc</version>
     </dependency>
   </dependencies>
 
