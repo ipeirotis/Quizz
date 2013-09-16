@@ -28,6 +28,9 @@ public class ProcessUserAnswer extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("application/json");
+		
+		Utils.ensureParameters(req,
+				"gclid", "relation", "mid", "gold", "correctanswers", "totalanswers");
 
 		User user = User.getUseridFromCookie(req, resp);
 		String gclid = req.getParameter("gclid");

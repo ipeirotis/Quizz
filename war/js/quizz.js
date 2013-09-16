@@ -1,5 +1,32 @@
+
+NUM_QUESTIONS = 10;
+CURRENT_QUIZZ = -1;
+QUIZZ_QUESTIONS = new Array();
+
+// From SO: http://stackoverflow.com/a/6274398/1585082
+function shuffle(array) {
+    var counter = array.length, temp, index;
+
+    // While there are elements in the array
+    while (counter--) {
+        // Pick a random index
+        index = (Math.random() * (counter + 1)) | 0;
+
+        // And swap the last element with it
+        temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
+	function getBaseURL() {
+		return 'https://crowd-power.appspot.com/'
+	}
+
 	function getAPIURL() {
-		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/'
+		return getBaseURL() + '_ah/api/quizz/v1/';
 	}
 
 	function getURLParameterByName(name) {
@@ -57,7 +84,6 @@
 
 	}
 
-
 	function getNextQuizQuestion(quiz) {
 		var url = getAPIURL() + 'quizquestioninstance';
 		url += '/quiz/' + encodeURIComponent(quiz);
@@ -66,8 +92,64 @@
 		};
 		return $.getJSON(url, params)
 			.done(function(question) { populateQuestion(question); });
+	}
+
+	function getNextQuizQuestions(quiz, numQuestions) {
+		CURRENT_QUIZZ = -1;
+		numQuestions = numQuestions || NUM_QUESTIONS;
+		var url = getAPIURL() + 'quizquestions/';
+		url += encodeURIComponent(quiz);
+		var params = {
+			'num' : numQuestions,
+		};
+		return $.getJSON(url, params)
+			.done(initializeQuizzWithQuestions);
+	}
+
+	function initializeQuizzWithQuestions(questions) {
+		QUIZZ_QUESTIONS = questions.items;
+		presentNextQuestion();
+	}
+
+	function presentNextQuestion() {
+		CURRENT_QUIZZ += 1
+		$('#answers').html("")
+		$('#questionsPackProgress').html("Question " + (CURRENT_QUIZZ + 1) +
+			" out of " + QUIZZ_QUESTIONS.length);
+		populateQuestion(QUIZZ_QUESTIONS[CURRENT_QUIZZ])
+	}
+
+	function nextQuestion() {
+		if (CURRENT_QUIZZ === QUIZZ_QUESTIONS.length - 1) {
+			endOfQuizzPack()
+		} else {
+			presentNextQuestion();
+		}
+		getUserQuizPerformance(getURLParameterByName('relation'), getUsername());
+		return false;
+	}
+
+	function sendSingleQuestionResults(formData) {
+		var url = getBaseURL() + 'processUserAnswer'
+		return $.post(url, formData)
+			.fail( function() { alert("Sending your answer failed ..."); });
+	}
+
+	function endOfQuizzPack () {
+		$('#addUserEntry').hide();
+		$('#questionsPackProgress').hide();
+		$('#form').html("Thank you for completing quizz. " +
+		 "Refresh page to start egain. Your statistics will soon be updated");
+	}
 
 
+	function formNextQuestion (nname, vvalue){
+		return function () {
+			var formData = $('#addUserEntry').serializeArray();
+			formData.push({name: nname, value: vvalue});
+			sendSingleQuestionResults(formData);
+			return nextQuestion();
+		}
 	}
 
 	function populateQuestion(question) {
@@ -81,22 +163,27 @@
 		$('#totalanswers').val(question.totalanswers);
 
 		var answers = $("#answers");
+		shuffle(question.answers);
 		$.each(question.answers, function(index, value) {
-			answers.append($('<input id="useranswer'+index+'" name="useranswer'+index+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
+			var uaid = "useranswer" + index;
+			var huaid = '#' + uaid;
+			answers.append($('<input id="'+uaid+'" name="'+uaid+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
 			if (value == question.correct) {
-				$('#useranswer'+index).mousedown(function(e){
+				$(huaid).mousedown(function(e){
 					markConversion('multiple-choice-correct', 1);
 				});
 			} else {
-				$('#useranswer'+index).mousedown(function(e){
+				$(huaid).mousedown(function(e){
 					markConversion('multiple-choice-incorrect', 0);
 				});
 			}
+			$(huaid).click(formNextQuestion (uaid, uaid));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
     	$("#idk_button").mousedown(function(){
     		markConversion("multiple-choice-idk", 0);
     	});
+    	$('#idk_button').click(formNextQuestion ("idk", "I don\'t know"));
 	}
 
 	function getQuizQuestionInstance(quiz, mid) {
