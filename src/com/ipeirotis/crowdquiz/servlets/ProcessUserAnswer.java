@@ -43,7 +43,10 @@ public class ProcessUserAnswer extends HttpServlet {
 			int limit=4;
 			for (int i=0; i<limit; i++) {
 				useranswer = req.getParameter("useranswer"+i);
-				if (useranswer!=null) break;
+				if (useranswer != null) {
+					useranswer = useranswer.trim();
+					break;
+				}
 			}
 		} else {
 			action = "I don't know";

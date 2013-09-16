@@ -177,7 +177,7 @@ function shuffle(array) {
 					markConversion('multiple-choice-incorrect', 0);
 				});
 			}
-			$(huaid).click(formNextQuestion (uaid, uaid));
+			$(huaid).click(formNextQuestion (uaid, value));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
     	$("#idk_button").mousedown(function(){
