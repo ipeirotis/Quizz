@@ -50,23 +50,38 @@ public class QuizesOperations {
 		Iterator<String> choosenWrongAnswers =
 				Helper.selectRandomElements(wrongAnswers, n * (ANSWERS_COUNT - 1)).iterator();
 		List<QuizQuestionInstance> questions = new ArrayList<QuizQuestionInstance>(n);
+		String questionText = QuizRepository.getQuiz(quizId).getQuestionText();
 		for (String quizQuestionWithGold: quizQuestionsWithGold){
 			questions.add(
-					makeQuestionInstance(quizId, quizQuestionWithGold, choosenWrongAnswers));
+					makeQuestionInstance(questionText, quizId, quizQuestionWithGold, choosenWrongAnswers));
 		}
 		return questions;
 	}
 	
-	private static QuizQuestionInstance makeQuestionInstance(String quizId, String questionMid, Iterator<String> wrongAnswers) {
-		// TODO
-		String questiontext = QuizRepository.getQuiz(quizId).getQuestionText();
+	private static QuizQuestionInstance makeQuestionInstance(String questionText, String quizId,
+					String questionMid, Iterator<String> wrongAnswers) {
 		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(quizId, questionMid);
-		QuizQuestionInstance result = QuizQuestionRepository.getQuizQuestionInstanceWithGold(quizId,
-				questionMid, question.getName(), 4);
+		
+		String goldAnswer = QuizQuestionRepository.getRandomGoldAnswer(quizId, questionMid);
+		Set<String> choices = generateChoices(quizId, questionMid, goldAnswer, wrongAnswers);
+		
+		QuizQuestionInstance result = new QuizQuestionInstance(quizId, questionMid, choices,
+					goldAnswer, true);
+		
 		result.setMidname(question.getName());
-		result.setQuizquestion(questiontext);
+		result.setQuizquestion(questionText);
 		result.setCorrectanswers(question.getNumberOfCorrentUserAnswers());
 		result.setTotalanswers(question.getNumberOfUserAnswers());
 		return result;
+	}
+	
+	protected static Set<String> generateChoices(String quizId, String questionMid, String goldAnswer,
+					Iterator<String> wrongAnswers){
+		Set<String> choices = new HashSet<String>();
+		for (int i=0;i<ANSWERS_COUNT - 1;i++) {
+			choices.add(wrongAnswers.next());
+		}
+		choices.add(goldAnswer);
+		return choices;
 	}
 }
