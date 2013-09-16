@@ -91,7 +91,7 @@ function shuffle(array) {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
 		return $.getJSON(url, params)
-			.done(function(question) { populateQuestion(question); });
+			.done(populateQuestion);
 	}
 
 	function getNextQuizQuestions(quiz, numQuestions) {
@@ -205,7 +205,7 @@ function shuffle(array) {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
 		$.getJSON(url, params)
-			.done(function(feedback) { displayFeedback(feedback); });
+			.done(displayFeedback);
 
 	}
 
@@ -215,7 +215,7 @@ function shuffle(array) {
 			'fields' : 'treatments',
 		};
 		$.getJSON(url, params)
-			.done(function(userdata) { applyTreatments(userdata); });
+			.done(applyTreatments);
 	}
 
 
@@ -227,7 +227,7 @@ function shuffle(array) {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
 		return $.getJSON(url, params)
-			.done(function(performance) { displayPerformanceScores(performance); });
+			.done(displayPerformanceScores);
 
 	}
 
