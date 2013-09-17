@@ -32,15 +32,15 @@ public class QuizPerformanceRepository {
 		return qp;
 	} 
 	
-	public static List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
+	protected static List<QuizPerformance> getQuizPerformanceFilterOnField(String field, String value) {
+		String valueName = field + "Param";
 		PersistenceManager pm = PMF.getPM();
-
 		Query q = pm.newQuery(QuizPerformance.class);
-		q.setFilter("quiz == quizParam");
-		q.declareParameters("String quizParam");
+		q.setFilter(field + " == " + valueName);
+		q.declareParameters("String " + valueName);
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
+		params.put(valueName, value);
 
 		@SuppressWarnings("unchecked")
 		List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
@@ -49,21 +49,12 @@ public class QuizPerformanceRepository {
 		return results;
 	}
 	
+	public static List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
+		return getQuizPerformanceFilterOnField("quiz", quizid);
+	}
+	
 	public static List<QuizPerformance> getQuizPerformancesByUser(String userid) {
-		PersistenceManager pm = PMF.getPM();
-
-		Query q = pm.newQuery(QuizPerformance.class);
-		q.setFilter("userid == useridParam");
-		q.declareParameters("String useridParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("useridParam", userid);
-
-		@SuppressWarnings("unchecked")
-		List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
-		pm.close();
-		
-		return results;
+		return getQuizPerformanceFilterOnField("userid", userid);
 	}
 	
 	public static List<QuizPerformance> getQuizPerformances() {
