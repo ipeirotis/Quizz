@@ -25,8 +25,6 @@ public class ProcessUserAnswer extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		resp.setContentType("application/json");
-		
 		Utils.ensureParameters(req,
 				"relation", "mid", "gold", "correctanswers", "totalanswers");
 
