@@ -127,9 +127,6 @@ function shuffle(array) {
 	}
 
 	function prepareNextQuestion() {
-		if (CURRENT_QUIZZ != -1) {
-			getFeedbackForPrevious(QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid);
-		}
 		if (CURRENT_QUIZZ === QUIZZ_QUESTIONS.length - 1) {
 			endOfQuizzPack();
 		} else {
@@ -158,7 +155,9 @@ function shuffle(array) {
 		return function () {
 			var formData = $('#addUserEntry').serializeArray();
 			formData.push({name: nname, value: vvalue});
-			sendSingleQuestionResults(formData);
+			sendSingleQuestionResults(formData).done(function () {
+					getFeedbackForPrevious(QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid);
+			});
 			return prepareNextQuestion();
 		}
 	}
