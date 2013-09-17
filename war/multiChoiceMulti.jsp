@@ -19,6 +19,10 @@
         </div>
 
         <div id="form" class="well" style="text-align: center;">
+            <div id="loadingScreen" style="display: none;">
+                <h3>Loading questions</h3>
+                <img src="assets/round_loader.gif" style="padding-top: 30px; margin-bottom: 30px;"/>
+            </div>
             <form id="addUserEntry">
                 <fieldset>
                     <div class="lead">
@@ -41,36 +45,24 @@
     <script>
     $(document).ready(function() {
 
-
         var user = getUsername();
         var quiz = getURLParameterByName('relation');
-        var mid = getURLParameterByName('mid');
-        var prior = getURLParameterByName('prior');
         var gclid = getURLParameterByName('gclid');
         $('#gclid').val(gclid);
 
-        getNextQuizQuestions(quiz);
-
-        if (prior) {
-            var feedbackdiv = $('#feedback');
-            feedbackdiv.append($('<div id="showMessage"></div>'));
-            feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));
-            feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
-            getFeedbackForPriorAnswer(user, quiz, prior);
-        }
-
         hideDivs();
+        makeLoadingScreen();
 
-        getUserTreatments(user);
-        getUserQuizPerformance(quiz, user);
-
-        if (prior) {
-            $('#feedback').show();
-            $('#feedback').delay(5000).fadeOut(600);
-        }
-        $('#scores').show();
-        $('#form').show();
-
+        $.when(
+            getNextQuizQuestions(quiz),
+            getUserTreatments(user),
+            getUserQuizPerformance(quiz, user)
+        ).done( function (questions, userTreatments, userQuizPerformance) {
+            initializeQuizzWithQuestions(fst(questions));
+            applyTreatments(fst(userTreatments));
+            displayPerformanceScores(fst(userQuizPerformance));
+            disableLoadingScreen();
+        });
 
     });
     </script>

@@ -3,6 +3,10 @@ NUM_QUESTIONS = 10;
 CURRENT_QUIZZ = -1;
 QUIZZ_QUESTIONS = new Array();
 
+function fst(array) {
+	return array[0];
+}
+
 // From SO: http://stackoverflow.com/a/6274398/1585082
 function shuffle(array) {
     var counter = array.length, temp, index;
@@ -106,8 +110,7 @@ function shuffle(array) {
 		var params = {
 			'num' : numQuestions,
 		};
-		return $.getJSON(url, params)
-			.done(initializeQuizzWithQuestions);
+		return $.getJSON(url, params);
 	}
 
 	function initializeQuizzWithQuestions(questions) {
@@ -120,10 +123,13 @@ function shuffle(array) {
 		$('#answers').html("")
 		$('#questionsPackProgress').html("Question " + (CURRENT_QUIZZ + 1) +
 			" out of " + QUIZZ_QUESTIONS.length);
-		populateQuestion(QUIZZ_QUESTIONS[CURRENT_QUIZZ])
+		populateQuestion(QUIZZ_QUESTIONS[CURRENT_QUIZZ]);
 	}
 
 	function nextQuestion() {
+		if (CURRENT_QUIZZ != -1) {
+			getFeedbackForPrevious(QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid);
+		}
 		if (CURRENT_QUIZZ === QUIZZ_QUESTIONS.length - 1) {
 			endOfQuizzPack();
 		} else {
@@ -147,7 +153,6 @@ function shuffle(array) {
 		$('#form').html("Thank you for completing quizz. " +
 		 "Refresh page to start egain. Your statistics are now being updated ...");
 	}
-
 
 	function formNextQuestion (nname, vvalue){
 		return function () {
@@ -210,9 +215,7 @@ function shuffle(array) {
 		var params = {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
-		$.getJSON(url, params)
-			.done(displayFeedback);
-
+		return $.getJSON(url, params);
 	}
 
 	function getUserTreatments(user) {
@@ -220,8 +223,7 @@ function shuffle(array) {
 		var params = {
 			'fields' : 'treatments',
 		};
-		$.getJSON(url, params)
-			.done(applyTreatments);
+		return $.getJSON(url, params);
 	}
 
 
@@ -232,11 +234,8 @@ function shuffle(array) {
 		var params = {
 			//'fields' : 'items(quiz, totalanswers)',
 		};
-		return $.getJSON(url, params)
-			.done(displayPerformanceScores);
-
+		return $.getJSON(url, params);
 	}
-
 
 	function toPercentage(fValue) {
 		return (100. * fValue).toFixed(0) + "%"
@@ -301,3 +300,38 @@ function shuffle(array) {
 			  'eventValue': value,
 			  } );
     }
+
+
+function makeLoadingScreen() {
+	$('#scores').hide();
+	$("#addUserEntry").hide();
+	$("#questionsPackProgress").hide();
+	$("#loadingScreen").show();
+}
+
+function disableLoadingScreen() {
+	$("#loadingScreen").hide();
+	$('#scores').show();
+	$("#questionsPackProgress").show();
+	$("#addUserEntry").show();
+}
+
+function getFeedbackForPrevious(previous) {
+    var feedbackdiv = $('#feedback');
+    feedbackdiv.empty();
+    feedbackdiv.hide();
+    feedbackdiv.append($('<div id="showMessage"></div>'));
+    feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));
+    feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
+
+    var user = getUsername();
+    var quiz = getURLParameterByName('relation');
+
+    $.when(
+    	getFeedbackForPriorAnswer(user, quiz, previous)
+    ).done( function (feedback) {
+    	displayFeedback(fst(feedback));
+	    $('#feedback').show();
+	    $('#feedback').delay(5000).fadeOut(600);
+    });
+}
