@@ -26,7 +26,7 @@ function shuffle(array) {
 	}
 
 	function getWebURL() {
-		return 'http://quizz.us/';
+		return 'http://www.quizz.us/';
 	}
 
 	function getAPIURL() {
