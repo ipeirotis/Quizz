@@ -126,7 +126,7 @@ function shuffle(array) {
 		populateQuestion(QUIZZ_QUESTIONS[CURRENT_QUIZZ]);
 	}
 
-	function nextQuestion() {
+	function prepareNextQuestion() {
 		if (CURRENT_QUIZZ != -1) {
 			getFeedbackForPrevious(QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid);
 		}
@@ -154,12 +154,12 @@ function shuffle(array) {
 		 "Refresh page to start egain. Your statistics are now being updated ...");
 	}
 
-	function formNextQuestion (nname, vvalue){
+	function answeredQuestion (nname, vvalue){
 		return function () {
 			var formData = $('#addUserEntry').serializeArray();
 			formData.push({name: nname, value: vvalue});
 			sendSingleQuestionResults(formData);
-			return nextQuestion();
+			return prepareNextQuestion();
 		}
 	}
 
@@ -188,13 +188,13 @@ function shuffle(array) {
 					markConversion('multiple-choice-incorrect', 0);
 				});
 			}
-			$(huaid).click(formNextQuestion (uaid, value));
+			$(huaid).click(answeredQuestion (uaid, value));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
     	$("#idk_button").mousedown(function(){
     		markConversion("multiple-choice-idk", 0);
     	});
-    	$('#idk_button').click(formNextQuestion ("idk", "I don\'t know"));
+    	$('#idk_button').click(answeredQuestion ("idk", "I don\'t know"));
 	}
 
 	function getQuizQuestionInstance(quiz, mid) {
