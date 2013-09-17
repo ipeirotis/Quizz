@@ -25,6 +25,10 @@ function shuffle(array) {
 		return 'https://crowd-power.appspot.com/'
 	}
 
+	function getWebURL() {
+		return 'http://quizz.us/';
+	}
+
 	function getAPIURL() {
 		return getBaseURL() + '_ah/api/quizz/v1/';
 	}
@@ -130,7 +134,7 @@ function shuffle(array) {
 	}
 
 	function sendSingleQuestionResults(formData) {
-		var url = getBaseURL() + 'processUserAnswer'
+		var url = getWebURL() + 'processUserAnswer'
 		return $.post(url, formData)
 			.fail( function() { alert("Sending your answer failed ..."); });
 	}

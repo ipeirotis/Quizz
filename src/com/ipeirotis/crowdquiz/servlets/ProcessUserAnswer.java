@@ -28,7 +28,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		resp.setContentType("application/json");
 		
 		Utils.ensureParameters(req,
-				"gclid", "relation", "mid", "gold", "correctanswers", "totalanswers");
+				"relation", "mid", "gold", "correctanswers", "totalanswers");
 
 		User user = User.getUseridFromCookie(req, resp);
 		String relation = req.getParameter("relation");
