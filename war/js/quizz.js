@@ -116,7 +116,7 @@ function shuffle(array) {
 	}
 
 	function presentNextQuestion() {
-		CURRENT_QUIZZ += 1
+		CURRENT_QUIZZ += 1;
 		$('#answers').html("")
 		$('#questionsPackProgress').html("Question " + (CURRENT_QUIZZ + 1) +
 			" out of " + QUIZZ_QUESTIONS.length);
@@ -125,7 +125,7 @@ function shuffle(array) {
 
 	function nextQuestion() {
 		if (CURRENT_QUIZZ === QUIZZ_QUESTIONS.length - 1) {
-			endOfQuizzPack()
+			endOfQuizzPack();
 		} else {
 			presentNextQuestion();
 		}
@@ -134,9 +134,11 @@ function shuffle(array) {
 	}
 
 	function sendSingleQuestionResults(formData) {
-		var url = getWebURL() + 'processUserAnswer'
+		var url = getWebURL() + 'processUserAnswer';
 		return $.post(url, formData)
-			.fail( function() { alert("Sending your answer failed ..."); });
+			.fail( function(jqXHR, textStatus, errorThrown) {
+				alert("Sending your answer failed: " + textStatus);
+			});
 	}
 
 	function endOfQuizzPack () {
