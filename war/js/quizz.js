@@ -155,8 +155,9 @@ function shuffle(array) {
 		return function () {
 			var formData = $('#addUserEntry').serializeArray();
 			formData.push({name: nname, value: vvalue});
+			var quiz = QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid;
 			sendSingleQuestionResults(formData).done(function () {
-					getFeedbackForPrevious(QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid);
+					getFeedbackForPrevious(quiz);
 			});
 			return prepareNextQuestion();
 		}
