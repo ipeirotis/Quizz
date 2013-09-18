@@ -41,14 +41,8 @@ public class UserAnswerRepository {
 		UserAnswer answer = CachePMF.get(key, UserAnswer.class);
 		if (answer!=null) return answer;
 		
-		PersistenceManager pm = PMF.getPM();
-		try {
-			answer = pm.getObjectById(UserAnswer.class, UserAnswer.generateKeyFromID(userid, quiz, mid));
-		} catch (Exception e) {
-			;
-		} finally {
-			pm.close();
-		}
+		answer = PMF.singleGetObjectById(UserAnswer.class,
+				UserAnswer.generateKeyFromID(userid, quiz, mid));
 		
 		if (answer!=null) CachePMF.put(key, answer);
 		
@@ -63,14 +57,8 @@ public class UserAnswerRepository {
 		UserAnswerFeedback answer = CachePMF.get(key, UserAnswerFeedback.class);
 		if (answer!=null) return answer;
 		
-		PersistenceManager pm = PMF.getPM();
-		try {
-			answer = pm.getObjectById(UserAnswerFeedback.class, UserAnswerFeedback.generateKeyFromID(userid, quiz, mid));
-		} catch (Exception e) {
-			;
-		} finally {
-			pm.close();
-		}
+		answer = PMF.singleGetObjectById(UserAnswerFeedback.class,
+				UserAnswerFeedback.generateKeyFromID(userid, quiz, mid));
 		
 		if (answer!=null) CachePMF.put(key, answer);
 		
