@@ -38,31 +38,15 @@ public class UserAnswerRepository {
 	public static UserAnswer getUserAnswer(String quiz, String mid, String userid) {
 
 		String key = "useranswer_"+quiz+mid+userid;
-		UserAnswer answer = CachePMF.get(key, UserAnswer.class);
-		if (answer!=null) return answer;
-		
-		answer = PMF.singleGetObjectById(UserAnswer.class,
+		return PMF.singleGetObjectByIdWithCaching(key, UserAnswer.class,
 				UserAnswer.generateKeyFromID(userid, quiz, mid));
-		
-		if (answer!=null) CachePMF.put(key, answer);
-		
-		return answer;
-
-		
 	}
 	
 	public static UserAnswerFeedback getUserAnswerFeedback(String quiz, String mid, String userid) {
 
 		String key = "useranswerfeedback_"+quiz+mid+userid;
-		UserAnswerFeedback answer = CachePMF.get(key, UserAnswerFeedback.class);
-		if (answer!=null) return answer;
-		
-		answer = PMF.singleGetObjectById(UserAnswerFeedback.class,
+		return PMF.singleGetObjectByIdWithCaching(key, UserAnswerFeedback.class,
 				UserAnswerFeedback.generateKeyFromID(userid, quiz, mid));
-		
-		if (answer!=null) CachePMF.put(key, answer);
-		
-		return answer;
 	}
 
 	public static void storeUserAnswer(UserAnswer ua) {
@@ -74,5 +58,4 @@ public class UserAnswerRepository {
 		CachePMF.put(key, uaf);
 		PMF.singleMakePersistent(uaf);
 	}
-	
 }

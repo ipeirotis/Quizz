@@ -5,6 +5,8 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
+import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
+
 import java.util.logging.Logger;
 
 public final class PMF {
@@ -47,5 +49,13 @@ public final class PMF {
 		} finally {
 			pm.close();
 		}
+	}
+	
+	public static <T> T singleGetObjectByIdWithCaching(String cacheKey, Class<T> cls, Object key){
+		T item = CachePMF.get(cacheKey, cls);
+		if (item != null) return item;
+		item = singleGetObjectById(cls, key);
+		if (item != null) CachePMF.put(cacheKey, item);
+		return item;
 	}
 }

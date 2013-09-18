@@ -17,19 +17,8 @@ public class QuizPerformanceRepository {
 
 	public static QuizPerformance getQuizPerformance(String quizid, String userid) {
 		String key = "qp_"+quizid+"_"+userid;
-		QuizPerformance qp = CachePMF.get(key, QuizPerformance.class);
-		if (qp!=null) return qp;
-	
-		PersistenceManager pm = PMF.getPM();
-		try {
-			qp = pm.getObjectById(QuizPerformance.class, QuizPerformance.generateKeyFromID(quizid, userid));
-		} catch (Exception e) {
-			// qp = new QuizPerformance(quizid, userid);
-		} finally {
-			pm.close();
-		}
-		CachePMF.put(key, qp);
-		return qp;
+		return PMF.singleGetObjectByIdWithCaching(key, QuizPerformance.class,
+				QuizPerformance.generateKeyFromID(quizid, userid));
 	} 
 	
 	protected static List<QuizPerformance> getQuizPerformanceFilterOnField(String field, String value) {

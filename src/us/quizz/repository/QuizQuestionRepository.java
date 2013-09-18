@@ -24,13 +24,8 @@ public class QuizQuestionRepository {
 	public static QuizQuestion getQuizQuestion(String quizid, String mid) {
 		
 		String key = "quizquestion_"+quizid+mid;
-		QuizQuestion question = CachePMF.get(key, QuizQuestion.class);
-		if (question!=null) return question;
-		
-		question = PMF.singleGetObjectById(QuizQuestion.class, QuizQuestion.generateKeyFromID(quizid, mid));
-		
-		CachePMF.put(key, question);
-		return question;
+		return PMF.singleGetObjectByIdWithCaching(key, QuizQuestion.class,
+				QuizQuestion.generateKeyFromID(quizid, mid));
 	}
 	
 	public static List<QuizQuestion> getQuizQuestions() {
