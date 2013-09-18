@@ -175,18 +175,15 @@ function shuffle(array) {
 		var answers = $("#answers");
 		shuffle(question.answers);
 		$.each(question.answers, function(index, value) {
+			//  triming " chars and escaping internal ones
+			value = $.trim(value).replace(/"+$/, "").replace(/^"+/, "");
+			value = $.trim(value).replace(/"/, "\\\"");
 			var uaid = "useranswer" + index;
 			var huaid = '#' + uaid;
 			answers.append($('<input id="'+uaid+'" name="'+uaid+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
-			if (value == question.correct) {
-				$(huaid).mousedown(function(e){
-					markConversion('multiple-choice-correct', 1);
-				});
-			} else {
-				$(huaid).mousedown(function(e){
-					markConversion('multiple-choice-incorrect', 0);
-				});
-			}
+			var gatype = 'multiple-choice-' + (value == question.correct ? "" : "in") + 'correct';
+			var ganumber = value == question.correct ? 1 : 0 ;
+			$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
 			$(huaid).click(answeredQuestion (uaid, value));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
