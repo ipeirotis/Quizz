@@ -327,7 +327,7 @@ function getFeedbackForPrevious(previous) {
     $.when(
     	getFeedbackForPriorAnswer(user, quiz, previous)
     ).done( function (feedback) {
-    	displayFeedback(fst(feedback));
+    	displayFeedback(feedback);
 	    $('#feedback').show();
 	    $('#feedback').delay(5000).fadeOut(600);
     });
