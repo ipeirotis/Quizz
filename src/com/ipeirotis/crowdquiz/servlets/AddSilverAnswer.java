@@ -25,10 +25,10 @@ public class AddSilverAnswer extends HttpServlet {
 		Utils.ensureParameters(req, "relation", "mid", "source", "answer");
 		try {
 
-			String relation = req.getParameter("relation");
-			String mid = req.getParameter("mid");
-			String source = req.getParameter("source");
-			String answer = req.getParameter("answer");
+			String relation = req.getParameter("relation").trim();
+			String mid = req.getParameter("mid").trim();
+			String source = req.getParameter("source").trim();
+			String answer = req.getParameter("answer").trim();
 			
 			String prob = req.getParameter("probability");
 			Double probability = -1.0;

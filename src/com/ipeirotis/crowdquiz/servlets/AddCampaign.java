@@ -33,7 +33,7 @@ public class AddCampaign extends HttpServlet {
 		Utils.ensureParameters(req, "relation", "budget");
 
 		try {
-			String relation = req.getParameter("relation");
+			String relation = req.getParameter("relation").trim();
 			Integer dailyBudget = Integer.parseInt(req.getParameter("budget"));
 
 			CampaignManagement service = new CampaignManagement();

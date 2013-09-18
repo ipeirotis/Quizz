@@ -27,13 +27,13 @@ public class AddQuiz extends HttpServlet {
 
 		Utils.ensureParameters(req, "relation", "name", "text");
 		try {
-			String relation = req.getParameter("relation");
+			String relation = req.getParameter("relation").trim();
 			resp.getWriter().println("Adding Quiz ID: " + relation);
 			
-			String name = req.getParameter("name");
+			String name = req.getParameter("name").trim();
 			resp.getWriter().println("Quiz Name: " + name);
 
-			String text = req.getParameter("text");
+			String text = req.getParameter("text").trim();
 			resp.getWriter().println("Question Text: " + text);
 
 			Quiz q = new Quiz(name, relation, text);

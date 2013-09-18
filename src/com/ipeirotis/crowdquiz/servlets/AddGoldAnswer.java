@@ -25,9 +25,9 @@ public class AddGoldAnswer extends HttpServlet {
 		Utils.ensureParameters(req, "relation", "mid", "answer");
 		try {
 
-			String relation = req.getParameter("relation");
-			String mid = req.getParameter("mid");
-			String answer = req.getParameter("answer");
+			String relation = req.getParameter("relation").trim();
+			String mid = req.getParameter("mid").trim();
+			String answer = req.getParameter("answer").trim();
 
 			// We only add the gold question, if there is a corresponding quizquestion.
 			// Otherwise, we ignore the addition

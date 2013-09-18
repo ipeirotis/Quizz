@@ -23,13 +23,13 @@ public class AddQuizQuestion extends HttpServlet {
 		Utils.ensureParameters(req, "relation", "mid", "name", "weight");
 
 		try {
-			String relation = req.getParameter("relation");
+			String relation = req.getParameter("relation").trim();
 			resp.getWriter().println("Adding Relation: " + relation);
 
-			String mid = req.getParameter("mid");
+			String mid = req.getParameter("mid").trim();
 			resp.getWriter().println("Entity ID: " + mid);
 			
-			String name = req.getParameter("name");
+			String name = req.getParameter("name").trim();
 			resp.getWriter().println("Entity name: " + name);
 			
 			Double weight = Double.parseDouble(req.getParameter("weight"));

@@ -45,12 +45,12 @@ public class AddAdGroup extends HttpServlet {
 		}
 
 		try {
-			String relation = req.getParameter("relation");
-			String cpcbid = req.getParameter("cpcbid");
-			String keywords = req.getParameter("keywords");
-			String adheadline = req.getParameter("adheadline");
-			String adline1 = req.getParameter("adline1");
-			String adline2 = req.getParameter("adline2");
+			String relation = req.getParameter("relation").trim();
+			String cpcbid = req.getParameter("cpcbid").trim();
+			String keywords = req.getParameter("keywords").trim();
+			String adheadline = req.getParameter("adheadline").trim();
+			String adline1 = req.getParameter("adline1").trim();
+			String adline2 = req.getParameter("adline2").trim();
 			
 			String mid = req.getParameter("mid");
 			if (mid == null) {

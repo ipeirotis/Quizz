@@ -19,14 +19,10 @@ public class AddTreatment extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
+		Utils.ensureParameters(req, "name");
 		try {
 
-			String name = req.getParameter("name");
-			if (name != null) {
-			} else {
-				resp.getWriter().print("Could not find name parameter\n");
-				return;
-			}
+			String name = req.getParameter("name").trim();
 
 			Double p = 0.0;
 			String prob = req.getParameter("probability");
