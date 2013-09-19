@@ -132,7 +132,6 @@ function shuffle(array) {
 		} else {
 			presentNextQuestion();
 		}
-		getUserQuizPerformance(getURLParameterByName('relation'), getUsername());
 		return false;
 	}
 
@@ -156,6 +155,7 @@ function shuffle(array) {
 			var formData = $('#addUserEntry').serializeArray();
 			formData.push({name: nname, value: vvalue});
 			var quiz = QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid;
+			hideScoresMakeLoading();
 			sendSingleQuestionResults(formData).done(function () {
 					getFeedbackForPrevious(quiz);
 			});
@@ -240,12 +240,14 @@ function shuffle(array) {
 
 
 	function displayPerformanceScores(performance) {
-
 		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
 		$('#showPercentageCorrect').html("Correct (%): " + toPercentage(performance.percentageCorrect));
 		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankPercentCorrect/performance.totalUsers)+")");
 		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankTotalCorrect/performance.totalUsers)+")");
+
+		$("#inScores").show();
+		$("#scoresLoading").hide();
 	}
 
 	function displayFeedback(feedback) {
@@ -331,4 +333,26 @@ function getFeedbackForPrevious(previous) {
 	    $('#feedback').show();
 	    $('#feedback').delay(5000).fadeOut(600);
     });
+}
+
+function setUpPerformanceUpdatesChannel(token) {
+	var channel = new goog.appengine.Channel(token);
+	var socket = channel.open();
+	socket.onmessage = handlePerfChannelMessage;
+	socket.onerror = function () {
+		alert("Error in channel gathering updates in performance");
+	}
+}
+
+function hideScoresMakeLoading() {
+	$("#inScores").hide();
+	$("#scoresLoading").show();
+}
+
+
+
+function handlePerfChannelMessage (msg) {
+	$.when(
+		getUserQuizPerformance(getURLParameterByName('relation'), getUsername())
+	).done (displayPerformanceScores);
 }

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.QuizPerformanceRepository;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
+import com.ipeirotis.crowdquiz.servlets.ChannelHelpers;
 import com.ipeirotis.crowdquiz.servlets.Utils;
 
 /**
@@ -44,6 +45,17 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		
 		qp.computeRank();
 		QuizPerformanceRepository.storeQuizPerformance(qp);
+		String channelNotify = req.getParameter("channelNotify");
+		if (Boolean.parseBoolean(channelNotify)) {
+			notifyUserViaChannel(userid, quiz);
+		}
 	}
 	
+	
+	protected void notifyUserViaChannel(String userId, String relation){
+		ChannelHelpers ch = new ChannelHelpers();
+		String channelId = ch.generateUserRelationChannelID(userId, relation);
+		ch.sendMessage(channelId, "Users quiz performance updated");
+		// ^^^ could send updated feedback ...
+	}
 }

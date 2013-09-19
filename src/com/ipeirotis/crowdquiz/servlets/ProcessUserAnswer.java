@@ -80,6 +80,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
 				.param("quiz", relation)
 				.param("userid", user.getUserid())
+				.param("channelNotify", "true")
 				.method(TaskOptions.Method.POST));
 	}
 

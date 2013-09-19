@@ -30,9 +30,13 @@ public class StartQuiz extends HttpServlet {
 		if (gclid != null) {
 			nextURL += "&gclid="+gclid;
 		}
+		
+		ChannelHelpers channelHelpers = new ChannelHelpers();
+		String userChannelId = channelHelpers.generateUserRelationChannelID(user, relation);
+		String token = channelHelpers.createChannel(userChannelId);
+		
+		nextURL += "&changelToken=" + URLEncoder.encode(token, "UTF-8");
 		resp.sendRedirect(nextURL);
 	}
-
-
 
 }

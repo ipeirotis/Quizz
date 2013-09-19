@@ -11,11 +11,16 @@
         <div id="feedback"></div>
 
         <div id="scores" class="alert alert-info" style="text-align: center;">
-            <span class="label label-info" id="showScore"></span>
-            <span class="label label-info" id="showTotalCorrect"></span>
-            <span class="label label-info" id="showPercentageCorrect"></span>
-            <span class="label label-info"  id="showPercentageRank"></span>
-            <span class="label label-info" id="showTotalCorrectRank"></span>
+            <div id="inScores">
+                <span class="label label-info" id="showScore"></span>
+                <span class="label label-info" id="showTotalCorrect"></span>
+                <span class="label label-info" id="showPercentageCorrect"></span>
+                <span class="label label-info"  id="showPercentageRank"></span>
+                <span class="label label-info" id="showTotalCorrectRank"></span>
+            </div>
+            <div id="scoresLoading">
+                <img src="assets/horizontal_loader.gif"/>
+            </div>
         </div>
 
         <div id="form" class="well" style="text-align: center;">
@@ -44,7 +49,7 @@
 
     <script>
     $(document).ready(function() {
-
+        setUpPerformanceUpdatesChannel(getURLParameterByName('changelToken'));
         var user = getUsername();
         var quiz = getURLParameterByName('relation');
         var gclid = getURLParameterByName('gclid');

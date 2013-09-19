@@ -16,6 +16,8 @@
 
 <!--  Add Quizz.us javascript functions -->
 <script src="/js/quizz.js"></script>
+<!-- Adding channel support -->
+<script src='/_ah/channel/jsapi'></script>
 
 <!-- Fav and touch icons -->
 <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
