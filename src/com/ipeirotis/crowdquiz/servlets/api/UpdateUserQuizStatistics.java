@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import us.quizz.repository.QuizPerformanceRepository;
 
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
@@ -55,7 +57,8 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 	protected void notifyUserViaChannel(String userId, String relation){
 		ChannelHelpers ch = new ChannelHelpers();
 		String channelId = ch.generateUserRelationChannelID(userId, relation);
-		ch.sendMessage(channelId, "Users quiz performance updated");
-		// ^^^ could send updated feedback ...
+		String jQuizPerformance = new Gson().toJson(
+				QuizPerformanceRepository.getQuizPerformance(relation, userId));
+		ch.sendMessage(channelId, jQuizPerformance);
 	}
 }

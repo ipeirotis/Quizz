@@ -349,10 +349,7 @@ function hideScoresMakeLoading() {
 	$("#scoresLoading").show();
 }
 
-
-
 function handlePerfChannelMessage (msg) {
-	$.when(
-		getUserQuizPerformance(getURLParameterByName('relation'), getUsername())
-	).done (displayPerformanceScores);
+	var perfData = $.parseJSON(msg.data);
+	displayPerformanceScores(perfData);
 }
