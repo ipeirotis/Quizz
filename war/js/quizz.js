@@ -156,9 +156,8 @@ function shuffle(array) {
 			formData.push({name: nname, value: vvalue});
 			var quiz = QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid;
 			hideScoresMakeLoading();
-			sendSingleQuestionResults(formData).done(function () {
-					getFeedbackForPrevious(quiz);
-			});
+			hideFeedback();
+			sendSingleQuestionResults(formData).done(showFeedback);
 			return prepareNextQuestion();
 		}
 	}
@@ -315,24 +314,19 @@ function disableLoadingScreen() {
 	$("#addUserEntry").show();
 }
 
-function getFeedbackForPrevious(previous) {
+function hideFeedback() {
     var feedbackdiv = $('#feedback');
     feedbackdiv.empty();
     feedbackdiv.hide();
     feedbackdiv.append($('<div id="showMessage"></div>'));
     feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));
     feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
+}
 
-    var user = getUsername();
-    var quiz = getURLParameterByName('relation');
-
-    $.when(
-    	getFeedbackForPriorAnswer(user, quiz, previous)
-    ).done( function (feedback) {
-    	displayFeedback(feedback);
-	    $('#feedback').show();
-	    $('#feedback').delay(5000).fadeOut(600);
-    });
+function showFeedback(feedback) {
+	displayFeedback(feedback);
+    $('#feedback').show();
+    $('#feedback').delay(5000).fadeOut(600);
 }
 
 function setUpPerformanceUpdatesChannel(token) {

@@ -15,6 +15,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
@@ -58,14 +59,22 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long timestamp = (new Date()).getTime();
 		Boolean isCorrect = useranswer.equals(gold);
 
-		storeUserAnswerFeedback(user, relation, mid, useranswer, gold, numCorrectAnswers, numTotalAnswers);
+		UserAnswerFeedback uaf = createUserAnswerFeedback(user, relation, mid, useranswer,
+				gold, numCorrectAnswers, numTotalAnswers);
 		quickUpdateQuizPerformance(user, relation, isCorrect, action);
-		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser, referer, timestamp, isCorrect);
+		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser,
+				referer, timestamp, isCorrect);
 		updateQuizPerformance(user, relation);
-
+		returnUserAnswerFeedback(uaf, resp);
 	}
 
-	private void storeUserAnswerFeedback(User user, String relation,
+	protected void returnUserAnswerFeedback(UserAnswerFeedback uaf,
+			HttpServletResponse resp) throws IOException {
+		resp.setContentType("application/json");
+		new Gson().toJson(uaf, resp.getWriter());
+	}
+
+	protected UserAnswerFeedback createUserAnswerFeedback(User user, String relation,
 			String mid, String useranswer, String gold,
 			String numCorrectAnswers, String numTotalAnswers) {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(relation, user.getUserid(), mid, useranswer, gold);
@@ -73,6 +82,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
 		uaf.computeDifficulty();
 		UserAnswerRepository.storeUserAnswerFeedback(uaf);
+		return uaf;
 	}
 
 	private void updateQuizPerformance(User user, String relation) {
