@@ -18,7 +18,9 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
+import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class ProcessUserAnswer extends HttpServlet {
@@ -109,19 +111,14 @@ public class ProcessUserAnswer extends HttpServlet {
 	private void storeUserAnswer(User user, String relation, String mid, String action, String useranswer,
 			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
 
-		Queue queueAnswers = QueueFactory.getQueue("answers");
-		queueAnswers.add(Builder.withUrl("/addUserAnswer")
-				.param("relation", relation)
-				.param("userid", user.getUserid())
-				.param("action", action)
-				.param("mid", mid)
-				.param("useranswer", useranswer)
-				.param("correct", isCorrect.toString())
-				.param("browser", browser)
-				.param("ipAddress", ipAddress)
-				.param("referer", referer)
-				.param("timestamp", timestamp.toString())
-				.method(TaskOptions.Method.POST));
+		UserAnswer ue = new UserAnswer(user.getUserid(), relation, mid, useranswer);
+		ue.setReferer(referer);
+		ue.setBrowser(browser);
+		ue.setIpaddress(ipAddress);
+		ue.setTimestamp(timestamp);
+		ue.setAction(action);
+		ue.setIsCorrect(isCorrect);
+		PMF.singleMakePersistent(ue);
 	}
 
 	/**
