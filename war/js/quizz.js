@@ -127,7 +127,7 @@ function shuffle(array) {
 		var url = getWebURL() + 'processUserAnswer';
 		return $.post(url, formData)
 			.fail( function(jqXHR, textStatus, errorThrown) {
-				alert("Sending your answer failed: " + textStatus);
+				console.log("Sending your answer failed: " + textStatus);
 			});
 	}
 
@@ -340,7 +340,7 @@ function setUpPerformanceUpdatesChannel(token) {
 	var socket = channel.open();
 	socket.onmessage = handlePerfChannelMessage;
 	socket.onerror = function () {
-		alert("Error in channel gathering updates in performance");
+		console.log("Error in channel gathering updates in performance");
 	}
 }
 
