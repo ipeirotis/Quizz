@@ -8,7 +8,6 @@
             <a href="/"><span style="color: maroon">Quizz</span>.us</a>
         </h2>
 
-        <div id="feedback"></div>
 
         <div id="scores" class="alert alert-info" style="text-align: center;">
             <div id="inScores">
@@ -25,9 +24,10 @@
 
         <div id="form" class="well" style="text-align: center;">
             <div id="loadingScreen" style="display: none;">
-                <h3>Loading questions</h3>
+                <h3 id="loadingMsg"></h3>
                 <img src="assets/round_loader.gif" style="padding-top: 30px; margin-bottom: 30px;"/>
             </div>
+            <div id="feedback" style="padding-bottom: 10px;"></div>
             <form id="addUserEntry">
                 <fieldset>
                     <div class="lead">
@@ -56,7 +56,7 @@
         $('#gclid').val(gclid);
 
         hideDivs();
-        makeLoadingScreen();
+        makeLoadingScreen("Loading questions");
 
         $.when(
             getNextQuizQuestions(quiz),

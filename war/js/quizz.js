@@ -88,18 +88,6 @@ function shuffle(array) {
 			'fields' : 'items(quiz, totalanswers)',
 		};
 		return $.getJSON(url, params);
-
-
-	}
-
-	function getNextQuizQuestion(quiz) {
-		var url = getAPIURL() + 'quizquestioninstance';
-		url += '/quiz/' + encodeURIComponent(quiz);
-		var params = {
-			//'fields' : 'items(quiz, totalanswers)',
-		};
-		return $.getJSON(url, params)
-			.done(populateQuestion);
 	}
 
 	function getNextQuizQuestions(quiz, numQuestions) {
@@ -120,10 +108,11 @@ function shuffle(array) {
 
 	function presentNextQuestion() {
 		CURRENT_QUIZZ += 1;
-		$('#answers').html("")
+		$('#answers').html("");
 		$('#questionsPackProgress').html("Question " + (CURRENT_QUIZZ + 1) +
 			" out of " + QUIZZ_QUESTIONS.length);
 		populateQuestion(QUIZZ_QUESTIONS[CURRENT_QUIZZ]);
+		showQuestion();
 	}
 
 	function prepareNextQuestion() {
@@ -132,7 +121,6 @@ function shuffle(array) {
 		} else {
 			presentNextQuestion();
 		}
-		return false;
 	}
 
 	function sendSingleQuestionResults(formData) {
@@ -157,8 +145,14 @@ function shuffle(array) {
 			var quiz = QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid;
 			hideScoresMakeLoading();
 			hideFeedback();
-			sendSingleQuestionResults(formData).done(showFeedback);
-			return prepareNextQuestion();
+			makeLoadingScreen("Loading feedback");
+			sendSingleQuestionResults(formData).done(
+				function (feedback) {
+					disableLoadingScreen();
+					hideQuestion();
+					showFeedback(feedback, prepareNextQuestion);
+			});
+			return false;
 		}
 	}
 
@@ -300,10 +294,11 @@ function shuffle(array) {
     }
 
 
-function makeLoadingScreen() {
+function makeLoadingScreen(msg) {
 	$('#scores').hide();
 	$("#addUserEntry").hide();
 	$("#questionsPackProgress").hide();
+	$("#loadingMsg").html(msg);
 	$("#loadingScreen").show();
 }
 
@@ -323,10 +318,21 @@ function hideFeedback() {
     feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
 }
 
-function showFeedback(feedback) {
+function showFeedback(feedback, callbackf) {
 	displayFeedback(feedback);
+    $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
+    	' class="btn btn-info" value="Skip feedback ..." />' );
     $('#feedback').show();
-    $('#feedback').delay(5000).fadeOut(600);
+    var executedCallback = false;
+    $('#feedback').delay(5000).fadeOut(600, function () {
+    	executedCallback = true;
+    	callbackf();
+    });
+    $('#skipFeedbackBtn').click (function () {
+    	$('#feedback').stop(true, true);
+    	$('#feedback').hide();
+    	if (!executedCallback) callbackf();
+    });
 }
 
 function setUpPerformanceUpdatesChannel(token) {
@@ -336,6 +342,14 @@ function setUpPerformanceUpdatesChannel(token) {
 	socket.onerror = function () {
 		alert("Error in channel gathering updates in performance");
 	}
+}
+
+function hideQuestion() {
+	$("#addUserEntry").hide();
+}
+
+function showQuestion() {
+	$("#addUserEntry").show();
 }
 
 function hideScoresMakeLoading() {
