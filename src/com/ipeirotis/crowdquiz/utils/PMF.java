@@ -5,8 +5,6 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
-import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
-
 import java.util.logging.Logger;
 
 public final class PMF {
