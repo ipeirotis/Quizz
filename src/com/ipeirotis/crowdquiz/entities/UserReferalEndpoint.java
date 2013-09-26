@@ -19,7 +19,14 @@ import javax.persistence.EntityNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-@Api(name = "userreferalendpoint", namespace = @ApiNamespace(ownerDomain = "ipeirotis.com", ownerName = "ipeirotis.com", packagePath = "crowdquiz.entities"))
+@Api(
+		name = "quizz",
+		description = "The API for Quizz.us",
+		version = "v1",
+		namespace = @ApiNamespace(
+				ownerDomain = "www.quizz.us", 
+				ownerName = "www.quizz.us", 
+				packagePath = "crowdquiz.entities"))
 public class UserReferalEndpoint {
 
 	/**

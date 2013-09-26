@@ -135,6 +135,105 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.updateUserReferal" : {
+      "path" : "userreferal",
+      "httpMethod" : "PUT",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.updateUserReferal",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.insertUserReferal" : {
+      "path" : "userreferal",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.insertUserReferal",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.getUserReferal" : {
+      "path" : "userreferal/{id}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.getUserReferal",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "quizz.removeUserReferal" : {
+      "path" : "userreferal/{id}",
+      "httpMethod" : "DELETE",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.removeUserReferal",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "int64",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "quizz.listUserReferal" : {
+      "path" : "userreferal",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.listUserReferal",
+      "request" : {
+        "parameters" : {
+          "cursor" : {
+            "type" : "string",
+            "required" : false
+          },
+          "limit" : {
+            "type" : "int32",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.getUser" : {
       "path" : "user/{userid}",
       "httpMethod" : "GET",
@@ -333,6 +432,27 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.getQuiz" : {
+      "path" : "quiz/{id}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.listQuiz" : {
       "path" : "quiz",
       "httpMethod" : "GET",
@@ -350,27 +470,6 @@
           "limit" : {
             "type" : "int32",
             "required" : false
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.getQuiz" : {
-      "path" : "quiz/{id}",
-      "httpMethod" : "GET",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz",
-      "request" : {
-        "parameters" : {
-          "id" : {
-            "type" : "string",
-            "required" : true
           }
         },
         "body" : "empty"
@@ -566,11 +665,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "complete" : {
-            "type" : "boolean"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
           }
         }
       },
@@ -582,6 +681,58 @@
             "type" : "array",
             "items" : {
               "$ref" : "UserAnswerFeedback"
+            }
+          },
+          "nextPageToken" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UserReferal" : {
+        "id" : "UserReferal",
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "$ref" : "Key"
+          },
+          "userid" : {
+            "type" : "string"
+          },
+          "quiz" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "ipaddress" : {
+            "type" : "string"
+          },
+          "referer" : {
+            "$ref" : "Text"
+          },
+          "browser" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Text" : {
+        "id" : "Text",
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CollectionResponse_UserReferal" : {
+        "id" : "CollectionResponse_UserReferal",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "UserReferal"
             }
           },
           "nextPageToken" : {
@@ -846,6 +997,34 @@
           "$ref" : "UserAnswerFeedback"
         }
       },
+      "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.updateUserReferal" : {
+        "request" : {
+          "$ref" : "UserReferal"
+        },
+        "response" : {
+          "$ref" : "UserReferal"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.insertUserReferal" : {
+        "request" : {
+          "$ref" : "UserReferal"
+        },
+        "response" : {
+          "$ref" : "UserReferal"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.getUserReferal" : {
+        "response" : {
+          "$ref" : "UserReferal"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.removeUserReferal" : {
+      },
+      "com.ipeirotis.crowdquiz.entities.UserReferalEndpoint.listUserReferal" : {
+        "response" : {
+          "$ref" : "CollectionResponse_UserReferal"
+        }
+      },
       "com.ipeirotis.crowdquiz.entities.UserEndpoint.getUser" : {
         "response" : {
           "$ref" : "User"
@@ -902,14 +1081,14 @@
           "$ref" : "QuizQuestionInstanceCollection"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz" : {
-        "response" : {
-          "$ref" : "CollectionResponse_Quiz"
-        }
-      },
       "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz" : {
         "response" : {
           "$ref" : "Quiz"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz" : {
+        "response" : {
+          "$ref" : "CollectionResponse_Quiz"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {

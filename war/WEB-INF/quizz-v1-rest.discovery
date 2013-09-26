@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/NuKQhx-Qi9U-BggWfAGP2OdWJmA\"",
+ "etag": "\"_SAkL5LfohOjTvNX8memTU9s4HI/7ImjBuuEFovPIBcTwB4PYy7ekbs\"",
  "discoveryVersion": "v1",
  "id": "quizz:v1",
  "name": "quizz",
@@ -64,6 +64,15 @@
    "location": "query"
   }
  },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
  "schemas": {
   "CollectionResponse_Quiz": {
    "id": "CollectionResponse_Quiz",
@@ -118,6 +127,21 @@
      "type": "array",
      "items": {
       "$ref": "UserAnswerFeedback"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "CollectionResponse_UserReferal": {
+   "id": "CollectionResponse_UserReferal",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "UserReferal"
      }
     },
     "nextPageToken": {
@@ -338,6 +362,15 @@
     }
    }
   },
+  "Text": {
+   "id": "Text",
+   "type": "object",
+   "properties": {
+    "value": {
+     "type": "string"
+    }
+   }
+  },
   "User": {
    "id": "User",
    "type": "object",
@@ -393,6 +426,34 @@
      "type": "string"
     }
    }
+  },
+  "UserReferal": {
+   "id": "UserReferal",
+   "type": "object",
+   "properties": {
+    "browser": {
+     "type": "string"
+    },
+    "ipaddress": {
+     "type": "string"
+    },
+    "key": {
+     "$ref": "Key"
+    },
+    "quiz": {
+     "type": "string"
+    },
+    "referer": {
+     "$ref": "Text"
+    },
+    "timestamp": {
+     "type": "string",
+     "format": "int64"
+    },
+    "userid": {
+     "type": "string"
+    }
+   }
   }
  },
  "methods": {
@@ -412,7 +473,10 @@
    ],
    "response": {
     "$ref": "QuizQuestionInstance"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "getQuiz": {
    "id": "quizz.getQuiz",
@@ -430,7 +494,10 @@
    ],
    "response": {
     "$ref": "Quiz"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "getQuizPerformance": {
    "id": "quizz.getQuizPerformance",
@@ -454,7 +521,10 @@
    ],
    "response": {
     "$ref": "QuizPerformance"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "getUser": {
    "id": "quizz.getUser",
@@ -472,7 +542,10 @@
    ],
    "response": {
     "$ref": "User"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "getUserAnswerFeedback": {
    "id": "quizz.getUserAnswerFeedback",
@@ -502,7 +575,32 @@
    ],
    "response": {
     "$ref": "UserAnswerFeedback"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getUserReferal": {
+   "id": "quizz.getUserReferal",
+   "path": "userreferal/{id}",
+   "httpMethod": "GET",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64",
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "response": {
+    "$ref": "UserReferal"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "insertQuiz": {
    "id": "quizz.insertQuiz",
@@ -514,7 +612,10 @@
    },
    "response": {
     "$ref": "Quiz"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "insertQuizPerformance": {
    "id": "quizz.insertQuizPerformance",
@@ -526,7 +627,10 @@
    },
    "response": {
     "$ref": "QuizPerformance"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "insertUser": {
    "id": "quizz.insertUser",
@@ -538,7 +642,10 @@
    },
    "response": {
     "$ref": "User"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "insertUserAnswerFeedback": {
    "id": "quizz.insertUserAnswerFeedback",
@@ -550,7 +657,25 @@
    },
    "response": {
     "$ref": "UserAnswerFeedback"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "insertUserReferal": {
+   "id": "quizz.insertUserReferal",
+   "path": "userreferal",
+   "httpMethod": "POST",
+   "request": {
+    "$ref": "UserReferal",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "UserReferal"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "listNextQuestions": {
    "id": "quizz.listNextQuestions",
@@ -573,7 +698,10 @@
    ],
    "response": {
     "$ref": "QuizQuestionInstanceCollection"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "listQuiz": {
    "id": "quizz.listQuiz",
@@ -592,7 +720,10 @@
    },
    "response": {
     "$ref": "CollectionResponse_Quiz"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "listQuizPerformance": {
    "id": "quizz.listQuizPerformance",
@@ -611,7 +742,10 @@
    },
    "response": {
     "$ref": "CollectionResponse_QuizPerformance"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "listQuizPerformanceByUser": {
    "id": "quizz.listQuizPerformanceByUser",
@@ -629,7 +763,10 @@
    ],
    "response": {
     "$ref": "CollectionResponse_QuizPerformance"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "listUser": {
    "id": "quizz.listUser",
@@ -648,7 +785,10 @@
    },
    "response": {
     "$ref": "CollectionResponse_User"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "listUserAnswerFeedback": {
    "id": "quizz.listUserAnswerFeedback",
@@ -667,7 +807,32 @@
    },
    "response": {
     "$ref": "CollectionResponse_UserAnswerFeedback"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "listUserReferal": {
+   "id": "quizz.listUserReferal",
+   "path": "userreferal",
+   "httpMethod": "GET",
+   "parameters": {
+    "cursor": {
+     "type": "string",
+     "location": "query"
+    },
+    "limit": {
+     "type": "integer",
+     "format": "int32",
+     "location": "query"
+    }
+   },
+   "response": {
+    "$ref": "CollectionResponse_UserReferal"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "removeQuiz": {
    "id": "quizz.removeQuiz",
@@ -682,6 +847,9 @@
    },
    "parameterOrder": [
     "id"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "removeQuizPerformance": {
@@ -703,6 +871,9 @@
    "parameterOrder": [
     "quizid",
     "userid"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "removeUser": {
@@ -718,6 +889,9 @@
    },
    "parameterOrder": [
     "userid"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "removeUserAnswerFeedback": {
@@ -734,6 +908,28 @@
    },
    "parameterOrder": [
     "id"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "removeUserReferal": {
+   "id": "quizz.removeUserReferal",
+   "path": "userreferal/{id}",
+   "httpMethod": "DELETE",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "format": "int64",
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "updateQuiz": {
@@ -746,7 +942,10 @@
    },
    "response": {
     "$ref": "Quiz"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "updateQuizPerformance": {
    "id": "quizz.updateQuizPerformance",
@@ -758,7 +957,10 @@
    },
    "response": {
     "$ref": "QuizPerformance"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "updateUser": {
    "id": "quizz.updateUser",
@@ -770,7 +972,10 @@
    },
    "response": {
     "$ref": "User"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "updateUserAnswerFeedback": {
    "id": "quizz.updateUserAnswerFeedback",
@@ -782,7 +987,25 @@
    },
    "response": {
     "$ref": "UserAnswerFeedback"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "updateUserReferal": {
+   "id": "quizz.updateUserReferal",
+   "path": "userreferal",
+   "httpMethod": "PUT",
+   "request": {
+    "$ref": "UserReferal",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "UserReferal"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   }
  }
 }
