@@ -77,7 +77,7 @@ public class Helper {
 	}
 	
 	/**
-	 * Computes a Bayesian version of Information Gain
+	 * Computes a Bayesian version of Entropy
 	 * 
 	 * @param a The number of correct answers (plus the prior)
 	 * @param b The number of incorrect answers (plus the prior)

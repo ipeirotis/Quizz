@@ -31,9 +31,10 @@
     "quizz.updateUserAnswerFeedback" : {
       "path" : "useranswerfeedback",
       "httpMethod" : "PUT",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.updateUserAnswerFeedback",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -46,9 +47,10 @@
     "quizz.insertUserAnswerFeedback" : {
       "path" : "useranswerfeedback",
       "httpMethod" : "POST",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.insertUserAnswerFeedback",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -61,9 +63,10 @@
     "quizz.listUserAnswerFeedback" : {
       "path" : "useranswerfeedback",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.listUserAnswerFeedback",
       "request" : {
         "parameters" : {
@@ -85,9 +88,10 @@
     "quizz.removeUserAnswerFeedback" : {
       "path" : "useranswerfeedback/{id}",
       "httpMethod" : "DELETE",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.removeUserAnswerFeedback",
       "request" : {
         "parameters" : {
@@ -105,9 +109,10 @@
     "quizz.getUserAnswerFeedback" : {
       "path" : "useranswerfeedback/{quiz}/{userid}/{mid}",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint.getUserAnswerFeedback",
       "request" : {
         "parameters" : {
@@ -133,9 +138,10 @@
     "quizz.getUser" : {
       "path" : "user/{userid}",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserEndpoint.getUser",
       "request" : {
         "parameters" : {
@@ -153,9 +159,10 @@
     "quizz.removeUser" : {
       "path" : "user/{userid}",
       "httpMethod" : "DELETE",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserEndpoint.removeUser",
       "request" : {
         "parameters" : {
@@ -173,9 +180,10 @@
     "quizz.insertUser" : {
       "path" : "user",
       "httpMethod" : "POST",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserEndpoint.insertUser",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -188,9 +196,10 @@
     "quizz.listUser" : {
       "path" : "user",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserEndpoint.listUser",
       "request" : {
         "parameters" : {
@@ -212,9 +221,10 @@
     "quizz.updateUser" : {
       "path" : "user",
       "httpMethod" : "PUT",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.UserEndpoint.updateUser",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -227,9 +237,10 @@
     "quizz.removeQuiz" : {
       "path" : "quiz/{id}",
       "httpMethod" : "DELETE",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.removeQuiz",
       "request" : {
         "parameters" : {
@@ -247,9 +258,10 @@
     "quizz.insertQuiz" : {
       "path" : "quiz",
       "httpMethod" : "POST",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.insertQuiz",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -262,9 +274,10 @@
     "quizz.getNextQuestionInstance" : {
       "path" : "quizquestioninstance/quiz/{quiz}",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getNextQuestion",
       "request" : {
         "parameters" : {
@@ -279,12 +292,29 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.updateQuiz" : {
+      "path" : "quiz",
+      "httpMethod" : "PUT",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.updateQuiz",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.listNextQuestions" : {
       "path" : "quizquestions/{quiz}",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getNextQuestions",
       "request" : {
         "parameters" : {
@@ -303,47 +333,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "quizz.updateQuiz" : {
-      "path" : "quiz",
-      "httpMethod" : "PUT",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.updateQuiz",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.getQuiz" : {
-      "path" : "quiz/{id}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz",
-      "request" : {
-        "parameters" : {
-          "id" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "quizz.listQuiz" : {
       "path" : "quiz",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz",
       "request" : {
         "parameters" : {
@@ -362,12 +358,34 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.getQuiz" : {
+      "path" : "quiz/{id}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz",
+      "request" : {
+        "parameters" : {
+          "id" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.removeQuizPerformance" : {
       "path" : "quizperformance/{quizid}/{userid}",
       "httpMethod" : "DELETE",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance",
       "request" : {
         "parameters" : {
@@ -389,9 +407,10 @@
     "quizz.insertQuizPerformance" : {
       "path" : "quizperformance",
       "httpMethod" : "POST",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.insertQuizPerformance",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -404,9 +423,10 @@
     "quizz.getQuizPerformance" : {
       "path" : "quizperformance/quiz/{quiz}/user/{user}",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance",
       "request" : {
         "parameters" : {
@@ -428,9 +448,10 @@
     "quizz.listQuizPerformanceByUser" : {
       "path" : "quizperformance/user/{user}",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
       "request" : {
         "parameters" : {
@@ -448,9 +469,10 @@
     "quizz.listQuizPerformance" : {
       "path" : "quizperformance",
       "httpMethod" : "GET",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance",
       "request" : {
         "parameters" : {
@@ -472,9 +494,10 @@
     "quizz.updateQuizPerformance" : {
       "path" : "quizperformance",
       "httpMethod" : "PUT",
-      "scopes" : [ ],
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
-      "clientIds" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
@@ -866,11 +889,6 @@
           "$ref" : "QuizQuestionInstance"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getNextQuestions" : {
-        "response" : {
-          "$ref" : "QuizQuestionInstanceCollection"
-        }
-      },
       "com.ipeirotis.crowdquiz.entities.QuizEndpoint.updateQuiz" : {
         "request" : {
           "$ref" : "Quiz"
@@ -879,14 +897,19 @@
           "$ref" : "Quiz"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz" : {
+      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getNextQuestions" : {
         "response" : {
-          "$ref" : "Quiz"
+          "$ref" : "QuizQuestionInstanceCollection"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizEndpoint.listQuiz" : {
         "response" : {
           "$ref" : "CollectionResponse_Quiz"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizEndpoint.getQuiz" : {
+        "response" : {
+          "$ref" : "Quiz"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.removeQuizPerformance" : {
