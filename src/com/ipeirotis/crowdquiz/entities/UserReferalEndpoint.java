@@ -1,21 +1,19 @@
 package com.ipeirotis.crowdquiz.entities;
 
-import com.ipeirotis.crowdquiz.utils.PMF;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -27,7 +25,11 @@ import javax.jdo.Query;
 				ownerDomain = "www.quizz.us", 
 				ownerName = "www.quizz.us", 
 				packagePath = "crowdquiz.entities"))
-public class UserReferalEndpoint {
+public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
+
+	public UserReferalEndpoint() {
+		super(UserReferal.class, "User referal");
+	}
 
 	/**
 	 * This method lists all the entities inserted in datastore.
@@ -85,14 +87,7 @@ public class UserReferalEndpoint {
 	 */
 	@ApiMethod(name = "getUserReferal")
 	public UserReferal getUserReferal(@Named("id") Long id) {
-		PersistenceManager mgr = getPersistenceManager();
-		UserReferal userreferal = null;
-		try {
-			userreferal = mgr.getObjectById(UserReferal.class, id);
-		} finally {
-			mgr.close();
-		}
-		return userreferal;
+		return PMF.singleGetObjectByIdThrowing(UserReferal.class, id);
 	}
 
 	/**
@@ -105,16 +100,7 @@ public class UserReferalEndpoint {
 	 */
 	@ApiMethod(name = "insertUserReferal")
 	public UserReferal insertUserReferal(UserReferal userreferal) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (containsUserReferal(userreferal)) {
-				throw new EntityExistsException("Object already exists");
-			}
-			mgr.makePersistent(userreferal);
-		} finally {
-			mgr.close();
-		}
-		return userreferal;
+		return insert(userreferal);
 	}
 
 	/**
@@ -127,16 +113,7 @@ public class UserReferalEndpoint {
 	 */
 	@ApiMethod(name = "updateUserReferal")
 	public UserReferal updateUserReferal(UserReferal userreferal) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (!containsUserReferal(userreferal)) {
-				throw new EntityNotFoundException("Object does not exist");
-			}
-			mgr.makePersistent(userreferal);
-		} finally {
-			mgr.close();
-		}
-		return userreferal;
+		return update(userreferal);
 	}
 
 	/**
@@ -147,30 +124,13 @@ public class UserReferalEndpoint {
 	 */
 	@ApiMethod(name = "removeUserReferal")
 	public void removeUserReferal(@Named("id") Long id) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			UserReferal userreferal = mgr.getObjectById(UserReferal.class, id);
-			mgr.deletePersistent(userreferal);
-		} finally {
-			mgr.close();
-		}
+		UserReferal ur = PMF.singleGetObjectByIdThrowing(UserReferal.class, id);
+		remove(ur.getKey());
 	}
 
-	private boolean containsUserReferal(UserReferal userreferal) {
-		PersistenceManager mgr = getPersistenceManager();
-		boolean contains = true;
-		try {
-			mgr.getObjectById(UserReferal.class, userreferal.getKey());
-		} catch (javax.jdo.JDOObjectNotFoundException ex) {
-			contains = false;
-		} finally {
-			mgr.close();
-		}
-		return contains;
-	}
-
-	private static PersistenceManager getPersistenceManager() {
-		return PMF.get().getPersistenceManager();
+	@Override
+	protected Key getKey(UserReferal item) {
+		return item.getKey();
 	}
 
 }
