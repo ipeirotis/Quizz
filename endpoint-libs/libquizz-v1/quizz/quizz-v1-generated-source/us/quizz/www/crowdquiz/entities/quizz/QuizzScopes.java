@@ -16,29 +16,29 @@
  * Modify at your own risk.
  */
 
-package us.quizz.www.crowdquiz.entities.quizz.model;
+package us.quizz.www.crowdquiz.entities.quizz;
 
 /**
- * Model definition for JsonMap.
+ * Available OAuth 2.0 scopes for use with the quizz.
  *
- * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
- * transmitted over HTTP when working with the quizz. For a detailed explanation see:
- * <a href="http://code.google.com/p/google-http-java-client/wiki/JSON">http://code.google.com/p/google-http-java-client/wiki/JSON</a>
- * </p>
- *
- * @author Google, Inc.
+ * @since 1.4
  */
-@SuppressWarnings("javadoc")
-public final class JsonMap extends com.google.api.client.json.GenericJson {
+public class QuizzScopes {
 
-  @Override
-  public JsonMap set(String fieldName, Object value) {
-    return (JsonMap) super.set(fieldName, value);
+  /** View your email address. */
+  public static final String USERINFO_EMAIL = "https://www.googleapis.com/auth/userinfo.email";
+
+  /**
+   * Returns an unmodifiable set that contains all scopes declared by this class.
+   *
+   * @since 1.16
+   */
+  public static java.util.Set<String> all() {
+    java.util.Set<String> set = new java.util.HashSet<String>();
+    set.add(USERINFO_EMAIL);
+    return java.util.Collections.unmodifiableSet(set);
   }
 
-  @Override
-  public JsonMap clone() {
-    return (JsonMap) super.clone();
+  private QuizzScopes() {
   }
-
 }

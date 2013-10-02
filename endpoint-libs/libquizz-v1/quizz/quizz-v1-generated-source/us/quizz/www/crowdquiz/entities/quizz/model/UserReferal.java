@@ -19,7 +19,7 @@
 package us.quizz.www.crowdquiz.entities.quizz.model;
 
 /**
- * Model definition for Key.
+ * Model definition for UserReferal.
  *
  * <p> This is the Java data model class that specifies how to parse/serialize into the JSON that is
  * transmitted over HTTP when working with the quizz. For a detailed explanation see:
@@ -29,163 +29,163 @@ package us.quizz.www.crowdquiz.entities.quizz.model;
  * @author Google, Inc.
  */
 @SuppressWarnings("javadoc")
-public final class Key extends com.google.api.client.json.GenericJson {
+public final class UserReferal extends com.google.api.client.json.GenericJson {
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.String appId;
+  private java.lang.String browser;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.Boolean complete;
+  private java.lang.String ipaddress;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private Key key;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private java.lang.String quiz;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
+  private Text referer;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key @com.google.api.client.json.JsonString
-  private java.lang.Long id;
+  private java.lang.Long timestamp;
 
   /**
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
-  private java.lang.String kind;
-
-  /**
-   * The value may be {@code null}.
-   */
-  @com.google.api.client.util.Key
-  private java.lang.String name;
-
-  /**
-   * The value may be {@code null}.
-   */
-  @com.google.api.client.util.Key
-  private java.lang.String namespace;
-
-  /**
-   * The value may be {@code null}.
-   */
-  @com.google.api.client.util.Key
-  private Key parent;
+  private java.lang.String userid;
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getAppId() {
-    return appId;
+  public java.lang.String getBrowser() {
+    return browser;
   }
 
   /**
-   * @param appId appId or {@code null} for none
+   * @param browser browser or {@code null} for none
    */
-  public Key setAppId(java.lang.String appId) {
-    this.appId = appId;
+  public UserReferal setBrowser(java.lang.String browser) {
+    this.browser = browser;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.Boolean getComplete() {
-    return complete;
+  public java.lang.String getIpaddress() {
+    return ipaddress;
   }
 
   /**
-   * @param complete complete or {@code null} for none
+   * @param ipaddress ipaddress or {@code null} for none
    */
-  public Key setComplete(java.lang.Boolean complete) {
-    this.complete = complete;
+  public UserReferal setIpaddress(java.lang.String ipaddress) {
+    this.ipaddress = ipaddress;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.Long getId() {
-    return id;
+  public Key getKey() {
+    return key;
   }
 
   /**
-   * @param id id or {@code null} for none
+   * @param key key or {@code null} for none
    */
-  public Key setId(java.lang.Long id) {
-    this.id = id;
+  public UserReferal setKey(Key key) {
+    this.key = key;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getKind() {
-    return kind;
+  public java.lang.String getQuiz() {
+    return quiz;
   }
 
   /**
-   * @param kind kind or {@code null} for none
+   * @param quiz quiz or {@code null} for none
    */
-  public Key setKind(java.lang.String kind) {
-    this.kind = kind;
+  public UserReferal setQuiz(java.lang.String quiz) {
+    this.quiz = quiz;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getName() {
-    return name;
+  public Text getReferer() {
+    return referer;
   }
 
   /**
-   * @param name name or {@code null} for none
+   * @param referer referer or {@code null} for none
    */
-  public Key setName(java.lang.String name) {
-    this.name = name;
+  public UserReferal setReferer(Text referer) {
+    this.referer = referer;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public java.lang.String getNamespace() {
-    return namespace;
+  public java.lang.Long getTimestamp() {
+    return timestamp;
   }
 
   /**
-   * @param namespace namespace or {@code null} for none
+   * @param timestamp timestamp or {@code null} for none
    */
-  public Key setNamespace(java.lang.String namespace) {
-    this.namespace = namespace;
+  public UserReferal setTimestamp(java.lang.Long timestamp) {
+    this.timestamp = timestamp;
     return this;
   }
 
   /**
    * @return value or {@code null} for none
    */
-  public Key getParent() {
-    return parent;
+  public java.lang.String getUserid() {
+    return userid;
   }
 
   /**
-   * @param parent parent or {@code null} for none
+   * @param userid userid or {@code null} for none
    */
-  public Key setParent(Key parent) {
-    this.parent = parent;
+  public UserReferal setUserid(java.lang.String userid) {
+    this.userid = userid;
     return this;
   }
 
   @Override
-  public Key set(String fieldName, Object value) {
-    return (Key) super.set(fieldName, value);
+  public UserReferal set(String fieldName, Object value) {
+    return (UserReferal) super.set(fieldName, value);
   }
 
   @Override
-  public Key clone() {
-    return (Key) super.clone();
+  public UserReferal clone() {
+    return (UserReferal) super.clone();
   }
 
 }

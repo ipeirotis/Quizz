@@ -519,6 +519,27 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "quizz.listQuizPerformanceByUser" : {
+      "path" : "quizperformance/user/{user}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
+      "request" : {
+        "parameters" : {
+          "user" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "quizz.getQuizPerformance" : {
       "path" : "quizperformance/quiz/{quiz}/user/{user}",
       "httpMethod" : "GET",
@@ -544,22 +565,17 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "quizz.listQuizPerformanceByUser" : {
-      "path" : "quizperformance/user/{user}",
-      "httpMethod" : "GET",
+    "quizz.updateQuizPerformance" : {
+      "path" : "quizperformance",
+      "httpMethod" : "PUT",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
       "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser",
+      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
       "request" : {
-        "parameters" : {
-          "user" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -585,22 +601,6 @@
           }
         },
         "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "quizz.updateQuizPerformance" : {
-      "path" : "quizperformance",
-      "httpMethod" : "PUT",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -662,14 +662,14 @@
           "name" : {
             "type" : "string"
           },
-          "parent" : {
-            "$ref" : "Key"
+          "complete" : {
+            "type" : "boolean"
           },
           "namespace" : {
             "type" : "string"
           },
-          "complete" : {
-            "type" : "boolean"
+          "parent" : {
+            "$ref" : "Key"
           }
         }
       },
@@ -1101,19 +1101,14 @@
           "$ref" : "QuizPerformance"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
-        "response" : {
-          "$ref" : "QuizPerformance"
-        }
-      },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformanceByUser" : {
         "response" : {
           "$ref" : "CollectionResponse_QuizPerformance"
         }
       },
-      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.getQuizPerformance" : {
         "response" : {
-          "$ref" : "CollectionResponse_QuizPerformance"
+          "$ref" : "QuizPerformance"
         }
       },
       "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.updateQuizPerformance" : {
@@ -1122,6 +1117,11 @@
         },
         "response" : {
           "$ref" : "QuizPerformance"
+        }
+      },
+      "com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint.listQuizPerformance" : {
+        "response" : {
+          "$ref" : "CollectionResponse_QuizPerformance"
         }
       }
     }

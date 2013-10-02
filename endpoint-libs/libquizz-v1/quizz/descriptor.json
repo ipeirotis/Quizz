@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/quizz/v1/20130926203254/java/1.16.0-rc/www.quizz.us-quizz-v1-20130926203254-java-1.16.0-rc-sources.jar", 
-      "path": "www.quizz.us-quizz-v1-20130926203254-java-1.16.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/quizz/v1/20131002125656/java/1.16.0-rc/www.quizz.us-quizz-v1-20131002125656-java-1.16.0-rc-sources.jar", 
+      "path": "www.quizz.us-quizz-v1-20131002125656-java-1.16.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-09-26 20:32"
+      "timestamp": "2013-10-02 12:56"
     }, 
     {
-      "path": "www.quizz.us-quizz-v1-20130926203254-java-1.16.0-rc.jar.properties", 
+      "path": "www.quizz.us-quizz-v1-20131002125656-java-1.16.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -702,5 +702,5 @@
   "packagePath": "crowdquiz.entities", 
   "language_version": "1.16.0-rc", 
   "id": "quizz:v1", 
-  "revision": 20130926203254
+  "revision": 20131002125656
 }
