@@ -46,7 +46,7 @@
             <!-- It will be moved (using JS) into form -->
             <h3>Thank you for completing quizz!</h3>
             You have answered correctly for <span id="correctCountSummary"></span>
-            out of <span id="totalCountSummary"></span>.
+            out of <span id="totalCountSummary"></span> questions.
 
             Share your results:
 
