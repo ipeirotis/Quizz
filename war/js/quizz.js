@@ -346,7 +346,7 @@ function hideFeedback() {
 function showFeedback(feedback, callbackf) {
 	displayFeedback(feedback);
     $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
-    	' class="btn btn-info" value="Skip feedback ..." />' );
+        ' class="btn btn-info" value="Next question ..." />' );
     $('#feedback').show();
     var executedCallback = false;
     $('#feedback').delay(5000).fadeOut(600, function () {
