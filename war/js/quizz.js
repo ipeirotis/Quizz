@@ -2,6 +2,7 @@
 NUM_QUESTIONS = 10;
 CURRENT_QUIZZ = -1;
 QUIZZ_QUESTIONS = new Array();
+USER_ANSWERS = new Array();
 
 function fst(array) {
 	return array[0];
@@ -134,8 +135,15 @@ function shuffle(array) {
 	function endOfQuizzPack () {
 		$('#addUserEntry').hide();
 		$('#questionsPackProgress').hide();
-		$('#form').html("Thank you for completing quizz. " +
-		 "Refresh page to start egain. Your statistics are now being updated ...");
+		$('#form').html($('#quizEndSummary').html());
+		var correctCount = 0;
+		for (var i=0;i<USER_ANSWERS.length;i++) {
+			if (clearString(QUIZZ_QUESTIONS[i].correct) === clearString(USER_ANSWERS[i])) {
+				correctCount++;
+			}
+		}
+		$('#correctCountSummary').html(correctCount);
+		$('#totalCountSummary').html(QUIZZ_QUESTIONS.length);
 	}
 
 	function answeredQuestion (nname, vvalue){
@@ -152,8 +160,13 @@ function shuffle(array) {
 					hideQuestion();
 					showFeedback(feedback, prepareNextQuestion);
 			});
+			USER_ANSWERS.push(vvalue);
 			return false;
 		}
+	}
+
+	function clearString(str) {
+		return $.trim(str).replace(/"+$/, "").replace(/^"+/, "");
 	}
 
 	function populateQuestion(question) {
@@ -170,7 +183,7 @@ function shuffle(array) {
 		shuffle(question.answers);
 		$.each(question.answers, function(index, value) {
 			//  triming " chars and escaping internal ones
-			value = $.trim(value).replace(/"+$/, "").replace(/^"+/, "");
+			value = clearString(value);
 			value = $.trim(value).replace(/"/, "\\\"");
 			var uaid = "useranswer" + index;
 			var huaid = '#' + uaid;

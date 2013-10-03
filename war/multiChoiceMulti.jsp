@@ -42,6 +42,16 @@
             </form>
         <span id="questionsPackProgress"></span>
         </div>
+        <div id="quizEndSummary" style="display: none;">
+            <!-- It will be moved (using JS) into form -->
+            <h3>Thank you for completing quizz!</h3>
+            You have answered correctly for <span id="correctCountSummary"></span>
+            out of <span id="totalCountSummary"></span>.
+
+            Share your results:
+
+            <h3><a id="restartQuizzLink" href="/startQuiz?relation=">Clik here to start again</a></h3>
+        </div>
     </div>
 
     <script>
@@ -51,6 +61,7 @@
         var quiz = getURLParameterByName('relation');
         var gclid = getURLParameterByName('gclid');
         $('#gclid').val(gclid);
+        $('#restartQuizzLink').attr('href', $('#restartQuizzLink').attr('href') + quiz);
 
         hideDivs();
         makeLoadingScreen("Loading questions");
