@@ -5,7 +5,7 @@
 	<div class="container" style="text-align: center; max-width: 640px">
 
 		<h2>
-			<span style="color: maroon">Quizz</span>es
+			<a href="/"><span style="color: maroon">Quizz</span>.us</a>
 		</h2>
 		<table class="table table-striped  table-bordered" id="quizzes">
 			<tbody>
