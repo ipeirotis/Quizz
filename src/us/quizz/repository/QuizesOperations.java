@@ -31,7 +31,7 @@ public class QuizesOperations {
 	 * Could be done a little bit better but it is much simpler that way ....
 	 */
 	protected static ArrayList<String> generateWrongAnswers(String quizId, Set<String> questions, int n) {
-		ArrayList<String> randomGolds = QuizQuestionRepository.getSomeQuizGoldAnswers(quizId, n * 150);
+		ArrayList<String> randomGolds = QuizQuestionRepository.getSomeQuizGoldAnswers(quizId, n * 125);
 		Set<String> wrongAnswers = new HashSet<String>(randomGolds);
 		wrongAnswers.removeAll(questions);
 		for (String questionMid: questions) {
