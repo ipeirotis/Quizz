@@ -4,10 +4,7 @@
 <body>
     <div class="container" style="text-align: center; max-width:720px">
 
-        <h2>
-            <a href="/"><span style="color: maroon">Quizz</span>.us</a>
-        </h2>
-
+        <jsp:include page="/logo.jsp"></jsp:include>
 
         <div id="scores" class="alert alert-info" style="text-align: center;">
             <div id="inScores">
