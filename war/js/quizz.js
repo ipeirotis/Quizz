@@ -231,13 +231,31 @@ function shuffle(array) {
 		return (100. * fValue).toFixed(0) + "%"
 	}
 
+	function isNormalNumber(value) {
+		return ! (isNaN(value) || typeof value === "undefined");
+	}
+
+	function safeNumber(value) {
+		return  isNormalNumber(value) ? value.toString() : "---" ;
+	}
+
+	function ranksFormating(kind, userValue, totalValue) {
+		var prefix = "Rank (" + kind + "correct): ";
+		var sufix = "---";
+		if (isNormalNumber(userValue) && isNormalNumber(totalValue)) {
+			var position = userValue / totalValue;
+			sufix = "" + userValue + "/" + totalValue + " (Top " + toPercentage(position) + ")";
+		}
+		return prefix + sufix;
+	}
+
 
 	function displayPerformanceScores(performance) {
 		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
 		$('#showPercentageCorrect').html("Correct (%): " + toPercentage(performance.percentageCorrect));
-		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankPercentCorrect/performance.totalUsers)+")");
-		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankTotalCorrect/performance.totalUsers)+")");
+		$('#showPercentageRank').html(ranksFormating("%", performance.rankPercentCorrect, performance.totalUsers));
+		$('#showTotalCorrectRank').html(ranksFormating("#", performance.rankTotalCorrect, performance.totalUsers));
 
 		$("#inScores").show();
 		$("#scoresLoading").hide();
@@ -254,7 +272,14 @@ function shuffle(array) {
 			$('#showMessage').attr('class', 'alert alert-error');
 		}
 		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswer+'</span>.');
-		$('#showCrowdAnswers').html('Crowd performance: <span class="label label-info">'+feedback.numCorrectAnswers+' out of the '+feedback.numTotalAnswers+' users	 ('+feedback.difficulty+') answered correctly.</span>');
+
+		var crowdPerformance;
+		if (isNormalNumber(feedback.numCorrectAnswers) && isNormalNumber(feedback.numTotalAnswers)) {
+			crowdPerformance = feedback.numCorrectAnswers+' out of the '+feedback.numTotalAnswers+' users	 ('+feedback.difficulty+') answered correctly.';
+		} else {
+			crowdPerformance = "not available yet ...";
+		}
+		$('#showCrowdAnswers').html('Crowd performance: <span class="label label-info">' + crowdPerformance + '</span>');
 	}
 
 	function hideDivs() {
