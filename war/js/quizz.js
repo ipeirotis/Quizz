@@ -343,17 +343,33 @@ function hideFeedback() {
     feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
 }
 
+function setFeedbackBtnMsg(val) {
+	$('#skipFeedbackBtn').attr('value', "Next question ... (" + val + ")");
+}
+
 function showFeedback(feedback, callbackf) {
 	displayFeedback(feedback);
     $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
-        ' class="btn btn-info" value="Next question ..." />' );
+        ' class="btn btn-info"/>' );
+    setFeedbackBtnMsg(5);
     $('#feedback').show();
     var executedCallback = false;
-    $('#feedback').delay(5000).fadeOut(600, function () {
-    	executedCallback = true;
-    	callbackf();
-    });
+
+    var intervalId = setInterval(function () {
+    	var valAttr = $('#skipFeedbackBtn').attr('value');
+    	var oldVal = parseInt(valAttr.substr(valAttr.indexOf("(") + 1, 1));
+    	setFeedbackBtnMsg(oldVal - 1);
+    	if (oldVal === 1) {
+    		clearInterval(intervalId);
+		    $('#feedback').fadeOut(600, function () {
+		    	executedCallback = true;
+		    	callbackf();
+		    });
+    	}
+    }, 1000);
+
     $('#skipFeedbackBtn').click (function () {
+    	clearInterval(intervalId);
     	$('#feedback').stop(true, true);
     	$('#feedback').hide();
     	if (!executedCallback) callbackf();
