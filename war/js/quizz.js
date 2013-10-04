@@ -144,6 +144,14 @@ function shuffle(array) {
 		}
 		$('#correctCountSummary').html(correctCount);
 		$('#totalCountSummary').html(QUIZZ_QUESTIONS.length);
+		updateSharingParameters(correctCount, QUIZZ_QUESTIONS.length);
+	}
+
+	function updateSharingParameters(correctCount, totalCount) {
+		var sbb = $("#sharingButtonsBox");
+		sbb.html(sbb.html().replace("CORRECT_COUNT", correctCount.toString())
+			.replace("TOTAL_COUNT", totalCount.toString()));
+		gapi.plus.go();
 	}
 
 	function answeredQuestion (nname, vvalue){
