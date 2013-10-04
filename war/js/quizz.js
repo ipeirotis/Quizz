@@ -252,6 +252,13 @@ function shuffle(array) {
 		return  isNormalNumber(value) ? value.toString() : "---" ;
 	}
 
+	function toSafePercentage(fValue) {
+		if (isNormalNumber(fValue))
+			return toPercentage(fValue);
+		else
+			return "---";
+	}
+
 	function ranksFormating(kind, userValue, totalValue) {
 		var prefix = "Rank (" + kind + "correct): ";
 		var sufix = "---";
@@ -266,7 +273,7 @@ function shuffle(array) {
 	function displayPerformanceScores(performance) {
 		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
-		$('#showPercentageCorrect').html("Correct (%): " + toPercentage(performance.percentageCorrect));
+		$('#showPercentageCorrect').html("Correct (%): " + toSafePercentage(performance.percentageCorrect));
 		$('#showPercentageRank').html(ranksFormating("%", performance.rankPercentCorrect, performance.totalUsers));
 		$('#showTotalCorrectRank').html(ranksFormating("#", performance.rankTotalCorrect, performance.totalUsers));
 
