@@ -215,14 +215,19 @@ public class QuizPerformance {
 		int numberOfMultipleChoiceOptions = 4;
 		try {
 			
-			// We do not want to give any positive score to someone who is "too wrong" so that their
-			// answers become accidentally informative. So, if the quality drops below random
-			// we set it at a level equal to random.
 			double quality = this.getPercentageCorrect();
+			
+			/*
+			We do not want to give any positive score to someone who is "too wrong" so that their
+			answers become accidentally informative. So, if the quality drops below random
+			we set it at a level equal to random.
+			*/
+			/*
 			if (quality<1.0/numberOfMultipleChoiceOptions) {
 				this.score=0.0;
 				return;
 			}
+			*/
 			
 			double meanInfoGain = Helper.getBayesianInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
 			//double varInfoGain = Helper.getBayesianVarianceInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);

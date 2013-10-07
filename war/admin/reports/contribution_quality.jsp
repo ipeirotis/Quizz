@@ -75,7 +75,7 @@
 					QuizRepository.storeQuiz(quiz);
 					%>
 					<tr>
-						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getRelation() %>"><%=quiz.getName()%></a></td>
+						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getRelation() %>&start=0&end=500"><%=quiz.getName()%></a></td>
 						<td><%=quiz.getContributingUsers()%></td>
 						<td><%=quiz.getCorrectAnswers()%></td>
 						<td><%=quiz.getTotalAnswers()%></td>

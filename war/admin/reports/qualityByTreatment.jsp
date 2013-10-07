@@ -14,6 +14,8 @@
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
 <% String relation = request.getParameter("quiz"); %>
+<% int start = Integer.parseInt(request.getParameter("start")); %>
+<% int end   = Integer.parseInt(request.getParameter("end")); %>
 
 <body>
 	<div class="container pagination-centered">
@@ -41,9 +43,10 @@
 					<th>Score</th>
 				</tr>
 				<%
-
+				
 					query = pm.newQuery(QuizPerformance.class);
 					query.setOrdering("score desc");
+					query.setRange(start, end);
 					List<QuizPerformance> perf = null;
 					if (relation!=null) {
 						query.setFilter("quiz == quizParam");
@@ -60,7 +63,7 @@
 						try {
 							user = pm.getObjectById(User.class, User.generateKeyFromID(qp.getUserid()));
 						} catch (Exception e) {
-							
+							continue;
 						}
 						%>
 						<tr>
@@ -81,9 +84,17 @@
 			
 				//}
 				pm.close();
+				
+				int prevStart = start-(end-start);
+				if (prevStart<0) prevStart = 0;
+				int prevEnd = Math.max(start, prevStart + (end-start));
+				int nextStart = end;
+				int nextEnd = end + (end-start);
 				%>
 
 			</table>
+			<a href="qualityByTreatment.jsp?quiz=<%=relation%>&start=<%=prevStart%>&end=<%=prevEnd%>">Prev</a> ... <a href="qualityByTreatment.jsp?quiz=<%=relation%>&start=<%=nextStart%>&end=<%=nextEnd%>">Next</a>
+			 
 		</div>
 	</div>
 </body>

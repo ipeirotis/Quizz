@@ -7,23 +7,23 @@
 
   <queue>
     <name>quizquestions</name>
-    <rate>10/s</rate>
+    <rate>50/s</rate>
     <bucket-size>50</bucket-size>
-    <max-concurrent-requests>20</max-concurrent-requests>
+    <max-concurrent-requests>200</max-concurrent-requests>
   </queue>
 
   <queue>
     <name>answers</name>
     <rate>50/s</rate>
     <bucket-size>50</bucket-size>
-    <max-concurrent-requests>20</max-concurrent-requests>
+    <max-concurrent-requests>200</max-concurrent-requests>
   </queue>
 
   <queue>
     <name>updateUserStatistics</name>
     <rate>50/s</rate>
     <bucket-size>50</bucket-size>
-    <max-concurrent-requests>20</max-concurrent-requests>
+    <max-concurrent-requests>200</max-concurrent-requests>
   </queue>
 
   <queue>
