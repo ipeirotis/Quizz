@@ -4,9 +4,8 @@
 <body>
 	<div class="container" style="text-align: center; max-width: 640px">
 
-		<h2>
-			<span style="color: maroon">Quizz</span>es
-		</h2>
+        <jsp:include page="/logo.jsp"></jsp:include>
+
 		<table class="table table-striped  table-bordered" id="quizzes">
 			<tbody>
 				<tr>

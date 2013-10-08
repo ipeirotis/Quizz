@@ -2,6 +2,7 @@
 NUM_QUESTIONS = 10;
 CURRENT_QUIZZ = -1;
 QUIZZ_QUESTIONS = new Array();
+USER_ANSWERS = new Array();
 
 function fst(array) {
 	return array[0];
@@ -134,8 +135,23 @@ function shuffle(array) {
 	function endOfQuizzPack () {
 		$('#addUserEntry').hide();
 		$('#questionsPackProgress').hide();
-		$('#form').html("Thank you for completing quizz. " +
-		 "Refresh page to start egain. Your statistics are now being updated ...");
+		$('#form').html($('#quizEndSummary').html());
+		var correctCount = 0;
+		for (var i=0;i<USER_ANSWERS.length;i++) {
+			if (clearString(QUIZZ_QUESTIONS[i].correct) === clearString(USER_ANSWERS[i])) {
+				correctCount++;
+			}
+		}
+		$('#correctCountSummary').html(correctCount);
+		$('#totalCountSummary').html(QUIZZ_QUESTIONS.length);
+		updateSharingParameters(correctCount, QUIZZ_QUESTIONS.length);
+	}
+
+	function updateSharingParameters(correctCount, totalCount) {
+		var sbb = $("#sharingButtonsBox");
+		sbb.html(sbb.html().replace("CORRECT_COUNT", correctCount.toString())
+			.replace("TOTAL_COUNT", totalCount.toString()));
+		gapi.plus.go();
 	}
 
 	function answeredQuestion (nname, vvalue){
@@ -152,8 +168,13 @@ function shuffle(array) {
 					hideQuestion();
 					showFeedback(feedback, prepareNextQuestion);
 			});
+			USER_ANSWERS.push(vvalue);
 			return false;
 		}
+	}
+
+	function clearString(str) {
+		return $.trim(str).replace(/"+$/, "").replace(/^"+/, "");
 	}
 
 	function populateQuestion(question) {
@@ -170,7 +191,7 @@ function shuffle(array) {
 		shuffle(question.answers);
 		$.each(question.answers, function(index, value) {
 			//  triming " chars and escaping internal ones
-			value = $.trim(value).replace(/"+$/, "").replace(/^"+/, "");
+			value = clearString(value);
 			value = $.trim(value).replace(/"/, "\\\"");
 			var uaid = "useranswer" + index;
 			var huaid = '#' + uaid;
@@ -231,13 +252,38 @@ function shuffle(array) {
 		return (100. * fValue).toFixed(0) + "%"
 	}
 
+	function isNormalNumber(value) {
+		return ! (isNaN(value) || typeof value === "undefined");
+	}
+
+	function safeNumber(value) {
+		return  isNormalNumber(value) ? value.toString() : "---" ;
+	}
+
+	function toSafePercentage(fValue) {
+		if (isNormalNumber(fValue))
+			return toPercentage(fValue);
+		else
+			return "---";
+	}
+
+	function ranksFormating(kind, userValue, totalValue) {
+		var prefix = "Rank (" + kind + "correct): ";
+		var sufix = "---";
+		if (isNormalNumber(userValue) && isNormalNumber(totalValue)) {
+			var position = userValue / totalValue;
+			sufix = "" + userValue + "/" + totalValue + " (Top " + toPercentage(position) + ")";
+		}
+		return prefix + sufix;
+	}
+
 
 	function displayPerformanceScores(performance) {
 		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
-		$('#showPercentageCorrect').html("Correct (%): " + toPercentage(performance.percentageCorrect));
-		$('#showPercentageRank').html("Rank (%correct): "+ performance.rankPercentCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankPercentCorrect/performance.totalUsers)+")");
-		$('#showTotalCorrectRank').html("Rank (#correct): "+ performance.rankTotalCorrect + "/" + performance.totalUsers +" (Top-"+toPercentage(performance.rankTotalCorrect/performance.totalUsers)+")");
+		$('#showPercentageCorrect').html("Correct (%): " + toSafePercentage(performance.percentageCorrect));
+		$('#showPercentageRank').html(ranksFormating("%", performance.rankPercentCorrect, performance.totalUsers));
+		$('#showTotalCorrectRank').html(ranksFormating("#", performance.rankTotalCorrect, performance.totalUsers));
 
 		$("#inScores").show();
 		$("#scoresLoading").hide();
@@ -254,7 +300,14 @@ function shuffle(array) {
 			$('#showMessage').attr('class', 'alert alert-error');
 		}
 		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswer+'</span>.');
-		$('#showCrowdAnswers').html('Crowd performance: <span class="label label-info">'+feedback.numCorrectAnswers+' out of the '+feedback.numTotalAnswers+' users	 ('+feedback.difficulty+') answered correctly.</span>');
+
+		var crowdPerformance;
+		if (isNormalNumber(feedback.numCorrectAnswers) && isNormalNumber(feedback.numTotalAnswers)) {
+			crowdPerformance = feedback.numCorrectAnswers+' out of the '+feedback.numTotalAnswers+' users	 ('+feedback.difficulty+') answered correctly.';
+		} else {
+			crowdPerformance = "not available yet ...";
+		}
+		$('#showCrowdAnswers').html('Crowd performance: <span class="label label-info">' + crowdPerformance + '</span>');
 	}
 
 	function hideDivs() {
@@ -318,17 +371,33 @@ function hideFeedback() {
     feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
 }
 
+function setFeedbackBtnMsg(val) {
+	$('#skipFeedbackBtn').attr('value', "Next question ... (" + val + ")");
+}
+
 function showFeedback(feedback, callbackf) {
 	displayFeedback(feedback);
     $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
-    	' class="btn btn-info" value="Skip feedback ..." />' );
+        ' class="btn btn-info"/>' );
+    setFeedbackBtnMsg(5);
     $('#feedback').show();
     var executedCallback = false;
-    $('#feedback').delay(5000).fadeOut(600, function () {
-    	executedCallback = true;
-    	callbackf();
-    });
+
+    var intervalId = setInterval(function () {
+    	var valAttr = $('#skipFeedbackBtn').attr('value');
+    	var oldVal = parseInt(valAttr.substr(valAttr.indexOf("(") + 1, 1));
+    	setFeedbackBtnMsg(oldVal - 1);
+    	if (oldVal === 1) {
+    		clearInterval(intervalId);
+		    $('#feedback').fadeOut(600, function () {
+		    	executedCallback = true;
+		    	callbackf();
+		    });
+    	}
+    }, 1000);
+
     $('#skipFeedbackBtn').click (function () {
+    	clearInterval(intervalId);
     	$('#feedback').stop(true, true);
     	$('#feedback').hide();
     	if (!executedCallback) callbackf();

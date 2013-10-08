@@ -34,4 +34,9 @@
 <meta property="og:description" content="A set of quizzes that will assess your knowledge in various areas, and allow you to compare against others." />
 <meta property="og:site_name" content="Quizz.us" />
 
+
+<!-- g+ sharing. -->
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+  {parsetags: 'explicit'}
+</script>
 </head>

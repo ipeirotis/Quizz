@@ -22,3 +22,13 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+*.swp
+
+# some generated but not needed libs
+endpoint-libs/libquizz-v1/quizz/libs-sources/google-*sources.jar
+endpoint-libs/libquizz-v1/quizz/libs/google-*.jar*
+endpoint-libs/libquizz-v1/quizz/dependencies/google-*.html
+endpoint-libs/libquizz-v1/quizz/www.quizz.us-quizz-v1-*.jar*
+
+war/WEB-INF/lib/google-*.jar
+

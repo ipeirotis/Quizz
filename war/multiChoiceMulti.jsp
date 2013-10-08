@@ -4,10 +4,7 @@
 <body>
     <div class="container" style="text-align: center; max-width:720px">
 
-        <h2>
-            <a href="/"><span style="color: maroon">Quizz</span>.us</a>
-        </h2>
-
+        <jsp:include page="/logo.jsp"></jsp:include>
 
         <div id="scores" class="alert alert-info" style="text-align: center;">
             <div id="inScores">
@@ -45,6 +42,39 @@
             </form>
         <span id="questionsPackProgress"></span>
         </div>
+        <div id="quizEndSummary" style="display: none;">
+            <!-- It will be moved (using JS) into form -->
+            <h3>Thank you for completing quizz!</h3>
+            <p>You have answered correctly for <span id="correctCountSummary"></span>
+            out of <span id="totalCountSummary"></span> questions.</p>
+
+            <div id="sharingButtonsBox">
+
+            <h4>Share your results:</h4>
+                <table width="50%" height="100%" align="center" valign="center">
+                    <tr><td>
+                        <a href="#"
+                          onclick="
+                            window.open(
+                              'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent('http://www.quizz.us'),
+                              'facebook-share-dialog',
+                              'width=626,height=436');
+                            return false;">
+                          Facebook
+                        </a>
+                    </td><td>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.quizz.us" data-text="I have just answered CORRECT_COUNT out of TOTAL_COUNT questions correctly!" data-size="large" data-count="none">Tweet</a>
+                        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                    </td><td>
+                        <!-- Place this tag where you want the share button to render. -->
+                        <div class="g-plus" data-action="share" data-annotation="none" data-height="24" data-href="http://www.quizz.us"></div>
+                    </td></tr>
+                </table>
+            </div>
+
+
+            <h3><a id="restartQuizzLink" href="/startQuiz?relation=">Clik here to start again</a></h3>
+        </div>
     </div>
 
     <script>
@@ -54,6 +84,7 @@
         var quiz = getURLParameterByName('relation');
         var gclid = getURLParameterByName('gclid');
         $('#gclid').val(gclid);
+        $('#restartQuizzLink').attr('href', $('#restartQuizzLink').attr('href') + quiz);
 
         hideDivs();
         makeLoadingScreen("Loading questions");
