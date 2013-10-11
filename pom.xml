@@ -156,6 +156,9 @@
                 <version>${appengine.target.version}</version>
                 <configuration>
                     <port>8888</port>
+                    <jvmFlags>
+                        <jvmFlag>-Ddatastore.backing_store=${basedir}/local_db.bin</jvmFlag>
+                    </jvmFlags>
                 </configuration>
             </plugin>
 
@@ -174,7 +177,7 @@
                     </dependencies>
                     <configuration>
                     <fork>false</fork>
-                    <log4jConfiguration>${basedir}/log4j.properties</log4jConfiguration>
+                    <log4jConfiguration>${basedir}/src/main/resources/log4j.properties</log4jConfiguration>
                     <verbose>true</verbose>
                     <props>${basedir}/datanucleus.properties</props>
                 </configuration>
