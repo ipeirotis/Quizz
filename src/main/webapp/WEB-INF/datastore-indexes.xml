@@ -1,0 +1,12 @@
+<datastore-indexes   autoGenerate="true">
+
+    <datastore-index kind="QuizPerformance" ancestor="false" source="manual">
+        <property name="quiz" direction="asc"/>
+        <property name="score" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="SilverAnswer" ancestor="false" source="manual">
+        <property name="mid" direction="asc"/>
+        <property name="relation" direction="asc"/>
+        <property name="probability" direction="asc"/>
+    </datastore-index>
+ </datastore-indexes>
