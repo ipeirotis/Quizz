@@ -135,20 +135,6 @@ public class QuizQuestionRepository {
 		return result;
 	}
 	
-	public static QuizQuestionInstance getQuizQuestionInstanceWithGold(String quiz, String mid, String name, int answers) {
-		String key = "qqi_"+quiz+mid;
-		QuizQuestionInstance result = CachePMF.get(key, QuizQuestionInstance.class);
-		if (result != null) return result;
-		
-		Set<String> choices =  QuizQuestionRepository.getIncorrectAnswers(quiz, mid, name, answers-1);
-		String gold = QuizQuestionRepository.getRandomGoldAnswer(quiz, mid);
-		choices.add(gold);
-		
-		result = new QuizQuestionInstance(quiz, mid, choices, gold, true);
-		CachePMF.put(key, result);
-		return result;
-	}
-	
 	public static List<String> getUserAnswers(String quizid, String mid) {
 
 		PersistenceManager pm = PMF.getPM();
