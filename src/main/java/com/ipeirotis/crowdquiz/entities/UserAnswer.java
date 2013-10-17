@@ -7,9 +7,15 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswer {
+	
+    public static Key generateKeyFromID(String questionID, String userID) {
+        return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_" + questionID + "_" + userID);
+}
+
 
 	@Persistent
 	private String	userid;
@@ -34,13 +40,24 @@ public class UserAnswer {
 	private String	referer;
 
 	@Persistent
-	private String	relation;
+	private Long questionID;
 
 	@Persistent
 	private String	browser;
 
 	@Persistent
 	private String	action;
+	
+    @Persistent
+    private Boolean isCorrect;
+
+    public Boolean getIsCorrect() {
+            return isCorrect;
+    }
+
+    public void setIsCorrect(Boolean isCorrect) {
+            this.isCorrect = isCorrect;
+    }
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -48,12 +65,14 @@ public class UserAnswer {
 
 
 	
-	public UserAnswer(String userid, String relation, String mid, Long answerID) {
-
-		this.relation = relation.replace('\t', ' ');
+	public UserAnswer(String userid, Long questionID, Long answerID) {
+		this.questionID = questionID;
 		this.answerID = answerID;
-		this.userid = userid.replace('\t', ' ');
-
+		this.userid = userid;
+	}
+	
+	public UserAnswer(String userid, String questionID, String answerID) {
+		this(userid, Long.parseLong(questionID), Long.parseLong(answerID));
 	}
 
 	public String getAction() {
@@ -78,10 +97,6 @@ public class UserAnswer {
 	public Key getKey() {
 		return key;
 	}
-	
-	public String getRelation() {
-		return relation;
-	}
 
 	public Long getTimestamp() {
 		return timestamp;
@@ -93,6 +108,10 @@ public class UserAnswer {
 
 	public String getUserid() {
 		return userid;
+	}
+	
+	public Long getQuestionID(){
+		return questionID;
 	}
 
 	public void setAction(String action) {
@@ -113,10 +132,6 @@ public class UserAnswer {
 
 	public void setIpaddress(String ipaddress) {
 		this.ipaddress = ipaddress.replace('\t', ' ');
-	}
-
-	public void setRelation(String relation) {
-		this.relation = relation.replace('\t', ' ');
 	}
 
 	public void setTimestamp(Long timestamp) {

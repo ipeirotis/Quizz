@@ -11,7 +11,7 @@ import com.google.gson.JsonPrimitive;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class QuizAnswer {
+public class Answer {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -34,6 +34,15 @@ public class QuizAnswer {
 	
 	@Persistent
 	private JsonObject metadata;
+	
+	@Persistent
+	private QuizQuestion question;
+	
+	@Persistent
+	private Boolean isGold;
+	
+	@Persistent
+	private Double probability;
 	
 	
 	public Long getId(){
@@ -86,5 +95,29 @@ public class QuizAnswer {
 	
 	public long getLongMetadata(String key){
 		return getPrimitiveMD(key).getAsLong();
+	}
+	
+	public boolean isGold() {
+		return isGold;
+	}
+	
+	public void setGold(Boolean isGold){
+		this.isGold = isGold;
+	}
+	
+	public boolean isSilver() {
+		return probability != null;
+	}
+	
+	public Double getProbability(){
+		return probability;
+	}
+	
+	public void setProbability(Double probability){
+		this.probability = probability;
+	}
+	
+	public void setSource(String source){
+		this.source = source;
 	}
 }

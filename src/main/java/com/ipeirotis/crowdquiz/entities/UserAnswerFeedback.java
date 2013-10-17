@@ -21,8 +21,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswerFeedback {
 
-	public static Key generateKeyFromID(String quiz, String userid, String mid) {
-		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(), "id_" + quiz + "_" + userid + "_" + mid);
+	public static Key generateKeyFromID(String questionID, String userid) {
+		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(), "id_" + questionID + "_" + userid);
 	}
 	
 	@PrimaryKey
@@ -30,13 +30,10 @@ public class UserAnswerFeedback {
 	private Key key;
 
 	@Persistent
-	private String	quiz;
+	private String	questionID;
 	
 	@Persistent
 	private String	userid;
-
-	@Persistent
-	private String	mid;
 
 	@Persistent
 	private String	userAnswer;
@@ -56,16 +53,15 @@ public class UserAnswerFeedback {
 	@Persistent
 	private String	difficulty;
 
-	public UserAnswerFeedback(String quiz, String userid, String mid, String userAnswer, String correctAnswer) {
+	public UserAnswerFeedback(String questionID, String userid, String userAnswer, String correctAnswer) {
 
-		this.quiz = quiz;
+		this.questionID = questionID;
 		this.userid = userid;
-		this.mid = mid;
 		this.userAnswer=userAnswer;
 		this.correctAnswer=correctAnswer;
 		this.isCorrect = (userAnswer.equals(correctAnswer));
 
-		this.key = generateKeyFromID(quiz, userid, mid);
+		this.key = generateKeyFromID(questionID, userid);
 	}
 
 	public Key getKey() {
@@ -76,12 +72,12 @@ public class UserAnswerFeedback {
 		this.key = key;
 	}
 
-	public String getQuiz() {
-		return quiz;
+	public String getQuestionID() {
+		return questionID;
 	}
 
-	public void setQuiz(String quiz) {
-		this.quiz = quiz;
+	public void setQuestionID(String questionID) {
+		this.questionID = questionID;
 	}
 
 	public String getUserid() {
@@ -90,14 +86,6 @@ public class UserAnswerFeedback {
 
 	public void setUserid(String userid) {
 		this.userid = userid;
-	}
-
-	public String getMid() {
-		return mid;
-	}
-
-	public void setMid(String mid) {
-		this.mid = mid;
 	}
 
 	public String getUserAnswer() {

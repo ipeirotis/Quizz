@@ -1,8 +1,6 @@
 package com.ipeirotis.crowdquiz.entities;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -12,7 +10,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 import us.quizz.repository.QuizQuestionRepository;
 
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class QuizQuestion {
@@ -36,14 +33,32 @@ public class QuizQuestion {
 	private Integer numberOfUserAnswers;
 	
 	@Persistent
+	private Boolean hasUserAnswers;
+	
+	@Persistent
 	private Double totalUserScore;
+	
+    @Persistent
+    private Boolean hasGoldAnswer;
+
+    @Persistent
+    private Integer numberOfGoldAnswers;
+
+    @Persistent
+    private Boolean hasSilverAnswers;
+
+    @Persistent
+    private Integer numberOfSilverAnswers;
+    
+    @Persistent
+    private Integer numberOfCorrentUserAnswers;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private Long key;
 	
 	@Persistent
-	private List<QuizAnswer> answers;
+	private List<Answer> answers;
 
 	public QuizQuestion(String quizID, String name, Double weight) {
 
@@ -60,7 +75,7 @@ public class QuizQuestion {
 		return adTextId;
 	}
 
-	public Key getKey() {
+	public Long getKey() {
 		return key;
 	}
 	
@@ -95,6 +110,10 @@ public class QuizQuestion {
 	 */
 	public String getQuizzID() {
 		return quizID;
+	}
+	
+	public Long getID() {
+		return key;
 	}
 
 	/**
@@ -139,6 +158,14 @@ public class QuizQuestion {
 	public void setNumberOfUserAnswers(Integer numberOfUserAnswers) {
 		this.numberOfUserAnswers = numberOfUserAnswers;
 	}
+	
+	public Integer getNumberOfCorrentUserAnswers() {
+		return numberOfCorrentUserAnswers;
+	}
+
+	public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
+		this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
+	}
 
 	public Double getTotalUserScore() {
 		return totalUserScore;
@@ -146,6 +173,22 @@ public class QuizQuestion {
 
 	public void setTotalUserScore(Double totalUserScore) {
 		this.totalUserScore = totalUserScore;
+	}
+
+	public void setHasGoldAnswer(Boolean hasGoldAnswer) {
+		this.hasGoldAnswer = hasGoldAnswer;
+	}
+
+	public void setHasSilverAnswers(Boolean hasSilverAnswers) {
+		this.hasSilverAnswers = hasSilverAnswers;
+	}
+
+	public void setHasUserAnswers(Boolean hasUserAnswers) {
+		this.hasUserAnswers = hasUserAnswers;
+	}
+	
+	public Boolean getHasUserAnswers(){
+		return hasUserAnswers;
 	}
 
 }

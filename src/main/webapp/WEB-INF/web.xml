@@ -22,18 +22,14 @@
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddTreatment</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddGoldAnswer</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddGoldAnswer</servlet-class>
-	</servlet>
-		<servlet>
 		<servlet-name>UploadGoldAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadGoldAnswers</servlet-class>
 	</servlet>
-			<servlet>
-		<servlet-name>AddSilverAnswer</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddSilverAnswer</servlet-class>
+	<servlet>
+		<servlet-name>AddAnswer</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAnswer</servlet-class>
 	</servlet>
-			<servlet>
+	<servlet>
 		<servlet-name>UploadSilverAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadSilverAnswers</servlet-class>
 	</servlet>
@@ -101,10 +97,6 @@
 		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.ScanUserAnswersAndCreateUsers</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>CleanupFreebaseNames</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.CleanupFreebaseNames</servlet-class>
-	</servlet>
 
 
 	<servlet-mapping>
@@ -129,16 +121,12 @@
 		<url-pattern>/uploadQuestions</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>AddGoldAnswer</servlet-name>
-		<url-pattern>/addGoldAnswer</url-pattern>
+		<servlet-name>AddAnswer</servlet-name>
+		<url-pattern>/addAnswer</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UploadGoldAnswers</servlet-name>
 		<url-pattern>/uploadGoldAnswers</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AddSilverAnswer</servlet-name>
-		<url-pattern>/addSilverAnswer</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UploadSilverAnswers</servlet-name>
@@ -197,12 +185,6 @@
 		<servlet-name>DeleteQuiz</servlet-name>
 		<url-pattern>/api/deleteQuiz</url-pattern>
 	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>CleanupFreebaseNames</servlet-name>
-		<url-pattern>/api/cleanupFreebaseNames</url-pattern>
-	</servlet-mapping>
-
 
 	<servlet-mapping>
 		<servlet-name>AddCampaign</servlet-name>

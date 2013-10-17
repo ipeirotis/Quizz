@@ -36,8 +36,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 		for (QuizQuestion quizquestion : quizquestions) {
 			queue.add(Builder.withUrl("/api/updateQuestionStatistics")
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
-					.param("relation", quizquestion.getRelation())
-					.param("mid", quizquestion.getFreebaseEntityId())
+					.param("questionID", quizquestion.getKey().toString())
 					.method(TaskOptions.Method.POST));
 		}
 	}

@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 
 public class QuizAnswerFactory {
 	
-	protected QuizAnswer getFreebaseAnswer(String mid, String name){
-		QuizAnswer answer = new QuizAnswer();
+	protected Answer getFreebaseAnswer(String mid, String name){
+		Answer answer = new Answer();
 		answer.setText(name);
 		JsonObject jo = new JsonObject();
 		jo.addProperty("mid", mid);

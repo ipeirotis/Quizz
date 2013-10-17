@@ -6,10 +6,9 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.ipeirotis.crowdquiz.entities.GoldAnswer;
 import com.ipeirotis.crowdquiz.entities.Quiz;
+import com.ipeirotis.crowdquiz.entities.Answer;
 import com.ipeirotis.crowdquiz.entities.QuizQuestion;
-import com.ipeirotis.crowdquiz.entities.SilverAnswer;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -44,7 +43,8 @@ public class QuizRepository {
 			pm.deletePersistent(quiz);
 			
 			Class<?>[] itemsClasses = new Class<?>[]{QuizQuestion.class,
-					GoldAnswer.class, SilverAnswer.class, UserAnswer.class};
+					Answer.class, UserAnswer.class};
+			// TODO
 			for (Class<?> cls: itemsClasses) {
 				deleteAll(pm, id, cls);
 			}
@@ -76,16 +76,8 @@ public class QuizRepository {
 		}
 	}
 	
-	public static Integer getNumberOfGoldAnswers(String quiz, boolean usecache) {
-		return getNumberOf("goldanswers", usecache, quiz, GoldAnswer.class);
-	}
-	
 	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
 		return getNumberOf("numquizquestions", usecache, quiz, QuizQuestion.class);
-	}
-	
-	public static Integer getNumberOfSilverAnswers(String quiz, boolean usecache) {
-		return getNumberOf("silveranswers", usecache, quiz, SilverAnswer.class);
 	}
 	
 	public static Integer getNumberOfUserAnswers(String quiz, boolean usecache) {
@@ -112,10 +104,6 @@ public class QuizRepository {
 		Quiz q = QuizRepository.getQuiz(quiz);
 		Integer count = QuizRepository.getNumberOfQuizQuestions(quiz, false);
 		q.setQuestions(count);
-		count = QuizRepository.getNumberOfGoldAnswers(quiz, false);
-		q.setGold(count);
-		count = QuizRepository.getNumberOfSilverAnswers(quiz, false);
-		q.setSilver(count);
 		count = QuizRepository.getNumberOfUserAnswers(quiz, false);
 		q.setSubmitted(count);
 		storeQuiz(q);

@@ -20,10 +20,10 @@ public class AddUserAnswer extends HttpServlet {
 
 		resp.setContentType("text/plain");
 
-		String action = req.getParameter("action");
-		String userid = req.getParameter("userid");
-		String relation = req.getParameter("relation");
-		String mid = req.getParameter("mid");
+		String action = req.getParameter("action").replace('\t', ' ');
+		String userid = req.getParameter("userid").replace('\t', ' ');
+		String questionStrID = req.getParameter("questionID").replace('\t', ' ');
+		Long questionID = Long.parseLong(questionStrID);
 		String useranswer = req.getParameter("useranswer");
 		String correct = req.getParameter("correct");
 		Boolean isCorrect = (correct.equals("true"));
@@ -37,8 +37,9 @@ public class AddUserAnswer extends HttpServlet {
 		} else {
 			return;
 		}
-
-		UserAnswer ue = new UserAnswer(userid, relation, mid, useranswer);
+		
+		Long answerId = Long.parseLong(useranswer);
+		UserAnswer ue = new UserAnswer(userid, questionID, answerId);
 		ue.setReferer(referer);
 		ue.setBrowser(browser);
 		ue.setIpaddress(ipAddress);

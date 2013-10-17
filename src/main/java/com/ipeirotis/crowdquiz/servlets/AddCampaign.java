@@ -30,18 +30,18 @@ public class AddCampaign extends HttpServlet {
 	
 		resp.setContentType("application/json");
 		
-		Utils.ensureParameters(req, "relation", "budget");
+		Utils.ensureParameters(req, "quizID", "budget");
 
 		try {
-			String relation = req.getParameter("relation").trim();
+			String quizID = req.getParameter("quizID").trim();
 			Integer dailyBudget = Integer.parseInt(req.getParameter("budget"));
 
 			CampaignManagement service = new CampaignManagement();
-			String campaignName = relation;
+			String campaignName = quizID;
 			Campaign campaign = service.createCampaign(campaignName, dailyBudget);
 			Long campaignId = service.publishCampaign(campaign);
 			
-			Quiz q = QuizRepository.getQuiz(relation);
+			Quiz q = QuizRepository.getQuiz(quizID);
 			q.setCampaignid(campaignId);
 			QuizRepository.storeQuiz(q);
 

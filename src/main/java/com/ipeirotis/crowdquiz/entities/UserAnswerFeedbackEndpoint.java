@@ -45,8 +45,8 @@ public class UserAnswerFeedbackEndpoint extends BaseCollectionEndpoint<UserAnswe
 	 * @return The entity with primary key id.
 	 */
 	@ApiMethod(name = "getUserAnswerFeedback")
-	public UserAnswerFeedback getUserAnswerFeedback(@Named("quiz") String quiz, @Named("userid")  String userid, @Named("mid") String mid) {
-		return PMF.singleGetObjectByIdThrowing(UserAnswerFeedback.class, UserAnswerFeedback.generateKeyFromID(quiz, userid, mid));
+	public UserAnswerFeedback getUserAnswerFeedback(@Named("question") String questionID, @Named("userid")  String userid) {
+		return PMF.singleGetObjectByIdThrowing(UserAnswerFeedback.class, UserAnswerFeedback.generateKeyFromID(questionID, userid));
 	}
 
 	/**

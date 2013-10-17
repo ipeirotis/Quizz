@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 
 import com.google.appengine.api.taskqueue.Queue;
@@ -29,11 +30,11 @@ public class ProcessUserAnswer extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		Utils.ensureParameters(req,
-				"relation", "mid", "gold", "correctanswers", "totalanswers");
+				"quizID", "questionID", "gold", "correctanswers", "totalanswers");
 
 		User user = User.getUseridFromCookie(req, resp);
-		String relation = req.getParameter("relation");
-		String mid = req.getParameter("mid");
+		String questionID = req.getParameter("questionID");
+		String quizID = req.getParameter("quizID");
 		String action, useranswer=null;
 		String idk = req.getParameter("idk");
 		if (idk==null) {
@@ -61,12 +62,12 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long timestamp = (new Date()).getTime();
 		Boolean isCorrect = useranswer.equals(gold);
 
-		UserAnswerFeedback uaf = createUserAnswerFeedback(user, relation, mid, useranswer,
+		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswer,
 				gold, numCorrectAnswers, numTotalAnswers);
-		quickUpdateQuizPerformance(user, relation, isCorrect, action);
-		storeUserAnswer(user, relation, mid, action, useranswer, ipAddress, browser,
+		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
+		storeUserAnswer(user, questionID, action, useranswer, ipAddress, browser,
 				referer, timestamp, isCorrect);
-		updateQuizPerformance(user, relation);
+		updateQuizPerformance(user, quizID);
 		returnUserAnswerFeedback(uaf, resp);
 	}
 
@@ -76,10 +77,9 @@ public class ProcessUserAnswer extends HttpServlet {
 		new Gson().toJson(uaf, resp.getWriter());
 	}
 
-	protected UserAnswerFeedback createUserAnswerFeedback(User user, String relation,
-			String mid, String useranswer, String gold,
-			String numCorrectAnswers, String numTotalAnswers) {
-		UserAnswerFeedback uaf = new UserAnswerFeedback(relation, user.getUserid(), mid, useranswer, gold);
+	protected UserAnswerFeedback createUserAnswerFeedback(User user, String questionID, String useranswer,
+			String gold, String numCorrectAnswers, String numTotalAnswers) {
+		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID, user.getUserid(), useranswer, gold);
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
 		uaf.computeDifficulty();
@@ -87,10 +87,11 @@ public class ProcessUserAnswer extends HttpServlet {
 		return uaf;
 	}
 
-	private void updateQuizPerformance(User user, String relation) {
+	private void updateQuizPerformance(User user, String questionID) {
 		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
+		String quizID = QuizQuestionRepository.getQuizQuestion(questionID).getQuizzID();
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
-				.param("quiz", relation)
+				.param("quiz", quizID)
 				.param("userid", user.getUserid())
 				.param("channelNotify", "true")
 				.method(TaskOptions.Method.POST));
@@ -108,10 +109,10 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param timestamp
 	 * @param isCorrect
 	 */
-	private void storeUserAnswer(User user, String relation, String mid, String action, String useranswer,
+	private void storeUserAnswer(User user, String questionID, String action, String useranswerID,
 			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
 
-		UserAnswer ue = new UserAnswer(user.getUserid(), relation, mid, useranswer);
+		UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
 		ue.setReferer(referer);
 		ue.setBrowser(browser);
 		ue.setIpaddress(ipAddress);
@@ -131,11 +132,11 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param isCorrect
 	 * @param action
 	 */
-	private void quickUpdateQuizPerformance(User user, String relation, Boolean isCorrect, String action) {
+	private void quickUpdateQuizPerformance(User user, String quizID, Boolean isCorrect, String action) {
 
-		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(relation, user.getUserid());
+		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(quizID, user.getUserid());
 		if (qp==null) {
-			qp = new QuizPerformance(relation, user.getUserid());
+			qp = new QuizPerformance(quizID, user.getUserid());
 		}
 
 		if (isCorrect) {

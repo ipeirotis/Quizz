@@ -20,14 +20,11 @@ public class AddQuizQuestion extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("text/plain");
-		Utils.ensureParameters(req, "relation", "mid", "name", "weight");
+		Utils.ensureParameters(req, "quizID", "mid", "name", "weight");
 
 		try {
-			String relation = req.getParameter("relation").trim();
-			resp.getWriter().println("Adding Relation: " + relation);
-
-			String mid = req.getParameter("mid").trim();
-			resp.getWriter().println("Entity ID: " + mid);
+			String quizID = req.getParameter("quizID").trim();
+			resp.getWriter().println("Adding to quiz: " + quizID);
 			
 			String name = req.getParameter("name").trim();
 			resp.getWriter().println("Entity name: " + name);
@@ -35,7 +32,7 @@ public class AddQuizQuestion extends HttpServlet {
 			Double weight = Double.parseDouble(req.getParameter("weight"));
 			resp.getWriter().println("Weight: " + weight);
 
-			QuizQuestion q = new QuizQuestion(relation, mid, name, weight);
+			QuizQuestion q = new QuizQuestion(quizID, name, weight);
 			PMF.singleMakePersistent(q);
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
