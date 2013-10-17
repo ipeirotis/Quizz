@@ -1,0 +1,105 @@
+define table kv /namespace/knowledge-vault/data/latest/final/columnio/kv_final.columnio*;
+
+set accounting_group knowledge-panels-users
+
+DEFINE INLINE TABLE query_demand
+SELECT
+    `prefix` as mid,
+    locale_frequency.frequency as obj_frequency, 
+    attribute_support.attribute_id AS pred,
+    SUM(attribute_support.support.frequency) AS pred_frequency
+FROM (FLATTEN(FLATTEN(kgraph.completions.latest, attribute_support.attribute_id), locale_frequency))
+WHERE locale_frequency.locale = "en" 
+      AND attribute_support.support.locale="en" 
+      AND attribute_support.attribute_id = "xxxxxxxxxx"
+  GROUP BY mid, obj_frequency, pred
+  ORDER BY pred_frequency DESC;
+
+DEFINE INLINE TABLE qa_pair
+SELECT
+    query_demand_table.mid AS question,
+    kpanel_table.ans_mid AS answer,
+    query_demand_table.obj_frequency AS obj_frequency,
+    query_demand_table.pred_frequency AS pred_frequency
+FROM (
+    SELECT mid, obj_frequency, pred, pred_frequency
+    FROM query_demand
+    SHUFFLE BY hash(mid, 1000)
+) query_demand_table
+JOIN (
+    SELECT entity_id AS mid,
+           fact.display_value.span.entity_id AS ans_mid
+    FROM (FLATTEN(kpanels.cards.latest, fact))
+    WHERE locale="en"
+          AND fact.display_value.span.entity_id<>""
+          AND fact.attribute_id="xxxxxxxxxx"
+          AND entity_id IN (SELECT mid FROM query_demand)
+    SHUFFLE BY hash(mid, 1000)
+) kpanel_table
+ON query_demand_table.mid=kpanel_table.mid
+ORDER BY pred_frequency DESC
+limit question_count;
+
+DEFINE INLINE TABLE qa_pair_sub
+SELECT
+    c.question AS question,
+    B.obj AS question_text,
+    c.answer AS answer,
+    c.obj_frequency AS obj_frequency,
+    c.pred_frequency AS pred_frequency
+FROM (
+    SELECT question, answer, obj_frequency, pred_frequency
+    FROM qa_pair
+    SHUFFLE BY hash(question,1000)
+) c
+JOIN (
+    SELECT obj, sub
+    FROM kgraph.base.triples.latest
+    WHERE pred = "/type/object/name"
+          AND text_lang="en"
+          AND sub IN (SELECT question FROM qa_pair)
+    SHUFFLE BY hash(sub,1000)
+) B
+ON c.question=B.sub
+ORDER BY pred_frequency DESC;
+
+DEFINE INLINE TABLE qa_pair_sub_obj
+SELECT
+    c.question AS question,
+    c.question_text AS question_text,
+    c.answer AS answer,
+    B.obj AS answer_text,
+    c.obj_frequency AS obj_frequency,
+    c.pred_frequency AS pred_frequency
+FROM (
+    SELECT question, question_text, answer, obj_frequency, pred_frequency
+    FROM qa_pair_sub
+    SHUFFLE BY hash(answer,1000)
+) c 
+JOIN (    
+    SELECT obj, sub
+    FROM kgraph.base.triples.latest
+    WHERE pred = "/type/object/name"
+          AND text_lang="en"
+          AND sub IN (SELECT answer FROM qa_pair_sub)
+    SHUFFLE BY hash(sub,1000)
+) B
+ON c.answer=B.sub
+ORDER BY pred_frequency DESC;
+
+SELECT question, question_text, answer, answer_text, pred_frequency AS weight
+FROM qa_pair_sub_obj
+ORDER BY weight DESC;
+
+define table kv /namespace/knowledge-vault/data/latest/final/columnio/kv_final.columnio*;
+SELECT
+    triple.sub AS question,
+    triple.obj AS answer,
+    kv_triple.belief.prob_true AS probability,
+    kv_triple.belief.system AS source
+FROM kv
+    WHERE triple.text_lang = "en"
+          AND kv_triple.obj_name <> ""
+          AND triple.pred ="yyyyyyyyyy"
+          AND triple.sub LIKE "/m/%"
+          AND triple.sub IN (SELECT question FROM qa_pair_sub_obj);
