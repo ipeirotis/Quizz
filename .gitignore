@@ -40,5 +40,8 @@ endpoint-libs/libquizz-v1/quizz/www.quizz.us-quizz-v1-*.jar*
 # generated files
 target/
 local_db.bin
+quizz-v1-java.zip
+quizz-v1-rest.discovery
+
 
 
