@@ -307,4 +307,9 @@ public class Quiz {
 		this.totalUsers = totalUsers;
 	}
 
+
+	public void setKey(Key key) {
+		this.key = key;
+	}
+
 }

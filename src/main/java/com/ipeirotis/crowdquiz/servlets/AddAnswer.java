@@ -33,8 +33,8 @@ public class AddAnswer extends HttpServlet {
 		
 		Answer answer = new Answer();
 		answer.setText(req.getParameter("answer").trim());
-		answer.setQuestion(question);
 		answer.setQuizID(question.getQuizID());
+		question.addAnswer(answer);
 		
 		if (Strings.isNullOrEmpty(req.getParameter("probability"))) {
 			goldAnswer(answer, question, req);
@@ -42,7 +42,7 @@ public class AddAnswer extends HttpServlet {
 			silverAnswer(answer, question, req);
 		}
 
-		QuizQuestionRepository.storeQuizQuestion(question);		
+		QuizQuestionRepository.storeQuizQuestion(question);
 		PMF.singleMakePersistent(answer);
 		resp.getWriter().println("OK");
 	}

@@ -1,5 +1,6 @@
 package com.ipeirotis.crowdquiz.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -99,11 +100,19 @@ public class Question {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
 	
+	public void setKey(Key key) {
+		this.key = key;
+	}
+
 	@Persistent
 	private List<Answer> answers;
+	
+	public Question(){
+		answers = new ArrayList<Answer>();
+	}
 
 	public Question(String quizID, String text, Double weight) {
-
+		this();
 		this.quizID = quizID;
 		this.weight = weight;
 		this.text = text;
@@ -123,6 +132,10 @@ public class Question {
 	
 	public List<UserAnswer> getUserAnswers() {
 		return QuizQuestionRepository.getUserAnswers(this);
+	}
+	
+	public void addAnswer(Answer answer){
+		answers.add(answer);
 	}
 
 	

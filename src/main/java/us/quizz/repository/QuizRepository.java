@@ -37,9 +37,8 @@ public class QuizRepository {
 			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(quizID));
 			pm.deletePersistent(quiz);
 			
-			Class<?>[] itemsClasses = new Class<?>[]{Question.class,
-					Answer.class, UserAnswer.class};
-			// TODO: REFQQ ^^ proper classes
+			Class<?>[] itemsClasses = new Class<?>[]{UserAnswer.class,
+					Answer.class, Question.class};
 			for (Class<?> cls: itemsClasses) {
 				deleteAll(pm, quizID, cls);
 			}

@@ -16,7 +16,8 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 public class QuizQuestionRepository {
 
 	public static Question getQuizQuestion(String questionID) {
-		return PMF.singleGetObjectById(Question.class, questionID);
+		return getQuizQuestion(Long.parseLong(questionID));
+//		return PMF.singleGetObjectById(Question.class, questionID);
 	}
 	
 	public static Question getQuizQuestion(Long questionID) {

@@ -26,7 +26,7 @@ class DataUploadTests(unittest.TestCase):
         self.client.remove_quiz(self.quiz_id)
 
     def wait(self):
-        time.sleep(1)
+        time.sleep(0.75)
 
     def test_add_quiz(self):
         self.wait()
@@ -40,19 +40,26 @@ class DataUploadTests(unittest.TestCase):
         quizes = self.client.list_quizes_id()
         self.assertTrue(self.quiz_id not in quizes)
 
-    def test_add_question(self):
+    def test_add_question_gold_and_not(self):
         questions = self.client.get_questions(self.quiz_id, 1)
         self.assertTrue('error' in questions)
         for text, answers, gold in QUESTIONS:
+            self.wait()
             question_resp = self.client.add_question(self.quiz_id, text)
             question_id = question_resp['questionID']
             for answer in answers:
+                self.wait()
                 self.client.add_answer(answer,
                         questionID=question_id,
                         isGold=(answer == gold))
-        questions = self.client.get_questions(self.quiz_id, 2)
-        self.assertTrue('error' not in questions)
+        self.wait()
+        questions = self.client.get_questions(self.quiz_id, 1)
         ipdb.set_trace()
+        print questions
+        self.assertTrue('error' not in questions)
+        questions = self.client.get_questions(self.quiz_id, 2)
+        print questions
+        self.assertTrue('error' in questions)
 
 
 if __name__ == '__main__':
