@@ -34,12 +34,12 @@
 	<div class="container pagination-centered">
 
 		<%
-			String relation = request.getParameter("relation");
-			String mid = request.getParameter("mid");
+			String quizID = request.getParameter("quizID");
+			String questionID = request.getParameter("questionID");
 
 			
-			Quiz q = QuizRepository.getQuiz(relation);
-			Question eq = QuizQuestionRepository.getQuizQuestion(relation, mid);
+			Quiz q = QuizRepository.getQuiz(quizID);
+			Question eq = QuizQuestionRepository.getQuizQuestion(questionID);
 		%>
 		<div class="row">
 			<div class="span8 offset2">
@@ -55,13 +55,12 @@
 					<fieldset>
 						<legend>
 							<%=q.getQuestionText()%>
-							<a href="http://www.freebase.com<%=mid%>"> <%=FreebaseSearch.getFreebaseAttribute(mid, "name")%>
 							</a>
 						</legend>
 						<input id="useranswer" name="useranswer" type="text"> <input
 							id="relation" name="relation" type="hidden"
-							value="<%=relation%>"> <input id="mid" name="mid"
-							type="hidden" value="<%=mid%>">
+							value="<%=quizID%>"> <input id="mid" name="mid"
+							type="hidden" value="<%=questionID%>">
 						<div class="form-actions"
 							style="background-color: #D0D0D0; border-radius: 5px;">
 							<input type="submit" class="btn" name="action" value="Submit">
@@ -114,7 +113,7 @@
 			  'hitType': 'event', 
 			  'eventCategory': 'quiz-submission', 
 			  'eventAction': 'fill-in', 
-			  'eventLabel': '<%=q.getRelation()%>',
+			  'eventLabel': '<%=q.getQuizID()%>',
 			  <%if (eq.getWeight() != null) {%> 'eventValue': <%=eq.getWeight()%>, <%} else {
 
 			}%>

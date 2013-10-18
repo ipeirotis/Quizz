@@ -16,7 +16,7 @@
 	}
 	%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="Edit quiz '<%=quiz.getName() %>' (<%=quiz.getRelation() %>)" /></jsp:include>
+<jsp:include page="/header.jsp"><jsp:param name="title" value="Edit quiz '<%=quiz.getName() %>' (<%=quiz.getQuizID() %>)" /></jsp:include>
 
 <body>
 

@@ -34,8 +34,8 @@
 				
 				for (Quiz quiz : quizzes) {
 					
-					int users = UserReferralRepository.getUserIDsByQuiz(quiz.getRelation()).size();
-					List<QuizPerformance> qp = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getRelation());
+					int users = UserReferralRepository.getUserIDsByQuiz(quiz.getQuizID()).size();
+					List<QuizPerformance> qp = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getQuizID());
 					NumberFormat percentFormat = NumberFormat.getPercentInstance();
 					percentFormat.setMaximumFractionDigits(0);
 					String rate = percentFormat.format(1.0*(qp.size()+1)/(users+1));
