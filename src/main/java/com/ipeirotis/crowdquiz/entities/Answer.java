@@ -36,7 +36,7 @@ public class Answer {
 	private JsonObject metadata;
 	
 	@Persistent
-	private QuizQuestion question;
+	private Question question;
 	
 	@Persistent
 	private Boolean isGold;

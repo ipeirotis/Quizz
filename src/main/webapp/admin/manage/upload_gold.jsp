@@ -3,7 +3,7 @@
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.List"%>
 <%@ page

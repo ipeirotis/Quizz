@@ -14,7 +14,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Question;
 
 @SuppressWarnings("serial")
 public class UpdateAllQuestionStatistics extends HttpServlet {
@@ -31,9 +31,9 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		
-		List<QuizQuestion> quizquestions = QuizQuestionRepository.getQuizQuestions();
+		List<Question> quizquestions = QuizQuestionRepository.getQuizQuestions();
 		
-		for (QuizQuestion quizquestion : quizquestions) {
+		for (Question quizquestion : quizquestions) {
 			queue.add(Builder.withUrl("/api/updateQuestionStatistics")
 					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 					.param("questionID", quizquestion.getKey().toString())

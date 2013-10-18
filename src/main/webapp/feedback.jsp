@@ -4,7 +4,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>

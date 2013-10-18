@@ -12,7 +12,7 @@ import us.quizz.repository.QuizQuestionRepository;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class QuizQuestion {
+public class Question {
 
 	@Persistent
 	private String quizID;
@@ -60,7 +60,7 @@ public class QuizQuestion {
 	@Persistent
 	private List<Answer> answers;
 
-	public QuizQuestion(String quizID, String name, Double weight) {
+	public Question(String quizID, String name, Double weight) {
 
 		this.quizID = quizID;
 		this.weight = weight;

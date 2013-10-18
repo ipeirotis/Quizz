@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.QuizQuestionRepository;
 
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Question;
 
 @SuppressWarnings("serial")
 public class UpdateQuestionStatistics extends HttpServlet {
@@ -23,7 +23,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
 		Long questionID = Long.parseLong(strQuestionId);
 		resp.getWriter().print("QuestionID:"+questionID+"\n");
 
-		QuizQuestion question = QuizQuestionRepository.getQuizQuestion(questionID);
+		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
 		if (question==null) return;
 		
 		int u = getNumberOfUserAnswers(questionID);

@@ -8,7 +8,7 @@ import javax.jdo.Query;
 
 import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.Answer;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -42,7 +42,7 @@ public class QuizRepository {
 			}
 			pm.deletePersistent(quiz);
 			
-			Class<?>[] itemsClasses = new Class<?>[]{QuizQuestion.class,
+			Class<?>[] itemsClasses = new Class<?>[]{Question.class,
 					Answer.class, UserAnswer.class};
 			// TODO
 			for (Class<?> cls: itemsClasses) {
@@ -77,7 +77,7 @@ public class QuizRepository {
 	}
 	
 	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
-		return getNumberOf("numquizquestions", usecache, quiz, QuizQuestion.class);
+		return getNumberOf("numquizquestions", usecache, quiz, Question.class);
 	}
 	
 	public static Integer getNumberOfUserAnswers(String quiz, boolean usecache) {

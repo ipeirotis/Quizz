@@ -11,7 +11,7 @@ import us.quizz.repository.QuizQuestionRepository;
 
 import com.google.common.base.Strings;
 import com.ipeirotis.crowdquiz.entities.Answer;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -25,7 +25,7 @@ public class AddAnswer extends HttpServlet {
 
 		String questionID = req.getParameter("questionID").trim();
 		
-		QuizQuestion qq = QuizQuestionRepository.getQuizQuestion(questionID);
+		Question qq = QuizQuestionRepository.getQuizQuestion(questionID);
 		if (qq==null) {
 			throw new IllegalArgumentException("Unknown question: " + questionID);
 		}
@@ -44,7 +44,7 @@ public class AddAnswer extends HttpServlet {
 		resp.getWriter().println("OK");
 	}
 
-	private void silverAnswer(Answer answer, QuizQuestion qq,
+	private void silverAnswer(Answer answer, Question qq,
 			HttpServletRequest req) {
 		
 		String source = req.getParameter("source").trim();
@@ -66,7 +66,7 @@ public class AddAnswer extends HttpServlet {
 		qq.setHasSilverAnswers(true);
 	}
 
-	private void goldAnswer(Answer answer, QuizQuestion qq,
+	private void goldAnswer(Answer answer, Question qq,
 			HttpServletRequest req) {
 		qq.setHasGoldAnswer(true);
 		answer.setGold(true);

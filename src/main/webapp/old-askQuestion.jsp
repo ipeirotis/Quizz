@@ -3,7 +3,7 @@
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
@@ -39,9 +39,7 @@
 
 			
 			Quiz q = QuizRepository.getQuiz(relation);
-			QuizQuestion eq = QuizQuestionRepository.getQuizQuestion(relation, mid);
-
-
+			Question eq = QuizQuestionRepository.getQuizQuestion(relation, mid);
 		%>
 		<div class="row">
 			<div class="span8 offset2">

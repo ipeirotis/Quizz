@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
@@ -32,7 +32,7 @@ public class AddQuizQuestion extends HttpServlet {
 			Double weight = Double.parseDouble(req.getParameter("weight"));
 			resp.getWriter().println("Weight: " + weight);
 
-			QuizQuestion q = new QuizQuestion(quizID, name, weight);
+			Question q = new Question(quizID, name, weight);
 			PMF.singleMakePersistent(q);
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {

@@ -20,7 +20,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.ads.CampaignManagement;
 import com.ipeirotis.crowdquiz.entities.Quiz;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
+import com.ipeirotis.crowdquiz.entities.Question;
 
 @SuppressWarnings("serial")
 public class AddAdGroup extends HttpServlet {
@@ -110,7 +110,7 @@ public class AddAdGroup extends HttpServlet {
 			Long textAdId = service.publishTextAd(ad);
 
 			
-			QuizQuestion eq = QuizQuestionRepository.getQuizQuestion(questionID);	
+			Question eq = QuizQuestionRepository.getQuizQuestion(questionID);	
 			eq.setAdTextId(textAdId);
 			eq.setAdGroupId(adgroupId);
 			QuizQuestionRepository.storeQuizQuestion(eq);
