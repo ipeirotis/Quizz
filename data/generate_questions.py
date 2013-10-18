@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import json
 import random
 import sys
 from sets import Set
@@ -11,8 +12,8 @@ if len(sys.argv) < 2:
 
 quizz_name = sys.argv[1]
 ques_template = sys.argv[2]
-inpf = open(quizz_name + '-qa_pair.csv', 'r')
-outf = open(quizz_name + '-quiz.csv', 'w')
+inpf = open('kg_questions/' + quizz_name + '-qa_pair.csv', 'r')
+outf = open('kg_questions/' + quizz_name + '-quiz.csv', 'w')
 
 ## ================================================
 # Initializes data structure for questions-answers.
@@ -103,7 +104,6 @@ print '# candidate answers:', candidate_count
 ## ==================
 num_questions = 0
 num_wrong_ans = 3  # Change the rest too if change this!!
-outf.write('question,correct_answer,wrong_answer_1,wrong_answer_2,wrong_answer_3\n')
 for key in gold_ans.iterkeys():
   for ans in gold_ans[key]:
     question = mid_to_name[key]
@@ -123,10 +123,20 @@ for key in gold_ans.iterkeys():
         break
     if len(wrong_ans) == num_wrong_ans:
       question = ques_template.replace('XXX', question)
-      full_ques = [question, right_ans, wrong_ans[0], wrong_ans[1], wrong_ans[2]]
-      full_ques = ','.join(full_ques)
-      outf.write(full_ques + '\n')
-      num_questions = num_questions + 1
+
+      json_ans = wrong_ans
+      json_ans.append(right_ans)
+      random.shuffle(json_ans)
+
+      correct_ans_index = -1
+      for i in xrange(len(json_ans)):
+        if json_ans[i] == right_ans:
+          correct_ans_index = i
+          break
+      if i >= 0:
+        json_ques = {'question': question, 'correct_ans_ind': correct_ans_index, 'answers': json_ans}
+        json.dump(json_ques, outf)
+        num_questions = num_questions + 1
 
 print '# questions:', num_questions
 inpf.close()
