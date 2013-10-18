@@ -20,13 +20,13 @@ public class AddQuestion extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		resp.setContentType("text/plain");
-		Utils.ensureParameters(req, "quizID", "mid", "name", "weight");
+		Utils.ensureParameters(req, "quizID", "text", "weight");
 
 		try {
 			String quizID = req.getParameter("quizID").trim();
 			resp.getWriter().println("Adding to quiz: " + quizID);
 			
-			String name = req.getParameter("name").trim();
+			String name = req.getParameter("text").trim();
 			resp.getWriter().println("Entity name: " + name);
 			
 			Double weight = Double.parseDouble(req.getParameter("weight"));
@@ -34,6 +34,7 @@ public class AddQuestion extends HttpServlet {
 
 			Question q = new Question(quizID, name, weight);
 			PMF.singleMakePersistent(q);
+			resp.getWriter().println(q.getID());
 
 		} catch (com.google.apphosting.api.DeadlineExceededException e) {
 			logger.log(Level.SEVERE, "Reached execution time limit. Press refresh to continue.", e);

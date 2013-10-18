@@ -25,9 +25,9 @@ public class AddQuiz extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		Utils.ensureParameters(req, "relation", "name", "text");
+		Utils.ensureParameters(req, "quizID", "name", "text");
 		try {
-			String quizID = req.getParameter("relation").trim();
+			String quizID = req.getParameter("quizID").trim();
 			resp.getWriter().println("Adding Quiz ID: " + quizID);
 			
 			String name = req.getParameter("name").trim();
@@ -43,7 +43,8 @@ public class AddQuiz extends HttpServlet {
 			if (budget != null) {
 				resp.getWriter().println("Budget: " + budget);
 			} else {
-				// return;
+				// TODO: REFQQ - ending if no budget is given - no adcampain data
+				 return;
 			}
 			
 			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");

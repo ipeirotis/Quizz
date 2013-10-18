@@ -21,7 +21,7 @@ public class Question {
 	private Double weight;
 
 	@Persistent
-	private String name;
+	private String text;
 
 	@Persistent
 	private Long adGroupId;
@@ -60,11 +60,11 @@ public class Question {
 	@Persistent
 	private List<Answer> answers;
 
-	public Question(String quizID, String name, Double weight) {
+	public Question(String quizID, String text, Double weight) {
 
 		this.quizID = quizID;
 		this.weight = weight;
-		this.name = name;
+		this.text = text;
 	}
 
 	public Long getAdGroupId() {
@@ -131,12 +131,12 @@ public class Question {
 		this.adTextId = adTextId;
 	}
 
-	public String getName() {
-		return name;
+	public String getText() {
+		return text;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	public void setRelation(String quizID) {

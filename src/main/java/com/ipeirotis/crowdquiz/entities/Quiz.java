@@ -38,7 +38,7 @@ public class Quiz {
 	// Typically, we assign the name of a KP attribute on this one
 	// and serves as a defacto primary key for the quiz.
 	@Persistent
-	private String	relation;
+	private String quizID;
 
 	// The question that we will ask to the user
 	@Persistent
@@ -146,15 +146,14 @@ public class Quiz {
 	private Key			key;
 
 
-	public Quiz(String name, String relation, String questionText) {
+	public Quiz(String name, String quizID, String questionText) {
 
 		this.name = name;
 		this.questionText = questionText;
-		this.relation = relation;
+		this.quizID = quizID;
 		this.freebaseType = null;
 
-
-		this.key = generateKeyFromID(relation);
+		this.key = generateKeyFromID(quizID);
 	}
 
 
@@ -217,9 +216,9 @@ public class Quiz {
 	}
 
 
-	public String getRelation() {
+	public String getQuizID() {
 
-		return relation;
+		return quizID;
 	}
 	
 	public Integer getTotalAnswers() {

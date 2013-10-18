@@ -2,7 +2,6 @@ package us.quizz.repository;
 
 import java.util.List;
 
-import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -23,30 +22,26 @@ public class QuizRepository {
 		PMF.singleMakePersistent(q);
 	}
 	
-	protected static <T> void deleteAll(PersistenceManager pm, String id, Class<T> itemsClass){
+	protected static <T> void deleteAll(PersistenceManager pm, String quizID, Class<T> itemsClass){
 		Query q = pm.newQuery(itemsClass);
-		q.setFilter("relation == relationParam");
-		q.declareParameters("String relationParam");
-		List<?> items = (List<?>) q.execute(id);
+		q.setFilter("quizID == quizIDParam");
+		q.declareParameters("String quizIDParam");
+		List<?> items = (List<?>) q.execute(quizID);
 		pm.deletePersistentAll(items);
 	}
 	
-	public static void deleteQuiz(String id) {
+	public static void deleteQuiz(String quizID) {
 		Quiz quiz = null;
 		PersistenceManager pm = PMF.getPM();
 		try {
-			try {
-				quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-			} catch (JDOObjectNotFoundException e) {
-				// TODO: shall we ignore or throw exception about wrong quiz id?
-			}
+			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(quizID));
 			pm.deletePersistent(quiz);
 			
 			Class<?>[] itemsClasses = new Class<?>[]{Question.class,
 					Answer.class, UserAnswer.class};
 			// TODO
 			for (Class<?> cls: itemsClasses) {
-				deleteAll(pm, id, cls);
+				deleteAll(pm, quizID, cls);
 			}
 		} finally {
 			pm.close();
@@ -64,7 +59,7 @@ public class QuizRepository {
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(queryClass);
-			q.setFilter("relation == quizParam");
+			q.setFilter("quizID == quizParam");
 			q.declareParameters("String quizParam");
 			@SuppressWarnings("unchecked")
 			List<T> results = (List<T>) q.execute(quiz);
