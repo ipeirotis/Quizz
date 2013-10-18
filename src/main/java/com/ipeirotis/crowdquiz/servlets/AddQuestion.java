@@ -12,7 +12,7 @@ import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
-public class AddQuizQuestion extends HttpServlet {
+public class AddQuestion extends HttpServlet {
 
 	final static Logger					logger	= Logger.getLogger("com.ipeirotis.quizz");
 

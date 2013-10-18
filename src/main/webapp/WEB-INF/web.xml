@@ -10,8 +10,8 @@
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.StartQuiz</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddQuizQuestion</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuizQuestion</servlet-class>
+		<servlet-name>AddQuestion</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuestion</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>UploadQuestions</servlet-name>
@@ -113,8 +113,8 @@
 		<url-pattern>/addQuiz</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>AddQuizQuestion</servlet-name>
-		<url-pattern>/addQuizQuestion</url-pattern>
+		<servlet-name>AddQuestion</servlet-name>
+		<url-pattern>/addQuestion</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UploadQuestions</servlet-name>
