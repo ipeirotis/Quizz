@@ -20,9 +20,9 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Quiz {
 
-	public static Key generateKeyFromID(String relation) {
+	public static Key generateKeyFromID(String quizID) {
 
-		return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + relation);
+		return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + quizID);
 	}
 
 	// The category of the quiz. This allows the quizzes to be grouped by category in the
@@ -44,6 +44,10 @@ public class Quiz {
 	@Persistent
 	private String	questionText;
 
+	public void setFreebaseType(String freebaseType) {
+		this.freebaseType = freebaseType;
+	}
+
 	// The type of entry for the answer that we expect
 	// We do not use this for multiple choice questions
 	// but it is used for the fill-in questions, to enable
@@ -61,6 +65,45 @@ public class Quiz {
 	@Persistent
 	private Integer totalUsers;
 	
+	public String getCategory() {
+		return category;
+	}
+
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+
+	public Double getAvgAnswerCorrectness() {
+		return avgAnswerCorrectness;
+	}
+
+
+	public void setAvgAnswerCorrectness(Double avgAnswerCorrectness) {
+		this.avgAnswerCorrectness = avgAnswerCorrectness;
+	}
+
+
+	public Double getCapacity() {
+		return capacity;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void setQuizID(String quizID) {
+		this.quizID = quizID;
+	}
+
+
+	public void setQuestionText(String questionText) {
+		this.questionText = questionText;
+	}
+
 	// The number of users that answered at least one non-IDK question
 	@Persistent
 	private Integer contributingUsers;

@@ -23,23 +23,26 @@ public class AddAnswer extends HttpServlet {
 		resp.setContentType("text/plain");
 		Utils.ensureParameters(req, "questionID", "answer");
 
-		String questionID = req.getParameter("questionID").trim();
+		String strQuestionID = req.getParameter("questionID").trim();
+		Long questionID = Long.parseLong(strQuestionID);
 		
-		Question qq = QuizQuestionRepository.getQuizQuestion(questionID);
-		if (qq==null) {
+		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
+		if (question == null) {
 			throw new IllegalArgumentException("Unknown question: " + questionID);
 		}
 		
 		Answer answer = new Answer();
 		answer.setText(req.getParameter("answer").trim());
+		answer.setQuestion(question);
+		answer.setQuizID(question.getQuizID());
 		
 		if (Strings.isNullOrEmpty(req.getParameter("probability"))) {
-			goldAnswer(answer, qq, req);
+			goldAnswer(answer, question, req);
 		} else {
-			silverAnswer(answer, qq, req);
+			silverAnswer(answer, question, req);
 		}
 
-		QuizQuestionRepository.storeQuizQuestion(qq);		
+		QuizQuestionRepository.storeQuizQuestion(question);		
 		PMF.singleMakePersistent(answer);
 		resp.getWriter().println("OK");
 	}
@@ -61,6 +64,7 @@ public class AddAnswer extends HttpServlet {
 		} else {
 			return;
 		}
+		answer.setKind("silver");
 		answer.setSource(source);
 		answer.setProbability(probability);
 		qq.setHasSilverAnswers(true);
@@ -68,7 +72,13 @@ public class AddAnswer extends HttpServlet {
 
 	private void goldAnswer(Answer answer, Question qq,
 			HttpServletRequest req) {
-		qq.setHasGoldAnswer(true);
-		answer.setGold(true);
+		String gold = req.getParameter("isGold");
+		if (!Strings.isNullOrEmpty(gold) && Boolean.parseBoolean(gold)) {
+			qq.setHasGoldAnswer(true);
+			answer.setGold(true);
+			answer.setKind("gold");
+		} else {
+			answer.setKind("normal_from_golds");
+		}
 	}
 }

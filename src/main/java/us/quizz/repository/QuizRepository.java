@@ -39,7 +39,7 @@ public class QuizRepository {
 			
 			Class<?>[] itemsClasses = new Class<?>[]{Question.class,
 					Answer.class, UserAnswer.class};
-			// TODO
+			// TODO: REFQQ ^^ proper classes
 			for (Class<?> cls: itemsClasses) {
 				deleteAll(pm, quizID, cls);
 			}

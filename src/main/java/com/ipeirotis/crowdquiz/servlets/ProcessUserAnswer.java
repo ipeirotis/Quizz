@@ -89,7 +89,7 @@ public class ProcessUserAnswer extends HttpServlet {
 
 	private void updateQuizPerformance(User user, String questionID) {
 		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
-		String quizID = QuizQuestionRepository.getQuizQuestion(questionID).getQuizzID();
+		String quizID = QuizQuestionRepository.getQuizQuestion(questionID).getQuizID();
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
 				.param("quiz", quizID)
 				.param("userid", user.getUserid())

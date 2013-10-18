@@ -75,10 +75,14 @@ class QuizzAPIClient(object):
             'text': text,
             'weight': weight,
         }
-        return self._post_web('addQuestion', data).text
+        return J(self._post_web('addQuestion', data))
 
-    def add_answer(self, answer):
-        pass
+    def add_answer(self, answer, **kwargs):
+        kwargs['answer'] = answer
+        return self._post_web("addAnswer", kwargs)
+
+    def get_questions(self, quizID, amount):
+        return J(self._get_api("quizquestions/" + quizID, {'num': amount}))
 
 
 def main(args):

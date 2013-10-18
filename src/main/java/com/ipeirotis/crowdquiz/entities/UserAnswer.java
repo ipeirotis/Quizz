@@ -41,6 +41,18 @@ public class UserAnswer {
 
 	@Persistent
 	private Long questionID;
+	
+	@Persistent
+	private String quizID;
+
+	public String getQuizID() {
+		return quizID;
+	}
+
+	public void setQuizID(String quizID) {
+		this.quizID = quizID;
+	}
+
 
 	@Persistent
 	private String	browser;
@@ -148,6 +160,14 @@ public class UserAnswer {
 
 	public void setUserid(String userid) {
 		this.userid = userid.replace('\t', ' ');
+	}
+
+	public void setScore(Double score) {
+		this.score = score;
+	}
+
+	public void setQuestionID(Long questionID) {
+		this.questionID = questionID;
 	}
 
 }

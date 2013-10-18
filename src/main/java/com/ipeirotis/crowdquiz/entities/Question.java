@@ -8,6 +8,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Key;
+
 import us.quizz.repository.QuizQuestionRepository;
 
 
@@ -22,6 +24,46 @@ public class Question {
 
 	@Persistent
 	private String text;
+
+	public String getQuizID() {
+		return quizID;
+	}
+
+	public void setQuizID(String quizID) {
+		this.quizID = quizID;
+	}
+
+	public Integer getNumberOfGoldAnswers() {
+		return numberOfGoldAnswers;
+	}
+
+	public void setNumberOfGoldAnswers(Integer numberOfGoldAnswers) {
+		this.numberOfGoldAnswers = numberOfGoldAnswers;
+	}
+
+	public Integer getNumberOfSilverAnswers() {
+		return numberOfSilverAnswers;
+	}
+
+	public void setNumberOfSilverAnswers(Integer numberOfSilverAnswers) {
+		this.numberOfSilverAnswers = numberOfSilverAnswers;
+	}
+
+	public List<Answer> getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(List<Answer> answers) {
+		this.answers = answers;
+	}
+
+	public Boolean getHasGoldAnswer() {
+		return hasGoldAnswer;
+	}
+
+	public Boolean getHasSilverAnswers() {
+		return hasSilverAnswers;
+	}
 
 	@Persistent
 	private Long adGroupId;
@@ -55,7 +97,7 @@ public class Question {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long key;
+	private Key key;
 	
 	@Persistent
 	private List<Answer> answers;
@@ -75,7 +117,7 @@ public class Question {
 		return adTextId;
 	}
 
-	public Long getKey() {
+	public Key getKey() {
 		return key;
 	}
 	
@@ -105,15 +147,8 @@ public class Question {
 	}
 	*/
 
-	/**
-	 * @return the relation
-	 */
-	public String getQuizzID() {
-		return quizID;
-	}
-	
 	public Long getID() {
-		return key;
+		return key.getId();
 	}
 
 	/**

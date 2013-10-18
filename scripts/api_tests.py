@@ -1,5 +1,6 @@
 import time
 import unittest
+import ipdb
 
 from uploader import QuizzAPIClient
 
@@ -40,7 +41,18 @@ class DataUploadTests(unittest.TestCase):
         self.assertTrue(self.quiz_id not in quizes)
 
     def test_add_question(self):
-        pass
+        questions = self.client.get_questions(self.quiz_id, 1)
+        self.assertTrue('error' in questions)
+        for text, answers, gold in QUESTIONS:
+            question_resp = self.client.add_question(self.quiz_id, text)
+            question_id = question_resp['questionID']
+            for answer in answers:
+                self.client.add_answer(answer,
+                        questionID=question_id,
+                        isGold=(answer == gold))
+        questions = self.client.get_questions(self.quiz_id, 2)
+        self.assertTrue('error' not in questions)
+        ipdb.set_trace()
 
 
 if __name__ == '__main__':

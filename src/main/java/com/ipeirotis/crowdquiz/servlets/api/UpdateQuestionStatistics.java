@@ -19,8 +19,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
-		String strQuestionId = req.getParameter("questionID");
-		Long questionID = Long.parseLong(strQuestionId);
+		String questionID = req.getParameter("questionID");
 		resp.getWriter().print("QuestionID:"+questionID+"\n");
 
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
@@ -38,11 +37,11 @@ public class UpdateQuestionStatistics extends HttpServlet {
 		QuizQuestionRepository.storeQuizQuestion(question);
 	}
 	
-	private int getNumberOfUserAnswers(Long questionID) {
+	private int getNumberOfUserAnswers(String questionID) {
 		return QuizQuestionRepository.getNumberOfUserAnswersExcludingIDK(questionID);
 	}
 	
-	private int getNumberOfCorrectUserAnswers(Long questionID) {
+	private int getNumberOfCorrectUserAnswers(String questionID) {
 		return QuizQuestionRepository.getNumberOfCorrectUserAnswers(questionID);
 	}
 	

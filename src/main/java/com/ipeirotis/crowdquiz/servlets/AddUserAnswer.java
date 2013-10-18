@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizQuestionRepository;
+
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -45,6 +47,7 @@ public class AddUserAnswer extends HttpServlet {
 		ue.setIpaddress(ipAddress);
 		ue.setTimestamp(timestamp);
 		ue.setAction(action);
+		ue.setQuizID(QuizQuestionRepository.getQuizQuestion(questionID).getQuizID());
 		if (isCorrect!=null) ue.setIsCorrect(isCorrect);
 
 		PMF.singleMakePersistent(ue);

@@ -39,6 +39,9 @@ public class Answer {
 	private Question question;
 	
 	@Persistent
+	private String quizID;
+	
+	@Persistent
 	private Boolean isGold;
 	
 	@Persistent
@@ -119,5 +122,41 @@ public class Answer {
 	
 	public void setSource(String source){
 		this.source = source;
+	}
+	
+	public void setQuizID(String quizID){
+		this.quizID = quizID;
+	}
+	
+	public void setQuestion(Question question){
+		this.question = question;
+	}
+
+	public Boolean getIsGold() {
+		return isGold;
+	}
+
+	public void setIsGold(Boolean isGold) {
+		this.isGold = isGold;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public JsonObject getMetadata() {
+		return metadata;
+	}
+
+	public Question getQuestion() {
+		return question;
+	}
+
+	public String getQuizID() {
+		return quizID;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

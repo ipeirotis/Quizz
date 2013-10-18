@@ -15,15 +15,13 @@ import com.ipeirotis.crowdquiz.utils.PMF;
 
 public class QuizQuestionRepository {
 
-	public static Question getQuizQuestion(Long questionID) {
+	public static Question getQuizQuestion(String questionID) {
 		return PMF.singleGetObjectById(Question.class, questionID);
 	}
 	
-	public static Question getQuizQuestion(String questionID) {
-		return getQuizQuestion(Long.parseLong(questionID));
+	public static Question getQuizQuestion(Long questionID) {
+		return PMF.singleGetObjectById(Question.class, questionID);
 	}
-	
-	
 	
 	public static List<Question> getQuizQuestions() {
 		
@@ -57,7 +55,7 @@ public class QuizQuestionRepository {
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query query = pm.newQuery(Question.class);
-			query.setFilter("relation == quizParam && hasGoldAnswer==hasGoldParam");
+			query.setFilter("quizID == quizParam && hasGoldAnswer==hasGoldParam");
 			query.declareParameters("String quizParam, Boolean hasGoldParam");
 	
 			Map<String,Object> params = new HashMap<String, Object>();
@@ -98,7 +96,7 @@ public class QuizQuestionRepository {
 			q.declareParameters("String quizParam");
 	
 			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("quizParam", question.getQuizzID());
+			params.put("quizParam", question.getQuizID());
 
 			@SuppressWarnings("unchecked")
 			List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
@@ -109,12 +107,12 @@ public class QuizQuestionRepository {
 	}
 
 	
-	public static int getNumberOfUserAnswersExcludingIDK(Long questionID) {
+	public static int getNumberOfUserAnswersExcludingIDK(String questionID) {
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(UserAnswer.class);
 			q.setFilter("questionID == questionIDParam && action==submitParam");
-			q.declareParameters("Long questionIDParam, String submitParam");
+			q.declareParameters("String questionIDParam, String submitParam");
 	
 			Map<String,Object> params = new HashMap<String, Object>();
 			params.put("questionIDParam", questionID);
@@ -128,12 +126,12 @@ public class QuizQuestionRepository {
 		}
 	}
 	
-	public static int getNumberOfCorrectUserAnswers(Long questionID) {
+	public static int getNumberOfCorrectUserAnswers(String questionID) {
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(UserAnswer.class);
 			q.setFilter("questionID == questionIDParam && action==submitParam && isCorrect==correctParam");
-			q.declareParameters("Long questionIDParam, String submitParam, Boolean correctParam");
+			q.declareParameters("String questionIDParam, String submitParam, Boolean correctParam");
 	
 			Map<String,Object> params = new HashMap<String, Object>();
 			params.put("questionIDParam", questionID);
