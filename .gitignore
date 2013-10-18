@@ -31,6 +31,7 @@ Thumbs.db
 .classpath
 .project
 .settings/
+.idea/
 
 # some generated but not needed libs
 endpoint-libs/libquizz-v1/quizz/libs-sources/google-*sources.jar
@@ -44,5 +45,8 @@ local_db.bin
 quizz-v1-java.zip
 quizz-v1-rest.discovery
 
-
+# python ingores
+*.pyc
+*.pyo
+.env/
 
