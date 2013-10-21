@@ -164,7 +164,10 @@ public class Helper {
 			// swapping with last element to avoid costly remove
 		}
 		
-		if (randomEls.size() < n) throw new IllegalArgumentException("Not enough elements to select uniq random ones");
+		if (randomEls.size() < n) {
+			throw new IllegalArgumentException("Not enough elements to select uniq " + n +
+					" random ones from " + elements.size());
+		}
 		return randomEls;
 	}
 
