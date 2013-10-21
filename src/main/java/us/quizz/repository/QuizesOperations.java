@@ -8,8 +8,6 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 
 public class QuizesOperations {
 	
-	protected static int ANSWERS_COUNT = 4;
-
 	public static Question getNextQuizQuestion(String quiz) {
 		return getNextQuizQuestions(quiz, 1).iterator().next();
 	}
