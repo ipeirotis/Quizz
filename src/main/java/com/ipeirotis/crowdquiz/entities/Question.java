@@ -1,6 +1,5 @@
 package com.ipeirotis.crowdquiz.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -10,6 +9,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.common.base.Objects;
 
 import us.quizz.repository.QuizQuestionRepository;
 
@@ -50,13 +50,6 @@ public class Question {
 		this.numberOfSilverAnswers = numberOfSilverAnswers;
 	}
 
-	public List<Answer> getAnswers() {
-		return answers;
-	}
-
-	public void setAnswers(List<Answer> answers) {
-		this.answers = answers;
-	}
 
 	public Boolean getHasGoldAnswer() {
 		return hasGoldAnswer;
@@ -103,16 +96,8 @@ public class Question {
 	public void setKey(Key key) {
 		this.key = key;
 	}
-
-	@Persistent
-	private List<Answer> answers;
 	
-	public Question(){
-		answers = new ArrayList<Answer>();
-	}
-
 	public Question(String quizID, String text, Double weight) {
-		this();
 		this.quizID = quizID;
 		this.weight = weight;
 		this.text = text;
@@ -132,10 +117,6 @@ public class Question {
 	
 	public List<UserAnswer> getUserAnswers() {
 		return QuizQuestionRepository.getUserAnswers(this);
-	}
-	
-	public void addAnswer(Answer answer){
-		answers.add(answer);
 	}
 
 	
@@ -238,5 +219,18 @@ public class Question {
 	public Boolean getHasUserAnswers(){
 		return hasUserAnswers;
 	}
-
+	
+	@Override
+	public boolean equals(Object other){
+		if (other instanceof Question) {
+			Question o = (Question) other;
+			return Objects.equal(getID(), o.getID());
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hashCode(getID());
+	}
 }

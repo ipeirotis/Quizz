@@ -36,7 +36,7 @@ public class Answer {
 	private JsonObject metadata;
 	
 	@Persistent
-	private Question question;
+	private Long questionID;
 	
 	@Persistent
 	private String quizID;
@@ -48,7 +48,7 @@ public class Answer {
 	private Double probability;
 	
 	
-	public Long getId(){
+	public Long getID(){
 		return id;
 	}
 	
@@ -128,8 +128,8 @@ public class Answer {
 		this.quizID = quizID;
 	}
 	
-	public void setQuestion(Question question){
-		this.question = question;
+	public void setQuestionID(Long questionID){
+		this.questionID = questionID;
 	}
 
 	public Boolean getIsGold() {
@@ -148,8 +148,8 @@ public class Answer {
 		return metadata;
 	}
 
-	public Question getQuestion() {
-		return question;
+	public Long getQuestionID() {
+		return questionID;
 	}
 
 	public String getQuizID() {

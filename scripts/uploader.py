@@ -75,11 +75,14 @@ class QuizzAPIClient(object):
             'text': text,
             'weight': weight,
         }
-        return J(self._post_web('addQuestion', data))
+        return J(self._post_web('addQuestion', json.dumps(data)))
 
     def add_answer(self, answer, **kwargs):
-        kwargs['answer'] = answer
-        return self._post_web("addAnswer", kwargs)
+        kwargs['text'] = answer
+        return self._post_web("addAnswer", json.dumps(kwargs))
+
+    def update_count_stats(self):
+        return self._get_web("api/updateCountStatistics")
 
     def get_questions(self, quizID, amount):
         return J(self._get_api("quizquestions/" + quizID, {'num': amount}))
@@ -89,6 +92,7 @@ def main(args):
     client = QuizzAPIClient(API_URL, WEB_URL)
     fname, quiz_id, quizz_text = args[:3]
     client.create_quiz(quiz_id, quizz_text)
+    client.update_count_stats()
 
 
 if __name__ == '__main__':

@@ -10,73 +10,71 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.QuizQuestionRepository;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ipeirotis.crowdquiz.entities.Answer;
 import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class AddAnswer extends HttpServlet {
-	final static Logger					logger	= Logger.getLogger("com.ipeirotis.crowdquiz");
-
+	final static Logger	logger	= Logger.getLogger("com.ipeirotis.crowdquiz");
+	
+	static protected JsonParser jParser = new JsonParser();
+	static protected Gson gson = new Gson();
+	
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.setContentType("text/plain");
-		Utils.ensureParameters(req, "questionID", "answer");
+		JsonObject jobject = jParser.parse(req.getReader()).getAsJsonObject();
 
-		String strQuestionID = req.getParameter("questionID").trim();
-		Long questionID = Long.parseLong(strQuestionID);
+		Long questionID = jobject.get("questionID").getAsLong();
 		
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
 		if (question == null) {
 			throw new IllegalArgumentException("Unknown question: " + questionID);
 		}
 		
-		Answer answer = new Answer();
-		answer.setText(req.getParameter("answer").trim());
-		answer.setQuizID(question.getQuizID());
-		question.addAnswer(answer);
-		
-		if (Strings.isNullOrEmpty(req.getParameter("probability"))) {
-			goldAnswer(answer, question, req);
-		} else {
-			silverAnswer(answer, question, req);
-		}
-
-		QuizQuestionRepository.storeQuizQuestion(question);
-		PMF.singleMakePersistent(answer);
-		resp.getWriter().println("OK");
+		Answer answer = parseAnswer(jobject, question);
+		PMF.singleMakePersistent(answer, question);
+		resp.setContentType("application/json");
+		resp.getWriter().println("{ \"answerID: \"" + answer.getID() + "\"}");
 	}
-
-	private void silverAnswer(Answer answer, Question qq,
-			HttpServletRequest req) {
-		
-		String source = req.getParameter("source").trim();
-		
-		String prob = req.getParameter("probability");
-		Double probability = -1.0;
-		if (prob != null) {
-			try {
-			probability = Double.parseDouble(prob);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
+	
+	protected Answer parseAnswer(JsonObject jAnswer, Question question){
+		Answer answer = new Answer();
+		answer.setText(jAnswer.get("text").getAsString());
+		answer.setQuestionID(question.getID());
+		answer.setQuizID(question.getQuizID());
+		if (jAnswer.has("probability")) {
+			parseSilverAnswer(jAnswer, answer, question);
 		} else {
-			return;
+			parseGoldAnswer(jAnswer, answer, question);
 		}
+		return answer;
+	}
+	
+	private void parseSilverAnswer(JsonObject jAnswer, Answer answer, Question question) {
+		
+		String source = jAnswer.get("source").getAsString();
+		Double probability = jAnswer.get("probability").getAsDouble();
+		
 		answer.setKind("silver");
 		answer.setSource(source);
 		answer.setProbability(probability);
-		qq.setHasSilverAnswers(true);
+		question.setHasSilverAnswers(true);
 	}
 
-	private void goldAnswer(Answer answer, Question qq,
-			HttpServletRequest req) {
-		String gold = req.getParameter("isGold");
-		if (!Strings.isNullOrEmpty(gold) && Boolean.parseBoolean(gold)) {
-			qq.setHasGoldAnswer(true);
-			answer.setGold(true);
-			answer.setKind("gold");
+	private void parseGoldAnswer(JsonObject jAnswer, Answer answer, Question question) {
+		boolean isGold = false;
+		if (jAnswer.has("isGold")) {
+			String gold = jAnswer.get("isGold").getAsString();
+			isGold = !Strings.isNullOrEmpty(gold) && Boolean.parseBoolean(gold);
+		}
+		if (isGold) {
+				question.setHasGoldAnswer(true);
+				answer.setGold(true);
+				answer.setKind("gold");
 		} else {
 			answer.setKind("normal_from_golds");
 		}

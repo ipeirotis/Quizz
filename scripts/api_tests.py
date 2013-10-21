@@ -25,8 +25,17 @@ class DataUploadTests(unittest.TestCase):
     def tearDown(self):
         self.client.remove_quiz(self.quiz_id)
 
-    def wait(self):
-        time.sleep(0.75)
+    def load_questions(self):
+        for text, answers, gold in QUESTIONS:
+            question_resp = self.client.add_question(self.quiz_id, text)
+            question_id = question_resp['questionID']
+            for answer in answers:
+                self.client.add_answer(answer,
+                        questionID=question_id,
+                        isGold=(answer == gold))
+
+    def wait(self, amount=0.25):
+        time.sleep(amount)
 
     def test_add_quiz(self):
         self.wait()
@@ -43,23 +52,21 @@ class DataUploadTests(unittest.TestCase):
     def test_add_question_gold_and_not(self):
         questions = self.client.get_questions(self.quiz_id, 1)
         self.assertTrue('error' in questions)
-        for text, answers, gold in QUESTIONS:
-            self.wait()
-            question_resp = self.client.add_question(self.quiz_id, text)
-            question_id = question_resp['questionID']
-            for answer in answers:
-                self.wait()
-                self.client.add_answer(answer,
-                        questionID=question_id,
-                        isGold=(answer == gold))
+        self.load_questions()
         self.wait()
         questions = self.client.get_questions(self.quiz_id, 1)
-        ipdb.set_trace()
-        print questions
+        # ^^ 1 because we are only taking questions with gold
         self.assertTrue('error' not in questions)
+        self.assertTrue('items' in questions)
         questions = self.client.get_questions(self.quiz_id, 2)
-        print questions
         self.assertTrue('error' in questions)
+
+    def test_get_question(self):
+        self.load_questions()
+        self.wait()
+        questions = self.client.get_questions(self.quiz_id, 1)
+        question = questions['items'][0]
+        self.assertEqual(question['text'], QUESTIONS[0][0])
 
 
 if __name__ == '__main__':
