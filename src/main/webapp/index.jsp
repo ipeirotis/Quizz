@@ -31,7 +31,7 @@
 			$.each(quizItems.items, function(key, quiz) {
 				var row = $('<tr />');
 				var cell = $('<td />');
-				cell.append($('<a href="/startQuiz?relation=' + quiz.quizID + '">' + quiz.name + '</a>'));
+				cell.append($('<a href="/startQuiz?quizID=' + quiz.quizID + '">' + quiz.name + '</a>'));
 				cell.append($('<br><small>(Your progress: <span id="' + quiz.quizID + '">0</span>/' + quiz.questions + ')</small>'));
 				row.append(cell);
 				table.after(row);

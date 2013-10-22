@@ -32,7 +32,7 @@
                         <a id="midname" href=""></a>
                     </div>
                     <div id="answers"></div>
-                    <input id="relation" name="relation" type="hidden" value="">
+                    <input id="quizID" name="quizID" type="hidden" value="">
                     <input id="mid" name="mid" type="hidden" value="">
                     <input id="totalanswers" name="totalanswers" type="hidden" value="">
                     <input id="correctanswers" name="correctanswers" type="hidden" value="">
@@ -73,7 +73,7 @@
             </div>
 
 
-            <h3><a id="restartQuizzLink" href="/startQuiz?relation=">Clik here to start again</a></h3>
+            <h3><a id="restartQuizzLink" href="/startQuiz?quizID=">Clik here to start again</a></h3>
         </div>
     </div>
 
@@ -81,7 +81,7 @@
     $(document).ready(function() {
         setUpPerformanceUpdatesChannel(getURLParameterByName('changelToken'));
         var user = getUsername();
-        var quiz = getURLParameterByName('relation');
+        var quiz = getURLParameterByName('quizID');
         var gclid = getURLParameterByName('gclid');
         $('#gclid').val(gclid);
         $('#restartQuizzLink').attr('href', $('#restartQuizzLink').attr('href') + quiz);

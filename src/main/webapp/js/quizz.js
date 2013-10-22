@@ -78,7 +78,7 @@ function shuffle(array) {
 	function getQuizzes() {
 		var url = getAPIURL() + 'quiz';
 		var params = {
-			'fields' : 'items(relation, name, questions)',
+			'fields' : 'items(quizID, name, questions)',
 		};
 		return $.getJSON(url, params);
 	}
@@ -179,7 +179,7 @@ function shuffle(array) {
 
 	function populateQuestion(question) {
 
-		$('#relation').val(question.quiz);
+		$('#quizID').val(question.quiz);
 		$('#mid').val(question.mid);
 		$('#gold').val(question.correct);
 		$('#questiontext').html(question.quizquestion);
@@ -341,7 +341,7 @@ function shuffle(array) {
 			  'hitCallback': function(){ },
 			  'eventCategory': 'quiz-submission',
 			  'eventAction': type,
-			  'eventLabel': getURLParameterByName('relation'),
+			  'eventLabel': getURLParameterByName('quizID'),
 			  'eventValue': value,
 			  } );
     }
