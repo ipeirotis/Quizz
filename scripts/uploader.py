@@ -88,6 +88,10 @@ class QuizzAPIClient(object):
     def get_questions(self, quizID, amount):
         return J(self._get_api("quizquestions/" + quizID, {'num': amount}))
 
+    def add_treatment(self, name, probability):
+        return self._post_web('addTreatment',
+                             {'name': name, 'probability': probability})
+
 
 def load_questions(fname):
     with open(fname) as F:
@@ -105,9 +109,16 @@ def upload_questions(client, quiz_id, questions):
             client.add_answer(question_id, answer, isGold=(answer == gold))
 
 
+TREATMENTS = ['Correct', 'CrowdAnswers', 'Difficulty', 'Message',
+              'PercentageCorrect', 'percentageRank', 'Score', 'TotalCorrect',
+              'TotalCorrectRank']
+
+
 def main(args):
     client = QuizzAPIClient(API_URL, WEB_URL)
     fname, quiz_id, quizz_text = args[:3]
+    for treatment in TREATMENTS:
+        client.add_treatment(treatment, 0.8)
     client.create_quiz(quiz_id, quizz_text)
     questions = load_questions(fname)
     upload_questions(client, quiz_id, questions)
