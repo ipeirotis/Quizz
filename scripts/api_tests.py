@@ -30,9 +30,8 @@ class DataUploadTests(unittest.TestCase):
             question_resp = self.client.add_question(self.quiz_id, text)
             question_id = question_resp['questionID']
             for answer in answers:
-                self.client.add_answer(answer,
-                        questionID=question_id,
-                        isGold=(answer == gold))
+                self.client.add_answer(question_id, answer,
+                                       isGold=(answer == gold))
 
     def wait(self, amount=0.25):
         time.sleep(amount)

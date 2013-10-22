@@ -1,3 +1,4 @@
+import csv
 import json
 import sys
 
@@ -29,7 +30,6 @@ class QuizzAPIClient(object):
 
     def _req(self, fun, *args, **kwargs):
         resp = fun(*args, **kwargs)
-        print resp
         return resp
 
     def _get(self, url, data):
@@ -77,8 +77,9 @@ class QuizzAPIClient(object):
         }
         return J(self._post_web('addQuestion', json.dumps(data)))
 
-    def add_answer(self, answer, **kwargs):
+    def add_answer(self, questionID, answer, **kwargs):
         kwargs['text'] = answer
+        kwargs['questionID'] = questionID
         return self._post_web("addAnswer", json.dumps(kwargs))
 
     def update_count_stats(self):
@@ -88,10 +89,28 @@ class QuizzAPIClient(object):
         return J(self._get_api("quizquestions/" + quizID, {'num': amount}))
 
 
+def load_questions(fname):
+    with open(fname) as F:
+        csvfile = csv.reader(F, delimiter='\t')
+        for row in csvfile:
+            (text, gold), answers = row[:2], row[2:]
+            yield text, gold, answers
+
+
+def upload_questions(client, quiz_id, questions):
+    for text, gold, answers in questions:
+        resp = client.add_question(quiz_id, text)
+        question_id = resp['questionID']
+        for answer in answers:
+            client.add_answer(question_id, answer, isGold=(answer == gold))
+
+
 def main(args):
     client = QuizzAPIClient(API_URL, WEB_URL)
     fname, quiz_id, quizz_text = args[:3]
     client.create_quiz(quiz_id, quizz_text)
+    questions = load_questions(fname)
+    upload_questions(client, quiz_id, questions)
     client.update_count_stats()
 
 
