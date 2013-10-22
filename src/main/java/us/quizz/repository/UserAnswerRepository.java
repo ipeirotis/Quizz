@@ -22,7 +22,7 @@ public class UserAnswerRepository {
 		PersistenceManager pm = PMF.getPM();
 
 		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("relation == quizParam && userid == useridParam");
+		q.setFilter("quizID == quizParam && userid == useridParam");
 		q.declareParameters("String quizParam, String useridParam");
 		
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -42,7 +42,7 @@ public class UserAnswerRepository {
 				UserAnswer.generateKeyFromID(questionID, userID));
 	}
 	
-	public static UserAnswerFeedback getUserAnswerFeedback(String questionID, String userID) {
+	public static UserAnswerFeedback getUserAnswerFeedback(Long questionID, String userID) {
 
 		String key = "useranswerfeedback_"+questionID + userID;
 		return PMF.singleGetObjectByIdWithCaching(key, UserAnswerFeedback.class,

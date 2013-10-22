@@ -200,7 +200,7 @@ public class QuizPerformance {
 			}
 			if (correct == null) {
 				Answer answer = PMF.singleGetObjectById(Answer.class, ua.getAnswerID());
-				correct = answer.isGold();
+				correct = answer.getIsGold();
 				ua.setIsCorrect(correct);
 				UserAnswerRepository.storeUserAnswer(ua);
 			}

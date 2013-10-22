@@ -100,14 +100,6 @@ public class Answer {
 		return getPrimitiveMD(key).getAsLong();
 	}
 	
-	public boolean isGold() {
-		return isGold;
-	}
-	
-	public void setGold(Boolean isGold){
-		this.isGold = isGold;
-	}
-	
 	public boolean isSilver() {
 		return probability != null;
 	}

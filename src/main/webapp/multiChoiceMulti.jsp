@@ -33,7 +33,7 @@
                     </div>
                     <div id="answers"></div>
                     <input id="quizID" name="quizID" type="hidden" value="">
-                    <input id="mid" name="mid" type="hidden" value="">
+                    <input id="questionID" name="questionID" type="hidden" value="">
                     <input id="totalanswers" name="totalanswers" type="hidden" value="">
                     <input id="correctanswers" name="correctanswers" type="hidden" value="">
                     <input id="gold" name="gold" type="hidden" value="">

@@ -154,11 +154,10 @@ function shuffle(array) {
 		gapi.plus.go();
 	}
 
-	function answeredQuestion (nname, vvalue){
+	function answeredQuestion (answerID){
 		return function () {
 			var formData = $('#addUserEntry').serializeArray();
-			formData.push({name: nname, value: vvalue});
-			var quiz = QUIZZ_QUESTIONS[CURRENT_QUIZZ].mid;
+			formData.push({'name': 'answerID', 'value': answerID});
 			hideScoresMakeLoading();
 			hideFeedback();
 			makeLoadingScreen("Loading feedback");
@@ -168,7 +167,7 @@ function shuffle(array) {
 					hideQuestion();
 					showFeedback(feedback, prepareNextQuestion);
 			});
-			USER_ANSWERS.push(vvalue);
+			USER_ANSWERS.push(answerID);
 			return false;
 		}
 	}
@@ -180,48 +179,39 @@ function shuffle(array) {
 	function populateQuestion(question) {
 
 		$('#quizID').val(question.quizID);
+		$('#questionID').val(question.id);
 		$('#gold').val(question.correct);
 		$('#questiontext').html(question.text);
-		$('#midname').html(question.midname);
 		$('#correctanswers').val(question.correctanswers);
 		$('#totalanswers').val(question.totalanswers);
 
 		var answers = $("#answers");
 		shuffle(question.answers);
-		$.each(question.answers, function(index, value) {
+		$.each(question.answers, function(index, answer) {
+			value = answer.text
 			//  triming " chars and escaping internal ones
 			value = clearString(value);
 			value = $.trim(value).replace(/"/, "\\\"");
 			var uaid = "useranswer" + index;
 			var huaid = '#' + uaid;
 			answers.append($('<input id="'+uaid+'" name="'+uaid+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
-			var gatype = 'multiple-choice-' + (value == question.correct ? "" : "in") + 'correct';
-			var ganumber = value == question.correct ? 1 : 0 ;
+			var gatype = 'multiple-choice-' + (answer.isGold ? "" : "in") + 'correct';
+			var ganumber = answer.isGold ? 1 : 0 ;
 			$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
-			$(huaid).click(answeredQuestion (uaid, value));
+			$(huaid).click(answeredQuestion (answer.id));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
     	$("#idk_button").mousedown(function(){
     		markConversion("multiple-choice-idk", 0);
     	});
-    	$('#idk_button').click(answeredQuestion ("idk", "I don\'t know"));
+    	$('#idk_button').click(answeredQuestion (-1));
 	}
 
-	function getQuizQuestionInstance(quiz, mid) {
-		var url = getAPIURL() + 'quizquestioninstance';
-		url += '/quiz/' + encodeURIComponent(quiz);
-		url += '/mid/' + encodeURIComponent(mid);
-		var params = {
-			//'fields' : 'items(quiz, totalanswers)',
-		};
-		return $.getJSON(url, params);
-	}
-
-	function getFeedbackForPriorAnswer(user, quiz, mid) {
+	function getFeedbackForPriorAnswer(user, quiz, questionID) {
 		var url = getAPIURL() + 'useranswerfeedback';
 		url += '/' + encodeURIComponent(quiz);
 		url += '/' + encodeURIComponent(user);
-		url += '/' + encodeURIComponent(mid);
+		url += '/' + encodeURIComponent(questionID);
 		var params = {
 			//'fields' : 'items(quiz, totalanswers)',
 		};

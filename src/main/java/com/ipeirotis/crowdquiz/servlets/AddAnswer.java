@@ -3,6 +3,7 @@ package com.ipeirotis.crowdquiz.servlets;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +37,14 @@ public class AddAnswer extends HttpServlet {
 		}
 		
 		Answer answer = parseAnswer(jobject, question);
-		PMF.singleMakePersistent(answer, question);
+		question.addAnswer(answer);
+		PersistenceManager pm = PMF.getPM();
+		try {
+			pm.makePersistent(answer);
+			pm.makePersistent(question);
+		} finally {
+			pm.close();
+		}
 		resp.setContentType("application/json");
 		resp.getWriter().println("{ \"answerID: \"" + answer.getID() + "\"}");
 	}
@@ -72,9 +80,9 @@ public class AddAnswer extends HttpServlet {
 			isGold = !Strings.isNullOrEmpty(gold) && Boolean.parseBoolean(gold);
 		}
 		if (isGold) {
-				question.setHasGoldAnswer(true);
-				answer.setGold(true);
-				answer.setKind("gold");
+			question.setHasGoldAnswer(true);
+			answer.setIsGold(true);
+			answer.setKind("gold");
 		} else {
 			answer.setKind("normal_from_golds");
 		}

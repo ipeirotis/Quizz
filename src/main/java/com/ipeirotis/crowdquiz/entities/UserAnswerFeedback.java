@@ -21,7 +21,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswerFeedback {
 
-	public static Key generateKeyFromID(String questionID, String userid) {
+	public static Key generateKeyFromID(Long questionID, String userid) {
 		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(), "id_" + questionID + "_" + userid);
 	}
 	
@@ -30,13 +30,13 @@ public class UserAnswerFeedback {
 	private Key key;
 
 	@Persistent
-	private String	questionID;
+	private Long questionID;
 	
 	@Persistent
 	private String	userid;
 
 	@Persistent
-	private String	userAnswer;
+	private Long	userAnswerID;
 	
 	@Persistent
 	private Boolean isCorrect;
@@ -53,13 +53,12 @@ public class UserAnswerFeedback {
 	@Persistent
 	private String	difficulty;
 
-	public UserAnswerFeedback(String questionID, String userid, String userAnswer, String correctAnswer) {
+	public UserAnswerFeedback(Long questionID, String userid, Long userAnswerID, Boolean isCorrect) {
 
 		this.questionID = questionID;
 		this.userid = userid;
-		this.userAnswer=userAnswer;
-		this.correctAnswer=correctAnswer;
-		this.isCorrect = (userAnswer.equals(correctAnswer));
+		this.userAnswerID = userAnswerID;
+		this.isCorrect = isCorrect;
 
 		this.key = generateKeyFromID(questionID, userid);
 	}
@@ -72,11 +71,11 @@ public class UserAnswerFeedback {
 		this.key = key;
 	}
 
-	public String getQuestionID() {
+	public Long getQuestionID() {
 		return questionID;
 	}
 
-	public void setQuestionID(String questionID) {
+	public void setQuestionID(Long questionID) {
 		this.questionID = questionID;
 	}
 
@@ -88,12 +87,12 @@ public class UserAnswerFeedback {
 		this.userid = userid;
 	}
 
-	public String getUserAnswer() {
-		return userAnswer;
+	public Long getUserAnswerID() {
+		return userAnswerID;
 	}
 
-	public void setUserAnswer(String userAnswer) {
-		this.userAnswer = userAnswer;
+	public void setUserAnswerID(Long userAnswerID) {
+		this.userAnswerID = userAnswerID;
 	}
 
 	public Boolean getIsCorrect() {

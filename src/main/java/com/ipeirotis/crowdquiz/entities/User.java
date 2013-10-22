@@ -3,7 +3,6 @@ package com.ipeirotis.crowdquiz.entities;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

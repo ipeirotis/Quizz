@@ -1,5 +1,6 @@
 package com.ipeirotis.crowdquiz.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -9,6 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 import com.google.common.base.Objects;
 
 import us.quizz.repository.QuizQuestionRepository;
@@ -88,6 +90,10 @@ public class Question {
     
     @Persistent
     private Integer numberOfCorrentUserAnswers;
+    
+    @Persistent(defaultFetchGroup = "true")
+    @Unowned
+    private ArrayList<Answer> answers;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -101,6 +107,7 @@ public class Question {
 		this.quizID = quizID;
 		this.weight = weight;
 		this.text = text;
+		answers = new ArrayList<Answer>();
 	}
 
 	public Long getAdGroupId() {
@@ -220,6 +227,18 @@ public class Question {
 		return hasUserAnswers;
 	}
 	
+	public ArrayList<Answer> getAnswers(){
+		return answers;
+	}
+	
+	public void setAnswers(ArrayList<Answer> answers){
+		this.answers = answers;
+	}
+	
+	public void addAnswer(Answer answer){
+		answers.add(answer);
+	}
+
 	@Override
 	public boolean equals(Object other){
 		if (other instanceof Question) {
