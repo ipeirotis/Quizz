@@ -17,30 +17,21 @@ public class QuizQuestionRepository {
 
 	public static Question getQuizQuestion(String questionID) {
 		return getQuizQuestion(Long.parseLong(questionID));
-//		return PMF.singleGetObjectById(Question.class, questionID);
 	}
 	
 	public static Question getQuizQuestion(Long questionID) {
 		return PMF.singleGetObjectById(Question.class, questionID);
 	}
 	
-	public static List<Question> getQuizQuestions() {
+	public static ArrayList<Question> getQuizQuestions() {
 		
 		PersistenceManager pm = PMF.getPM();
 		try {
 			Query query = pm.newQuery(Question.class);
-			List<Question> list = new ArrayList<Question>();
-			int limit = 1000;
-			int i=0;
-			while (true) {
-				query.setRange(i, i+limit);
-				@SuppressWarnings("unchecked")
-				List<Question> results = (List<Question>) query.execute();
-				if (results.size()==0) break;
-				list.addAll(results);
-				i+=limit;
-			}
-			return list;
+			query.getFetchPlan().setFetchSize(1000);
+			@SuppressWarnings("unchecked")
+			List<Question> results = (List<Question>) query.execute();
+			return new ArrayList<Question>(results);
 		} finally {
 			pm.close();
 		}
@@ -93,11 +84,11 @@ public class QuizQuestionRepository {
 		PersistenceManager pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(UserAnswer.class);
-			q.setFilter("quizID == quizParam");
-			q.declareParameters("String quizParam");
+			q.setFilter("questionID == questionParam");
+			q.declareParameters("Long questionParam");
 	
 			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("quizParam", question.getQuizID());
+			params.put("questionParam", question.getID());
 
 			@SuppressWarnings("unchecked")
 			List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
