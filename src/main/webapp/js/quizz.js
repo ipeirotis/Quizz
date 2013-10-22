@@ -179,10 +179,9 @@ function shuffle(array) {
 
 	function populateQuestion(question) {
 
-		$('#quizID').val(question.quiz);
-		$('#mid').val(question.mid);
+		$('#quizID').val(question.quizID);
 		$('#gold').val(question.correct);
-		$('#questiontext').html(question.quizquestion);
+		$('#questiontext').html(question.text);
 		$('#midname').html(question.midname);
 		$('#correctanswers').val(question.correctanswers);
 		$('#totalanswers').val(question.totalanswers);
