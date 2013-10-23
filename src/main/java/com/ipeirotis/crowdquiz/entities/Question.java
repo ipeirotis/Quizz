@@ -10,7 +10,6 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.annotations.Unowned;
 import com.google.common.base.Objects;
 
 import us.quizz.repository.QuizQuestionRepository;
@@ -92,7 +91,6 @@ public class Question {
     private Integer numberOfCorrentUserAnswers;
     
     @Persistent(defaultFetchGroup = "true")
-    @Unowned
     private ArrayList<Answer> answers;
 
 	@PrimaryKey

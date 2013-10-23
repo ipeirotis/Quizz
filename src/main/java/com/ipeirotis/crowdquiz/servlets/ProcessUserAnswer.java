@@ -60,7 +60,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID,
 				isCorrect, numCorrectAnswers, numTotalAnswers);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
-		storeUserAnswer(user, questionID, action, useranswerID, ipAddress, browser,
+		storeUserAnswer(user, quizID, questionID, action, useranswerID, ipAddress, browser,
 				referer, timestamp, isCorrect);
 		updateQuizPerformance(user, questionID);
 		returnUserAnswerFeedback(uaf, resp);
@@ -104,7 +104,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param timestamp
 	 * @param isCorrect
 	 */
-	private void storeUserAnswer(User user, Long questionID, String action, Long useranswerID,
+	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Long useranswerID,
 			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
 
 		UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
@@ -114,6 +114,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		ue.setTimestamp(timestamp);
 		ue.setAction(action);
 		ue.setIsCorrect(isCorrect);
+		ue.setQuizID(quizID);
 		PMF.singleMakePersistent(ue);
 	}
 

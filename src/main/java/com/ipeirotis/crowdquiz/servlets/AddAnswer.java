@@ -3,7 +3,6 @@ package com.ipeirotis.crowdquiz.servlets;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,30 +29,23 @@ public class AddAnswer extends HttpServlet {
 		JsonObject jobject = jParser.parse(req.getReader()).getAsJsonObject();
 
 		Long questionID = jobject.get("questionID").getAsLong();
-		
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
 		if (question == null) {
 			throw new IllegalArgumentException("Unknown question: " + questionID);
 		}
-		
 		Answer answer = parseAnswer(jobject, question);
 		question.addAnswer(answer);
-		PersistenceManager pm = PMF.getPM();
-		try {
-			pm.makePersistent(answer);
-			pm.makePersistent(question);
-		} finally {
-			pm.close();
-		}
+
+		PMF.singleMakePersistent(answer);
+		PMF.singleMakePersistent(question);
+
 		resp.setContentType("application/json");
 		resp.getWriter().println("{ \"answerID: \"" + answer.getID() + "\"}");
 	}
 	
 	protected Answer parseAnswer(JsonObject jAnswer, Question question){
-		Answer answer = new Answer();
-		answer.setText(jAnswer.get("text").getAsString());
-		answer.setQuestionID(question.getID());
-		answer.setQuizID(question.getQuizID());
+		Answer answer = new Answer(question.getID(), question.getQuizID(),
+				jAnswer.get("text").getAsString());
 		if (jAnswer.has("probability")) {
 			parseSilverAnswer(jAnswer, answer, question);
 		} else {

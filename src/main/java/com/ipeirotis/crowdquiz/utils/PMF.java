@@ -26,8 +26,20 @@ public final class PMF {
 	
 	public static void singleMakePersistent(Object... items) {
 		PersistenceManager pm = getPM();
-		pm.makePersistentAll(items);
-		pm.close();
+		try{
+			pm.makePersistentAll(items);
+		} finally {
+			pm.close();
+		}
+	}
+	
+	public static void singleMakePersistent(Object item){
+		PersistenceManager pm = getPM();
+		try {
+			pm.makePersistent(item);
+		} finally {
+			pm.close();
+		}
 	}
 	
 	public static <T> T singleGetObjectById(Class<T> cls, Object key){

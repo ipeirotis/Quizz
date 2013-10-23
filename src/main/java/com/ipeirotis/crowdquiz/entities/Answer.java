@@ -6,6 +6,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -13,9 +15,13 @@ import com.google.gson.JsonPrimitive;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Answer {
 
+	public static Key generateKeyFromID(Long questionID, String text) {
+		return KeyFactory.createKey(Answer.class.getSimpleName(), "id_" + questionID + "_" + text);
+	}
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+	private Key id;
 	
 	@Persistent
 	private String text;
@@ -47,8 +53,14 @@ public class Answer {
 	@Persistent
 	private Double probability;
 	
+	public Answer(Long questionID, String quizID, String text){
+		this.questionID = questionID;
+		this.quizID = quizID;
+		this.text = text;
+		this.id = generateKeyFromID(questionID, text);
+	}
 	
-	public Long getID(){
+	public Key getID(){
 		return id;
 	}
 	
@@ -148,7 +160,7 @@ public class Answer {
 		return quizID;
 	}
 
-	public void setId(Long id) {
+	public void setId(Key id) {
 		this.id = id;
 	}
 }
