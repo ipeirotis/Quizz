@@ -180,7 +180,6 @@ function shuffle(array) {
 
 		$('#quizID').val(question.quizID);
 		$('#questionID').val(question.id);
-		$('#gold').val(question.correct);
 		$('#questiontext').html(question.text);
 		$('#correctanswers').val(question.correctanswers);
 		$('#totalanswers').val(question.totalanswers);

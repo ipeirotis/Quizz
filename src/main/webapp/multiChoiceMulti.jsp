@@ -36,7 +36,6 @@
                     <input id="questionID" name="questionID" type="hidden" value="">
                     <input id="totalanswers" name="totalanswers" type="hidden" value="">
                     <input id="correctanswers" name="correctanswers" type="hidden" value="">
-                    <input id="gold" name="gold" type="hidden" value="">
                     <input id="gclid" name="gclid" type="hidden" value="">
                 </fieldset>
             </form>
