@@ -26,10 +26,6 @@
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadGoldAnswers</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddAnswer</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAnswer</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>UploadSilverAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadSilverAnswers</servlet-class>
 	</servlet>
@@ -119,10 +115,6 @@
 	<servlet-mapping>
 		<servlet-name>UploadQuestions</servlet-name>
 		<url-pattern>/uploadQuestions</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AddAnswer</servlet-name>
-		<url-pattern>/addAnswer</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UploadGoldAnswers</servlet-name>
