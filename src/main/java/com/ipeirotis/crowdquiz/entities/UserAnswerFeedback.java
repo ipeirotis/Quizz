@@ -39,10 +39,13 @@ public class UserAnswerFeedback {
 	private Integer userAnswerID;
 	
 	@Persistent
+	private String userAnswerText;
+
+	@Persistent
 	private Boolean isCorrect;
 
 	@Persistent
-	private String	correctAnswer;
+	private String	correctAnswerText;
 	
 	@Persistent
 	private Integer numCorrectAnswers;
@@ -91,6 +94,18 @@ public class UserAnswerFeedback {
 		return userAnswerID;
 	}
 
+	public String getUserAnswerText() {
+		return userAnswerText;
+	}
+
+	public void setUserAnswerText(String userAnswerText) {
+		this.userAnswerText = userAnswerText;
+	}
+
+	public void setDifficulty(String difficulty) {
+		this.difficulty = difficulty;
+	}
+	
 	public void setUserAnswerID(Integer userAnswerID) {
 		this.userAnswerID = userAnswerID;
 	}
@@ -103,12 +118,12 @@ public class UserAnswerFeedback {
 		this.isCorrect = isCorrect;
 	}
 
-	public String getCorrectAnswer() {
-		return correctAnswer;
+	public String getCorrectAnswerText() {
+		return correctAnswerText;
 	}
 
-	public void setCorrectAnswer(String correctAnswer) {
-		this.correctAnswer = correctAnswer;
+	public void setCorrectAnswerText(String correctAnswerText) {
+		this.correctAnswerText = correctAnswerText;
 	}
 
 	public Integer getNumCorrectAnswers() {

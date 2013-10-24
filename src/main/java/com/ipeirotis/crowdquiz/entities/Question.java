@@ -240,6 +240,16 @@ public class Question {
 	public Answer getAnswer(Integer answerID){
 		return answers.get(answerID);
 	}
+	
+	public Answer goldAnswer(){
+		for (Answer answer: answers) {
+			Boolean isGold = answer.getIsGold();
+			if (isGold != null && isGold) {
+				return answer;
+			}
+		}
+		throw new IllegalArgumentException("This question doesn't have gold answer");
+	}
 
 	@Override
 	public boolean equals(Object other){

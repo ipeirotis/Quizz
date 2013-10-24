@@ -281,13 +281,13 @@ function shuffle(array) {
 
 		if (feedback.isCorrect) {
 
-			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswer+'</span> was <span class="label label-success">correct</span>!');
+			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
 		} else {
-			$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswer+'</span> was <span class="label label-important">incorrect</span>!');
+			$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswerText+'</span> was <span class="label label-important">incorrect</span>!');
 			$('#showMessage').attr('class', 'alert alert-error');
 		}
-		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswer+'</span>.');
+		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswerText+'</span>.');
 
 		var crowdPerformance;
 		if (isNormalNumber(feedback.numCorrectAnswers) && isNormalNumber(feedback.numTotalAnswers)) {

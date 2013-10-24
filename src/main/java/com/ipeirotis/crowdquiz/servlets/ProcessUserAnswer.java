@@ -19,6 +19,7 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.Answer;
+import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
@@ -78,6 +79,9 @@ public class ProcessUserAnswer extends HttpServlet {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID, user.getUserid(), useranswerID, isCorrect);
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
+		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
+		uaf.setUserAnswerText(question.getAnswer(useranswerID).getText());
+		uaf.setCorrectAnswerText(question.goldAnswer().getText());
 		uaf.computeDifficulty();
 		UserAnswerRepository.storeUserAnswerFeedback(uaf);
 		return uaf;
