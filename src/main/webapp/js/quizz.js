@@ -197,7 +197,7 @@ function shuffle(array) {
 			var gatype = 'multiple-choice-' + (answer.isGold ? "" : "in") + 'correct';
 			var ganumber = answer.isGold ? 1 : 0 ;
 			$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
-			$(huaid).click(answeredQuestion (answer.id));
+			$(huaid).click(answeredQuestion (answer.internalID));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
     	$("#idk_button").mousedown(function(){

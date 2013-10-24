@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
@@ -37,11 +38,11 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long questionID = Long.parseLong(req.getParameter("questionID"));
 		String quizID = req.getParameter("quizID");
 		String action;
-		Long useranswerID = Long.parseLong(req.getParameter("answerID"));
+		Integer useranswerID = Integer.parseInt(req.getParameter("answerID"));
 		Boolean isCorrect = false;
 		if (useranswerID != -1) {
 			action = "Submit";
-			Answer answer = PMF.singleGetObjectById(Answer.class, useranswerID);
+			Answer answer = AnswersRepository.getAnswer(questionID, useranswerID);
 			if (answer.getIsGold() != null) {
 				isCorrect = answer.getIsGold();
 			}
@@ -72,7 +73,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		new Gson().toJson(uaf, resp.getWriter());
 	}
 
-	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Long useranswerID,
+	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Integer useranswerID,
 			Boolean isCorrect, String numCorrectAnswers, String numTotalAnswers) {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID, user.getUserid(), useranswerID, isCorrect);
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
@@ -104,7 +105,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param timestamp
 	 * @param isCorrect
 	 */
-	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Long useranswerID,
+	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Integer useranswerID,
 			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
 
 		UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);

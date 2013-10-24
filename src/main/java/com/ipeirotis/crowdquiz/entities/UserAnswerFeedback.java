@@ -36,7 +36,7 @@ public class UserAnswerFeedback {
 	private String	userid;
 
 	@Persistent
-	private Long	userAnswerID;
+	private Integer userAnswerID;
 	
 	@Persistent
 	private Boolean isCorrect;
@@ -53,7 +53,7 @@ public class UserAnswerFeedback {
 	@Persistent
 	private String	difficulty;
 
-	public UserAnswerFeedback(Long questionID, String userid, Long userAnswerID, Boolean isCorrect) {
+	public UserAnswerFeedback(Long questionID, String userid, Integer userAnswerID, Boolean isCorrect) {
 
 		this.questionID = questionID;
 		this.userid = userid;
@@ -87,11 +87,11 @@ public class UserAnswerFeedback {
 		this.userid = userid;
 	}
 
-	public Long getUserAnswerID() {
+	public Integer getUserAnswerID() {
 		return userAnswerID;
 	}
 
-	public void setUserAnswerID(Long userAnswerID) {
+	public void setUserAnswerID(Integer userAnswerID) {
 		this.userAnswerID = userAnswerID;
 	}
 

@@ -40,7 +40,8 @@ public class AddQuestion extends HttpServlet {
 		try{
 			pm.makePersistent(question); // To generate key
 			for (JsonElement je: jobject.get("answers").getAsJsonArray()) {
-				Answer answer = parseAnswer(je.getAsJsonObject(), question);
+				Integer internalID = question.getAnswers().size();
+				Answer answer = parseAnswer(je.getAsJsonObject(), question, internalID);
 				question.addAnswer(answer);
 			}
 			pm.makePersistentAll(question.getAnswers());
@@ -54,9 +55,9 @@ public class AddQuestion extends HttpServlet {
 		resp.getWriter().println(gson.toJson(status));
 	}
 	
-	protected Answer parseAnswer(JsonObject jAnswer, Question question){
+	protected Answer parseAnswer(JsonObject jAnswer, Question question, Integer internalID){
 		Answer answer = new Answer(question.getID(), question.getQuizID(),
-				jAnswer.get("text").getAsString());
+				jAnswer.get("text").getAsString(), internalID);
 		if (jAnswer.has("probability")) {
 			parseSilverAnswer(jAnswer, answer, question);
 		} else {

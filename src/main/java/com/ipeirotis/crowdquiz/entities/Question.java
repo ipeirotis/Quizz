@@ -236,6 +236,10 @@ public class Question {
 	public void addAnswer(Answer answer){
 		answers.add(answer);
 	}
+	
+	public Answer getAnswer(Integer answerID){
+		return answers.get(answerID);
+	}
 
 	@Override
 	public boolean equals(Object other){

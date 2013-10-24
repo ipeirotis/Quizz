@@ -15,14 +15,25 @@ import com.google.gson.JsonPrimitive;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Answer {
 
-	public static Key generateKeyFromID(Long questionID, String text) {
-		return KeyFactory.createKey(Answer.class.getSimpleName(), "id_" + questionID + "_" + text);
+	public static String generateKeyID(Long questionID, Integer internalID) {
+		return "id_" + questionID + "_" + internalID;
+	}
+	
+	public static Key generateKeyFromID(Long questionID, Integer internalID) {
+		return generateKeyFromKeyID(generateKeyID(questionID, internalID));
+	}
+	
+	public static Key generateKeyFromKeyID(String keyID) {
+		return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
 	}
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key id;
 	
+	@Persistent
+	private Integer internalID;
+
 	@Persistent
 	private String text;
 	// contains html to put on the website?
@@ -53,17 +64,26 @@ public class Answer {
 	@Persistent
 	private Double probability;
 	
-	public Answer(Long questionID, String quizID, String text){
+	public Answer(Long questionID, String quizID, String text, Integer internalID){
 		this.questionID = questionID;
 		this.quizID = quizID;
 		this.text = text;
-		this.id = generateKeyFromID(questionID, text);
+		this.internalID = internalID;
+		this.id = generateKeyFromID(questionID, internalID);
 	}
 	
 	public Key getID(){
 		return id;
-	}
+	}	
 	
+	public Integer getInternalID() {
+		return internalID;
+	}
+
+	public void setInternalID(Integer internalID) {
+		this.internalID = internalID;
+	}
+
 	public String getText(){
 		return text;
 	}

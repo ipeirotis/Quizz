@@ -27,7 +27,7 @@ public class UserAnswer {
 	private String	ipaddress;
 
 	@Persistent
-	private Long answerID;
+	private Integer answerID;
 	
 	@Persistent
 	private Double score;
@@ -77,14 +77,14 @@ public class UserAnswer {
 
 
 	
-	public UserAnswer(String userid, Long questionID, Long answerID) {
+	public UserAnswer(String userid, Long questionID, Integer useranswerID) {
 		this.questionID = questionID;
-		this.answerID = answerID;
+		this.answerID = useranswerID;
 		this.userid = userid;
 	}
 	
 	public UserAnswer(String userid, String questionID, String answerID) {
-		this(userid, Long.parseLong(questionID), Long.parseLong(answerID));
+		this(userid, Long.parseLong(questionID), Integer.parseInt(answerID));
 	}
 
 	public String getAction() {
@@ -114,7 +114,7 @@ public class UserAnswer {
 		return timestamp;
 	}
 
-	public Long getAnswerID() {
+	public Integer getAnswerID() {
 		return answerID;
 	}
 
@@ -154,7 +154,7 @@ public class UserAnswer {
 	 * @param useranswer
 	 *          the useranswer to set
 	 */
-	public void setAnswerID(Long answerID) {
+	public void setAnswerID(Integer answerID) {
 		this.answerID = answerID;
 	}
 
