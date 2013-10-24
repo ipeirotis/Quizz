@@ -69,11 +69,12 @@ class QuizzAPIClient(object):
     def remove_quiz(self, quiz_id):
         return self._get_web('api/deleteQuiz', {'quizID': quiz_id})
 
-    def add_question(self, quiz_id, text, weight=1.):
+    def add_question(self, quiz_id, text, answers, weight=1.):
         data = {
             'quizID': quiz_id,
             'text': text,
             'weight': weight,
+            'answers': answers,
         }
         return J(self._post_web('addQuestion', json.dumps(data)))
 
@@ -103,10 +104,9 @@ def load_questions(fname):
 
 def upload_questions(client, quiz_id, questions):
     for text, gold, answers in questions:
-        resp = client.add_question(quiz_id, text)
-        question_id = resp['questionID']
-        for answer in answers:
-            client.add_answer(question_id, answer, isGold=(answer == gold))
+        answers = [{'text': answer, 'isGold': (answer == gold)}
+                   for answer in answers]
+        client.add_question(quiz_id, text, answers)
 
 
 TREATMENTS = ['Correct', 'CrowdAnswers', 'Difficulty', 'Message',
