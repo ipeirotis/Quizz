@@ -42,6 +42,17 @@ public final class PMF {
 		}
 	}
 	
+	public static void makePersistentIterative(Object... items){
+		PersistenceManager pm = getPM();
+		try {
+			for (Object item: items) {
+				pm.makePersistent(item);
+			}
+		} finally {
+			pm.close();
+		}
+	}
+	
 	public static <T> T singleGetObjectById(Class<T> cls, Object key){
 		try {
 			return singleGetObjectByIdThrowing(cls, key);

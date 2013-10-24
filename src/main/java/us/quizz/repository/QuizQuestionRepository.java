@@ -37,32 +37,54 @@ public class QuizQuestionRepository {
 		}
 	}
 	
-	public static ArrayList<Question> getQuizQuestionsWithGold(String quizid) {
-		
-		String key = "quizquestions_"+quizid;
-		@SuppressWarnings("unchecked")
-		ArrayList<Question> availableQuestions = CachePMF.get(key, ArrayList.class);
-		if (availableQuestions!=null) return availableQuestions;
-		
+	protected static ArrayList<Question> getQuestions(String filter, String declaredParameters,
+				Map<String, Object> params){
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query query = pm.newQuery(Question.class);
-			query.setFilter("quizID == quizParam && hasGoldAnswer==hasGoldParam");
-			query.declareParameters("String quizParam, Boolean hasGoldParam");
-	
-			Map<String,Object> params = new HashMap<String, Object>();
-			params.put("quizParam", quizid);
-			params.put("hasGoldParam", Boolean.TRUE);
+			query.setFilter(filter);
+			query.declareParameters(declaredParameters);
+			query.getFetchPlan().setFetchSize(1000);
 			
 			@SuppressWarnings("unchecked")
 			ArrayList<Question> questions =
 					new ArrayList<Question>((List<Question>) query.executeWithMap(params));
-
-			CachePMF.put(key, questions);
 			return questions;
 		} finally {
 			pm.close();
 		}
+	}
+	
+	protected static ArrayList<Question> getQuestionsWitchCaching(String key, String filter,
+				String declaredParameters, Map<String, Object> params){
+		@SuppressWarnings("unchecked")
+		ArrayList<Question> questions = CachePMF.get(key, ArrayList.class);
+		if (questions != null) return questions;
+		questions = getQuestions(filter, declaredParameters, params);
+		CachePMF.put(key, questions);
+		return questions;
+	}
+	
+	public static ArrayList<Question> getQuizQuestions(String quizid) {
+		
+		String key = "quizquestions_all_"+quizid;
+		String filter = "quizID == quizParam";
+		String declaredParameters = "String quizParam";
+		Map<String,Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quizid);
+		return getQuestionsWitchCaching(key, filter, declaredParameters, params);
+	}
+	
+	
+	public static ArrayList<Question> getQuizQuestionsWithGold(String quizid) {
+		
+		String key = "quizquestions_gold_"+quizid;
+		String filter = "quizID == quizParam && hasGoldAnswer==hasGoldParam";
+		String declaredParameters = "String quizParam, Boolean hasGoldParam";
+		Map<String,Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quizid);
+		params.put("hasGoldParam", Boolean.TRUE);
+		return getQuestionsWitchCaching(key, filter, declaredParameters, params);
 	}
 	
 	public static void storeQuizQuestion(Question q) {
