@@ -13,8 +13,10 @@ def load_questions(fname):
         ANSWERS = [x + " of them" for x in ["None", "Some", "All"]]
         csvfile = csv.reader(F, delimiter='\t')
         for row in csvfile:
-            (quiz_id, quiz_name), (text, gold) = row[1:3], row[7:9]
+            (quiz_id, quiz_name), (text, gold) = row[1:3], row[8:10]
             #print quiz_id, quiz_name, text, gold
+            if not gold:
+                continue
             quiz_id = quiz_id.replace("/", "_")
             yield quiz_id, quiz_name, text, gold, ANSWERS
 
