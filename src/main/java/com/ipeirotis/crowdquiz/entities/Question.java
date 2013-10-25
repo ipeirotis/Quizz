@@ -250,18 +250,4 @@ public class Question {
 		}
 		throw new IllegalArgumentException("This question doesn't have gold answer");
 	}
-
-	@Override
-	public boolean equals(Object other){
-		if (other instanceof Question) {
-			Question o = (Question) other;
-			return Objects.equal(getID(), o.getID());
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode(){
-		return Objects.hashCode(getID());
-	}
 }
