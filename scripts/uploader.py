@@ -7,6 +7,9 @@ from client import QuizzAPIClient
 API_URL = 'http://localhost:8888/'
 WEB_URL = 'http://localhost:8888/'
 
+API_URL = 'https://crowd-power.appspot.com/'
+WEB_URL = 'http://www.quizz.us/'
+
 
 def load_questions(fname):
     with open(fname) as F:
