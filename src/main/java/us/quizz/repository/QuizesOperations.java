@@ -14,7 +14,7 @@ public class QuizesOperations {
 
 	public static Set<Question> getNextQuizQuestions(String quiz, int n) {
 		ArrayList<Question> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
-		return Helper.selectRandomElements(list, n);
+		return Helper.trySelectingRandomElements(list, n);
 	}
 
 	public static Question getNextQuizQuestionInstance(String quizId) {

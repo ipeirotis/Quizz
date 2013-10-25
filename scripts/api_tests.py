@@ -2,7 +2,7 @@ import time
 import unittest
 import ipdb
 
-from uploader import QuizzAPIClient
+from client import QuizzAPIClient
 
 
 API_URL = 'http://localhost:8888/'
@@ -48,15 +48,14 @@ class DataUploadTests(unittest.TestCase):
 
     def test_add_question_gold_and_not(self):
         questions = self.client.get_questions(self.quiz_id, 1)
-        self.assertTrue('error' in questions)
+        self.assertFalse(questions['items'])
         self.load_questions()
         self.wait()
         questions = self.client.get_questions(self.quiz_id, 1)
         # ^^ 1 because we are only taking questions with gold
-        self.assertTrue('error' not in questions)
-        self.assertTrue('items' in questions)
+        self.assertTrue(questions['items'])
         questions = self.client.get_questions(self.quiz_id, 2)
-        self.assertTrue('error' in questions)
+        self.assertEqual(1, len(questions['items']))
 
     def test_get_question(self):
         self.load_questions()
