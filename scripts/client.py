@@ -75,6 +75,7 @@ class QuizzAPIClient(object):
             'weight': weight,
             'answers': answers,
         }
+        print data
         return J(self._post_web('addQuestion', json.dumps(data)))
 
     def add_answer(self, questionID, answer, **kwargs):
