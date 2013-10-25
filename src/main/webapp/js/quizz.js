@@ -26,16 +26,12 @@ function shuffle(array) {
     return array;
 }
 
-	function getBaseURL() {
-		return 'https://crowd-power.appspot.com/'
-	}
-
 	function getWebURL() {
-		return 'http://www.quizz.us/';
+		return window.location.origin + "/";
 	}
 
 	function getAPIURL() {
-		return getBaseURL() + '_ah/api/quizz/v1/';
+		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/';
 	}
 
 	function getURLParameterByName(name) {
