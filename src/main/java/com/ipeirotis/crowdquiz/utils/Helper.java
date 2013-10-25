@@ -151,6 +151,15 @@ public class Helper {
 	 * Selects random elements without replacement, modifies elements order in given array!
 	 */
 	public static <T> Set<T> selectRandomElements(ArrayList<T> elements, int n){
+		Set<T> randomEls = trySelectingRandomElements(elements, n);
+		if (randomEls.size() < n) {
+			throw new IllegalArgumentException("Not enough elements to select uniq " + n +
+					" random ones from " + elements.size());
+		}
+		return randomEls;
+	}
+	
+	public static <T> Set<T> trySelectingRandomElements(ArrayList<T> elements, int n){
 		Set<T> randomEls = new HashSet<T>(n);
 		int size = elements.size();
 		Random r = new Random();
@@ -163,8 +172,6 @@ public class Helper {
 			elements.set(size, randElement);
 			// swapping with last element to avoid costly remove
 		}
-		
-		if (randomEls.size() < n) throw new IllegalArgumentException("Not enough elements to select uniq random ones");
 		return randomEls;
 	}
 

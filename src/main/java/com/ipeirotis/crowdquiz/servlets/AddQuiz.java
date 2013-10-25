@@ -25,10 +25,10 @@ public class AddQuiz extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		Utils.ensureParameters(req, "relation", "name", "text");
+		Utils.ensureParameters(req, "quizID", "name", "text");
 		try {
-			String relation = req.getParameter("relation").trim();
-			resp.getWriter().println("Adding Quiz ID: " + relation);
+			String quizID = req.getParameter("quizID").trim();
+			resp.getWriter().println("Adding Quiz ID: " + quizID);
 			
 			String name = req.getParameter("name").trim();
 			resp.getWriter().println("Quiz Name: " + name);
@@ -36,14 +36,15 @@ public class AddQuiz extends HttpServlet {
 			String text = req.getParameter("text").trim();
 			resp.getWriter().println("Question Text: " + text);
 
-			Quiz q = new Quiz(name, relation, text);
+			Quiz q = new Quiz(name, quizID, text);
 			QuizRepository.storeQuiz(q);
 
 			String budget = req.getParameter("budget");
 			if (budget != null) {
 				resp.getWriter().println("Budget: " + budget);
 			} else {
-				// return;
+				// TODO: REFQQ - ending if no budget is given - no adcampain data
+				 return;
 			}
 			
 			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");
@@ -53,7 +54,7 @@ public class AddQuiz extends HttpServlet {
 			long delay = 0; // in seconds
 			long etaMillis = System.currentTimeMillis() + delay * 1000L;
 			queueAdCampaign.add(Builder.withUrl("/addCampaign")
-					.param("relation", relation)
+					.param("quizID", quizID)
 					.param("budget", budget)
 					.method(TaskOptions.Method.POST)
 					.etaMillis(etaMillis));
@@ -72,7 +73,7 @@ public class AddQuiz extends HttpServlet {
 			delay = 10; // in seconds
 			etaMillis = System.currentTimeMillis() + delay * 1000L;
 			queueAdgroup.add(paramManager.getTaskOptions()
-					.param("relation", relation)
+					.param("quizID", quizID)
 					.method(TaskOptions.Method.POST)
 					.etaMillis(etaMillis));
 

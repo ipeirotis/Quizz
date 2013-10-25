@@ -17,26 +17,26 @@
 	</div>
 
 	<script type="text/javascript">
-	
+
 	$(document).ready(function() {
 		var user = getUsername();
 		$.when(getQuizzes(), getUserQuizPerformances(user)).done(function(a1, a2){
-			
+
 			// The a1, a2 contain the return values from the getJSON as an array with three elements
-			// The [0] element contains the data 
+			// The [0] element contains the data
 			quizItems = a1[0];
 			quizperformanceItems = a2[0];
-			
+
 			var table = $("#quizzes tr:first");
 			$.each(quizItems.items, function(key, quiz) {
 				var row = $('<tr />');
 				var cell = $('<td />');
-				cell.append($('<a href="/startQuiz?relation=' + quiz.relation + '">' + quiz.name + '</a>'));
-				cell.append($('<br><small>(Your progress: <span id="' + quiz.relation + '">0</span>/' + quiz.questions + ')</small>'));
+				cell.append($('<a href="/startQuiz?quizID=' + quiz.quizID + '">' + quiz.name + '</a>'));
+				cell.append($('<br><small>(Your progress: <span id="' + quiz.quizID + '">0</span>/' + quiz.questions + ')</small>'));
 				row.append(cell);
 				table.after(row);
 			});
-			
+
 			$.each(quizperformanceItems.items, function(key, quizperf) {
 				var element = $(document.getElementById(quizperf.quiz));
 				element.text(quizperf.totalanswers);

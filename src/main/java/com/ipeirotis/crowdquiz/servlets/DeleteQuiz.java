@@ -20,10 +20,10 @@ public class DeleteQuiz extends HttpServlet {
 		String baseURL = Helper.getBaseURL(req);
 		String url = baseURL + "/admin/";
 		resp.sendRedirect(url);
-		Utils.ensureParameters(req, "relation");
+		Utils.ensureParameters(req, "quizID");
 
-		String relation = req.getParameter("relation");
-		QuizRepository.deleteQuiz(relation);
+		String quizID = req.getParameter("quizID");
+		QuizRepository.deleteQuiz(quizID);
 	}
 
 }

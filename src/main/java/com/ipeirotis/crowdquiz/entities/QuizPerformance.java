@@ -1,7 +1,6 @@
 package com.ipeirotis.crowdquiz.entities;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -11,12 +10,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.ipeirotis.crowdquiz.utils.Helper;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 /**
  * Keeps track of the performance of a user within a Quiz. This is a "caching" object that aggregates the results
@@ -200,8 +199,8 @@ public class QuizPerformance {
 				t++;
 			}
 			if (correct == null) {
-				ArrayList<String> gold = QuizQuestionRepository.getGoldAnswers(ua.getRelation(), ua.getMid());
-				correct = gold.contains(ua.getUseranswer());
+				Answer answer = PMF.singleGetObjectById(Answer.class, ua.getAnswerID());
+				correct = answer.getIsGold();
 				ua.setIsCorrect(correct);
 				UserAnswerRepository.storeUserAnswer(ua);
 			}
@@ -215,7 +214,7 @@ public class QuizPerformance {
 		int numberOfMultipleChoiceOptions = 4;
 		try {
 			
-			double quality = this.getPercentageCorrect();
+//			double quality = this.getPercentageCorrect();
 			
 			/*
 			We do not want to give any positive score to someone who is "too wrong" so that their

@@ -26,19 +26,19 @@
 						for (Quiz q : quizzes) {
 							%>
 							<tr>
-								<td><%=q.getRelation()%></td>
+								<td><%=q.getQuizID()%></td>
 								<td><%=q.getName()%><br>
 									<a 
-									href="listEntities.jsp?relation=<%=q.getRelation()%>">List</a>|<a 
-									href="edit_quiz.jsp?relation=<%=q.getRelation()%>">Edit</a>|<a 
-									href="/api/deleteQuiz?relation=<%=q.getRelation()%>">Delete</a>
+									href="listEntities.jsp?relation=<%=q.getQuizID()%>">List</a>|<a 
+									href="edit_quiz.jsp?relation=<%=q.getQuizID()%>">Edit</a>|<a 
+									href="/api/deleteQuiz?relation=<%=q.getQuizID()%>">Delete</a>
 								</td>
 								<td><%=q.getQuestionText()%></td>
-								<td><a id="upload_questions" title="Upload additional entities for which we want to ask the quiz question" href="upload_questions.jsp?relation=<%=q.getRelation()%>">Questions</a>&nbsp;(<div style="display: inline" name="num_questions" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="upload_gold"	title="Upload correct answers for the questions asked" href="upload_gold.jsp?relation=<%=q.getRelation()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="upload_silver" title="Upload possible answers for the questions asked (with some <1 probability of being correct)" href="upload_silver.jsp?relation=<%=q.getRelation()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="upload_crowd" title="Upload answers submitted by users (that have been downloaded previously from Quizz.us)" href="upload_crowd.jsp?relation=<%=q.getRelation()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getRelation()%>">...</div>)</td>
-								<td><a id="download" title="Download the answers submitted so far by the users" href="/admin/downloadUserAnswers?relation=<%=q.getRelation()%>">Answers</a></td>
+								<td><a id="upload_questions" title="Upload additional entities for which we want to ask the quiz question" href="upload_questions.jsp?relation=<%=q.getQuizID()%>">Questions</a>&nbsp;(<div style="display: inline" name="num_questions" quiz="<%=q.getQuizID()%>">...</div>)</td>
+								<td><a id="upload_gold"	title="Upload correct answers for the questions asked" href="upload_gold.jsp?relation=<%=q.getQuizID()%>">Gold</a>&nbsp;(<div  style="display: inline"  name="num_gold"  quiz="<%=q.getQuizID()%>">...</div>)</td>
+								<td><a id="upload_silver" title="Upload possible answers for the questions asked (with some <1 probability of being correct)" href="upload_silver.jsp?relation=<%=q.getQuizID()%>">Silver</a>&nbsp;(<div   style="display: inline"  name="num_silver" quiz="<%=q.getQuizID()%>">...</div>)</td>
+								<td><a id="upload_crowd" title="Upload answers submitted by users (that have been downloaded previously from Quizz.us)" href="upload_crowd.jsp?relation=<%=q.getQuizID()%>">Answers</a>&nbsp;(<div  style="display: inline"  name="num_answers" quiz="<%=q.getQuizID()%>">...</div>)</td>
+								<td><a id="download" title="Download the answers submitted so far by the users" href="/admin/downloadUserAnswers?relation=<%=q.getQuizID()%>">Answers</a></td>
 							</tr>
 							<%
 						}

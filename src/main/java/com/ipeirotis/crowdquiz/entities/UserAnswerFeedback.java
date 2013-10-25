@@ -21,8 +21,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswerFeedback {
 
-	public static Key generateKeyFromID(String quiz, String userid, String mid) {
-		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(), "id_" + quiz + "_" + userid + "_" + mid);
+	public static Key generateKeyFromID(Long questionID, String userid) {
+		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(), "id_" + questionID + "_" + userid);
 	}
 	
 	@PrimaryKey
@@ -30,22 +30,22 @@ public class UserAnswerFeedback {
 	private Key key;
 
 	@Persistent
-	private String	quiz;
+	private Long questionID;
 	
 	@Persistent
 	private String	userid;
 
 	@Persistent
-	private String	mid;
-
-	@Persistent
-	private String	userAnswer;
+	private Integer userAnswerID;
 	
+	@Persistent
+	private String userAnswerText;
+
 	@Persistent
 	private Boolean isCorrect;
 
 	@Persistent
-	private String	correctAnswer;
+	private String	correctAnswerText;
 	
 	@Persistent
 	private Integer numCorrectAnswers;
@@ -56,16 +56,14 @@ public class UserAnswerFeedback {
 	@Persistent
 	private String	difficulty;
 
-	public UserAnswerFeedback(String quiz, String userid, String mid, String userAnswer, String correctAnswer) {
+	public UserAnswerFeedback(Long questionID, String userid, Integer userAnswerID, Boolean isCorrect) {
 
-		this.quiz = quiz;
+		this.questionID = questionID;
 		this.userid = userid;
-		this.mid = mid;
-		this.userAnswer=userAnswer;
-		this.correctAnswer=correctAnswer;
-		this.isCorrect = (userAnswer.equals(correctAnswer));
+		this.userAnswerID = userAnswerID;
+		this.isCorrect = isCorrect;
 
-		this.key = generateKeyFromID(quiz, userid, mid);
+		this.key = generateKeyFromID(questionID, userid);
 	}
 
 	public Key getKey() {
@@ -76,12 +74,12 @@ public class UserAnswerFeedback {
 		this.key = key;
 	}
 
-	public String getQuiz() {
-		return quiz;
+	public Long getQuestionID() {
+		return questionID;
 	}
 
-	public void setQuiz(String quiz) {
-		this.quiz = quiz;
+	public void setQuestionID(Long questionID) {
+		this.questionID = questionID;
 	}
 
 	public String getUserid() {
@@ -92,20 +90,24 @@ public class UserAnswerFeedback {
 		this.userid = userid;
 	}
 
-	public String getMid() {
-		return mid;
+	public Integer getUserAnswerID() {
+		return userAnswerID;
 	}
 
-	public void setMid(String mid) {
-		this.mid = mid;
+	public String getUserAnswerText() {
+		return userAnswerText;
 	}
 
-	public String getUserAnswer() {
-		return userAnswer;
+	public void setUserAnswerText(String userAnswerText) {
+		this.userAnswerText = userAnswerText;
 	}
 
-	public void setUserAnswer(String userAnswer) {
-		this.userAnswer = userAnswer;
+	public void setDifficulty(String difficulty) {
+		this.difficulty = difficulty;
+	}
+	
+	public void setUserAnswerID(Integer userAnswerID) {
+		this.userAnswerID = userAnswerID;
 	}
 
 	public Boolean getIsCorrect() {
@@ -116,12 +118,12 @@ public class UserAnswerFeedback {
 		this.isCorrect = isCorrect;
 	}
 
-	public String getCorrectAnswer() {
-		return correctAnswer;
+	public String getCorrectAnswerText() {
+		return correctAnswerText;
 	}
 
-	public void setCorrectAnswer(String correctAnswer) {
-		this.correctAnswer = correctAnswer;
+	public void setCorrectAnswerText(String correctAnswerText) {
+		this.correctAnswerText = correctAnswerText;
 	}
 
 	public Integer getNumCorrectAnswers() {

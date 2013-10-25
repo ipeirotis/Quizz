@@ -35,7 +35,7 @@ public class DownloadUserAnswers extends HttpServlet {
 		List<UserAnswer> answers = (List<UserAnswer>) query.execute(relation);
 		StringBuffer sb = new StringBuffer();
 		sbApp(sb, "userid");
-		sbApp(sb, "mid");
+		sbApp(sb, "questionID");
 		sbApp(sb, "useranswer");
 		sbApp(sb, "action");
 		sbApp(sb, "ipaddress");
@@ -45,8 +45,8 @@ public class DownloadUserAnswers extends HttpServlet {
 			
 		for (UserAnswer ue : answers) {
 			String userid = safeStr(ue.getUserid());
-			String mid = safeStr(ue.getMid());
-			String useranswer = safeStr(ue.getUseranswer());
+			String questionID = safeStr(ue.getQuestionID());
+			String useranswer = safeStr(ue.getAnswerID());
 			String action = safeStr(ue.getAction());
 			String ipaddress = safeStr(ue.getIpaddress());
 			String timestamp = safeStr(ue.getTimestamp());
@@ -54,7 +54,7 @@ public class DownloadUserAnswers extends HttpServlet {
 			String referer = safeStr(ue.getReferer());
 			
 			sbApp(sb, userid);
-			sbApp(sb, mid);
+			sbApp(sb, questionID);
 			sbApp(sb, useranswer);
 			sbApp(sb, action);
 			sbApp(sb, ipaddress);

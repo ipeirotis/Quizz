@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.QuizQuestionRepository;
+
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
@@ -20,11 +22,11 @@ public class AddUserAnswer extends HttpServlet {
 
 		resp.setContentType("text/plain");
 
-		String action = req.getParameter("action");
-		String userid = req.getParameter("userid");
-		String relation = req.getParameter("relation");
-		String mid = req.getParameter("mid");
-		String useranswer = req.getParameter("useranswer");
+		String action = req.getParameter("action").replace('\t', ' ');
+		String userid = req.getParameter("userid").replace('\t', ' ');
+		String questionStrID = req.getParameter("questionID");
+		Long questionID = Long.parseLong(questionStrID);
+		Integer useranswerID = Integer.parseInt(req.getParameter("useranswer"));
 		String correct = req.getParameter("correct");
 		Boolean isCorrect = (correct.equals("true"));
 		String browser = req.getParameter("browser");
@@ -37,13 +39,14 @@ public class AddUserAnswer extends HttpServlet {
 		} else {
 			return;
 		}
-
-		UserAnswer ue = new UserAnswer(userid, relation, mid, useranswer);
+		
+		UserAnswer ue = new UserAnswer(userid, questionID, useranswerID);
 		ue.setReferer(referer);
 		ue.setBrowser(browser);
 		ue.setIpaddress(ipAddress);
 		ue.setTimestamp(timestamp);
 		ue.setAction(action);
+		ue.setQuizID(QuizQuestionRepository.getQuizQuestion(questionID).getQuizID());
 		if (isCorrect!=null) ue.setIsCorrect(isCorrect);
 
 		PMF.singleMakePersistent(ue);

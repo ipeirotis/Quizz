@@ -20,9 +20,9 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Quiz {
 
-	public static Key generateKeyFromID(String relation) {
+	public static Key generateKeyFromID(String quizID) {
 
-		return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + relation);
+		return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + quizID);
 	}
 
 	// The category of the quiz. This allows the quizzes to be grouped by category in the
@@ -38,11 +38,15 @@ public class Quiz {
 	// Typically, we assign the name of a KP attribute on this one
 	// and serves as a defacto primary key for the quiz.
 	@Persistent
-	private String	relation;
+	private String quizID;
 
 	// The question that we will ask to the user
 	@Persistent
 	private String	questionText;
+
+	public void setFreebaseType(String freebaseType) {
+		this.freebaseType = freebaseType;
+	}
 
 	// The type of entry for the answer that we expect
 	// We do not use this for multiple choice questions
@@ -61,6 +65,45 @@ public class Quiz {
 	@Persistent
 	private Integer totalUsers;
 	
+	public String getCategory() {
+		return category;
+	}
+
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+
+	public Double getAvgAnswerCorrectness() {
+		return avgAnswerCorrectness;
+	}
+
+
+	public void setAvgAnswerCorrectness(Double avgAnswerCorrectness) {
+		this.avgAnswerCorrectness = avgAnswerCorrectness;
+	}
+
+
+	public Double getCapacity() {
+		return capacity;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void setQuizID(String quizID) {
+		this.quizID = quizID;
+	}
+
+
+	public void setQuestionText(String questionText) {
+		this.questionText = questionText;
+	}
+
 	// The number of users that answered at least one non-IDK question
 	@Persistent
 	private Integer contributingUsers;
@@ -146,15 +189,14 @@ public class Quiz {
 	private Key			key;
 
 
-	public Quiz(String name, String relation, String questionText) {
+	public Quiz(String name, String quizID, String questionText) {
 
 		this.name = name;
 		this.questionText = questionText;
-		this.relation = relation;
+		this.quizID = quizID;
 		this.freebaseType = null;
 
-
-		this.key = generateKeyFromID(relation);
+		this.key = generateKeyFromID(quizID);
 	}
 
 
@@ -217,9 +259,9 @@ public class Quiz {
 	}
 
 
-	public String getRelation() {
+	public String getQuizID() {
 
-		return relation;
+		return quizID;
 	}
 	
 	public Integer getTotalAnswers() {
@@ -263,6 +305,11 @@ public class Quiz {
 
 	public void setTotalUsers(Integer totalUsers) {
 		this.totalUsers = totalUsers;
+	}
+
+
+	public void setKey(Key key) {
+		this.key = key;
 	}
 
 }

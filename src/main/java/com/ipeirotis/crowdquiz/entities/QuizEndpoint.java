@@ -1,6 +1,8 @@
 package com.ipeirotis.crowdquiz.entities;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -101,16 +103,17 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 * @return The entity with primary key id.
 	 */
 	@ApiMethod(name = "getNextQuestionInstance", path = "quizquestioninstance/quiz/{quiz}")
-	public QuizQuestionInstance getNextQuestion(@Named("quiz") String quiz) {
-		return QuizesOperations.getNextQuizQuestionInstance(quiz);
+	public Question getNextQuestion(@Named("quiz") String quiz) {
+		return QuizesOperations.getNextQuizQuestion(quiz);
 	}
 	
 	/** This method generates a questions for quiz
 	 */
 	@ApiMethod(name = "listNextQuestions", path = "quizquestions/{quiz}")
-	public List<QuizQuestionInstance> getNextQuestions(@Named("quiz") String quiz, @Nullable @Named("num") Integer num) {
+	public List<Question> getNextQuestions(@Named("quiz") String quiz, @Nullable @Named("num") Integer num) {
 		if (num == null) num = QUESTION_PACKAGE_SIZE;
-		return QuizesOperations.getNextQuizQuestionInstances(quiz, num);
+		Set<Question> questions = QuizesOperations.getNextQuizQuestions(quiz, num);
+		return new ArrayList<Question>(questions);
 	}
 
 

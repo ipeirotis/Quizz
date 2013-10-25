@@ -36,7 +36,7 @@
 				List<Quiz> quizzes = QuizRepository.getQuizzes();
 				for (Quiz quiz : quizzes) {
 					
-					List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getRelation());
+					List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getQuizID());
 					
 					int totalUsers = perf.size();
 					int totalCorrect = 0;
@@ -75,7 +75,7 @@
 					QuizRepository.storeQuiz(quiz);
 					%>
 					<tr>
-						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getRelation() %>&start=0&end=500"><%=quiz.getName()%></a></td>
+						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getQuizID() %>&start=0&end=500"><%=quiz.getName()%></a></td>
 						<td><%=quiz.getContributingUsers()%></td>
 						<td><%=quiz.getCorrectAnswers()%></td>
 						<td><%=quiz.getTotalAnswers()%></td>

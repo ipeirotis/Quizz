@@ -2,14 +2,12 @@ package us.quizz.repository;
 
 import java.util.List;
 
-import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.ipeirotis.crowdquiz.entities.GoldAnswer;
 import com.ipeirotis.crowdquiz.entities.Quiz;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
-import com.ipeirotis.crowdquiz.entities.SilverAnswer;
+import com.ipeirotis.crowdquiz.entities.Answer;
+import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -24,29 +22,25 @@ public class QuizRepository {
 		PMF.singleMakePersistent(q);
 	}
 	
-	protected static <T> void deleteAll(PersistenceManager pm, String id, Class<T> itemsClass){
+	protected static <T> void deleteAll(PersistenceManager pm, String quizID, Class<T> itemsClass){
 		Query q = pm.newQuery(itemsClass);
-		q.setFilter("relation == relationParam");
-		q.declareParameters("String relationParam");
-		List<?> items = (List<?>) q.execute(id);
+		q.setFilter("quizID == quizIDParam");
+		q.declareParameters("String quizIDParam");
+		List<?> items = (List<?>) q.execute(quizID);
 		pm.deletePersistentAll(items);
 	}
 	
-	public static void deleteQuiz(String id) {
+	public static void deleteQuiz(String quizID) {
 		Quiz quiz = null;
 		PersistenceManager pm = PMF.getPM();
 		try {
-			try {
-				quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-			} catch (JDOObjectNotFoundException e) {
-				// TODO: shall we ignore or throw exception about wrong quiz id?
-			}
+			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(quizID));
 			pm.deletePersistent(quiz);
 			
-			Class<?>[] itemsClasses = new Class<?>[]{QuizQuestion.class,
-					GoldAnswer.class, SilverAnswer.class, UserAnswer.class};
+			Class<?>[] itemsClasses = new Class<?>[]{UserAnswer.class,
+					Answer.class, Question.class};
 			for (Class<?> cls: itemsClasses) {
-				deleteAll(pm, id, cls);
+				deleteAll(pm, quizID, cls);
 			}
 		} finally {
 			pm.close();
@@ -64,7 +58,7 @@ public class QuizRepository {
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(queryClass);
-			q.setFilter("relation == quizParam");
+			q.setFilter("quizID == quizParam");
 			q.declareParameters("String quizParam");
 			@SuppressWarnings("unchecked")
 			List<T> results = (List<T>) q.execute(quiz);
@@ -76,16 +70,8 @@ public class QuizRepository {
 		}
 	}
 	
-	public static Integer getNumberOfGoldAnswers(String quiz, boolean usecache) {
-		return getNumberOf("goldanswers", usecache, quiz, GoldAnswer.class);
-	}
-	
 	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
-		return getNumberOf("numquizquestions", usecache, quiz, QuizQuestion.class);
-	}
-	
-	public static Integer getNumberOfSilverAnswers(String quiz, boolean usecache) {
-		return getNumberOf("silveranswers", usecache, quiz, SilverAnswer.class);
+		return getNumberOf("numquizquestions", usecache, quiz, Question.class);
 	}
 	
 	public static Integer getNumberOfUserAnswers(String quiz, boolean usecache) {
@@ -112,10 +98,6 @@ public class QuizRepository {
 		Quiz q = QuizRepository.getQuiz(quiz);
 		Integer count = QuizRepository.getNumberOfQuizQuestions(quiz, false);
 		q.setQuestions(count);
-		count = QuizRepository.getNumberOfGoldAnswers(quiz, false);
-		q.setGold(count);
-		count = QuizRepository.getNumberOfSilverAnswers(quiz, false);
-		q.setSilver(count);
 		count = QuizRepository.getNumberOfUserAnswers(quiz, false);
 		q.setSubmitted(count);
 		storeQuiz(q);

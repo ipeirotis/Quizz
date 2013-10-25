@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.QuizRepository;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.Quiz;
 
@@ -34,13 +35,14 @@ public class GetQuizCounts extends HttpServlet {
 		@Override
 		public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-			String quiz = req.getParameter("quiz");
+			String quiz = req.getParameter("quizID");
 			String cache = req.getParameter("cache");
 			if (cache!=null && cache.equals("no")) {
 				QuizRepository.updateQuizCounts(quiz);
 			}
 
 			Quiz q = QuizRepository.getQuiz(quiz);
+			Preconditions.checkArgument(q != null, "Unknown quiz ID: " + quiz);
 			
 			resp.setContentType("application/json");
 			Gson gson = new Gson();

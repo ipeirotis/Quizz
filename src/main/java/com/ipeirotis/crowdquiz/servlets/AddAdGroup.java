@@ -20,8 +20,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.ipeirotis.crowdquiz.ads.CampaignManagement;
 import com.ipeirotis.crowdquiz.entities.Quiz;
-import com.ipeirotis.crowdquiz.entities.QuizQuestion;
-import com.ipeirotis.crowdquiz.utils.FreebaseSearch;
+import com.ipeirotis.crowdquiz.entities.Question;
 
 @SuppressWarnings("serial")
 public class AddAdGroup extends HttpServlet {
@@ -37,7 +36,7 @@ public class AddAdGroup extends HttpServlet {
 		r = resp;
 		r.setContentType("application/json");
 		try {
-			Utils.ensureParameters(req, "relation", "cpcbid", "keywords", "adheadline",
+			Utils.ensureParameters(req, "quizID", "cpcbid", "keywords", "adheadline",
 					"adline1", "adline2");
 		} catch (IllegalArgumentException ex) {
 			resp.setStatus(422); // 422 (Unprocessable Entity)
@@ -45,20 +44,20 @@ public class AddAdGroup extends HttpServlet {
 		}
 
 		try {
-			String relation = req.getParameter("relation").trim();
+			String quizID = req.getParameter("quizID").trim();
 			String cpcbid = req.getParameter("cpcbid").trim();
 			String keywords = req.getParameter("keywords").trim();
 			String adheadline = req.getParameter("adheadline").trim();
 			String adline1 = req.getParameter("adline1").trim();
 			String adline2 = req.getParameter("adline2").trim();
 			
-			String mid = req.getParameter("mid");
-			if (mid == null) {
+			String questionID = req.getParameter("questionID");
+			if (questionID == null) {
 				// In this case, we create the "default" ad for the quiz
 				// return;
 			}
 
-			Quiz q = QuizRepository.getQuiz(relation);
+			Quiz q = QuizRepository.getQuiz(quizID);
 			Long campaignId = q.getCampaignid();
 			
 			
@@ -72,7 +71,7 @@ public class AddAdGroup extends HttpServlet {
 				long delay = 10; // in seconds
 				long etaMillis = System.currentTimeMillis() + delay * 1000L;
 				TaskOptions taskOptions = Builder.withUrl("/addAdGroup")
-						.param("relation", relation)
+						.param("quizID", quizID)
 						.param("cpcbid", cpcbid)
 						.param("keywords", keywords)
 						.param("adheadline", adheadline)
@@ -80,8 +79,8 @@ public class AddAdGroup extends HttpServlet {
 						.param("adline2", adline2)
 						.method(TaskOptions.Method.POST)
 						.etaMillis(etaMillis);
-				if (mid != null) {
-					taskOptions.param("mid", mid);
+				if (questionID != null) {
+					taskOptions.param("questionID", questionID);
 				}
 				queueAdgroup.add(taskOptions);
 				resp.setStatus(202); // The request has been accepted for
@@ -92,7 +91,8 @@ public class AddAdGroup extends HttpServlet {
 
 			CampaignManagement service = new CampaignManagement();
 
-			String midName = (mid == null) ? "default" : FreebaseSearch	.getFreebaseAttribute(mid, "name");
+			// TODO: REFQQ - midName ... used freebase name
+			String midName = "default";
 			String adGroupName = midName;
 
 			AdGroup adgroup = service.createAdgroup(adGroupName, campaignId, Double.parseDouble(cpcbid));
@@ -100,17 +100,17 @@ public class AddAdGroup extends HttpServlet {
 
 			String[] keyword = keywords.split(",");
 			for (String k : keyword) {
-				String bidKeyword = ((mid != null) ? midName.toLowerCase() :"") + " " + k.trim().toLowerCase();
+				String bidKeyword = " " + k.trim().toLowerCase();
 				service.addKeyword(bidKeyword.replaceAll("[^A-Za-z0-9 ]", " "), adgroupId);
 			}
 
 			String displayURL = "http://www.quizz.us";
-			String targetURL = "http://www.quizz.us/startQuiz?relation=" + URLEncoder.encode(relation, "UTF-8");
+			String targetURL = "http://www.quizz.us/startQuiz?quizID=" + URLEncoder.encode(quizID, "UTF-8");
 			AdGroupAd ad = service.createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
 			Long textAdId = service.publishTextAd(ad);
 
 			
-			QuizQuestion eq =QuizQuestionRepository.getQuizQuestion(relation, mid);	
+			Question eq = QuizQuestionRepository.getQuizQuestion(questionID);	
 			eq.setAdTextId(textAdId);
 			eq.setAdGroupId(adgroupId);
 			QuizQuestionRepository.storeQuizQuestion(eq);

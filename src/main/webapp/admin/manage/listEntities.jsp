@@ -3,7 +3,7 @@
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.QuizQuestion"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
 <%@ page import="java.util.List"%>
 <%@ page import="javax.jdo.Query"%>
 
@@ -12,11 +12,10 @@
 	String relation = request.getParameter("relation");
 	Quiz quiz = QuizRepository.getQuiz(relation);
 	String name = quiz.getName();
-	
 %>
 
 <jsp:include page="/header.jsp"><jsp:param name="title"
-		value="Questions for quiz '<%=quiz.getName()%>' (<%=quiz.getRelation()%>)" /></jsp:include>
+		value="Questions for quiz '<%=quiz.getName()%>' (<%=quiz.getQuizID()%>)" /></jsp:include>
 
 
 <body>
@@ -29,20 +28,20 @@
 			</tr>
 			<%
 				PersistenceManager pm = PMF.getPM();
-				Query query = pm.newQuery(QuizQuestion.class);
-				query.setFilter("relation == relationParam");
-				query.declareParameters("String lastNameParam");
-				query.setOrdering("weight DESC");
-				List<QuizQuestion> questions = (List<QuizQuestion>) query.execute(quiz);
-		
-				if (questions.isEmpty()) {
+					Query query = pm.newQuery(Question.class);
+					query.setFilter("relation == relationParam");
+					query.declareParameters("String lastNameParam");
+					query.setOrdering("weight DESC");
+					List<Question> questions = (List<Question>) query.execute(quiz);
+					
+					if (questions.isEmpty()) {
 			%>
 			<tr>
 				<td>No entries found!</td>
 			</tr>
 			<%
 				} else {
-								for (QuizQuestion q: questions) {
+									for (Question q: questions) {
 			%>
 			<tr>
 				<td><div name="FreebaseName" id="<%=q.getFreebaseEntityId()%>">Loading...</div></td>

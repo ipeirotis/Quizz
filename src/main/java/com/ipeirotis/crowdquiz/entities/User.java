@@ -3,7 +3,6 @@ package com.ipeirotis.crowdquiz.entities;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -58,6 +57,18 @@ public class User {
 	public void setExperiment(Experiment experiment) {
 		this.experiment = experiment;
 	}
+	
+	public static User getOrCreate(String userid){
+		User user = PMF.singleGetObjectById(User.class, User.generateKeyFromID(userid));
+		if (user == null) {
+			user = new User(userid);
+			Experiment exp = new Experiment();
+			exp.assignTreatments();
+			user.setExperiment(exp);
+			PMF.singleMakePersistent(user);
+		}
+		return user;
+	}
 
 	public static User getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
 
@@ -76,7 +87,6 @@ public class User {
 
 		if (userid == null) {
 			userid = UUID.randomUUID().toString();
-			;
 		}
 
 		Cookie username = new Cookie("username", userid);
@@ -84,19 +94,7 @@ public class User {
 		username.setPath("/");
 		resp.addCookie(username);
 		
-		User user = null;
-		PersistenceManager pm = PMF.getPM();
-		try {
-			user = pm.getObjectById(User.class, User.generateKeyFromID(userid));
-		} catch (Exception e) {
-			user = new User(userid);
-			Experiment exp = new Experiment();
-			exp.assignTreatments();
-			user.setExperiment(exp);
-			pm.makePersistent(user);
-		}
-		
-		return user;
+		return getOrCreate(userid);
 	}
 
 	public String getUserid() {

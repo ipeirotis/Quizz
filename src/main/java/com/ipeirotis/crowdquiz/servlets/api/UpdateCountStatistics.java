@@ -30,7 +30,7 @@ public class UpdateCountStatistics extends HttpServlet {
 			resp.getWriter().println("Updating quiz: " + quiz.getName());
 			
 			queue.add(Builder.withUrl("/api/getQuizCounts")
-					.param("quiz", quiz.getRelation())
+					.param("quizID", quiz.getQuizID())
 					.param("cache", "no")
 					.method(TaskOptions.Method.GET));
 			
