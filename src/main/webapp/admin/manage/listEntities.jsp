@@ -44,16 +44,11 @@
 									for (Question q: questions) {
 			%>
 			<tr>
-				<td><div name="FreebaseName" id="<%=q.getFreebaseEntityId()%>">Loading...</div></td>
-				<td><a target="_blank" name="GoogleQuery"
-					id="<%=q.getFreebaseEntityId()%>">Google</a></td>
-				<td><a target="_blank"
-					href="http://www.freebase.com<%=q.getFreebaseEntityId()%>">Freebase</a></td>
 				<td><a
-					href="/askQuestion.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Fill
+					href="/askQuestion.jsp?questionID=<%=q.getID()%>">Fill
 						the answer</a></td>
 				<td><a
-					href="/multChoice.jsp?mid=<%=q.getFreebaseEntityId()%>&relation=<%=q.getRelation()%>">Multiple
+					href="/multChoice.jsp?questionID=<%=q.getID()%>">Multiple
 						choice</a></td>
 			</tr>
 			<%
