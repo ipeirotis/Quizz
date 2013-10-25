@@ -10,7 +10,12 @@ def good_url(url):
 
 
 def J(response):
-    return json.loads(response.text)
+    text = response.text
+    try:
+        return json.loads(text)
+    except ValueError as ve:
+        print text
+        raise ve
 
 
 class QuizzAPIClient(object):
