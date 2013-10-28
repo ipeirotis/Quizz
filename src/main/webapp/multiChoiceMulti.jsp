@@ -51,11 +51,13 @@
 
             <h4>Share your results:</h4>
                 <table width="50%" height="100%" align="center" valign="center">
-                    <tr><td>
-                        <a href="#"
+                    <tr><td valign="top">
+                        <a class="btn btn-primary" href="#"
                           onclick="
-                            window.open(
-                              'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent('http://www.quizz.us'),
+                            window.open('http://www.facebook.com/sharer/sharer.php?s=100' +
+                            		'&p[url]=' + encodeURIComponent('http://www.quizz.us') +
+                            		'&p[images][0]=' +
+                            		'&p[title]=I+have+just+answered+' + CORRECT_COUNT + '+out+of+' + TOTAL_COUNT + '+questions+correctly!',
                               'facebook-share-dialog',
                               'width=626,height=436');
                             return false;">

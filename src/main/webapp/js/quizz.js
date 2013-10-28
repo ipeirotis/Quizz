@@ -1,8 +1,8 @@
 
 NUM_QUESTIONS = 10;
 CURRENT_QUIZZ = -1;
-QUIZZ_QUESTIONS = new Array();
-USER_ANSWERS = new Array();
+QUIZZ_QUESTIONS = [];
+USER_ANSWERS = [];
 
 function fst(array) {
 	return array[0];
@@ -274,16 +274,15 @@ function shuffle(array) {
 	}
 
 	function displayFeedback(feedback) {
-
 		if (feedback.isCorrect) {
-
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
+			$('#showCorrect').hide();
 		} else {
 			$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswerText+'</span> was <span class="label label-important">incorrect</span>!');
 			$('#showMessage').attr('class', 'alert alert-error');
+			$('#showCorrect').show().html('The correct answer was <span class="label label-success">'+feedback.correctAnswerText+'</span>.');
 		}
-		$('#showCorrect').html('The correct answer was <span class="label label-success">'+feedback.correctAnswerText+'</span>.');
 
 		var crowdPerformance;
 		if (isNormalNumber(feedback.numCorrectAnswers) && isNormalNumber(feedback.numTotalAnswers)) {
@@ -366,19 +365,26 @@ function showFeedback(feedback, callbackf) {
     setFeedbackBtnMsg(5);
     $('#feedback').show();
     var executedCallback = false;
+    var intervalId;
 
-    var intervalId = setInterval(function () {
-    	var valAttr = $('#skipFeedbackBtn').attr('value');
-    	var oldVal = parseInt(valAttr.substr(valAttr.indexOf("(") + 1, 1));
-    	setFeedbackBtnMsg(oldVal - 1);
-    	if (oldVal === 1) {
-    		clearInterval(intervalId);
-		    $('#feedback').fadeOut(600, function () {
-		    	executedCallback = true;
-		    	callbackf();
-		    });
-    	}
-    }, 1000);
+
+    if (CURRENT_QUIZZ == QUIZZ_QUESTIONS.length - 1) {
+    	$('#skipFeedbackBtn').val("Show Results")
+    } else {
+    	intervalId = setInterval(function () {
+        	var valAttr = $('#skipFeedbackBtn').attr('value');
+        	var oldVal = parseInt(valAttr.substr(valAttr.indexOf("(") + 1, 1));
+        	setFeedbackBtnMsg(oldVal - 1);
+        	if (oldVal === 1) {
+        		clearInterval(intervalId);
+    		    $('#feedback').fadeOut(600, function () {
+    		    	executedCallback = true;
+    		    	callbackf();
+    		    });
+        	}
+        }, 1000);
+    }
+
 
     $('#skipFeedbackBtn').click (function () {
     	clearInterval(intervalId);
