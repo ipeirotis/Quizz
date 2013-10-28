@@ -1,7 +1,6 @@
 package com.ipeirotis.crowdquiz.entities;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -10,8 +9,6 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
-
-import us.quizz.repository.QuizQuestionRepository;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -118,12 +115,7 @@ public class Question {
 	public Key getKey() {
 		return key;
 	}
-	
-	public List<UserAnswer> getUserAnswers() {
-		return QuizQuestionRepository.getUserAnswers(this);
-	}
 
-	
 	/*
 	public Set<String> getMultipleChoice(int size) {
 		
