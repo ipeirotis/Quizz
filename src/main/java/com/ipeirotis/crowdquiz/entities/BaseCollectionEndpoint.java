@@ -42,7 +42,7 @@ public abstract class BaseCollectionEndpoint<T> {
 
 		try {
 			mgr = getPersistenceManager();
-			Query query = mgr.newQuery(UserAnswerFeedback.class);
+			Query query = mgr.newQuery(cls);
 			if (!Strings.isNullOrEmpty(cursorString)) {
 				cursor = Cursor.fromWebSafeString(cursorString);
 				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
