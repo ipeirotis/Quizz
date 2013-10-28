@@ -5,21 +5,29 @@ import random
 import sys
 from sets import Set
 
-if len(sys.argv) < 2:
-  print 'Usage: python generate_question.py [quizz_name] [ques_template]'
+from client import QuizzAPIClient
+
+API_URL = 'https://crowd-power.appspot.com/'
+WEB_URL = 'http://www.quizz.us/'
+
+if len(sys.argv) < 3:
+  print 'Usage: python generate_question.py [quizz_id] [quizz_name] [ques_template]'
   print 'ques_template: Some string question with XXX to be filled by the question entity'
   exit(1)
 
-quizz_name = sys.argv[1]
-ques_template = sys.argv[2]
-inpf = open('kg_questions/' + quizz_name + '-qa_pair.csv', 'r')
-outf = open('kg_questions/' + quizz_name + '-quiz.csv', 'w')
+quizz_id = sys.argv[1]
+quizz_name = sys.argv[2]
+ques_template = sys.argv[3]
+inpf = open('../data/kg_questions/' + quizz_id + '-qa_pair.csv', 'r')
+#outf = open('kg_questions/' + quizz_id + '-quiz.csv', 'w')
 
 ## ================================================
 # Initializes data structure for questions-answers.
 ## ================================================
 # Dictionary from question to list of answers.
 gold_ans = {}
+# Dictionary from question to weight of question.
+gold_weight = {}
 # Dictionary from mid to object name.
 mid_to_name = {}
 # Dictionary from question to hash set of potential answers.
@@ -69,6 +77,7 @@ for line in inpf:
     # Update golden answer table.
     if q not in gold_ans:
       gold_ans[q] = [a]
+      gold_weight[q] = weight
     else:
       gold_ans[q].append(a)
     candidate_ans.add(a)
@@ -76,7 +85,7 @@ for line in inpf:
 ## ===========
 # Print stats.
 ## ===========
-print quizz_name, 'stats:'
+print quizz_id, 'stats:'
 gold_count = 0
 for key in gold_ans.iterkeys():
   gold_count = gold_count + len(gold_ans[key])
@@ -99,6 +108,16 @@ candidate_ans = list(candidate_ans)
 candidate_count = len(candidate_ans)
 print '# candidate answers:', candidate_count
 
+
+# Create Quizz client.
+TREATMENTS = ['Correct', 'CrowdAnswers', 'Difficulty', 'Message',
+              'PercentageCorrect', 'percentageRank', 'Score', 'TotalCorrect',
+              'TotalCorrectRank']
+client = QuizzAPIClient(API_URL, WEB_URL)
+for treatment in TREATMENTS:
+  client.add_treatment(treatment, 0.8)
+client.create_quiz(quizz_id, quizz_name)
+
 ## ==================
 # Generate questions.
 ## ==================
@@ -108,6 +127,7 @@ for key in gold_ans.iterkeys():
   for ans in gold_ans[key]:
     question = mid_to_name[key]
     right_ans = mid_to_name[ans]
+    weight = gold_weight[key]
     wrong_ans = []
     # Choose 3 other answer choices.
     for i in xrange(0, num_wrong_ans):
@@ -128,16 +148,15 @@ for key in gold_ans.iterkeys():
       json_ans.append(right_ans)
       random.shuffle(json_ans)
 
-      correct_ans_index = -1
-      for i in xrange(len(json_ans)):
-        if json_ans[i] == right_ans:
-          correct_ans_index = i
-          break
       if i >= 0:
-        json_ques = {'question': question, 'correct_ans_ind': correct_ans_index, 'answers': json_ans}
-        json.dump(json_ques, outf)
+        answers = [{'text': answer, 'isGold': (answer == right_ans)}
+                   for answer in json_ans]
+        client.add_question(quizz_id, question, answers, weight, False)
+        #json_ques = {'question': question, 'correct_ans_ind': correct_ans_index, 'answers': json_ans}
+        #json.dump(json_ques, outf)
         num_questions = num_questions + 1
 
+client.update_count_stats()
 print '# questions:', num_questions
 inpf.close()
-outf.close()
+#outf.close()
