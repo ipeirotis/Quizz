@@ -134,7 +134,7 @@ function shuffle(array) {
 		$('#form').html($('#quizEndSummary').html());
 		var correctCount = 0;
 		for (var i=0;i<USER_ANSWERS.length;i++) {
-			if (clearString(QUIZZ_QUESTIONS[i].correct) === clearString(USER_ANSWERS[i])) {
+			if (USER_ANSWERS[i].isGold) {
 				correctCount++;
 			}
 		}
@@ -150,9 +150,10 @@ function shuffle(array) {
 		gapi.plus.go();
 	}
 
-	function answeredQuestion (answerID){
+	function answeredQuestion (answer){
 		return function () {
 			var formData = $('#addUserEntry').serializeArray();
+			var answerID = (answer === null) ? -1 : answer.internalID;
 			formData.push({'name': 'answerID', 'value': answerID});
 			hideScoresMakeLoading();
 			hideFeedback();
@@ -163,7 +164,7 @@ function shuffle(array) {
 					hideQuestion();
 					showFeedback(feedback, prepareNextQuestion);
 			});
-			USER_ANSWERS.push(answerID);
+			USER_ANSWERS.push(answer);
 			return false;
 		}
 	}
@@ -193,13 +194,13 @@ function shuffle(array) {
 			var gatype = 'multiple-choice-' + (answer.isGold ? "" : "in") + 'correct';
 			var ganumber = answer.isGold ? 1 : 0 ;
 			$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
-			$(huaid).click(answeredQuestion (answer.internalID));
+			$(huaid).click(answeredQuestion (answer));
 		});
 		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
     	$("#idk_button").mousedown(function(){
     		markConversion("multiple-choice-idk", 0);
     	});
-    	$('#idk_button').click(answeredQuestion (-1));
+    	$('#idk_button').click(answeredQuestion (null));
 	}
 
 	function getFeedbackForPriorAnswer(user, quiz, questionID) {
