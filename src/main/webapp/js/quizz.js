@@ -134,7 +134,7 @@ function shuffle(array) {
 		$('#form').html($('#quizEndSummary').html());
 		var correctCount = 0;
 		for (var i=0;i<USER_ANSWERS.length;i++) {
-			if (USER_ANSWERS[i].isGold) {
+			if (USER_ANSWERS[i] && USER_ANSWERS[i].isGold) {
 				correctCount++;
 			}
 		}
@@ -280,8 +280,10 @@ function shuffle(array) {
 			$('#showMessage').attr('class', 'alert alert-success');
 			$('#showCorrect').hide();
 		} else {
-			$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswerText+'</span> was <span class="label label-important">incorrect</span>!');
-			$('#showMessage').attr('class', 'alert alert-error');
+			if (feedback.userAnswerText) {
+				$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswerText+'</span> was <span class="label label-important">incorrect</span>!');
+				$('#showMessage').attr('class', 'alert alert-error');
+			}
 			$('#showCorrect').show().html('The correct answer was <span class="label label-success">'+feedback.correctAnswerText+'</span>.');
 		}
 

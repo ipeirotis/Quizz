@@ -80,7 +80,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
-		uaf.setUserAnswerText(question.getAnswer(useranswerID).getText());
+		uaf.setUserAnswerText((useranswerID == -1)? "" : question.getAnswer(useranswerID).getText());
 		uaf.setCorrectAnswerText(question.goldAnswer().getText());
 		uaf.computeDifficulty();
 		UserAnswerRepository.storeUserAnswerFeedback(uaf);
