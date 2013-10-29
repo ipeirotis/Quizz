@@ -136,7 +136,7 @@ for key in gold_ans.iterkeys():
         trial = trial + 1
         rand_ind = random.randint(0, candidate_count - 1)
         rand_ans = candidate_ans[rand_ind]
-        if rand_ans not in kv_ans[key]:
+        if rand_ans not in kv_ans[key] and mid_to_name[rand_ans] not in wrong_ans:
           wrong_ans.append(mid_to_name[rand_ans])
           break
       if trial == 100:
