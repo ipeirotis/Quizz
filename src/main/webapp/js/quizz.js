@@ -55,6 +55,45 @@ function shuffle(array) {
 		return username;
 	}
 
+	function createSession() {
+		var session = createUUID();
+		$.cookie("session", session, { expires: 365, path: "/"});
+		return session;
+	}
+	
+	function getSession() {
+		var session = $.cookie("session");
+		return session;
+	}
+	function sendSingleQuestionResults(formData) {
+		var url = getWebURL() + 'processUserAnswer';
+		return $.post(url, formData)
+			.fail( function(jqXHR, textStatus, errorThrown) {
+				console.log("Sending your answer failed: " + textStatus);
+			});
+	}
+	function loginFB(fbid) {
+		console.log("Logging In");
+		var url = getWebURL() + 'fblogin';
+		sessionid = createSession();
+		var params = {
+			'fbid' : fbid,
+			'sessionid' : sessionid,
+			'url' : document.location.href
+		};
+		return $.post(url, params);
+	}
+	function getUser() {
+		userid = getUsername();
+		var url = getAPIURL() + "user/" + userid;
+		return $.getJSON(url);
+	}
+	
+	function logout() {
+		$.cookie("session", "0", { expires: 365, path: "/"});
+		document.location.href = document.location.href;
+	}
+
 	function createUUID() {
 	    // http://www.ietf.org/rfc/rfc4122.txt
 	    var s = [];

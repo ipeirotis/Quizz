@@ -1,8 +1,11 @@
 package com.ipeirotis.crowdquiz.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -16,6 +19,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
+import javax.jdo.Query;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class User {
 	
@@ -27,6 +32,14 @@ public class User {
 	// The id for the user.
 	@Persistent
 	private String	userid;
+	
+	// The id for the user's session.
+	@Persistent
+	private String	sessionid;
+	
+	//The id for the user's fb or google account.
+	@Persistent
+	private String fbid;
 	
 	// The set of treatments assigned to the user
 	@Persistent(defaultFetchGroup = "true")
@@ -97,12 +110,52 @@ public class User {
 		return getOrCreate(userid);
 	}
 
+	public static User getUseridFromFbid(String fbid) {
+		System.out.println("start get pm");
+		PersistenceManager pm = PMF.getPM();
+		User user = null;
+		System.out.println("try to get user");
+		try {
+			System.out.println("1");
+			Query query = pm.newQuery(User.class);
+			query.setFilter("fbid == fbidParam");
+			query.declareParameters("String fbidParam");
+			System.out.println("2");
+			
+			@SuppressWarnings("unchecked")
+			List<User> users = (List<User>) query.execute(fbid);
+			user = users.get(0);
+			System.out.println("3");
+		} catch (Exception e) {
+			System.out.println("cannot get user");
+		} finally {
+			pm.close();
+		}
+		return user;
+	}
+
 	public String getUserid() {
 		return userid;
 	}
 
 	public void setUserid(String userid) {
 		this.userid = userid;
+	}
+	
+	public String getFBID() {
+		return fbid;
+	}
+	
+	public void setFBID(String fbid) {
+		this.fbid = fbid;
+	}
+
+	public String getSessionid() {
+		return sessionid;
+	}
+
+	public void setSessionid(String sessionid) {
+		this.sessionid = sessionid;
 	}
 
 	public boolean getsTreatment(String treatmentName) {
