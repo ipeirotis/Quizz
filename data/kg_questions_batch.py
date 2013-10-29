@@ -14,6 +14,6 @@ for line in tmpl:
   dremel_args = ['./generate_candidate.sh', tokens[0], tokens[1], tokens[2], tokens[3]]
   p = subprocess.Popen(dremel_args)
   p.wait()
-  ques_args = ['./generate_questions.py', tokens[2], tokens[4]]
+  ques_args = ['../scripts/generate_questions.py', tokens[2], tokens[5], tokens[4]]
   p = subprocess.Popen(ques_args)
 tmpl.close()
