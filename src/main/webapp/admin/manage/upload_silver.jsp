@@ -10,7 +10,7 @@
 
 	<%
 		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-		String relation = request.getParameter("relation");
+		String quizID = request.getParameter("quizID");
 	%>
 
 
@@ -21,7 +21,7 @@
 			method="post" enctype="multipart/form-data">
 			<fieldset>
 				<legend style="text-align: center">Add silver answers to the quiz</legend>
-				<input id="relation" name="relation" type="hidden" value="<%= relation %>">
+				<input id="quizID" name="quizID" type="hidden" value="<%= quizID %>">
 				<div class="control-group">		
 					<label class="control-label" for="silver_file">File:</label>
 					<div class="controls">

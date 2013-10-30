@@ -8,7 +8,7 @@
 
 	<%
 		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-		String relation = request.getParameter("relation");
+		String quizID = request.getParameter("quizID");
 	%>
 
 	<div class="container">
