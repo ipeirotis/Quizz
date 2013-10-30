@@ -30,7 +30,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
-		Utils.ensureParameters(req, "quiz", "userid");
+		Utils.ensureParameters(req, "quizID", "userid");
 		String quiz = req.getParameter("quizID");
 		String userid = req.getParameter("userid");
 

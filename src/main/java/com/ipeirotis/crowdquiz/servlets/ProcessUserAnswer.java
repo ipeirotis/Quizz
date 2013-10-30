@@ -91,7 +91,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
 		String quizID = QuizQuestionRepository.getQuizQuestion(questionID).getQuizID();
 		queueUserStats.add(Builder.withUrl("/api/updateUserQuizStatistics")
-				.param("quiz", quizID)
+				.param("quizID", quizID)
 				.param("userid", user.getUserid())
 				.param("channelNotify", "true")
 				.method(TaskOptions.Method.POST));
