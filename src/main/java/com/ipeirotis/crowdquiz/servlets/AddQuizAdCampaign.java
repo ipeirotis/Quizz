@@ -27,11 +27,11 @@ public class AddQuizAdCampaign extends HttpServlet {
 
 		r = resp;
 		r.setContentType("text/plain");
-		Utils.ensureParameters(req, "relation", "name", "text", "fbtype");
+		Utils.ensureParameters(req, "quizID", "name", "text", "fbtype");
 
 		try {
-			String relation = req.getParameter("relation");
-			resp.getWriter().println("Adding Relation: " + relation);
+			String quizID = req.getParameter("quizID");
+			resp.getWriter().println("Adding Relation: " + quizID);
 			
 			String name = req.getParameter("name");
 			resp.getWriter().println("Name: " + name);
@@ -101,13 +101,13 @@ public class AddQuizAdCampaign extends HttpServlet {
 			}
 			
 			
-			Quiz q = new Quiz(name, relation, text);
+			Quiz q = new Quiz(name, quizID, text);
 			PMF.singleMakePersistent(q);
 			
 			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");
 			
 			queueAdCampaign.add(Builder.withUrl("/addCampaign")
-					.param("relation", relation)
+					.param("quizID", quizID)
 					.param("budget", budget)
 					.method(TaskOptions.Method.GET));
 			
@@ -122,8 +122,8 @@ public class AddQuizAdCampaign extends HttpServlet {
 				long delay = 10; // in seconds
 				long etaMillis = System.currentTimeMillis() + delay * 1000L;
 				queueAdgroup.add(Builder.withUrl("/addAdGroup")
-						.param("relation", relation)
-						.param("mid", "mid")
+						.param("quizID", quizID)
+						.param("questionID", "mid") // this is not used in AddAdGroup
 						.param("cpcbid", cpcbid)
 						.param("keywords", keywords)
 						.param("adheadline", adheadline)

@@ -25,6 +25,8 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.ipeirotis.crowdquiz.utils.Helper;
 
 @SuppressWarnings("serial")
@@ -41,12 +43,9 @@ public class UploadCrowdAnswers extends HttpServlet {
 		resp.sendRedirect(url); 
 		
 		try {
-			String relation = req.getParameter("relation");
-			if (relation == null) {
-				return;
-			}
+			String quizID = req.getParameter("quizID");
+			Preconditions.checkArgument(!Strings.isNullOrEmpty(quizID), "Empty quizID");
 
-			
 			BlobstoreService		blobstoreService	= BlobstoreServiceFactory.getBlobstoreService();
 			@SuppressWarnings("deprecation")
 			Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
@@ -72,11 +71,11 @@ public class UploadCrowdAnswers extends HttpServlet {
 			for (UserAnswerBean ce : list) {
 				
 				queue.add(Builder.withUrl("/addUserAnswer").
-						param("relation", relation).
+						param("quizID", quizID).
 						param("userid", ce.getUserid()).
 						param("action", ce.getAction()).
-						param("mid", ce.getMid()).
-						param("useranswer", ce.getUseranswer()).
+						param("questionID", ce.getQuestionID()).
+						param("useranswerID", "" + ce.getUseranswerID()).
 						param("browser", ce.getBrowser()).
 						param("ipAddress", ce.getIpaddress()).
 						param("referer", ce.getReferer()).

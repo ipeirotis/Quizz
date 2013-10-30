@@ -4,11 +4,11 @@ package com.ipeirotis.crowdquiz.servlets;
 
 public class UserAnswerBean {
 
-	private String	relation;
+	private String	quizID;
 	private String	userid;
-	private String	mid;
+	private String	questionID;
 	private String	action;
-	private String	useranswer;
+	private Long	useranswerID;
 	private Boolean iscorrect;
 	private Long	timestamp;
 	private String	ipaddress;
@@ -44,19 +44,19 @@ public class UserAnswerBean {
 	}
 
 	/**
-	 * @return the relation
+	 * @return the quizID
 	 */
-	public String getRelation() {
+	public String getQuizID() {
 	
-		return relation;
+		return quizID;
 	}
 	
 	/**
-	 * @param relation the relation to set
+	 * @param quizID the quizID to set
 	 */
-	public void setRelation(String relation) {
+	public void setQuizID(String quizID) {
 	
-		this.relation = relation.replace('\t', ' ');
+		this.quizID = quizID.replace('\t', ' ');
 	}
 	
 	/**
@@ -78,17 +78,17 @@ public class UserAnswerBean {
 	/**
 	 * @return the mid
 	 */
-	public String getMid() {
+	public String getQuestionID() {
 	
-		return mid;
+		return questionID;
 	}
 	
 	/**
 	 * @param mid the mid to set
 	 */
-	public void setMid(String mid) {
+	public void setQuestionID(String questionID) {
 	
-		this.mid = mid.replace('\t', ' ');
+		this.questionID = questionID;
 	}
 	
 	/**
@@ -110,17 +110,17 @@ public class UserAnswerBean {
 	/**
 	 * @return the answer
 	 */
-	public String getUseranswer() {
+	public Long getUseranswerID() {
 	
-		return useranswer;
+		return useranswerID;
 	}
 	
 	/**
 	 * @param answer the answer to set
 	 */
-	public void setUseranswer(String answer) {
+	public void setUseranswerID(Long answerID) {
 	
-		this.useranswer = answer.replace('\t', ' ');
+		this.useranswerID = answerID;
 	}
 	
 	/**

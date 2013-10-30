@@ -31,7 +31,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		resp.setContentType("text/plain");
 
 		Utils.ensureParameters(req, "quiz", "userid");
-		String quiz = req.getParameter("quiz");
+		String quiz = req.getParameter("quizID");
 		String userid = req.getParameter("userid");
 
 		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(quiz, userid);
@@ -54,11 +54,11 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 	}
 	
 	
-	protected void notifyUserViaChannel(String userId, String relation){
+	protected void notifyUserViaChannel(String userId, String quizID){
 		ChannelHelpers ch = new ChannelHelpers();
-		String channelId = ch.generateUserRelationChannelID(userId, relation);
+		String channelId = ch.generateUserQuizChannelID(userId, quizID);
 		String jQuizPerformance = new Gson().toJson(
-				QuizPerformanceRepository.getQuizPerformance(relation, userId));
+				QuizPerformanceRepository.getQuizPerformance(quizID, userId));
 		ch.sendMessage(channelId, jQuizPerformance);
 	}
 }

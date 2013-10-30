@@ -23,16 +23,16 @@ public class DownloadUserAnswers extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		String relation = request.getParameter("relation");
-		String name = QuizRepository.getQuiz(relation).getName();
+		String quizID = request.getParameter("quizID");
+		String name = QuizRepository.getQuiz(quizID).getName();
 
 		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(UserAnswer.class);
-		query.setFilter("relation == relationParam");
-		query.declareParameters("String relationParam");
+		query.setFilter("quizID == quizIDParam");
+		query.declareParameters("String quizIDParam");
 
 		@SuppressWarnings("unchecked")
-		List<UserAnswer> answers = (List<UserAnswer>) query.execute(relation);
+		List<UserAnswer> answers = (List<UserAnswer>) query.execute(quizID);
 		StringBuffer sb = new StringBuffer();
 		sbApp(sb, "userid");
 		sbApp(sb, "questionID");

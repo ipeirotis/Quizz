@@ -12,13 +12,13 @@ public class ChannelHelpers {
 	protected ChannelService channelService =
 			ChannelServiceFactory.getChannelService();
 
-	public String generateUserRelationChannelID(User user, String relation) {
-		return generateUserRelationChannelID(user.getUserid(), relation); 
+	public String generateUserQuizChannelID(User user, String quizID) {
+		return generateUserQuizChannelID(user.getUserid(), quizID); 
 	}
 	
-	public String generateUserRelationChannelID(String userId, String relation) {
+	public String generateUserQuizChannelID(String userId, String quizID) {
 		// a little bit risky if user will start the same quizz in two windows ...
-		return userId + "_" + relation; 
+		return userId + "_" + quizID; 
 	}
 	
 	/** Returns channel token for JS client

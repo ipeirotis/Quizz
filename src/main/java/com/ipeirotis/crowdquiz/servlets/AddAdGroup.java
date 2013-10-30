@@ -62,7 +62,7 @@ public class AddAdGroup extends HttpServlet {
 			
 			
 			if (campaignId == null) {
-				// All relations (should) have a corresponding ad campaign.
+				// All quizzes (should) have a corresponding ad campaign.
 				// If we get a null, we just put the task back in the queue
 				// and run the call again.
 				// This happens either when the Quiz object has not yet 

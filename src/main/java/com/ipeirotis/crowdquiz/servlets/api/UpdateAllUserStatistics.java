@@ -43,7 +43,7 @@ public class UpdateAllUserStatistics extends HttpServlet {
 			queue.add(Builder.withUrl("/api/updateUserQuizStatistics")
 				.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
 				.param("userid", qp.getUserid())
-				.param("quiz", qp.getQuiz())
+				.param("quizID", qp.getQuiz())
 				.method(TaskOptions.Method.POST));
 		}
 	}

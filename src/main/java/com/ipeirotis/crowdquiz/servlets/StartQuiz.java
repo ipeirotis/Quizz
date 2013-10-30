@@ -32,7 +32,7 @@ public class StartQuiz extends HttpServlet {
 		}
 		
 		ChannelHelpers channelHelpers = new ChannelHelpers();
-		String userChannelId = channelHelpers.generateUserRelationChannelID(user, quizID);
+		String userChannelId = channelHelpers.generateUserQuizChannelID(user, quizID);
 		String token = channelHelpers.createChannel(userChannelId);
 		
 		nextURL += "&changelToken=" + URLEncoder.encode(token, "UTF-8");

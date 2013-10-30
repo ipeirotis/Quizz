@@ -99,7 +99,7 @@ public class ProcessUserAnswer extends HttpServlet {
 
 	/**
 	 * @param user
-	 * @param relation
+	 * @param quizID
 	 * @param mid
 	 * @param action
 	 * @param useranswer
@@ -129,7 +129,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * placed in the task queue.
 	 * 
 	 * @param user
-	 * @param relation
+	 * @param quizID
 	 * @param isCorrect
 	 * @param action
 	 */

@@ -40,7 +40,7 @@ public class UserReferralRepository {
 	public static void createAndStoreUserReferal(HttpServletRequest req, String userid) {
 
 		UserReferal ur = new UserReferal(userid);
-		ur.setQuiz(req.getParameter("relation"));
+		ur.setQuiz(req.getParameter("quizID"));
 		ur.setReferer(req.getHeader("Referer"));
 		ur.setIpaddress(req.getRemoteAddr());
 		ur.setBrowser(req.getHeader("User-Agent"));

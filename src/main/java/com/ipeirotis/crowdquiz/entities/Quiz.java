@@ -30,11 +30,11 @@ public class Quiz {
 	@Persistent
 	private String	category;
 	
-	// The user-friendly name of the relation that we are targeting
+	// The user-friendly name of the quiz that we are targeting
 	@Persistent
 	private String	name;
 
-	// The name of the relation that we are targeting. 
+	// The name of the quiz that we are targeting. 
 	// Typically, we assign the name of a KP attribute on this one
 	// and serves as a defacto primary key for the quiz.
 	@Persistent

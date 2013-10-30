@@ -18,14 +18,14 @@
 			method="post" enctype="multipart/form-data">
 			<fieldset>
 				<legend style="text-align: center">Upload existing user answers to the quiz</legend>
-				<input id="relation" name="relation" type="hidden" value="<%= relation %>">
-				<div class="control-group">		
+				<input id="quizID" name="quizID" type="hidden" value="<%= quizID %>">
+				<div class="control-group">
 					<label class="control-label" for="answers_file">File:</label>
 					<div class="controls">
 						<span class="btn btn-file">
-							<input id="answers_file" title="A file that contains previously submitted user answers for the quiz. The format is the same as the one downloaded from the admin interface through the download data function." name="answers_file" type="file"> 
+							<input id="answers_file" title="A file that contains previously submitted user answers for the quiz. The format is the same as the one downloaded from the admin interface through the download data function." name="answers_file" type="file">
 						</span>
-						<button type="submit" class="btn">Submit</button>	
+						<button type="submit" class="btn">Submit</button>
 					</div>
 				</div>
 			</fieldset>

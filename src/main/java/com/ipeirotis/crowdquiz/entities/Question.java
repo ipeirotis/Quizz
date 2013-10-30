@@ -116,27 +116,6 @@ public class Question {
 		return key;
 	}
 
-	/*
-	public Set<String> getMultipleChoice(int size) {
-		
-		String cachekey = "quizquestion-choices-"+this.relation+this.freebaseEntityId;
-		Set<String> results = CachePMF.get(cachekey, Set.class);
-		if (results != null) return results;
-		
-		results = new TreeSet<String>();
-		
-		String gold = getRandomGoldAnswer();
-		results.add(gold);
-		
-		Set<String> pyrite = getIncorrectAnswers(size-1);
-		results.addAll(pyrite);
-		
-		CachePMF.put("quizquestion-choices-"+this.relation+this.freebaseEntityId, results);
-		
-		return results;
-	}
-	*/
-
 	public Long getID() {
 		return key.getId();
 	}
