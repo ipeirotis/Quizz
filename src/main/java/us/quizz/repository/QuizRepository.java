@@ -70,6 +70,27 @@ public class QuizRepository {
 		}
 	}
 	
+	public static Integer getNumberOfGoldQuestions(String quizID, boolean useCache){
+		String key = "goldQuestions_"+quizID;
+		
+		if (useCache) {
+			Integer result = CachePMF.get(key, Integer.class);
+			if (result != null) return result;
+		}
+		
+		PersistenceManager	pm = PMF.getPM();
+		try {
+			Query q = QuizQuestionRepository.getQuizGoldQuestionsQuery(pm, quizID);
+			List<?> results = (List<?>) q.executeWithMap(
+					QuizQuestionRepository.getQuizGoldQuestionsParameters(quizID));
+			Integer result = results.size();
+			CachePMF.put(key, result);
+			return result;
+		} finally {
+			pm.close();
+		}
+	}
+	
 	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
 		return getNumberOf("numquizquestions", usecache, quiz, Question.class);
 	}
@@ -100,6 +121,8 @@ public class QuizRepository {
 		q.setQuestions(count);
 		count = QuizRepository.getNumberOfUserAnswers(quiz, false);
 		q.setSubmitted(count);
+		count = QuizRepository.getNumberOfGoldQuestions(quiz, false);
+		q.setGold(count);
 		storeQuiz(q);
 	}
 }

@@ -13,12 +13,8 @@ public class QuizesOperations {
 	}
 
 	public static Set<Question> getNextQuizQuestions(String quiz, int n) {
-		ArrayList<Question> list = QuizQuestionRepository.getQuizQuestionsWithGold(quiz);
+		int N = n * 50;
+		ArrayList<Question> list = QuizQuestionRepository.getSomeQuizQuestionsWithGold(quiz, N);
 		return Helper.trySelectingRandomElements(list, n);
 	}
-
-	public static Question getNextQuizQuestionInstance(String quizId) {
-		return getNextQuizQuestions(quizId, 1).iterator().next();
-	}
-
 }

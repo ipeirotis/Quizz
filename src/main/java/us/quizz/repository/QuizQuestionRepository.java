@@ -9,6 +9,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.ipeirotis.crowdquiz.entities.Question;
+import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -23,12 +24,24 @@ public class QuizQuestionRepository {
 		return PMF.singleGetObjectById(Question.class, questionID);
 	}
 	
+	protected static Query getQuestionBaseQuery(PersistenceManager pm){
+		Query query = pm.newQuery(Question.class);
+		query.getFetchPlan().setFetchSize(1000);
+		return query;
+	}
+	
+	protected static Query getQuestionQuery(PersistenceManager pm, String filter, String declaredParameters){
+		Query query = getQuestionBaseQuery(pm);
+		query.setFilter(filter);
+		query.declareParameters(declaredParameters);
+		return query;
+	}
+	
 	public static ArrayList<Question> getQuizQuestions() {
 		
 		PersistenceManager pm = PMF.getPM();
 		try {
-			Query query = pm.newQuery(Question.class);
-			query.getFetchPlan().setFetchSize(1000);
+			Query query = getQuestionBaseQuery(pm);
 			@SuppressWarnings("unchecked")
 			List<Question> results = (List<Question>) query.execute();
 			return new ArrayList<Question>(results);
@@ -41,10 +54,7 @@ public class QuizQuestionRepository {
 				Map<String, Object> params){
 		PersistenceManager	pm = PMF.getPM();
 		try {
-			Query query = pm.newQuery(Question.class);
-			query.setFilter(filter);
-			query.declareParameters(declaredParameters);
-			query.getFetchPlan().setFetchSize(1000);
+			Query query = getQuestionQuery(pm, filter, declaredParameters);
 			
 			@SuppressWarnings("unchecked")
 			ArrayList<Question> questions =
@@ -64,7 +74,7 @@ public class QuizQuestionRepository {
 		CachePMF.put(key, questions);
 		return questions;
 	}
-	
+
 	public static ArrayList<Question> getQuizQuestions(String quizid) {
 		
 		String key = "quizquestions_all_"+quizid;
@@ -75,16 +85,47 @@ public class QuizQuestionRepository {
 		return getQuestionsWitchCaching(key, filter, declaredParameters, params);
 	}
 	
-	
-	public static ArrayList<Question> getQuizQuestionsWithGold(String quizid) {
-		
-		String key = "quizquestions_gold_"+quizid;
+	protected static Query getQuizGoldQuestionsQuery(PersistenceManager pm, String quizID){
 		String filter = "quizID == quizParam && hasGoldAnswer==hasGoldParam";
 		String declaredParameters = "String quizParam, Boolean hasGoldParam";
+		return getQuestionQuery(pm, filter, declaredParameters);
+	}
+	
+	protected static Map<String, Object> getQuizGoldQuestionsParameters(String quizID){
 		Map<String,Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quizid);
+		params.put("quizParam", quizID);
 		params.put("hasGoldParam", Boolean.TRUE);
-		return getQuestionsWitchCaching(key, filter, declaredParameters, params);
+		return params;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Question> getSomeQuizQuestionsWithGold(String quizID, int amount){
+		PersistenceManager pm = PMF.getPM();
+		try {
+			Quiz quiz = QuizRepository.getQuiz(quizID);
+			Query query = getQuizGoldQuestionsQuery(pm, quizID);
+			setRandomRange(query, quiz.getGold(), amount);
+			return new ArrayList<Question>((List<Question>) query.executeWithMap(
+					getQuizGoldQuestionsParameters(quizID)));
+		} finally {
+			pm.close();
+		}
+		
+	}
+	
+	public static void setRandomRange(Query query, int size, int amount){
+		int lower = (int) (Math.random() * Math.max(0, size - amount));
+		int upper = Math.min(size, lower + amount);
+		query.setRange(lower, upper); // upper is excluded index
+	}
+	
+	public static ArrayList<Question> getQuizQuestionsWithGold(String quizID) {
+		
+		String key = "quizquestions_gold_"+quizID;
+		String filter = "quizID == quizParam && hasGoldAnswer==hasGoldParam";
+		String declaredParameters = "String quizParam, Boolean hasGoldParam";
+		return getQuestionsWitchCaching(key, filter, declaredParameters,
+					getQuizGoldQuestionsParameters(quizID));
 	}
 	
 	public static void storeQuizQuestion(Question q) {
