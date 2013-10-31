@@ -60,8 +60,9 @@ public class QuizRepository {
 			Query q = pm.newQuery(queryClass);
 			q.setFilter("quizID == quizParam");
 			q.declareParameters("String quizParam");
-			@SuppressWarnings("unchecked")
-			List<T> results = (List<T>) q.execute(quiz);
+			q.getFetchPlan().setFetchSize(1000);
+			q.setResult("quizID");
+			List<?> results = (List<?>) q.execute(quiz);
 			Integer result = results.size();
 			CachePMF.put(key, result);
 			return result;
@@ -81,6 +82,7 @@ public class QuizRepository {
 		PersistenceManager	pm = PMF.getPM();
 		try {
 			Query q = QuizQuestionRepository.getQuizGoldQuestionsQuery(pm, quizID);
+			q.setResult("quizID");
 			List<?> results = (List<?>) q.executeWithMap(
 					QuizQuestionRepository.getQuizGoldQuestionsParameters(quizID));
 			Integer result = results.size();
