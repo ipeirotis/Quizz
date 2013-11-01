@@ -33,6 +33,10 @@ function shuffle(array) {
 	function getAPIURL() {
 		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/';
 	}
+	
+	function getFBAppID() {
+		return '220743704753581';
+	}
 
 	function getURLParameterByName(name) {
 		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -73,7 +77,6 @@ function shuffle(array) {
 			});
 	}
 	function loginFB(fbid) {
-		console.log("Logging In");
 		var url = getWebURL() + 'fblogin';
 		sessionid = createSession();
 		var params = {

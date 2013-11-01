@@ -3,14 +3,9 @@
 <body>
 <div id="fb-root"></div>
 <script>
-	if(location.hostname == 'localhost') {
-		appid = '176643002525713';
-	} else {
-		appid = '220743704753581';
-	}
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId      : appid, // App ID
+			appId      : getFBAppID(), // App ID
 			channelUrl : '//localhost:8888/channel.html', // Channel File
 			status     : true, // check login status
 			cookie     : true, // enable cookies to allow the server to access the session
@@ -85,7 +80,7 @@
 		});
 		$('#facebook-login').on('click', function(){
 			facebookID = FB.getUserID();
-			if(facebookID) {
+			if(facebookID != '') {
 				$.when(loginFB(facebookID)).done(function(){
 					$('#login').hide();
 					$('#logout').show();

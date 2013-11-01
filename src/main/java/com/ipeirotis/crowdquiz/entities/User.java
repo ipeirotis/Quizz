@@ -38,7 +38,7 @@ public class User {
 	
 	//The id for the user's fb or google account.
 	@Persistent
-	private String fbid;
+	private String socialid;
 	
 	// The set of treatments assigned to the user
 	@Persistent(defaultFetchGroup = "true")
@@ -109,24 +109,19 @@ public class User {
 		return getOrCreate(userid);
 	}
 
-	public static User getUseridFromFbid(String fbid) {
-		System.out.println("start get pm");
+	public static User getUseridFromSocialid(String fbid) {
 		PersistenceManager pm = PMF.getPM();
-		User user = null;
-		System.out.println("try to get user");
+		User user;
 		try {
-			System.out.println("1");
 			Query query = pm.newQuery(User.class);
 			query.setFilter("fbid == fbidParam");
 			query.declareParameters("String fbidParam");
-			System.out.println("2");
 			
 			@SuppressWarnings("unchecked")
 			List<User> users = (List<User>) query.execute(fbid);
 			user = users.get(0);
-			System.out.println("3");
 		} catch (Exception e) {
-			System.out.println("cannot get user");
+			user = null;
 		} finally {
 			pm.close();
 		}
@@ -142,11 +137,11 @@ public class User {
 	}
 	
 	public String getFBID() {
-		return fbid;
+		return socialid;
 	}
 	
 	public void setFBID(String fbid) {
-		this.fbid = fbid;
+		this.socialid = fbid;
 	}
 
 	public String getSessionid() {
