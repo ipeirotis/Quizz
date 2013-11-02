@@ -65,33 +65,42 @@
 
 	$(document).ready(function() {
 		var loggedin = false;
+		
+		function showLogin(){
+			$('#logout').hide();
+			$('#login').show();
+		}
+		function hideLogin(){
+			$('#login').hide();
+			$('#logout').show();
+		}
+		
 		$.when(getUser()).done(function(response){
 			if(response.responseJSON.sessionid == getSession()) {
 				loggedin = true;
-				$('#login').hide();
-				$('#logout').show();
+				hideLogin();
 			} else {
-				$('#logout').hide();
-				$('#login').show();
+				showLogin();
 			}
 		}).fail(function(){
-			$('#logout').hide();
-			$('#login').show();
+			showLogin();
 		});
 		$('#facebook-login').on('click', function(){
 			facebookID = FB.getUserID();
 			if(facebookID != '') {
 				$.when(loginFB(facebookID)).done(function(){
-					$('#login').hide();
-					$('#logout').show();
+					hideLogin();
+				}).fail(function(){
+					showLogin();
 				});
 			} else {
 	      		FB.login(function(response) { 
 			        if ( response.status === 'connected' ) {
 						FBID = response.authResponse.userID;
 						$.when(loginFB(FBID)).done(function(){
-							$('#login').hide();
-							$('#logout').show();
+							hideLogin();
+						}).fail(function(){
+							showLogin();
 						});
 			        } else {
 			        	html = $('#facebook-login').html();
@@ -104,8 +113,7 @@
 		});
 		$('#logout').on('click', function(){
 			logout();
-			$('#logout').hide();
-			$('#login').show();
+			showLogin();
 		});
 		var user = getUsername();
 		$.when(getQuizzes(), getUserQuizPerformances(user)).done(function(a1, a2){

@@ -69,13 +69,7 @@ function shuffle(array) {
 		var session = $.cookie("session");
 		return session;
 	}
-	function sendSingleQuestionResults(formData) {
-		var url = getWebURL() + 'processUserAnswer';
-		return $.post(url, formData)
-			.fail( function(jqXHR, textStatus, errorThrown) {
-				console.log("Sending your answer failed: " + textStatus);
-			});
-	}
+	
 	function loginFB(fbid) {
 		var url = getWebURL() + 'fblogin';
 		sessionid = createSession();
