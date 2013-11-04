@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.UserReferralRepository;
+import us.quizz.repository.UserRepository;
 
 import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.utils.Helper;
@@ -22,7 +23,7 @@ public class StartQuiz extends HttpServlet {
 		
 		String gclid = req.getParameter("gclid");
 		
-		User user = User.getUseridFromCookie(req, resp);
+		User user = UserRepository.getUseridFromCookie(req, resp);
 		String userid = user.getUserid();
 		UserReferralRepository.createAndStoreUserReferal(req, userid);
 

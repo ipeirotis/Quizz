@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.repository.UserRepository;
+
 import com.ipeirotis.crowdquiz.entities.User;
 
 @SuppressWarnings("serial")
@@ -17,9 +19,9 @@ public class FacebookLogin extends HttpServlet {
 		Utils.ensureParameters(req, "fbid", "sessionid", "url");
 		String fbid = req.getParameter("fbid");
 		String sessionid = req.getParameter("sessionid");
-		user = User.getUseridFromSocialid(fbid);
+		user = UserRepository.getUseridFromSocialid(fbid);
 		if (user == null) {
-			user = User.getUseridFromCookie(req, resp);
+			user = UserRepository.getUseridFromCookie(req, resp);
 			user.setFBID(fbid);
 		}
 		user.setSessionid(sessionid);

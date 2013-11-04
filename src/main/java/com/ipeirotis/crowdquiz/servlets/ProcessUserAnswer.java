@@ -11,6 +11,7 @@ import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
+import us.quizz.repository.UserRepository;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -35,7 +36,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		Utils.ensureParameters(req,
 				"quizID", "questionID", "answerID", "correctanswers", "totalanswers");
 
-		User user = User.getUseridFromCookie(req, resp);
+		User user = UserRepository.getUseridFromCookie(req, resp);
 		Long questionID = Long.parseLong(req.getParameter("questionID"));
 		String quizID = req.getParameter("quizID");
 		String action;
