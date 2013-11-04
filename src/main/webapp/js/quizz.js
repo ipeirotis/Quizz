@@ -33,6 +33,10 @@ function shuffle(array) {
 	function getAPIURL() {
 		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/';
 	}
+	
+	function getFBAppID() {
+		return '220743704753581';
+	}
 
 	function getURLParameterByName(name) {
 		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -53,6 +57,38 @@ function shuffle(array) {
 		var username = createUUID();
 		$.cookie("username", username, { expires: 365, path: "/"});
 		return username;
+	}
+
+	function createSession() {
+		var session = createUUID();
+		$.cookie("session", session, { expires: 365, path: "/"});
+		return session;
+	}
+	
+	function getSession() {
+		var session = $.cookie("session");
+		return session;
+	}
+	
+	function loginFB(fbid) {
+		var url = getWebURL() + 'fblogin';
+		sessionid = createSession();
+		var params = {
+			'fbid' : fbid,
+			'sessionid' : sessionid,
+			'url' : document.location.href
+		};
+		return $.post(url, params);
+	}
+	function getUser() {
+		userid = getUsername();
+		var url = getAPIURL() + "user/" + userid;
+		return $.getJSON(url);
+	}
+	
+	function logout() {
+		$.cookie("session", "0", { expires: 365, path: "/"});
+		document.location.href = document.location.href;
 	}
 
 	function createUUID() {

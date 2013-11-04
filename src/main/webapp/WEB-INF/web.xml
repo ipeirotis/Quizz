@@ -93,6 +93,10 @@
 		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.ScanUserAnswersAndCreateUsers</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>FacebookLogin</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.FacebookLogin</servlet-class>
+	</servlet>
 
 
 	<servlet-mapping>
@@ -185,6 +189,10 @@
 	<servlet-mapping>
 		<servlet-name>AddAdGroup</servlet-name>
 		<url-pattern>/addAdGroup</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FacebookLogin</servlet-name>
+		<url-pattern>/fblogin</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>
