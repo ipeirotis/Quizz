@@ -68,12 +68,13 @@ class QuizzAPIClient(object):
     def remove_quiz(self, quiz_id):
         return self._get_web('api/deleteQuiz', {'quizID': quiz_id})
 
-    def add_question(self, quiz_id, text, answers, weight=1., print_debug=True):
+    def add_question(self, quiz_id, text, answers, weight=1., source='', print_debug=True):
         data = {
             'quizID': quiz_id,
             'text': text,
             'weight': weight,
             'answers': answers,
+            'source': source,
         }
         if print_debug:
           print data
