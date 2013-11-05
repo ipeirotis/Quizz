@@ -4,6 +4,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
+<%@ page import="us.quizz.repository.UserRepository"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
@@ -16,7 +17,7 @@
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Feedback" /></jsp:include>
 
-<% User user = User.getUseridFromCookie(request, response); %>
+<% User user = UserRepository.getUseridFromCookie(request, response); %>
 
 </head>
 <body>

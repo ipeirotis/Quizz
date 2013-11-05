@@ -50,3 +50,4 @@ quizz-v1-rest.discovery
 *.pyo
 .env/
 
+/bin

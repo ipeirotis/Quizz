@@ -3,6 +3,7 @@
 <%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
 <%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
+<%@ page import="us.quizz.repository.UserRepository"%>
 <%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
@@ -20,7 +21,7 @@
 			<table class="table table-striped  table-bordered">
 			
 				<tr><th colspan="4">User Information</th></tr>
-				<% User u = User.getUseridFromCookie(request, response); %>
+				<% User u = UserRepository.getUseridFromCookie(request, response); %>
 				<tr>
 					<td  class="span2">Userid:</td>
 					<td class="span6" colspan="3"><%=u.getUserid() %></td>
