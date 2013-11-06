@@ -69,12 +69,12 @@ public class User {
 		this.userid = userid;
 	}
 	
-	public String getFBID() {
+	public String getSocialid() {
 		return socialid;
 	}
 	
-	public void setFBID(String fbid) {
-		this.socialid = fbid;
+	public void setSocialid(String sid) {
+		this.socialid = sid;
 	}
 
 	public String getSessionid() {

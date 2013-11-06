@@ -11,17 +11,8 @@
 			cookie     : true, // enable cookies to allow the server to access the session
 			xfbml      : true  // parse XFBML
 		});
-		FB.Event.subscribe('auth.login', function(response) {
-			if ( response.status === 'connected' )
-	        {
-    			FBID = response.authResponse.userID;
-    			createUsername(FBID);
-	        }
-	    });
 		FB.Event.subscribe('auth.authResponseChange', function(response) {
 			if (response.status === 'connected') {
-				FBID = response.authResponse.userID;
-				createUsername(FBID);
 			} else if (response.status === 'not_authorized') {
 				FB.login(function(response) { 
 					$('#login').hide();
