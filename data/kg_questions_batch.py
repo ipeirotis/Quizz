@@ -4,6 +4,7 @@ import subprocess
 import os
 
 tmpl = open('quizz_template.txt', 'r')
+p = None
 for line in tmpl:
   if not line: break
 
@@ -17,3 +18,6 @@ for line in tmpl:
   ques_args = ['../scripts/generate_questions.py', tokens[2], tokens[5], tokens[4]]
   p = subprocess.Popen(ques_args)
 tmpl.close()
+
+if p:
+  p.wait()

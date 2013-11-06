@@ -95,6 +95,7 @@ define table kv /namespace/knowledge-vault/data/latest/final/columnio/kv_final.c
 SELECT
     triple.sub AS question,
     triple.obj AS answer,
+    kv_triple.obj_name AS answer_name,
     kv_triple.belief.prob_true AS probability,
     kv_triple.belief.system AS source
 FROM kv
