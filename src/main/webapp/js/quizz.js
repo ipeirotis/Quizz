@@ -35,6 +35,9 @@ function shuffle(array) {
 	}
 	
 	function getFBAppID() {
+		if(window.location.host == 'jason-testing.crowd-power.appspot.com'){
+			return '176643002525713';
+		}
 		return '220743704753581';
 	}
 

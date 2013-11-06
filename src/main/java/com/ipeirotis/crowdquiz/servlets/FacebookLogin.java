@@ -22,7 +22,7 @@ public class FacebookLogin extends HttpServlet {
 		user = UserRepository.getUseridFromSocialid(fbid);
 		if (user == null) {
 			user = UserRepository.getUseridFromCookie(req, resp);
-			user.setFBID(fbid);
+			user.setSocialid(fbid);
 		}
 		user.setSessionid(sessionid);
 	}
