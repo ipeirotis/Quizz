@@ -51,11 +51,13 @@ public class AddAdGroup extends HttpServlet {
 			String adline1 = req.getParameter("adline1").trim();
 			String adline2 = req.getParameter("adline2").trim();
 			
+			/*
 			String questionID = req.getParameter("questionID");
 			if (questionID == null) {
 				// In this case, we create the "default" ad for the quiz
 				// return;
 			}
+			*/
 
 			Quiz q = QuizRepository.getQuiz(quizID);
 			Long campaignId = q.getCampaignid();
@@ -79,9 +81,9 @@ public class AddAdGroup extends HttpServlet {
 						.param("adline2", adline2)
 						.method(TaskOptions.Method.POST)
 						.etaMillis(etaMillis);
-				if (questionID != null) {
-					taskOptions.param("questionID", questionID);
-				}
+				//if (questionID != null) {
+				//	taskOptions.param("questionID", questionID);
+				//}
 				queueAdgroup.add(taskOptions);
 				resp.setStatus(202); // The request has been accepted for
 										// processing, but the processing has
@@ -109,11 +111,12 @@ public class AddAdGroup extends HttpServlet {
 			AdGroupAd ad = service.createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
 			Long textAdId = service.publishTextAd(ad);
 
-			
-			Question eq = QuizQuestionRepository.getQuizQuestion(questionID);	
-			eq.setAdTextId(textAdId);
-			eq.setAdGroupId(adgroupId);
-			QuizQuestionRepository.storeQuizQuestion(eq);
+			//if (questionID != null) { 
+			//	Question eq = QuizQuestionRepository.getQuizQuestion(questionID);	
+			//	eq.setAdTextId(textAdId);
+			//	eq.setAdGroupId(adgroupId);
+			//	QuizQuestionRepository.storeQuizQuestion(eq);
+			//}
 			
 
 		} catch (Exception e) {
