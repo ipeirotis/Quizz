@@ -206,28 +206,30 @@ class QuestionGenerator(object):
 
   def parse_kp_data(self, tokens):
     ''' Format of tokens:
-        question, question_name, answer, answer_name, weight
+        question, question_name, pred, answer, answer_name, weight
     '''
     if len(tokens) != 5: return
     q = tokens[0]
     q_name = tokens[1]
-    a = tokens[2]
-    a_name = tokens[3]
-    weight = tokens[4]
+    pred = tokens[2]
+    a = tokens[3]
+    a_name = tokens[4]
+    weight = tokens[5]
     self.mid_names.add_mid_name(q, q_name)
     self.mid_names.add_mid_name(a, a_name)
     self.qa_dict.add_gold_data(q, a, weight)
 
   def parse_kv_data(self, tokens):
     ''' Format of tokens:
-        question, answer, answer_name, probability, belief system.
+        question, pred, answer, answer_name, probability, belief system.
     '''
     if len(tokens) != 5: return
     q = tokens[0]
-    a = tokens[1]
-    a_name = tokens[2]
-    prob = float(tokens[3])
-    belief_system = tokens[4]
+    pred = tokens[1]
+    a = tokens[2]
+    a_name = tokens[3]
+    prob = float(tokens[4])
+    belief_system = tokens[5]
     self.qa_dict.add_kv_data(q, a, prob);
     self.mid_names.add_mid_name(a, a_name)
 
