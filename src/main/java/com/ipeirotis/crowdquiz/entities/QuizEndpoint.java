@@ -17,6 +17,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
+import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 @Api(
@@ -103,7 +104,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 * @return The entity with primary key id.
 	 */
 	@ApiMethod(name = "getNextQuestionInstance", path = "quizquestioninstance/quiz/{quiz}")
-	public Question getNextQuestion(@Named("quiz") String quiz) {
+	public Question getNextQuestion(@Named("quiz") String quiz) {		
 		return QuizesOperations.getNextQuizQuestion(quiz);
 	}
 	
@@ -111,9 +112,10 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz>{
 	 */
 	@ApiMethod(name = "listNextQuestions", path = "quizquestions/{quiz}")
 	public List<Question> getNextQuestions(@Named("quiz") String quiz, @Nullable @Named("num") Integer num) {
-		if (num == null) num = QUESTION_PACKAGE_SIZE;
+		if (num == null) num = QUESTION_PACKAGE_SIZE;	
 		Set<Question> questions = QuizesOperations.getNextQuizQuestions(quiz, num);
-		return new ArrayList<Question>(questions);
+		List<Question> result = new ArrayList<Question>(questions);
+		return result;
 	}
 
 

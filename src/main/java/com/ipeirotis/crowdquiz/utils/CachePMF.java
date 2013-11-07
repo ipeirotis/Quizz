@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
@@ -13,14 +17,25 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 public class CachePMF {
-
+	
+	public static int DEFAULT_LIFETIME = 24*3600;
+	
 	public static <T> void put(String key, T obj) {
+		
+		put(key, obj, DEFAULT_LIFETIME);
+		
+	}
+
+	public static <T> void put(String key, T obj, int seconds) {
 
 		Cache cache;
 
+		Map props = new HashMap();
+        props.put(GCacheFactory.EXPIRATION_DELTA, seconds);
+		
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-			cache = cacheFactory.createCache(Collections.emptyMap());
+			cache = cacheFactory.createCache(props);
 		} catch (CacheException e) {
 			cache = null;
 			return;
