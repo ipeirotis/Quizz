@@ -97,7 +97,7 @@ ORDER BY weight DESC;
 define table kv /namespace/knowledge-vault/data/latest/final/columnio/kv_final.columnio*;
 SELECT
     triple.sub AS question,
-    triple.pred AS pred,
+    "xxxxxxxxxx" AS pred,
     triple.obj AS answer,
     kv_triple.obj_name AS answer_name,
     kv_triple.belief.prob_true AS probability,

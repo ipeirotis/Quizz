@@ -109,7 +109,8 @@ ORDER BY pred_frequency DESC;
 DEFINE INLINE TABLE golden_kg_pred
 SELECT
     golden_table.mid AS mid,
-    predicate_table.kv_pred AS pred
+    predicate_table.kv_pred AS kv_pred,
+    predicate_table.pred AS pred
 FROM (
     SELECT question AS mid, pred
     FROM qa_pair_sub_obj
@@ -135,13 +136,13 @@ SELECT
     kv_table.probability AS probability,
     kv_table.source AS source
 FROM (
-    SELECT mid, pred
+    SELECT mid, kv_pred, pred
     FROM golden_kg_pred
     SHUFFLE BY hash(mid, 1000)
 ) golden_table
 JOIN (
     SELECT triple.sub AS mid,
-           triple.pred AS pred,
+           triple.pred AS kv_pred,
            triple.obj AS answer,
            kv_triple.obj_name AS answer_name,
            kv_triple.belief.prob_true AS probability,
@@ -155,4 +156,4 @@ JOIN (
     SHUFFLE BY hash(mid, 1000)
 ) kv_table
 ON golden_table.mid=kv_table.mid AND
-   golden_table.pred=kv_table.pred;
+   golden_table.kv_pred=kv_table.kv_pred;
