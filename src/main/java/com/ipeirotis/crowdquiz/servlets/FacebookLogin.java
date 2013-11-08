@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.UserRepository;
 
 import com.ipeirotis.crowdquiz.entities.User;
+import com.ipeirotis.crowdquiz.utils.PMF;
 
 @SuppressWarnings("serial")
 public class FacebookLogin extends HttpServlet {
@@ -25,5 +26,6 @@ public class FacebookLogin extends HttpServlet {
 			user.setSocialid(fbid);
 		}
 		user.setSessionid(sessionid);
+		PMF.singleMakePersistent(user);
 	}
 };
