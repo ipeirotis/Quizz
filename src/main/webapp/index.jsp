@@ -67,10 +67,14 @@
 		}
 		
 		$.when(getUser()).done(function(response){
-			if(response.responseJSON.sessionid == getSession()) {
-				loggedin = true;
-				hideLogin();
-			} else {
+			try{
+				if(response.responseJSON.sessionid == getSession()) {
+					loggedin = true;
+					hideLogin();
+				} else {
+					showLogin();
+				}
+			} catch(err) {
 				showLogin();
 			}
 		}).fail(function(){
