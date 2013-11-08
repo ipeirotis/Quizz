@@ -1,0 +1,4 @@
+### Collection Id [TAB] Predicates File [TAB] Quizz id [TAB] Max questions [TAB] Quizz name.
+# Uncomment # to generate quizz for the line needed.
+###
+/collection/us_presidents	us_president_predicates.csv	us_presidents	1000	"US Presidents"
