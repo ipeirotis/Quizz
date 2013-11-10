@@ -65,7 +65,7 @@ public class QuizQuestionRepository {
 		}
 	}
 	
-	protected static ArrayList<Question> getQuestionsWitchCaching(String key, String filter,
+	protected static ArrayList<Question> getQuestionsWithCaching(String key, String filter,
 				String declaredParameters, Map<String, Object> params){
 		@SuppressWarnings("unchecked")
 		ArrayList<Question> questions = CachePMF.get(key, ArrayList.class);
@@ -82,7 +82,7 @@ public class QuizQuestionRepository {
 		String declaredParameters = "String quizParam";
 		Map<String,Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizid);
-		return getQuestionsWitchCaching(key, filter, declaredParameters, params);
+		return getQuestionsWithCaching(key, filter, declaredParameters, params);
 	}
 	
 	protected static Query getQuizGoldQuestionsQuery(PersistenceManager pm, String quizID){
@@ -101,12 +101,17 @@ public class QuizQuestionRepository {
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Question> getSomeQuizQuestionsWithGold(String quizID, int amount){
 		PersistenceManager pm = PMF.getPM();
+		
+		
 		try {
 			Quiz quiz = QuizRepository.getQuiz(quizID);
 			Query query = getQuizGoldQuestionsQuery(pm, quizID);
 			setRandomRange(query, quiz.getGold(), amount);
-			return new ArrayList<Question>((List<Question>) query.executeWithMap(
+			ArrayList<Question> result = new ArrayList<Question>((List<Question>) query.executeWithMap(
 					getQuizGoldQuestionsParameters(quizID)));
+			
+			return result;
+			
 		} finally {
 			pm.close();
 		}
@@ -124,7 +129,7 @@ public class QuizQuestionRepository {
 		String key = "quizquestions_gold_"+quizID;
 		String filter = "quizID == quizParam && hasGoldAnswer==hasGoldParam";
 		String declaredParameters = "String quizParam, Boolean hasGoldParam";
-		return getQuestionsWitchCaching(key, filter, declaredParameters,
+		return getQuestionsWithCaching(key, filter, declaredParameters,
 					getQuizGoldQuestionsParameters(quizID));
 	}
 	

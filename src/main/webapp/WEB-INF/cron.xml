@@ -13,7 +13,7 @@
   <cron>
     <url>/api/updateCountStatistics</url>
     <description>Update the counters that display number of questions, answers, etc in the admin interface</description>
-    <schedule>every 720 minutes</schedule>
+    <schedule>every 9 minutes</schedule>
   </cron>
 
 </cronentries>

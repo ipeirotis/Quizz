@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.QuizRepository;
+import us.quizz.repository.QuizesOperations;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -33,6 +34,11 @@ public class UpdateCountStatistics extends HttpServlet {
 					.param("quizID", quiz.getQuizID())
 					.param("cache", "no")
 					.method(TaskOptions.Method.GET));
+			
+			// TODO: This is piggybagging an existing cron effort
+			// to cache the creation of quizzes with 10 questions.
+			// We should move that into an independent cron call
+			QuizesOperations.getNextQuizQuestions(quiz.getQuizID(), 10);
 			
 		}
 	}
