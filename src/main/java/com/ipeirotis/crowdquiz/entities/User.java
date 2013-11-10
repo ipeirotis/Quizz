@@ -39,8 +39,6 @@ public class User {
 	public User(String userid) {
 		this.userid = userid;
 		this.key = generateKeyFromID(userid);
-		this.socialid = "";
-		this.sessionid = "";
 	}
 	
 	public static Key generateKeyFromID(String userid) {
