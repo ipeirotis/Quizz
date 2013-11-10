@@ -35,7 +35,6 @@ function shuffle(array) {
 	}
 	
 	function getFBAppID() {
-		//return '176643002525713';
 		return '220743704753581';
 	}
 
