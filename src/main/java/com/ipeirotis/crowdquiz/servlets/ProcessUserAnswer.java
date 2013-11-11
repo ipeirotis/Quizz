@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.AnswersRepository;
+import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
@@ -53,6 +54,8 @@ public class ProcessUserAnswer extends HttpServlet {
 		}
 		String numCorrectAnswers = req.getParameter("correctanswers");
 		String numTotalAnswers = req.getParameter("totalanswers");
+		
+		BadgeRepository.addBadge(user, quizID, numCorrectAnswers, numTotalAnswers);
 		
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");

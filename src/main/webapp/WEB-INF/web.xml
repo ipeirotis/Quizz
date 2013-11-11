@@ -22,6 +22,10 @@
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddTreatment</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>AddBadge</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddBadge</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>UploadGoldAnswers</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadGoldAnswers</servlet-class>
 	</servlet>
@@ -147,6 +151,10 @@
 	<servlet-mapping>
 		<servlet-name>AddTreatment</servlet-name>
 		<url-pattern>/addTreatment</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AddBadge</servlet-name>
+		<url-pattern>/addBadge</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GetQuizCounts</servlet-name>

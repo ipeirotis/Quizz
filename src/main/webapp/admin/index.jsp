@@ -43,7 +43,17 @@
 				<td>
 						<a href="reports/contribution_quality.jsp">Quality of contributions</a>
 					</td>
-				</tr>					
+				</tr>
+				<tr>
+					<td>
+						<a href="badges/create_badge.jsp">Create new badge</a>
+					</td>
+				</tr>				
+				<tr>
+					<td>
+						<a href="badges/">See all badges</a>
+					</td>
+				</tr>				
 			</table>
 			
 		</div>
