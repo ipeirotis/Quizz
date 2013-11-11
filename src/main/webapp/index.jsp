@@ -55,8 +55,6 @@
 	<script type="text/javascript">
 
 	$(document).ready(function() {
-		var loggedin = false;
-		
 		function showLogin(){
 			$('#logout').hide();
 			$('#login').show();
@@ -67,10 +65,13 @@
 		}
 		
 		$.when(getUser()).done(function(response){
-			if(response.responseJSON.sessionid == getSession()) {
-				loggedin = true;
-				hideLogin();
-			} else {
+			try{
+				if(response.sessionid == getSession()) {
+					hideLogin();
+				} else {
+					showLogin();
+				}
+			} catch(err) {
 				showLogin();
 			}
 		}).fail(function(){
