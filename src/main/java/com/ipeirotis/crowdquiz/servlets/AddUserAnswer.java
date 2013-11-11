@@ -22,6 +22,8 @@ public class AddUserAnswer extends HttpServlet {
 
 		resp.setContentType("text/plain");
 
+		Utils.ensureParameters(req, "action", "userid", "questionID", "useranswer");
+
 		String action = req.getParameter("action").replace('\t', ' ');
 		String userid = req.getParameter("userid").replace('\t', ' ');
 		String questionStrID = req.getParameter("questionID");
