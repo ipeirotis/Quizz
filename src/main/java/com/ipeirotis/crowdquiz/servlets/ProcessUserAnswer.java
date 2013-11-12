@@ -2,6 +2,7 @@ package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.Answer;
+import com.ipeirotis.crowdquiz.entities.Badge;
 import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
@@ -54,7 +56,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		}
 		String numCorrectAnswers = req.getParameter("correctanswers");
 		String numTotalAnswers = req.getParameter("totalanswers");
-		
+
 		BadgeRepository.addBadge(user, quizID, numCorrectAnswers, numTotalAnswers);
 		
 		String ipAddress = req.getRemoteAddr();

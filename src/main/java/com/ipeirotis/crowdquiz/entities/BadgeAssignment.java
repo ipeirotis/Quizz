@@ -15,21 +15,21 @@ public class BadgeAssignment {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key	key;
+
+	@Persistent(defaultFetchGroup = "true")
+	private String userid;
+
+	@Persistent(defaultFetchGroup = "true")
+	private String badgename;
 	
-	@Persistent
-	private User user;
-	
-	@Persistent
-	private Badge badge;
-	
-	public BadgeAssignment(User user, Badge badge) {
-		this.key = generateKeyFromUserBadge(user, badge);
-		this.badge = badge;
-		this.user = user;
+	public BadgeAssignment(String userid, String badgename) {
+		this.userid = userid;
+		this.badgename = badgename;
+		this.key = generateKeyFromUserBadge(userid, badgename);
 	}
 	
-	public static Key generateKeyFromUserBadge(User user, Badge badge) {
-		return KeyFactory.createKey(Badge.class.getSimpleName(), "id_" + user.getUserid() + "_" + badge.getBadgename());
+	public static Key generateKeyFromUserBadge(String userid, String badgeid) {
+		return KeyFactory.createKey(BadgeAssignment.class.getSimpleName(), "id_" + userid + "_" + badgeid);
 	}
 	
 	public Key getKey() {
@@ -40,19 +40,19 @@ public class BadgeAssignment {
 		this.key = key;
 	}
 
-	public User getUser() {
-		return user;
+	public String getUserid() {
+		return userid;
 	}
 	
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserid(String userid) {
+		this.userid = userid;
 	}
 
-	public Badge getBadge() {
-		return badge;
+	public String getBadgename() {
+		return badgename;
 	}
 	
-	public void setBadge(Badge badge) {
-		this.badge = badge;
+	public void setBadgename(String badgename) {
+		this.badgename = badgename;
 	}
 }

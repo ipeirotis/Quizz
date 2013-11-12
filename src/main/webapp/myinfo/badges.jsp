@@ -22,15 +22,15 @@
 				<%
 				PersistenceManager	pm = PMF.getPM();
 				Query q = pm.newQuery(BadgeAssignment.class);
-				q.setFilter("user == userParam");
-				q.declareParameters("User userParam");
+				q.setFilter("userid == useridParam");
+				q.declareParameters("String useridParam");
 				@SuppressWarnings("unchecked")
-				List<BadgeAssignment> userBadgeAssignments = (List<BadgeAssignment>) q.execute(u);
+				List<BadgeAssignment> userBadgeAssignments = (List<BadgeAssignment>) q.execute(u.getUserid());
 				pm.close();
 				for (BadgeAssignment ba : userBadgeAssignments) {
 					%>
 					<tr>
-						<td><%=ba.getBadge().getBadgename()%></td>
+						<td><%=ba.getBadgename()%></td>
 					</tr>
 					<%
 				}

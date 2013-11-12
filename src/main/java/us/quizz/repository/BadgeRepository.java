@@ -8,12 +8,13 @@ import com.ipeirotis.crowdquiz.entities.User;
 import com.ipeirotis.crowdquiz.utils.PMF;
 
 public class BadgeRepository {
-	public static void addBadge(User user, String quizID, String numCorrectAnswers, String numTotalAnswers){
+	public static List<Badge> addBadge(User user, String quizID, String numCorrectAnswers, String numTotalAnswers){
 		List<Badge> badges = getBadges(user, quizID, numCorrectAnswers, numTotalAnswers);
 		for(Badge b : badges){
-			BadgeAssignment ba = new BadgeAssignment(user, b);
+			BadgeAssignment ba = new BadgeAssignment(user.getUserid(), b.getBadgename());
 			PMF.singleMakePersistent(ba);
 		}
+		return badges;
 	}
 	
 	public static List<Badge> getBadges(User user, String quizID, String numCorrectAnswers, String numTotalAnswers){
