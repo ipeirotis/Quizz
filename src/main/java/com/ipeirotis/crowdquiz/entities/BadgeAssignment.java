@@ -16,10 +16,10 @@ public class BadgeAssignment {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key	key;
 
-	@Persistent(defaultFetchGroup = "true")
+	@Persistent
 	private String userid;
 
-	@Persistent(defaultFetchGroup = "true")
+	@Persistent
 	private String badgename;
 	
 	public BadgeAssignment(String userid, String badgename) {

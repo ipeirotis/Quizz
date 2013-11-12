@@ -55,7 +55,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		String numCorrectAnswers = req.getParameter("correctanswers");
 		String numTotalAnswers = req.getParameter("totalanswers");
 
-		BadgeRepository.addBadge(user, quizID, numCorrectAnswers, numTotalAnswers);
+		BadgeRepository.checkForNewBadges(user, quizID, numCorrectAnswers, numTotalAnswers);
 		
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
