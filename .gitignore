@@ -32,6 +32,7 @@ Thumbs.db
 .project
 .settings/
 .idea/
+*.iml
 
 # some generated but not needed libs
 endpoint-libs/libquizz-v1/quizz/libs-sources/google-*sources.jar
