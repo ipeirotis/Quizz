@@ -34,20 +34,19 @@ public class ProcessUserAnswer extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		Utils.ensureParameters(req,
-				"quizID", "questionID", "answerID", "correctanswers", "totalanswers");
+				"quizID", "questionID", "answerID", "correctanswers", "totalanswers", "userInput");
 
 		User user = UserRepository.getUseridFromCookie(req, resp);
 		Long questionID = Long.parseLong(req.getParameter("questionID"));
 		String quizID = req.getParameter("quizID");
 		String action;
 		Integer useranswerID = Integer.parseInt(req.getParameter("answerID"));
+        String userInput = req.getParameter("userInput");
 		Boolean isCorrect = false;
 		if (useranswerID != -1) {
 			action = "Submit";
 			Answer answer = AnswersRepository.getAnswer(questionID, useranswerID);
-			if (answer.getIsGold() != null) {
-				isCorrect = answer.getIsGold();
-			}
+            isCorrect = answer.checkIfCorrect(userInput);
 		} else {
 			action = "I don't know";
 		}
@@ -60,7 +59,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (referer==null) referer="";
 		Long timestamp = (new Date()).getTime();
 
-		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID,
+		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID, userInput,
 				isCorrect, numCorrectAnswers, numTotalAnswers);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
 		storeUserAnswer(user, quizID, questionID, action, useranswerID, ipAddress, browser,
@@ -75,13 +74,13 @@ public class ProcessUserAnswer extends HttpServlet {
 		new Gson().toJson(uaf, resp.getWriter());
 	}
 
-	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Integer useranswerID,
+	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Integer useranswerID, String userInput,
 			Boolean isCorrect, String numCorrectAnswers, String numTotalAnswers) {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID, user.getUserid(), useranswerID, isCorrect);
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
-		uaf.setUserAnswerText((useranswerID == -1)? "" : question.getAnswer(useranswerID).getText());
+		uaf.setUserAnswerText((useranswerID == -1)? "" : question.getAnswer(useranswerID).userAnswerText(userInput));
 		uaf.setCorrectAnswerText(question.goldAnswer().getText());
 		uaf.computeDifficulty();
 		UserAnswerRepository.storeUserAnswerFeedback(uaf);

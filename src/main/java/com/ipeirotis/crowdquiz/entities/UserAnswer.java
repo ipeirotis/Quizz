@@ -14,7 +14,7 @@ public class UserAnswer {
 	
     public static Key generateKeyFromID(String questionID, String userID) {
         return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_" + questionID + "_" + userID);
-}
+    }
 
 
 	@Persistent
@@ -28,6 +28,9 @@ public class UserAnswer {
 
 	@Persistent
 	private Integer answerID;
+
+    @Persistent
+    private String userInput;
 	
 	@Persistent
 	private Double score;
@@ -170,4 +173,19 @@ public class UserAnswer {
 		this.questionID = questionID;
 	}
 
+    public String getUserInput() {
+        return userInput;
+    }
+
+    public void setUserInput(String userInput) {
+        this.userInput = userInput;
+    }
+
+    public Boolean getCorrect() {
+        return isCorrect;
+    }
+
+    public void setCorrect(Boolean correct) {
+        isCorrect = correct;
+    }
 }
