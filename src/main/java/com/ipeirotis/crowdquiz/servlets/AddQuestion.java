@@ -2,6 +2,8 @@ package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -58,41 +61,54 @@ public class AddQuestion extends HttpServlet {
 	protected Answer parseAnswer(JsonObject jAnswer, Question question, Integer internalID){
 		Answer answer = new Answer(question.getID(), question.getQuizID(),
 				jAnswer.get("text").getAsString(), internalID);
-		if (jAnswer.has("probability")) {
-			parseSilverAnswer(jAnswer, answer, question);
-		} else {
-			parseGoldAnswer(jAnswer, answer, question);
-		}
+        String kind = jAnswer.get("kind").getAsString().toLowerCase();
+        Preconditions.checkArgument(ANSWERS_PARSERS.containsKey(kind),
+                "Unknown answer type: " + kind);
+        answer.setKind(kind);
+        ANSWERS_PARSERS.get(kind).parseIntoAnswer(jAnswer, answer, question);
 		return answer;
 	}
-	
-	private void parseSilverAnswer(JsonObject jAnswer, Answer answer, Question question) {
-		
-		String source = jAnswer.get("source").getAsString();
-		Double probability = jAnswer.get("probability").getAsDouble();
-		
-		answer.setKind("silver");
-		answer.setSource(source);
-		answer.setProbability(probability);
-		question.setHasSilverAnswers(true);
-	}
 
-	private void parseGoldAnswer(JsonObject jAnswer, Answer answer, Question question) {
-		boolean isGold = false;
-		if (jAnswer.has("isGold")) {
-			String gold = jAnswer.get("isGold").getAsString();
-			isGold = !Strings.isNullOrEmpty(gold) && Boolean.parseBoolean(gold);
-		}
-		if (isGold) {
-			question.setHasGoldAnswer(true);
-			answer.setIsGold(true);
-			answer.setKind("gold");
-		} else {
-			answer.setKind("normal_from_golds");
-		}
-	}
-	
-	protected static class Status {
+    protected interface AnswerParser {
+        void parseIntoAnswer(JsonObject jAnswer, Answer answer, Question question);
+    }
+
+    protected static Map<String, AnswerParser> ANSWERS_PARSERS = new HashMap<>();
+    static {
+        ANSWERS_PARSERS.put("silver", new SilverAnswerParser());
+        ANSWERS_PARSERS.put("selectable_gold", new GoldAnswerParser());
+        ANSWERS_PARSERS.put("selectable_not_gold", new EmptyParser());
+        ANSWERS_PARSERS.put("input_text", new GoldAnswerParser());
+    }
+
+    protected static class SilverAnswerParser implements AnswerParser {
+
+        @Override
+        public void parseIntoAnswer(JsonObject jAnswer, Answer answer, Question question) {
+            String source = jAnswer.get("source").getAsString();
+            Double probability = jAnswer.get("probability").getAsDouble();
+            answer.setSource(source);
+            answer.setProbability(probability);
+            question.setHasSilverAnswers(true);
+        }
+    }
+    protected static class GoldAnswerParser implements AnswerParser {
+
+        @Override
+        public void parseIntoAnswer(JsonObject jAnswer, Answer answer, Question question) {
+            question.setHasGoldAnswer(true);
+            answer.setIsGold(true);
+        }
+    }
+
+    protected static class EmptyParser implements AnswerParser {
+
+        @Override
+        public void parseIntoAnswer(JsonObject jAnswer, Answer answer, Question question) {}
+    }
+
+
+    protected static class Status {
 		protected String quizID;
 		protected String text;
 		protected Double weight;

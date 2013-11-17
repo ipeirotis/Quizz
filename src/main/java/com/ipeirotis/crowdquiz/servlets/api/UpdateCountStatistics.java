@@ -38,7 +38,7 @@ public class UpdateCountStatistics extends HttpServlet {
 			// TODO: This is piggybagging an existing cron effort
 			// to cache the creation of quizzes with 10 questions.
 			// We should move that into an independent cron call
-			QuizesOperations.getNextQuizQuestions(quiz.getQuizID(), 10);
+//			QuizesOperations.getNextQuizQuestions(quiz.getQuizID(), 10);
 			
 		}
 	}
