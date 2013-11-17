@@ -91,6 +91,41 @@ class QuizzAPIClient(object):
     def get_questions(self, quizID, amount):
         return J(self._get_api("quizquestions/" + quizID, {'num': amount}))
 
+    def get_questions_answers(self, quizID, amount):
+        results = self.get_questions(quizID, amount)
+        questions = results['items']
+        qas = [['quesID', 'quesText', 'quesWeight', 'answerPos',
+                'answerText', 'answerIsGold', 'answerProb']]
+        for question in questions:
+          if ('id' not in question or
+              'text' not in question or
+              'weight' not in question or
+              'answers' not in question):
+            continue
+          quesID = question['id']
+          quesText = question['text']
+          quesWeight = question['weight']
+          answers = question['answers']
+
+          for answer in answers:
+            if 'internalID' not in answer or 'text' not in answer:
+              continue
+            answerPos = answer['internalID']
+            answerText = answer['text']
+            answerIsGold = False
+            answerProb = 0.0
+            if 'isGold' in answer:
+              answerIsGold = answer['isGold']
+              answerProb = 1.0
+            elif 'silver' in answer and 'probability' in answer and answer['silver']:
+              answerIsGold = False
+              answerProb = answer['probability']
+            else:
+              continue
+            qas.append([quesID, quesText, quesWeight, answerPos,
+                        answerText, answerIsGold, answerProb])
+        return qas
+
     def add_treatment(self, name, probability):
         return self._post_web('addTreatment',
                              {'name': name, 'probability': probability})
