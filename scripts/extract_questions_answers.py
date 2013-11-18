@@ -16,4 +16,7 @@ num_ques = int(sys.argv[2])
 client = QuizzAPIClient(API_URL, WEB_URL)
 quiz = client.get_questions_answers(quizz_id, num_ques)
 for qa in quiz:
-  print '\t'.join(map(lambda x: unicode(x), qa))
+  try:
+    print '\t'.join(map(lambda x: unicode(x), qa))
+  except UnicodeEncodeError as e:
+    continue

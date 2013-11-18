@@ -121,7 +121,8 @@ class QuizzAPIClient(object):
               answerIsGold = False
               answerProb = answer['probability']
             else:
-              continue
+              answerIsGold = False
+              answerProb = 0.0
             qas.append([quesID, quesText, quesWeight, answerPos,
                         answerText, answerIsGold, answerProb])
         return qas
