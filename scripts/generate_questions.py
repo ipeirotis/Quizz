@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import Queue
+import os
 import random
 import sys
 from sets import Set
@@ -11,6 +11,8 @@ from client import QuizzAPIClient
 API_URL = 'https://crowd-power.appspot.com/'
 WEB_URL = 'http://www.quizz.us/'
 KV_THRESHOLD = 0.5
+GOLD_ANSWER = 'selectable_gold'
+WRONG_ANSWER = 'selectable_not_gold'
 
 class EntityNames(object):
   ''' A class to keep track of mid <-> object name.
@@ -153,7 +155,12 @@ class QuestionAnswers(object):
           json_ans.append(ans)
           random.shuffle(json_ans)
 
-          answers = [{'text': mid_names.get_mid_name(answer), 'isGold': (answer == ans)}
+          kind = ''
+          if answer == ans:
+            kind = GOLD_ANSWER
+          else:
+            kind = WRONG_ANSWER
+          answers = [{'text': mid_names.get_mid_name(answer), 'kind': kind}
                      for answer in json_ans]
           results.append((question, pred, answers, weight, 'Golden'))
     return results
@@ -195,22 +202,25 @@ class QuestionAnswers(object):
       weight = self.gold_weight[key][pred]
       answers = []
       if item[0] >= KV_THRESHOLD:
+        kind = WRONG_ANSWER
+        if item[0] >= KV_THRESHOLD:
+          kind = GOLD_ANSWER
         answers = [{'text': mid_names.get_mid_name(item[1]),
-                    'isGold': item[0] >= KV_THRESHOLD}]
+                    'kind': kind}]
       for i in xrange(1, 4):
         item = queue[i]
         answers.append({'text': mid_names.get_mid_name(item[1]),
-                        'isGold': False,
+                        'kind': WRONG_ANSWER,
                         'probability': item[0],
                         'source': 'KV'})
       random.shuffle(answers)
       prob = 0
       if is_none_answer:
         answers.append({'text': 'None of the option',
-                        'isGold': True})
+                        'kind': GOLD_ANSWER})
       else:
         answers.append({'text': 'None of the option',
-                        'isGold': False,
+                        'kind': WRONG_ANSWER,
                         'probability': prob,
                         'source': 'KV'})
       results.append((question, pred, answers, weight, 'KV'))
@@ -278,8 +288,8 @@ class QuestionGenerator(object):
     print self.quizz_id, 'stats:'
     self.qa_dict.print_stats()
 
-  def load_quizz_data(self, quizz_id):
-    inpf = open('../data/kg_questions/' + quizz_id + '-qa_pair.csv', 'r')
+  def load_quizz_data(self, file_path, quizz_id):
+    inpf = open(file_path + quizz_id + '-qa_pair.csv', 'r')
     is_qa = False
     is_kv = False
     for line in inpf:
@@ -316,9 +326,36 @@ class QuestionGenerator(object):
     self.client.update_count_stats()
     print '# questions:', len(questions)
 
-  def generate_kp_questions(self):
+  def generate_kp_questions(self, num_questions=-1):
     questions = self.generate_questions(self.qa_dict.generate_kp_question)
-    self.add_questions(questions)
+    if num_questions == -1:
+      self.add_questions(questions)
+      return
+
+    num_questions = min(len(questions), num_questions)
+
+    # Sample about the same number of questions per predicates.
+    final_questions = []
+    preds = dict()
+    for question in questions:
+      pred = question[1]
+      if pred not in preds:
+        preds[pred] = 0
+      preds[pred] += 1
+    random.shuffle(questions)
+    count = 0
+    ques_per_pred = float(num_questions) / float(len(preds))
+    for question in questions:
+      pred = question[1]
+      rate = ques_per_pred / float(preds[pred])
+      if random.random() < rate:
+        print json.dumps(question)
+        final_questions.append(question)
+        count += 1
+      if count >= num_questions:
+        break
+
+    self.add_questions(final_questions)
 
   def generate_kv_questions(self):
     questions = self.generate_questions(self.qa_dict.generate_kv_question)
@@ -362,18 +399,48 @@ class QuestionGenerator(object):
     print '# KP questions', num_kp
     print '# KV questions', num_kv
 
-if len(sys.argv) < 4:
-  print 'Usage: python generate_question.py [quizz_id] [quizz_name] [ques_template_file] [is_control_kp_kv]'
+  def set_quizz_id(self, quizz_id):
+    self.quizz_id = quizz_id
+
+def merge_questions(path_dir, num_questions, ques_template, quizz_id, quizz_name, filter_pred=''):
+  ''' Merge all questions found in path_dir/* and choose num_questions from
+      them to be submitted to Quizz with the given quizz_id and quizz_name.
+      If filter_pred is not empty, keep only questions where predicate = given filter_pred.
+  '''
+  questions = []
+  for f in os.listdir(path_dir):
+    file_name = path_dir + '/' + f
+    for line in open(file_name, 'r'):
+      if not line: break
+      question = json.loads(line)
+      if filter_pred != '' and question[1] != filter_pred:
+        continue
+      questions.append(question)
+  random.shuffle(questions)
+  num_questions = min(len(questions), num_questions)
+
+  questions = questions[:num_questions]
+  for question in questions:
+    print json.dumps(question)
+
+  kg_generator = QuestionGenerator(ques_template)
+  kg_generator.set_quizz_id(quizz_id)
+  kg_generator.create_quiz(quizz_id, quizz_name)
+  kg_generator.add_questions(questions)
+
+if len(sys.argv) < 6:
+  print 'Usage: python generate_question.py [quizz_id] [quizz_name] [ques_template_file] [file_path] [is_control_kp_kv]'
   print 'ques_template_file: A file with mapping from kp predicate to question template'
   exit(1)
 
 quizz_id = sys.argv[1]
 quizz_name = sys.argv[2]
 ques_template = sys.argv[3]
-is_control_kp_kv = bool(sys.argv[4])
+file_path = sys.argv[4]
+is_control_kp_kv = bool(sys.argv[5])
 
 kg_generator = QuestionGenerator(ques_template)
-kg_generator.load_quizz_data(quizz_id)
+kg_generator.load_quizz_data(file_path, quizz_id)
 
 kg_generator.create_quiz(quizz_id + "_kp_kv", quizz_name)
 kg_generator.generate_kp_and_kv_questions(True, True)

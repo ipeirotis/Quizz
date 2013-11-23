@@ -4,7 +4,7 @@ DEFINE INLINE TABLE collection_mids
 SELECT
     entity_id as mid
 FROM
-    (FLATTEN(kpanels.cards.latest, top_collection))
+    (FLATTEN(kpanels.cards.20131101, top_collection))
 WHERE
     locale = "en" AND
     top_collection = "xxxxxxxxxx";
@@ -45,7 +45,7 @@ JOIN (
     SELECT entity_id AS mid,
            fact.attribute_id AS pred,
            fact.display_value.span.entity_id AS ans_mid
-    FROM (FLATTEN(kpanels.cards.latest, fact))
+    FROM (FLATTEN(kpanels.cards.20131101, fact))
     WHERE locale="en"
           AND fact.display_value.span.entity_id<>""
           AND fact.attribute_id IN (SELECT kp_pred FROM predicates)
@@ -153,6 +153,8 @@ JOIN (
           AND triple.pred IN (SELECT kv_pred FROM predicates)
           AND triple.sub LIKE "/m/%"
           AND triple.sub IN (SELECT question FROM qa_pair_sub_obj)
+          AND kv_triple.belief.system="KNOWLEDGE_VAULT"
+          AND kv_triple.belief.prob_true > 0.5
     SHUFFLE BY hash(mid, 1000)
 ) kv_table
 ON golden_table.mid=kv_table.mid AND
