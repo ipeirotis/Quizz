@@ -2,12 +2,16 @@ set accounting_group knowledge-panels-users
 
 DEFINE INLINE TABLE collection_mids
 SELECT
-    entity_id as mid
+    member_id AS mid,
+    scores.score AS score
 FROM
-    (FLATTEN(kpanels.cards.20131101, top_collection))
+    kgraph.collection_memberships.latest
 WHERE
-    locale = "en" AND
-    top_collection = "xxxxxxxxxx";
+    scores.label='notable_within' AND
+    collection_id.id="xxxxxxxxxx"
+ORDER BY
+    score DESC
+LIMIT 100;
 
 DEFINE INLINE TABLE predicates yyyyyyyyyy;
 

@@ -14,6 +14,10 @@ KV_THRESHOLD = 0.5
 GOLD_ANSWER = 'selectable_gold'
 WRONG_ANSWER = 'selectable_not_gold'
 
+def convert_answer(isGold):
+  if isGold: return GOLD_ANSWER
+  else: return WRONG_ANSWER
+
 class EntityNames(object):
   ''' A class to keep track of mid <-> object name.
   '''
@@ -127,7 +131,7 @@ class QuestionAnswers(object):
         break
     return wrong_ans
 
-  def generate_kp_question(self, key, mid_names):
+  def generate_kp_question(self, key, mid_names, collection=''):
     ''' Generates questions from KP using the following idea:
         1. Take one golden answer for the question key.
         2. Randomly choose wrong answers from the candidate list (same expected type)
@@ -154,18 +158,14 @@ class QuestionAnswers(object):
           json_ans = wrong_ans
           json_ans.append(ans)
           random.shuffle(json_ans)
-
-          kind = ''
-          if answer == ans:
-            kind = GOLD_ANSWER
-          else:
-            kind = WRONG_ANSWER
-          answers = [{'text': mid_names.get_mid_name(answer), 'kind': kind}
+          answers = [{'text': mid_names.get_mid_name(answer), 'kind': convert_answer(answer == ans)}
                      for answer in json_ans]
+          if collection != '':
+            question = question + ' (' + collection + ')'
           results.append((question, pred, answers, weight, 'Golden'))
     return results
 
-  def generate_kv_question(self, key, mid_names):
+  def generate_kv_question(self, key, mid_names, collection):
     ''' Generates questions from KV using the following idea:
         1. Pick the most confidence answer from KV as the golden answer.
         2. Pick random answers from the rest of the KV answers or the candidate answers
@@ -202,11 +202,8 @@ class QuestionAnswers(object):
       weight = self.gold_weight[key][pred]
       answers = []
       if item[0] >= KV_THRESHOLD:
-        kind = WRONG_ANSWER
-        if item[0] >= KV_THRESHOLD:
-          kind = GOLD_ANSWER
         answers = [{'text': mid_names.get_mid_name(item[1]),
-                    'kind': kind}]
+                    'kind': GOLD_ANSWER}]
       for i in xrange(1, 4):
         item = queue[i]
         answers.append({'text': mid_names.get_mid_name(item[1]),
@@ -288,7 +285,7 @@ class QuestionGenerator(object):
     print self.quizz_id, 'stats:'
     self.qa_dict.print_stats()
 
-  def load_quizz_data(self, file_path, quizz_id):
+  def load_quizz_data(self, file_path, quizz_id, collection):
     inpf = open(file_path + quizz_id + '-qa_pair.csv', 'r')
     is_qa = False
     is_kv = False
@@ -307,12 +304,13 @@ class QuestionGenerator(object):
       elif is_qa:
         self.parse_kp_data(tokens)
     inpf.close()
+    self.collection_name = collection
 
   def generate_questions(self, generation_function):
     self.qa_dict.init_generate_question()
     questions = []
     for key in self.qa_dict.question_list():
-      questions = questions + generation_function(key, self.mid_names)
+      questions = questions + generation_function(key, self.mid_names, self.collection_name)
     return questions
 
   def add_question(self, qa):
@@ -423,9 +421,14 @@ def merge_questions(path_dir, num_questions, ques_template, quizz_id, quizz_name
   for question in questions:
     print json.dumps(question)
 
-  kg_generator = QuestionGenerator(ques_template)
-  kg_generator.set_quizz_id(quizz_id)
-  kg_generator.create_quiz(quizz_id, quizz_name)
+def upload_question(quiz_id, quiz_name, file_path):
+  kg_generator = QuestionGenerator('../data/question_template.txt')
+  kg_generator.set_quizz_id(quiz_id)
+  kg_generator.create_quiz(quiz_id, quiz_name)
+  questions = []
+  for line in open(file_path, 'r'):
+    if not line: break
+    questions.append(json.loads(line))
   kg_generator.add_questions(questions)
 
 if len(sys.argv) < 6:
@@ -440,19 +443,5 @@ file_path = sys.argv[4]
 is_control_kp_kv = bool(sys.argv[5])
 
 kg_generator = QuestionGenerator(ques_template)
-kg_generator.load_quizz_data(file_path, quizz_id)
-
-kg_generator.create_quiz(quizz_id + "_kp_kv", quizz_name)
-kg_generator.generate_kp_and_kv_questions(True, True)
-
-kg_generator.create_quiz(quizz_id + "_kp", quizz_name)
-if is_control_kp_kv:
-  kg_generator.generate_kp_and_kv_questions(True, False)
-else:
-  kg_generator.generate_kp_questions()
-
-kg_generator.create_quiz(quizz_id + "_kv", quizz_name)
-if is_control_kp_kv:
-  kg_generator.generate_kp_and_kv_questions(False, True)
-else:
-  kg_generator.generate_kv_questions()
+kg_generator.load_quizz_data(file_path, quizz_id, quizz_name)
+kg_generator.generate_kp_questions(100)
