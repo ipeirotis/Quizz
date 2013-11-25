@@ -54,4 +54,9 @@ public class BadgeRepository {
 		}
 		return badge;
 	}
+	
+	public static Boolean userHasBadge(User u, Badge b){
+		BadgeAssignment ba = PMF.singleGetObjectById(BadgeAssignment.class, BadgeAssignment.generateKeyFromUserBadge(u.getUserid(), b.getBadgename()));
+		return (ba != null);
+	}
 }

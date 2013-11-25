@@ -1,4 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="javax.jdo.PersistenceManager"%>
+<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.Badge"%>
+<%@ page import="javax.jdo.Query"%>
+<%@ page import="java.util.List"%>
+<%@ page import="us.quizz.repository.BadgeRepository"%>
+<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
+<%@ page import="us.quizz.repository.UserRepository"%>
+<% User u = UserRepository.getUseridFromCookie(request, response); %>
 <jsp:include page="/header.jsp"></jsp:include>
 
 <body>
@@ -11,7 +20,7 @@
                 <span class="label label-info" id="showScore"></span>
                 <span class="label label-info" id="showTotalCorrect"></span>
                 <span class="label label-info" id="showPercentageCorrect"></span>
-                <span class="label label-info"  id="showPercentageRank"></span>
+                <span class="label label-info" id="showPercentageRank"></span>
                 <span class="label label-info" id="showTotalCorrectRank"></span>
             </div>
             <div id="scoresLoading">
@@ -41,6 +50,27 @@
             </form>
         <span id="questionsPackProgress"></span>
         </div>
+    	<ul class="nav nav-pills">
+    	<%
+    	PersistenceManager	pm = PMF.getPM();
+    	Query q = pm.newQuery(Badge.class);
+    	@SuppressWarnings("unchecked")
+    	List<Badge> allBadges = (List<Badge>) q.execute();
+    	pm.close();
+    	for (Badge b : allBadges) {
+    		if(BadgeRepository.userHasBadge(u,b)){%>
+    		<li style="width: 128px" class="active">
+    		<%} else {%>
+    		<li style="width: 128px">
+    		<%}%>
+    			<a>
+    		      <span class="badge pull-right"></span>
+    		      <%=b.getBadgename()%>
+    	        </a>
+    		</li>
+    		<%
+    	}%>
+    	</ul>
         <div id="quizEndSummary" style="display: none;">
             <!-- It will be moved (using JS) into form -->
             <h3>Thank you for completing quizz!</h3>

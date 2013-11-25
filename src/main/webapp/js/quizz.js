@@ -35,7 +35,9 @@ function shuffle(array) {
 	}
 	
 	function getFBAppID() {
-		return '220743704753581';
+		//return '220743704753581';
+		return '176643002525713';
+		//return '327621583960022';
 	}
 
 	function getURLParameterByName(name) {
@@ -311,6 +313,8 @@ function shuffle(array) {
 	}
 
 	function displayFeedback(feedback) {
+		var newBadgeHtml = 'New Badges: ';
+		$('#showNewBadges').html(newBadgeHtml + feedback.userNewBadges);
 		if (feedback.isCorrect) {
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
@@ -388,6 +392,7 @@ function hideFeedback() {
     var feedbackdiv = $('#feedback');
     feedbackdiv.empty();
     feedbackdiv.hide();
+    feedbackdiv.append($('<div id="showNewBadges"></div>'));
     feedbackdiv.append($('<div id="showMessage"></div>'));
     feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));
     feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));
