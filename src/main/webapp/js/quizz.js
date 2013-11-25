@@ -214,8 +214,6 @@ function shuffle(array) {
 		$('#quizID').val(question.quizID);
 		$('#questionID').val(question.id);
 		$('#questiontext').html(question.text);
-		$('#correctanswers').val(question.correctanswers);
-		$('#totalanswers').val(question.totalanswers);
 
 		var answers = $("#answers");
 		shuffle(question.answers);
@@ -305,6 +303,8 @@ function shuffle(array) {
 		$('#showPercentageCorrect').html("Correct (%): " + toSafePercentage(performance.percentageCorrect));
 		$('#showPercentageRank').html(ranksFormating("%", performance.rankPercentCorrect, performance.totalUsers));
 		$('#showTotalCorrectRank').html(ranksFormating("#", performance.rankTotalCorrect, performance.totalUsers));
+		$('#correctanswers').val(performance.correctanswers);
+		$('#totalanswers').val(performance.totalanswers);
 
 		$("#inScores").show();
 		$("#scoresLoading").hide();

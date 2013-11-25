@@ -54,8 +54,14 @@ public class ProcessUserAnswer extends HttpServlet {
 		} else {
 			action = "I don't know";
 		}
-		String numCorrectAnswers = req.getParameter("correctanswers");
-		String numTotalAnswers = req.getParameter("totalanswers");
+		Integer correctAnswers = Integer.parseInt(req.getParameter("correctanswers"));
+		if (isCorrect){
+			correctAnswers += 1;
+		}
+		Integer totalAnswers = Integer.parseInt(req.getParameter("totalanswers"));
+		totalAnswers += 1;
+		String numCorrectAnswers = Integer.toString(correctAnswers);
+		String numTotalAnswers = Integer.toString(totalAnswers);
 
 		List<Badge> newBadges = BadgeRepository.checkForNewBadges(user, quizID, numCorrectAnswers, numTotalAnswers);
 		

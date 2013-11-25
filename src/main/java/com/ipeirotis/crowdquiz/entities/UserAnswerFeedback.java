@@ -113,7 +113,7 @@ public class UserAnswerFeedback {
 	public void setUserNewBadges(List<Badge> newBadges) {
 		String userNewBadges = "";
 		for(Badge b : newBadges){
-			userNewBadges += b + "...";
+			userNewBadges += b.getBadgename() + "...";
 		}
 		this.userNewBadges = userNewBadges;
 	}

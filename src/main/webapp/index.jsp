@@ -95,7 +95,7 @@
 		
 		$.when(getUser()).done(function(response){
 			try{
-				if(response.sessionid == getSession()) {
+				if(response.sessionid == getSession() && response.sessionid != undefined) {
 					hideLogin();
 				} else {
 					showLogin();

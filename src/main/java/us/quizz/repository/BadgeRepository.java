@@ -19,27 +19,27 @@ public class BadgeRepository {
 	
 	public static List<Badge> getBadges(User user, String quizID, String numCorrectAnswers, String numTotalAnswers){
 		List<Badge> badgelist = new ArrayList<Badge>();
-		if(numTotalAnswers == "1"){
+		if(numTotalAnswers.equals("1")){
 			badgelist.add(getBadge("Answered One"));
-		} else if(numTotalAnswers == "5"){
+		} else if(numTotalAnswers.equals("5")){
 			badgelist.add(getBadge("Answered Five"));
-		} else if(numTotalAnswers == "10"){
+		} else if(numTotalAnswers.equals("10")){
 			badgelist.add(getBadge("Answered Ten"));
-		} else if(numTotalAnswers == "25"){
+		} else if(numTotalAnswers.equals("25")){
 			badgelist.add(getBadge("Answered Twenty-Five"));
-		} else if(numTotalAnswers == "50"){
+		} else if(numTotalAnswers.equals("50")){
 			badgelist.add(getBadge("Answered Fifty"));
 		}
 		
-		if(numCorrectAnswers == "1"){
+		if(numCorrectAnswers.equals("1")){
 			badgelist.add(getBadge("One Correct"));
-		} else if(numCorrectAnswers == "5"){
+		} else if(numCorrectAnswers.equals("5")){
 			badgelist.add(getBadge("Five Correct"));
-		} else if(numCorrectAnswers == "10"){
+		} else if(numCorrectAnswers.equals("10")){
 			badgelist.add(getBadge("Ten Correct"));
-		} else if(numCorrectAnswers == "25"){
+		} else if(numCorrectAnswers.equals("25")){
 			badgelist.add(getBadge("Twenty-Five Correct"));
-		} else if(numCorrectAnswers == "50"){
+		} else if(numCorrectAnswers.equals("50")){
 			badgelist.add(getBadge("Fifty Correct"));
 		}
 		return badgelist; 
