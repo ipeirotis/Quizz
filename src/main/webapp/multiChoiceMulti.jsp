@@ -50,27 +50,33 @@
             </form>
         <span id="questionsPackProgress"></span>
         </div>
-    	<ul class="nav nav-pills">
-    	<%
-    	PersistenceManager	pm = PMF.getPM();
-    	Query q = pm.newQuery(Badge.class);
-    	@SuppressWarnings("unchecked")
-    	List<Badge> allBadges = (List<Badge>) q.execute();
-    	pm.close();
-    	for (Badge b : allBadges) {
-    		if(BadgeRepository.userHasBadge(u,b)){%>
-    		<li style="width: 128px" class="active">
-    		<%} else {%>
-    		<li style="width: 128px">
-    		<%}%>
-    			<a>
-    		      <span class="badge pull-right"></span>
-    		      <%=b.getBadgename()%>
-    	        </a>
-    		</li>
-    		<%
-    	}%>
-    	</ul>
+        <div id="showQuizBadgeBox" style="display: none">
+	    	<h4>Badges</h4>
+	    	<ul class="nav nav-pills">
+	    	<%
+	    	PersistenceManager	pm = PMF.getPM();
+	    	Query q = pm.newQuery(Badge.class);
+	    	@SuppressWarnings("unchecked")
+	    	List<Badge> allBadges = (List<Badge>) q.execute();
+	    	pm.close();
+	    	for (Badge b : allBadges) {
+	    		%>
+	    		<li style="width: 128px" data-original-title="<%=b.getBadgename()%>" 
+	    		<%
+	    		if(BadgeRepository.userHasBadge(u,b)){%>
+	    		class="active">
+	    		<%} else {%>
+	    		class="">
+	    		<%}%>
+	    			<a>
+	    		      <span class="badge pull-right"></span>
+	    		      <%=b.getShortname()%>
+	    	        </a>
+	    		</li>
+	    		<%
+	    	}%>
+	    	</ul>
+    	</div>
         <div id="quizEndSummary" style="display: none;">
             <!-- It will be moved (using JS) into form -->
             <h3>Thank you for completing quizz!</h3>
@@ -110,6 +116,7 @@
 
     <script>
     $(document).ready(function() {
+		$('.nav-pills li').tooltip();
         setUpPerformanceUpdatesChannel(getURLParameterByName('changelToken'));
         var user = getUsername();
         var quiz = getURLParameterByName('quizID');
@@ -126,6 +133,7 @@
             getUserQuizPerformance(quiz, user)
         ).done( function (questions, userTreatments, userQuizPerformance) {
             initializeQuizzWithQuestions(fst(questions));
+            setupDivs();
             applyTreatments(fst(userTreatments));
             displayPerformanceScores(fst(userQuizPerformance));
             disableLoadingScreen();

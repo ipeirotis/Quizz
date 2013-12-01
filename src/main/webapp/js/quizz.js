@@ -312,7 +312,12 @@ function shuffle(array) {
 
 	function displayFeedback(feedback) {
 		var newBadgeHtml = 'New Badges: ';
-		$('#showNewBadges').html(newBadgeHtml + feedback.userNewBadges);
+		if(feedback.userNewBadges != "" && $('#showNewBadges').hasClass('show')){
+			$('#showNewBadges').html(newBadgeHtml + feedback.userNewBadges);
+			$('#showNewBadges').show();
+		} else {
+			$('#showNewBadges').hide();
+		}
 		if (feedback.isCorrect) {
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
@@ -353,6 +358,7 @@ function shuffle(array) {
 			var element = $(document.getElementById(key));
 			if (value == true) {
 				element.show();
+				element.addClass('show');
 			} else {
 				element.hide();
 			}
@@ -389,8 +395,12 @@ function disableLoadingScreen() {
 
 function hideFeedback() {
     var feedbackdiv = $('#feedback');
-    feedbackdiv.empty();
     feedbackdiv.hide();
+}
+
+function setupDivs() {
+    var feedbackdiv = $('#feedback');
+    feedbackdiv.empty();
     feedbackdiv.append($('<div class="alert alert-warning" id="showNewBadges"></div>'));
     feedbackdiv.append($('<div id="showMessage"></div>'));
     feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));

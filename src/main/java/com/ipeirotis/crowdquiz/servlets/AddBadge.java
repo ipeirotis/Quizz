@@ -18,8 +18,9 @@ public class AddBadge extends HttpServlet {
 
 		Utils.ensureParameters(req, "name");
 		String badgename = req.getParameter("name").trim();
+		String shortname = req.getParameter("sname").trim();
 
-		Badge badge = new Badge(badgename);
+		Badge badge = new Badge(badgename, shortname);
 		PMF.singleMakePersistent(badge);
 
 		resp.setContentType("text/plain");

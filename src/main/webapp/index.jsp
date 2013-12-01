@@ -46,27 +46,35 @@
 	</script>
 	<div class="container" style="text-align: center; max-width: 640px">
         <jsp:include page="/logo.jsp"></jsp:include>
-    	<ul class="nav nav-pills">
-    	<%
-    	PersistenceManager	pm = PMF.getPM();
-    	Query q = pm.newQuery(Badge.class);
-    	@SuppressWarnings("unchecked")
-    	List<Badge> allBadges = (List<Badge>) q.execute();
-    	pm.close();
-    	for (Badge b : allBadges) {
-    		if(BadgeRepository.userHasBadge(u,b)){%>
-    		<li style="width: 128px" class="active">
-    		<%} else {%>
-    		<li style="width: 128px">
-    		<%}%>
-    			<a>
-    		      <span class="badge pull-right"></span>
-    		      <%=b.getBadgename()%>
-    	        </a>
-    		</li>
-    		<%
-    	}%>
-    	</ul>
+		<%	if(u.getExperiment().getsTreatment("showHomeBadgeBox")){	%>
+	        <div id="showHomeBadgeBox">
+	        	<h4>Badges</h4>
+		    	<ul class="nav nav-pills">
+		    	<%
+		    	PersistenceManager	pm = PMF.getPM();
+		    	Query q = pm.newQuery(Badge.class);
+		    	@SuppressWarnings("unchecked")
+		    	List<Badge> allBadges = (List<Badge>) q.execute();
+		    	pm.close();
+		    	for (Badge b : allBadges) {
+		    		%>
+		    		<li style="width: 128px" data-original-title="<%=b.getBadgename()%>" 
+		    		<%
+		    		if(BadgeRepository.userHasBadge(u,b)){%>
+		    		class="active">
+		    		<%} else {%>
+		    		class="">
+		    		<%}%>
+		    			<a>
+		    		      <span class="badge pull-right"></span>
+		    		      <%=b.getShortname()%>
+		    	        </a>
+		    		</li>
+		    		<%
+		    	}%>
+		    	</ul>
+	    	</div>
+    	<%	}	%>
 		<span id='login' style='display: none'>
 			<a id='facebook-login' href="#"><img src="./assets/facebook_button.png" width="160px" height="80px"></a>
 		</span>
@@ -84,6 +92,7 @@
 	<script type="text/javascript">
 
 	$(document).ready(function() {
+		$('.nav-pills li').tooltip();
 		function showLogin(){
 			$('#logout').hide();
 			$('#login').show();

@@ -19,9 +19,13 @@ public class Badge {
 	@Persistent
 	private String	badgename;
 	
-	public Badge(String badgename) {
+	@Persistent
+	private String	shortname;
+	
+	public Badge(String badgename, String shortname) {
 		this.key = generateKeyFromID(badgename);
 		this.badgename = badgename;
+		this.shortname = shortname;
 	}
 	
 	public static Key generateKeyFromID(String name) {
@@ -42,5 +46,13 @@ public class Badge {
 	
 	public void setBadgename(String badgename) {
 		this.badgename = badgename;
+	}
+
+	public String getShortname() {
+		return shortname;
+	}
+	
+	public void setShortname(String shortname) {
+		this.shortname = shortname;
 	}
 }

@@ -16,7 +16,11 @@
 				<div class="control-group">
 					<label class="control-label" for="name">Name:</label>
 					<div class="controls">
-						<input class="input-large" id="name" name="name" type="text">
+					<input class="input-large" id="name" name="name" type="text">
+					</div>
+					<label class="control-label" for="sname">Short Name:</label>
+					<div class="controls">
+					<input class="input-large" id="sname" name="sname" type="text">
 					</div>
 				</div>
 
