@@ -62,7 +62,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID, userInput,
 				isCorrect, numCorrectAnswers, numTotalAnswers);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
-		storeUserAnswer(user, quizID, questionID, action, useranswerID, ipAddress, browser,
+		storeUserAnswer(user, quizID, questionID, action, useranswerID, userInput, ipAddress, browser,
 				referer, timestamp, isCorrect);
 		updateQuizPerformance(user, questionID);
 		returnUserAnswerFeedback(uaf, resp);
@@ -70,7 +70,7 @@ public class ProcessUserAnswer extends HttpServlet {
 
 	protected void returnUserAnswerFeedback(UserAnswerFeedback uaf,
 			HttpServletResponse resp) throws IOException {
-		resp.setContentType("application/json");
+		resp.setContentType("application/json;charset=UTF-8");
 		new Gson().toJson(uaf, resp.getWriter());
 	}
 
@@ -109,7 +109,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param timestamp
 	 * @param isCorrect
 	 */
-	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Integer useranswerID,
+	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Integer useranswerID, String userInput,
 			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
 
 		UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
@@ -120,6 +120,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		ue.setAction(action);
 		ue.setIsCorrect(isCorrect);
 		ue.setQuizID(quizID);
+		ue.setUserInput(userInput);
 		PMF.singleMakePersistent(ue);
 	}
 

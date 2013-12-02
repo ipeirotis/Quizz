@@ -105,8 +105,9 @@ public class QuizQuestionRepository {
 		
 		try {
 			Quiz quiz = QuizRepository.getQuiz(quizID);
+			int questionsWithGold = quiz.getGold();
 			Query query = getQuizGoldQuestionsQuery(pm, quizID);
-			setRandomRange(query, quiz.getGold(), amount);
+			setRandomRange(query, questionsWithGold, amount);
 			ArrayList<Question> result = new ArrayList<Question>((List<Question>) query.executeWithMap(
 					getQuizGoldQuestionsParameters(quizID)));
 			
