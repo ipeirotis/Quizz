@@ -3,6 +3,7 @@ NUM_QUESTIONS = 10;
 CURRENT_QUIZZ = -1;
 QUIZZ_QUESTIONS = [];
 USER_ANSWERS = [];
+USER_FEEDBACKS = [];
 
 function fst(array) {
 	return array[0];
@@ -64,12 +65,12 @@ function shuffle(array) {
 		$.cookie("session", session, { expires: 365, path: "/"});
 		return session;
 	}
-	
+
 	function getSession() {
 		var session = $.cookie("session");
 		return session;
 	}
-	
+
 	function loginFB(fbid) {
 		var url = getWebURL() + 'fblogin';
 		sessionid = createSession();
@@ -85,7 +86,7 @@ function shuffle(array) {
 		var url = getAPIURL() + "user/" + userid;
 		return $.getJSON(url);
 	}
-	
+
 	function logout() {
 		$.cookie("session", "0", { expires: 365, path: "/"});
 		document.location.href = document.location.href;
@@ -169,8 +170,8 @@ function shuffle(array) {
 		$('#questionsPackProgress').hide();
 		$('#form').html($('#quizEndSummary').html());
 		var correctCount = 0;
-		for (var i=0;i<USER_ANSWERS.length;i++) {
-			if (USER_ANSWERS[i] && USER_ANSWERS[i].isGold) {
+		for (var i=0;i<USER_FEEDBACKS.length;i++) {
+			if (USER_FEEDBACKS[i].isCorrect) {
 				correctCount++;
 			}
 		}
@@ -190,12 +191,15 @@ function shuffle(array) {
 		return function () {
 			var formData = $('#addUserEntry').serializeArray();
 			var answerID = (answer === null) ? -1 : answer.internalID;
+			var userInput = $('#userInputField').val();
 			formData.push({'name': 'answerID', 'value': answerID});
+			formData.push({'name': 'userInput', 'value': userInput});
 			hideScoresMakeLoading();
 			hideFeedback();
 			makeLoadingScreen("Loading feedback");
 			sendSingleQuestionResults(formData).done(
 				function (feedback) {
+					USER_FEEDBACKS.push(feedback);
 					disableLoadingScreen();
 					hideQuestion();
 					showFeedback(feedback, prepareNextQuestion);
@@ -209,32 +213,62 @@ function shuffle(array) {
 		return $.trim(str).replace(/"+$/, "").replace(/^"+/, "");
 	}
 
+	function generateSelectableAnswer(htmlAnswers, index, answer, gatype, ganumber) {
+		value = answer.text
+		//  triming " chars and escaping internal ones
+		value = clearString(value);
+		value = $.trim(value).replace(/"/, "\\\"");
+		var uaid = "useranswer" + index;
+		var huaid = '#' + uaid;
+		htmlAnswers.append($('<input id="'+uaid+'" name="'+uaid+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
+		$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
+		$(huaid).click(answeredQuestion (answer));
+	}
+
+	function generateSelectableWrongAnswer(htmlAnswers, index, answer) {
+		var ganumber = 0;
+		var gatype = 'multiple-choice-incorrect';
+		generateSelectableAnswer(htmlAnswers, index, answer, gatype, ganumber);
+	}
+
+	function generateSelectableGoldAnswer(htmlAnswers, index, answer) {
+		var ganumber = 1;
+		var gatype = 'multiple-choice-correct';
+		generateSelectableAnswer(htmlAnswers, index, answer, gatype, ganumber);
+	}
+
+	function generateInputTextAnswer(htmlAnswers, index, answer) {
+		htmlAnswers.append('Your answer: <input id="userInputField" type="text" name="userInput">');
+		htmlAnswers.append($('<input id="submitUserInput" name="submitUserInput" type="submit" class="btn btn-primary btn-block" value="Send">'));
+		$("#submitUserInput").click(answeredQuestion (answer));
+	}
+
+ANSWERS_GENERATORS = {
+	"selectable_gold": generateSelectableGoldAnswer,
+	"selectable_not_gold": generateSelectableWrongAnswer,
+	"input_text": generateInputTextAnswer,
+}
+
+	function generateAnswers(answers) {
+		var htmlAnswers = $("#answers");
+		shuffle(answers);
+		$.each(answers, function(index, answer) {
+			ANSWERS_GENERATORS[answer.kind](htmlAnswers, index, answer);
+		});
+		htmlAnswers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
+    	$("#idk_button").mousedown(function(){
+    		markConversion("multiple-choice-idk", 0);
+    	});
+    	$('#idk_button').click(answeredQuestion (null));
+	}
+
 	function populateQuestion(question) {
 
 		$('#quizID').val(question.quizID);
 		$('#questionID').val(question.id);
 		$('#questiontext').html(question.text);
 
-		var answers = $("#answers");
-		shuffle(question.answers);
-		$.each(question.answers, function(index, answer) {
-			value = answer.text
-			//  triming " chars and escaping internal ones
-			value = clearString(value);
-			value = $.trim(value).replace(/"/, "\\\"");
-			var uaid = "useranswer" + index;
-			var huaid = '#' + uaid;
-			answers.append($('<input id="'+uaid+'" name="'+uaid+'" type="submit" class="btn btn-primary btn-block" value="'+value+'">'));
-			var gatype = 'multiple-choice-' + (answer.isGold ? "" : "in") + 'correct';
-			var ganumber = answer.isGold ? 1 : 0 ;
-			$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
-			$(huaid).click(answeredQuestion (answer));
-		});
-		answers.append($('<input id="idk_button" type="submit" class="btn btn-danger btn-block" name="idk" value="I don\'t know">'));
-    	$("#idk_button").mousedown(function(){
-    		markConversion("multiple-choice-idk", 0);
-    	});
-    	$('#idk_button').click(answeredQuestion (null));
+		generateAnswers(question.answers);
 	}
 
 	function getFeedbackForPriorAnswer(user, quiz, questionID) {

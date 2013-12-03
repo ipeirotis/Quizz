@@ -37,20 +37,19 @@ public class ProcessUserAnswer extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		Utils.ensureParameters(req,
-				"quizID", "questionID", "answerID", "correctanswers", "totalanswers");
+				"quizID", "questionID", "answerID", "correctanswers", "totalanswers", "userInput");
 
 		User user = UserRepository.getUseridFromCookie(req, resp);
 		Long questionID = Long.parseLong(req.getParameter("questionID"));
 		String quizID = req.getParameter("quizID");
 		String action;
 		Integer useranswerID = Integer.parseInt(req.getParameter("answerID"));
+        String userInput = req.getParameter("userInput");
 		Boolean isCorrect = false;
 		if (useranswerID != -1) {
 			action = "Submit";
 			Answer answer = AnswersRepository.getAnswer(questionID, useranswerID);
-			if (answer.getIsGold() != null) {
-				isCorrect = answer.getIsGold();
-			}
+            isCorrect = answer.checkIfCorrect(userInput);
 		} else {
 			action = "I don't know";
 		}
@@ -71,10 +70,10 @@ public class ProcessUserAnswer extends HttpServlet {
 		if (referer==null) referer="";
 		Long timestamp = (new Date()).getTime();
 
-		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID,
+		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID, userInput,
 				isCorrect, numCorrectAnswers, numTotalAnswers, newBadges);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
-		storeUserAnswer(user, quizID, questionID, action, useranswerID, ipAddress, browser,
+		storeUserAnswer(user, quizID, questionID, action, useranswerID, userInput, ipAddress, browser,
 				referer, timestamp, isCorrect);
 		updateQuizPerformance(user, questionID);
 		returnUserAnswerFeedback(uaf, resp);
@@ -82,18 +81,18 @@ public class ProcessUserAnswer extends HttpServlet {
 
 	protected void returnUserAnswerFeedback(UserAnswerFeedback uaf,
 			HttpServletResponse resp) throws IOException {
-		resp.setContentType("application/json");
+		resp.setContentType("application/json;charset=UTF-8");
 		new Gson().toJson(uaf, resp.getWriter());
 	}
 
-	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Integer useranswerID,
+	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Integer useranswerID, String userInput,
 			Boolean isCorrect, String numCorrectAnswers, String numTotalAnswers, List<Badge> newBadges) {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID, user.getUserid(), useranswerID, isCorrect);
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
 		uaf.setUserNewBadges(newBadges);
-		uaf.setUserAnswerText((useranswerID == -1)? "" : question.getAnswer(useranswerID).getText());
+		uaf.setUserAnswerText((useranswerID == -1)? "" : question.getAnswer(useranswerID).userAnswerText(userInput));
 		uaf.setCorrectAnswerText(question.goldAnswer().getText());
 		uaf.computeDifficulty();
 		UserAnswerRepository.storeUserAnswerFeedback(uaf);
@@ -122,7 +121,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param timestamp
 	 * @param isCorrect
 	 */
-	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Integer useranswerID,
+	private void storeUserAnswer(User user, String quizID, Long questionID, String action, Integer useranswerID, String userInput,
 			String ipAddress, String browser, String referer, Long timestamp, Boolean isCorrect) {
 
 		UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
@@ -133,6 +132,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		ue.setAction(action);
 		ue.setIsCorrect(isCorrect);
 		ue.setQuizID(quizID);
+		ue.setUserInput(userInput);
 		PMF.singleMakePersistent(ue);
 	}
 

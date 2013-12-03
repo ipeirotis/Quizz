@@ -57,7 +57,7 @@ public class Answer {
 	
 	@Persistent
 	private String quizID;
-	
+
 	@Persistent
 	private Boolean isGold;
 	
@@ -183,4 +183,21 @@ public class Answer {
 	public void setId(Key id) {
 		this.id = id;
 	}
+
+    public boolean checkIfCorrect(String userInput){
+        if (kind.startsWith("selectable_")) {
+            return kind.equals("selectable_gold");
+        }
+        if (kind.equals("input_text")) {
+            return text.equals(userInput);
+        }
+        throw new UnsupportedOperationException("Undefined correctness for: " + kind);
+    }
+
+    public String userAnswerText(String userInput){
+        if (kind.equals("input_text")) {
+            return userInput;
+        }
+        return text;
+    }
 }

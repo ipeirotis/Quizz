@@ -61,6 +61,12 @@
 		<servlet-name>UpdateCountStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateCountStatistics</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>CacheQuizQuestions</servlet-name>
+		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.CacheQuizQuestions</servlet-class>
+	</servlet>
+
+
 
 	<servlet>
 		<servlet-name>DeleteQuiz</servlet-name>
@@ -111,6 +117,11 @@
 		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
 		<url-pattern>/scanUserAnswersAndCreateUsers</url-pattern>
 	</servlet-mapping>
+		<servlet-mapping>
+		<servlet-name>CacheQuizQuestions</servlet-name>
+		<url-pattern>/api/cacheQuizQuestions</url-pattern>
+	</servlet-mapping>
+	
 
 	<servlet-mapping>
 		<servlet-name>AddQuiz</servlet-name>

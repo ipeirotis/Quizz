@@ -37,3 +37,9 @@ kc:/medicine/medical_treatment:side effect	What is a side effect of XXX?
 kc:/film/film:featured song	What is the feature song of XXX?
 kc:/government/us_president:vice president	Who is/was the vice president of XXX?
 kc:/government/politician:party	Which of the following politician party was XXX in?
+kc:/business/business_operation:industry	Which industry is/was XXX operating in?
+kc:/organization/organization:place founded	Where was XXX founded?
+kc:/organization/organization:leadership	Who is/was part of the leadership team in XXX?
+kc:/organization/organization:date founded	When was XXX founded?
+kc:/organization/organization:headquarters	Where is/was the headquarter of XXX?
+kc:/organization/organization:founder	Who was the founders of XXX?
