@@ -267,8 +267,6 @@ ANSWERS_GENERATORS = {
 		$('#quizID').val(question.quizID);
 		$('#questionID').val(question.id);
 		$('#questiontext').html(question.text);
-		$('#correctanswers').val(question.correctanswers);
-		$('#totalanswers').val(question.totalanswers);
 
 		generateAnswers(question.answers);
 	}
@@ -339,12 +337,21 @@ ANSWERS_GENERATORS = {
 		$('#showPercentageCorrect').html("Correct (%): " + toSafePercentage(performance.percentageCorrect));
 		$('#showPercentageRank').html(ranksFormating("%", performance.rankPercentCorrect, performance.totalUsers));
 		$('#showTotalCorrectRank').html(ranksFormating("#", performance.rankTotalCorrect, performance.totalUsers));
+		$('#correctanswers').val(performance.correctanswers);
+		$('#totalanswers').val(performance.totalanswers);
 
 		$("#inScores").show();
 		$("#scoresLoading").hide();
 	}
 
 	function displayFeedback(feedback) {
+		var newBadgeHtml = 'New Badges: ';
+		if(feedback.userNewBadges != "" && $('#showNewBadges').hasClass('show')){
+			$('#showNewBadges').html(newBadgeHtml + feedback.userNewBadges);
+			$('#showNewBadges').show();
+		} else {
+			$('#showNewBadges').hide();
+		}
 		if (feedback.isCorrect) {
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
@@ -368,6 +375,7 @@ ANSWERS_GENERATORS = {
 
 	function hideDivs() {
 		$('#feedback').hide();
+		$('#showNewBadges').hide();
 		$('#showMessage').hide();
 		$('#showCorrect').hide();
 		$('#showCrowdAnswers')
@@ -384,6 +392,7 @@ ANSWERS_GENERATORS = {
 			var element = $(document.getElementById(key));
 			if (value == true) {
 				element.show();
+				element.addClass('show');
 			} else {
 				element.hide();
 			}
@@ -420,8 +429,13 @@ function disableLoadingScreen() {
 
 function hideFeedback() {
     var feedbackdiv = $('#feedback');
-    feedbackdiv.empty();
     feedbackdiv.hide();
+}
+
+function setupDivs() {
+    var feedbackdiv = $('#feedback');
+    feedbackdiv.empty();
+    feedbackdiv.append($('<div class="alert alert-warning" id="showNewBadges"></div>'));
     feedbackdiv.append($('<div id="showMessage"></div>'));
     feedbackdiv.append($('<div class="alert alert-success" id="showCorrect"></div>'));
     feedbackdiv.append($('<div class="alert alert-info" id="showCrowdAnswers"></div>'));

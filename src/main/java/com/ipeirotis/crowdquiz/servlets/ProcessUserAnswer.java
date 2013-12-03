@@ -2,12 +2,14 @@ package com.ipeirotis.crowdquiz.servlets;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.repository.AnswersRepository;
+import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
@@ -20,6 +22,7 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.Answer;
+import com.ipeirotis.crowdquiz.entities.Badge;
 import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
@@ -50,8 +53,16 @@ public class ProcessUserAnswer extends HttpServlet {
 		} else {
 			action = "I don't know";
 		}
-		String numCorrectAnswers = req.getParameter("correctanswers");
-		String numTotalAnswers = req.getParameter("totalanswers");
+		Integer correctAnswers = Integer.parseInt(req.getParameter("correctanswers"));
+		if (isCorrect){
+			correctAnswers += 1;
+		}
+		Integer totalAnswers = Integer.parseInt(req.getParameter("totalanswers"));
+		totalAnswers += 1;
+		String numCorrectAnswers = Integer.toString(correctAnswers);
+		String numTotalAnswers = Integer.toString(totalAnswers);
+
+		List<Badge> newBadges = BadgeRepository.checkForNewBadges(user, quizID, numCorrectAnswers, numTotalAnswers);
 		
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
@@ -60,7 +71,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long timestamp = (new Date()).getTime();
 
 		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID, useranswerID, userInput,
-				isCorrect, numCorrectAnswers, numTotalAnswers);
+				isCorrect, numCorrectAnswers, numTotalAnswers, newBadges);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
 		storeUserAnswer(user, quizID, questionID, action, useranswerID, userInput, ipAddress, browser,
 				referer, timestamp, isCorrect);
@@ -75,11 +86,12 @@ public class ProcessUserAnswer extends HttpServlet {
 	}
 
 	protected UserAnswerFeedback createUserAnswerFeedback(User user, Long questionID, Integer useranswerID, String userInput,
-			Boolean isCorrect, String numCorrectAnswers, String numTotalAnswers) {
+			Boolean isCorrect, String numCorrectAnswers, String numTotalAnswers, List<Badge> newBadges) {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID, user.getUserid(), useranswerID, isCorrect);
 		if (!Strings.isNullOrEmpty(numCorrectAnswers)) uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers)) uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
 		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
+		uaf.setUserNewBadges(newBadges);
 		uaf.setUserAnswerText((useranswerID == -1)? "" : question.getAnswer(useranswerID).userAnswerText(userInput));
 		uaf.setCorrectAnswerText(question.goldAnswer().getText());
 		uaf.computeDifficulty();

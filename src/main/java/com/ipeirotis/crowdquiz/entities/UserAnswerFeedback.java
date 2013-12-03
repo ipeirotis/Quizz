@@ -1,6 +1,7 @@
 package com.ipeirotis.crowdquiz.entities;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -40,6 +41,9 @@ public class UserAnswerFeedback {
 	
 	@Persistent
 	private String userAnswerText;
+	
+	@Persistent
+	private String userNewBadges;
 
 	@Persistent
 	private Boolean isCorrect;
@@ -100,6 +104,18 @@ public class UserAnswerFeedback {
 
 	public void setUserAnswerText(String userAnswerText) {
 		this.userAnswerText = userAnswerText;
+	}
+
+	public String getUserNewBadges() {
+		return userNewBadges;
+	}
+
+	public void setUserNewBadges(List<Badge> newBadges) {
+		String userNewBadges = "";
+		for(Badge b : newBadges){
+			userNewBadges += b.getBadgename() + "...";
+		}
+		this.userNewBadges = userNewBadges;
 	}
 
 	public void setDifficulty(String difficulty) {
