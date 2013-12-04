@@ -74,7 +74,7 @@
             </div>
 
 
-            <h3><a id="restartQuizzLink" href="/startQuiz?quizID=">Clik here to start again</a></h3>
+            <h3><a id="restartQuizzLink" href="/startQuiz?quizID=">Click here to start again</a></h3>
         </div>
     </div>
 
@@ -103,9 +103,6 @@
 
     });
     </script>
-
 <%@ include file="assets/google-analytics.html" %>
-
-
 </body>
 </html>

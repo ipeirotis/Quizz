@@ -50,7 +50,9 @@ import com.google.api.ads.adwords.jaxws.v201302.cm.Operator;
 import com.google.api.ads.adwords.jaxws.v201302.cm.TextAd;
 import com.google.api.ads.adwords.lib.client.AdWordsSession;
 import com.google.api.ads.common.lib.auth.ClientLoginTokens;
+import com.google.api.ads.common.lib.auth.OfflineCredentials;
 import com.google.api.ads.common.lib.exception.ValidationException;
+import com.google.api.client.auth.oauth2.Credential;
 
 @SuppressWarnings("serial")
 public class CampaignManagement extends HttpServlet {
@@ -104,7 +106,21 @@ public class CampaignManagement extends HttpServlet {
 
 		// Construct an AdWordsSession.
 		try {
+			try {
+				Credential oAuth2Credential = new OfflineCredentials.Builder()
+						.forApi(com.google.api.ads.common.lib.auth.OfflineCredentials.Api.ADWORDS)
+						.fromFile().build().generateCredential();
+					AdWordsSession awSession = new AdWordsSession.Builder()
+							.fromFile().withOAuth2Credential(oAuth2Credential)
+							.build();
+					System.out.println("\nADWord Session OAuth2Credintial Access Token:   \n\n");
+					System.out.println(awSession.getOAuth2Credential().getAccessToken());
+					session = awSession;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			session = new AdWordsSession.Builder().from(config).withClientLoginToken(clientLoginToken).build();
+			
 		} catch (ValidationException e) {
 			e.printStackTrace();
 		}

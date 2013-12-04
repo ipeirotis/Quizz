@@ -51,7 +51,9 @@ function shuffle(array) {
 		if (!username) {
 			username = createUsername();
 		}
-		return username;
+		
+		return username
+		//return "3a94d8ff-dfc6-4c1e-94d2-3f6548f80aaa";
 	}
 
 	function createUsername() {
