@@ -240,9 +240,15 @@ function shuffle(array) {
 	}
 
 	function generateInputTextAnswer(htmlAnswers, index, answer) {
-		htmlAnswers.append('Your answer: <input id="userInputField" type="text" name="userInput">');
-		htmlAnswers.append($('<input id="submitUserInput" name="submitUserInput" type="submit" class="btn btn-primary btn-block" value="Send">'));
-		$("#submitUserInput").click(answeredQuestion (answer));
+		var ganumber = 1;
+		var gatype = 'input-text-correct';
+		var uaid = "useranswer" + index;
+		var huaid = '#' + uaid;
+		
+		htmlAnswers.append('<span style="vertical-align: text-bottom;">Your answer: </span> <input id="userInputField" type="text" name="userInput">');
+		htmlAnswers.append($('<input id="'+uaid+'" name="'+uaid+'" type="submit" class="btn btn-primary btn-block" value="Send">'));
+		$(huaid).mousedown(function(e){markConversion(gatype, ganumber);});
+		$(huaid).click(answeredQuestion (answer));
 	}
 
 ANSWERS_GENERATORS = {
@@ -449,8 +455,9 @@ function setFeedbackBtnMsg(val) {
 
 function showFeedback(feedback, callbackf) {
 	displayFeedback(feedback);
-    $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
-        ' class="btn btn-info"/>' );
+	if($('#feedback').has("#skipFeedbackBtn").length == 0){
+		$('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +' class="btn btn-info"/>' );
+	}
     setFeedbackBtnMsg(5);
     $('#feedback').show();
     var executedCallback = false;

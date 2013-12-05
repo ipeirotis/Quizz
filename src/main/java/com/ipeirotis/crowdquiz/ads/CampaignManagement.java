@@ -104,8 +104,6 @@ public class CampaignManagement extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		// Construct an AdWordsSession.
-		try {
 			try {
 				Credential oAuth2Credential = new OfflineCredentials.Builder()
 						.forApi(com.google.api.ads.common.lib.auth.OfflineCredentials.Api.ADWORDS)
@@ -119,11 +117,14 @@ public class CampaignManagement extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			session = new AdWordsSession.Builder().from(config).withClientLoginToken(clientLoginToken).build();
-			
-		} catch (ValidationException e) {
-			e.printStackTrace();
-		}
+
+// Construct an AdWordsSession.
+//			try {
+//			session = new AdWordsSession.Builder().from(config).withClientLoginToken(clientLoginToken).build();
+//			
+//		} catch (ValidationException e) {
+//			e.printStackTrace();
+//		}
 
 		adWordsServices = new AdWordsServices();
 	}
