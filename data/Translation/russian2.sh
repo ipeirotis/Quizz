@@ -6,7 +6,7 @@ QUIZ_ID='translateRussian2'
 
 
 # create quiz
-curl $WEB_URL/addQuiz --data "quizID=$QUIZ_ID&name=Translate into Russian&text=ignored"
+curl $WEB_URL/addQuiz --data "quizID=$QUIZ_ID&name=Как сказать по-русски&text=ignored"
 
 IFS=","
 i=1
