@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.ipeirotis.crowdquiz.entities.Answer;
 import com.ipeirotis.crowdquiz.entities.Badge;
+import com.ipeirotis.crowdquiz.entities.LevenshteinAlgorithm;
 import com.ipeirotis.crowdquiz.entities.Question;
 import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.User;
@@ -50,6 +51,21 @@ public class ProcessUserAnswer extends HttpServlet {
 			action = "Submit";
 			Answer answer = AnswersRepository.getAnswer(questionID, useranswerID);
             isCorrect = answer.checkIfCorrect(userInput);
+        	if(isCorrect){
+                userInput = userInput+ " is Correct!";        		
+            }
+            //Checking Edit_Distance in input_text
+            if (answer.getKind().equals("input_text")) {
+            	if(isCorrect){
+            		
+                }else{
+                    int editDistance =  LevenshteinAlgorithm.getLevenshteinDistance(userInput,answer.getText());
+                	if(editDistance==1){
+                		isCorrect = true;
+                		userInput = userInput+ " is Almost Correct!";
+                	}
+                }
+            }
 		} else {
 			action = "I don't know";
 		}

@@ -212,6 +212,14 @@ public class Question {
 	}
 	
 	public Answer goldAnswer(){
+		//checking if any feedbackgold is there?
+		for (Answer answer: answers) {
+			Boolean isGold = answer.getIsGold();
+			if (isGold != null && isGold && answer.getKind().equals("feedback_gold")) {
+				return answer;
+			}
+		}
+		//if no feedback gold is there return first gold answer
 		for (Answer answer: answers) {
 			Boolean isGold = answer.getIsGold();
 			if (isGold != null && isGold) {

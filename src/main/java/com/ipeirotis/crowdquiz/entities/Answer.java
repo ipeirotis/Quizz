@@ -185,7 +185,10 @@ public class Answer {
 	}
 
     public boolean checkIfCorrect(String userInput){
-        if (kind.startsWith("selectable_")) {
+    	if (kind.equals("feedback_gold")){
+    		return true;
+    	}
+    	if (kind.startsWith("selectable_")) {
             return kind.equals("selectable_gold");
         }
         if (kind.equals("input_text")) {

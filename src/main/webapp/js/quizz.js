@@ -363,7 +363,8 @@ ANSWERS_GENERATORS = {
 		if (feedback.isCorrect) {
 			$('#showMessage').html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span> was <span class="label label-success">correct</span>!');
 			$('#showMessage').attr('class', 'alert alert-success');
-			$('#showCorrect').hide();
+			//$('#showCorrect').hide();
+			$('#showCorrect').show().html('The answer <span class="label label-success">'+feedback.userAnswerText+'</span>.');
 		} else {
 			if (feedback.userAnswerText) {
 				$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswerText+'</span> was <span class="label label-important">incorrect</span>!');
@@ -408,15 +409,25 @@ ANSWERS_GENERATORS = {
 	}
 
     function markConversion(type, value) {
-    	// Mark a conversion in Google Analytics
-		ga('send', {
-			  'hitType': 'event',
-			  'hitCallback': function(){ },
-			  'eventCategory': 'quiz-submission',
-			  'eventAction': type,
-			  'eventLabel': getURLParameterByName('quizID'),
-			  'eventValue': value,
-			  } );
+		var url = getAPIURL() + 'quizperformance';
+		url += '/quiz/' + encodeURIComponent(getURLParameterByName('quizID'));
+		url += '/user/' + encodeURIComponent(getUsername());
+    	$.ajax( {
+    		type:'Get',
+    		url:url,
+    		success:function(data) {	
+   			JSON.stringify(data);
+        	// Mark a conversion in Google Analytics
+    		ga('send', {
+    			  'hitType': 'event',
+    			  'hitCallback': function(){ },
+    			  'eventCategory': 'quiz-submission',
+    			  'eventAction': type,
+    			  'eventLabel': getURLParameterByName('quizID'),
+    			  'eventValue': data.score,
+    			  } );
+    		}
+    		});
     }
 
 
