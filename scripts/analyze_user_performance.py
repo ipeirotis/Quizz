@@ -259,11 +259,11 @@ def compute_user_accuracy_stats(user_answers, quiz, min_answers=1):
       obj = quiz[ques_id][5]
       if str(user_ans_pos) not in answers:
         logger.warning('Answer position ' + str(user_ans_pos) + ' not found in '
-                       + answers)
+                       + str(answers))
         continue
       if str(gold_ans_pos) not in answers:
         logger.warning('Answer position ' + str(gold_ans_pos) + ' not found in '
-                       + answers)
+                       + str(answers))
         continue
 
     if num_user_ans == 0:
@@ -339,7 +339,6 @@ def compute_question_accuracy(user_answers, quiz, gold_perf, kv_perf):
   print '======================='
   print 'Question summary stats:'
   print '======================='
-
   # ques_id -> list of (user answer, user_gold_perf, user_kv_perf)
   ques_response = dict()
   for user_id in user_answers.iterkeys():
@@ -371,7 +370,68 @@ def compute_question_accuracy(user_answers, quiz, gold_perf, kv_perf):
     ques_resp_hist[len(responses)] += 1
 
   for num_response in sorted(ques_resp_hist.iterkeys()):
-    print '# response:', num_response, ', # questions:', ques_resp_hist[num_response]
+    print '# response:', num_response, ', # questions:', \
+          ques_resp_hist[num_response]
+
+  # List of (unweighted, gold_weighted, kv_weighted, num_ans,
+  #          majority_percentage, ques_id).
+  ques_quality = []
+  for ques_id in ques_response.iterkeys():
+    responses = ques_response[ques_id]
+    unweighted = 0
+    gold_weighted = 0
+    kv_weighted = 0
+    num_ans = 0
+    num_yes = 0
+    for response in responses:
+      ans_pos = response[0]
+      multiplier = 0
+      if ans_pos == 0:
+        multiplier = 1
+        num_yes += 1
+      elif ans_pos == 1:
+        multiplier = -1
+      else:
+        logger.warning('Question ' + ques_id + ' is not a true/false question.')
+        continue
+
+      unweighted += multiplier
+      if response[1] != -1:
+        gold_weighted += response[1][1] * multiplier
+      if response[2] != -1:
+        kv_weighted += response[2][1] * multiplier
+      num_ans += 1
+
+    majority = 0
+    if num_yes > num_ans - num_yes:
+      majority = num_yes / float(num_ans)
+    elif num_yes <= num_ans - num_yes:
+      majority = (num_ans - num_yes) / float(num_ans)
+
+    ques_quality.append((unweighted, gold_weighted, kv_weighted, num_ans,
+                         majority, ques_id))
+
+  votes = sorted(ques_quality, key=lambda t: abs(t[0]), reverse=True)
+  print 'Num answers,', 'Majority,', 'Unweighted vote,', \
+        'Weighted (gold) vote,', 'Weighted (kv) vote,', 'Sub,', 'Pred,', \
+        'Obj,', 'Probability'
+  for vote in votes:
+    un_w = vote[0]
+    gold_w = vote[1]
+    kv_w = vote[2]
+    num_ans = vote[3]
+    majority = vote[4]
+    ques_id = vote[5]
+
+    if ques_id not in quiz: continue
+    ques = quiz[ques_id]
+    sub = ques[3]
+    pred = ques[4]
+    obj = ques[5]
+    prob = ques[6]
+    output = map(str, [num_ans, majority, un_w, gold_w, kv_w,
+                     sub, pred, obj, prob])
+    print ','.join(output)
 
 if len(sys.argv) < 7:
   print ('Usage: python analyze_user_performance.py [user_answer_tsv] [quiz_id] '
@@ -383,15 +443,16 @@ quizz_id = sys.argv[2]
 num_ques = int(sys.argv[3])
 ques_file = sys.argv[4]
 raw_file = sys.argv[5]
-reload_raw_file = bool(sys.argv[6])
+reload_raw_file = int(sys.argv[6])
 
 if reload_raw_file:
+  print 'Reloading'
   store_question_answers(quizz_id, num_ques, raw_file, ques_file)
 quiz = load_question_answers(ques_file)
 user_answers = fetch_user_answers(user_answer_file)
 compute_user_summary_stats(user_answers)
-for i in xrange(2, 6):
-  compute_user_accuracy_stats(user_answers, quiz, min_answers=i)
+#for i in xrange(2, 6):
+#  compute_user_accuracy_stats(user_answers, quiz, min_answers=i)
 
 (gold_perf, kv_perf) = compute_user_accuracy_stats(
     user_answers, quiz, min_answers=1)
