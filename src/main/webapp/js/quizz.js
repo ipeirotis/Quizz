@@ -52,7 +52,7 @@ function shuffle(array) {
 			username = createUsername();
 		}
 		
-		return username
+		return username;
 		//return "3a94d8ff-dfc6-4c1e-94d2-3f6548f80aaa";
 	}
 
@@ -424,7 +424,7 @@ ANSWERS_GENERATORS = {
     			  'eventCategory': 'quiz-submission',
     			  'eventAction': type,
     			  'eventLabel': getURLParameterByName('quizID'),
-    			  'eventValue': data.score,
+    			  'eventValue': 1.0*data.score/data.totalanswers,
     			  } );
     		}
     		});

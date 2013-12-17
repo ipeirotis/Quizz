@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -111,8 +112,7 @@ public class CampaignManagement extends HttpServlet {
 					AdWordsSession awSession = new AdWordsSession.Builder()
 							.fromFile().withOAuth2Credential(oAuth2Credential)
 							.build();
-					System.out.println("\nADWord Session OAuth2Credintial Access Token:   \n\n");
-					System.out.println(awSession.getOAuth2Credential().getAccessToken());
+					Logger.getLogger("AdwordOAuth").info("ADWord Session OAuth2Credintial Access Token:   "+awSession.getOAuth2Credential().getAccessToken());
 					session = awSession;
 			} catch (Exception e) {
 				e.printStackTrace();
