@@ -212,7 +212,7 @@ public class Question {
 	}
 	
 	public Answer goldAnswer(){
-		//checking if any feedbackgold is there?
+		// check if there's any designate one of the golds as the feedback answer i.e. feedback_gold
 		for (Answer answer: answers) {
 			Boolean isGold = answer.getIsGold();
 			if (isGold != null && isGold && answer.getKind().equals("feedback_gold")) {

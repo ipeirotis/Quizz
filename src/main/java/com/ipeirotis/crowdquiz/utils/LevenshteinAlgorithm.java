@@ -1,4 +1,4 @@
-package com.ipeirotis.crowdquiz.entities;
+package com.ipeirotis.crowdquiz.utils;
 
 public class LevenshteinAlgorithm {
 	public static int getLevenshteinDistance(String s, String t) {
