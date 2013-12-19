@@ -461,45 +461,59 @@ function setupDivs() {
 }
 
 function setFeedbackBtnMsg(val) {
-	$('#skipFeedbackBtn').attr('value', "Next question ... (" + val + ")");
+  $('#skipFeedbackBtn').attr('value', "Next question ... (" + val + ")");
 }
 
+// Shows the feedback page of the previous question and calls the callbackf
+// if either the user clicks on the #skipFeedbackBtn or 5 seconds elapsed
+// if there is another question.
 function showFeedback(feedback, callbackf) {
-	displayFeedback(feedback);
-	if($('#feedback').has("#skipFeedbackBtn").length == 0){
-		$('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +' class="btn btn-info"/>' );
-	}
+  displayFeedback(feedback);
+  if($('#feedback').has("#skipFeedbackBtn").length == 0){
+    $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
+        ' class="btn btn-info"/>');
+  }
+  $('#feedback').show();
+
+  var executedCallback = false;
+  var intervalId;
+  if (CURRENT_QUIZZ == QUIZZ_QUESTIONS.length - 1) {
+    $('#skipFeedbackBtn').val("Show Results")
+  } else {
+    // Set up event to go to next question after 5 seconds.
     setFeedbackBtnMsg(5);
-    $('#feedback').show();
-    var executedCallback = false;
-    var intervalId;
+    intervalId = setInterval(function () {
+      var valAttr = $('#skipFeedbackBtn').attr('value');
+      var oldVal = parseInt(valAttr.substr(valAttr.indexOf("(") + 1, 1));
+      setFeedbackBtnMsg(oldVal - 1);
+      if (oldVal === 1) {
+        // Reset event handler for going to next question.
+        clearInterval(intervalId);
+        $('#skipFeedbackBtn').unbind('click');
+        $('#feedback').fadeOut(600, function () {
+          if (!executedCallback) {
+            executedCallback = true;
+            callbackf();
+          }
+        });
+      }
+    }, 1000);
+  }
 
-
-    if (CURRENT_QUIZZ == QUIZZ_QUESTIONS.length - 1) {
-    	$('#skipFeedbackBtn').val("Show Results")
-    } else {
-    	intervalId = setInterval(function () {
-        	var valAttr = $('#skipFeedbackBtn').attr('value');
-        	var oldVal = parseInt(valAttr.substr(valAttr.indexOf("(") + 1, 1));
-        	setFeedbackBtnMsg(oldVal - 1);
-        	if (oldVal === 1) {
-        		clearInterval(intervalId);
-    		    $('#feedback').fadeOut(600, function () {
-    		    	executedCallback = true;
-    		    	callbackf();
-    		    });
-        	}
-        }, 1000);
+  // Set up click handler to go to next question when clicked.
+  $('#skipFeedbackBtn').click (function () {
+    // Reset event handler for going to next question.
+    clearInterval(intervalId);
+    $('#skipFeedbackBtn').unbind('click');
+    $('#feedback').stop(true, true);
+    $('#feedback').hide();
+    if (!executedCallback) {
+      executedCallback = true;
+      callbackf();
     }
-
-
-    $('#skipFeedbackBtn').click (function () {
-    	clearInterval(intervalId);
-    	$('#feedback').stop(true, true);
-    	$('#feedback').hide();
-    	if (!executedCallback) callbackf();
-    });
+  });
 }
+
 
 function setUpPerformanceUpdatesChannel(token) {
 	var channel = new goog.appengine.Channel(token);
