@@ -145,8 +145,14 @@ function shuffle(array) {
 	function presentNextQuestion() {
 		CURRENT_QUIZZ += 1;
 		$('#answers').html("");
-		$('#questionsPackProgress').html("Question " + (CURRENT_QUIZZ + 1) +
-			" out of " + QUIZZ_QUESTIONS.length);
+		/*$('#questionsPackProgress').html("Question " + (CURRENT_QUIZZ + 1) +
+			" out of " + QUIZZ_QUESTIONS.length);*/
+		
+		// fix question skipping
+		var currentQuizzNo = CURRENT_QUIZZ + 1;
+		$('#questionsPackProgress').html("Question " + (currentQuizzNo) +
+		 			" out of " + QUIZZ_QUESTIONS.length);
+		
 		populateQuestion(QUIZZ_QUESTIONS[CURRENT_QUIZZ]);
 		showQuestion();
 	}
