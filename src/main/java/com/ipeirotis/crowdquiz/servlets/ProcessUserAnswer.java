@@ -46,26 +46,45 @@ public class ProcessUserAnswer extends HttpServlet {
 		String action;
 		Integer useranswerID = Integer.parseInt(req.getParameter("answerID"));
         String userInput = req.getParameter("userInput");
+		
+		List<Answer> answers = null;
 		Boolean isCorrect = false;
 		if (useranswerID != -1) {
 			action = "Submit";
 			Answer answer = AnswersRepository.getAnswer(questionID, useranswerID);
-            isCorrect = answer.checkIfCorrect(userInput);
-        	if(isCorrect){
-                userInput = userInput+ " is Correct!";        		
-            }
-            //Checking Edit_Distance in input_text
-            if (answer.getKind().equals("input_text")) {
-            	if(isCorrect){
-            		
-                }else{
-                    int editDistance =  LevenshteinAlgorithm.getLevenshteinDistance(userInput,answer.getText());
-                	if(editDistance==1){
-                		isCorrect = true;
-                		userInput = userInput+ " is Almost Correct!";
-                	}
-                }
-            }
+			if(answer.getKind().equals("input_text")){ // check in all possible answers
+				Question question = QuizQuestionRepository.getQuizQuestion(questionID);
+				answers = question.getAnswers();
+				
+				// first check for correct answers
+				for (Answer ans : answers) {
+					isCorrect = ans.checkIfCorrect(userInput);
+					if (isCorrect) {
+						userInput = userInput + " is Correct!";
+						break;
+					}
+				}
+				
+				// if no correct answer then calculate edit distance
+				if (!isCorrect) {
+					for (Answer ans : answers) {
+						// Checking Edit_Distance for input_text
+						int editDistance = LevenshteinAlgorithm
+								.getLevenshteinDistance(userInput,
+										ans.getText());
+						if (editDistance == 1) {
+							isCorrect = true;
+							userInput = userInput + " is Almost Correct!";
+							break;
+						}
+					}
+				}
+			}else {
+				isCorrect = answer.checkIfCorrect(userInput);
+				if (isCorrect) {
+					userInput = userInput + " is Correct!";
+				}
+			}
 		} else {
 			action = "I don't know";
 		}
