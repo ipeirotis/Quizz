@@ -29,6 +29,7 @@ b. A free-text entry question
 
 Here is an example of creating a multiple choice entry:
 
+::
     curl http://www.quizz.us/addQuestion --data '{
     "quizID": "'$QUIZ_ID'",
     "text": "Question text goes here",
@@ -43,6 +44,7 @@ Here is an example of creating a multiple choice entry:
 
 Here is an example of creating a free-text entry. You will notice that we can put arbitrary HTML code in the question, and that we also upload a (set of) answers that are correct.
 
+::
     curl http://www.quizz.us/addQuestion 
       --header 'Content-Type: application/x-www-form-urlencoded; charset=utf-8'
       --data '{ 
