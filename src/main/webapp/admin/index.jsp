@@ -1,8 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-<%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
-<%@ page import="java.util.List"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Admin actions" /></jsp:include>
 

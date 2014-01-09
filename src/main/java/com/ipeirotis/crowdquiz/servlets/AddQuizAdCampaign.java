@@ -27,7 +27,7 @@ public class AddQuizAdCampaign extends HttpServlet {
 
 		r = resp;
 		r.setContentType("text/plain");
-		Utils.ensureParameters(req, "quizID", "name", "text", "fbtype");
+		Utils.ensureParameters(req, "quizID", "name", "fbtype");
 
 		try {
 			String quizID = req.getParameter("quizID");
@@ -35,9 +35,6 @@ public class AddQuizAdCampaign extends HttpServlet {
 			
 			String name = req.getParameter("name");
 			resp.getWriter().println("Name: " + name);
-			
-			String text = req.getParameter("text");
-			resp.getWriter().println("Question Text: " + text);
 
 			String freebasetype = req.getParameter("fbtype");
 			resp.getWriter().println("Freebase Type: " + freebasetype);
@@ -101,7 +98,7 @@ public class AddQuizAdCampaign extends HttpServlet {
 			}
 			
 			
-			Quiz q = new Quiz(name, quizID, text);
+			Quiz q = new Quiz(name, quizID);
 			PMF.singleMakePersistent(q);
 			
 			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");

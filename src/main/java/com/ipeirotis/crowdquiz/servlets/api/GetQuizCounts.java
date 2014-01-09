@@ -20,14 +20,13 @@ public class GetQuizCounts extends HttpServlet {
 			String				quiz;
 			Integer				questions;
 			Integer				gold;
-			Integer				silver;
 			Integer				submitted;
 			
-			Response(String quiz, Integer questions, Integer gold, Integer silver, Integer submitted) {
+			Response(String quiz, Integer questions, Integer gold, Integer submitted) {
 				this.quiz = quiz;
 				this.questions = questions;
 				this.gold = gold;
-				this.silver = silver;
+				
 				this.submitted = submitted;
 			}
 		}
@@ -47,7 +46,7 @@ public class GetQuizCounts extends HttpServlet {
 			resp.setContentType("application/json");
 			Gson gson = new Gson();
 			Response result = new Response(quiz, q.getQuestions(),
-					q.getGold(), q.getSilver(), q.getSubmitted());
+					q.getGold(),  q.getSubmitted());
 			String json = gson.toJson(result);
 			resp.getWriter().println(json);
 		}

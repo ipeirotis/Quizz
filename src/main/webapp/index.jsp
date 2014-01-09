@@ -1,80 +1,49 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
-<%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Badge"%>
-<%@ page import="javax.jdo.Query"%>
-<%@ page import="java.util.List"%>
-<%@ page import="us.quizz.repository.BadgeRepository"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
-<%@ page import="us.quizz.repository.UserRepository"%>
-<% User u = UserRepository.getUseridFromCookie(request, response); %>
+
+
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Test yourself, Compare yourself, Learn new things" /></jsp:include>
 <body>
 <div id="fb-root"></div>
-<script>
-	window.fbAsyncInit = function() {
-		FB.init({
-			appId      : getFBAppID(), // App ID
-			channelUrl : '//localhost:8888/channel.html', // Channel File
-			status     : true, // check login status
-			cookie     : true, // enable cookies to allow the server to access the session
-			xfbml      : true  // parse XFBML
-		});
-		FB.Event.subscribe('auth.authResponseChange', function(response) {
-			if (response.status === 'connected') {
-			} else if (response.status === 'not_authorized') {
-				FB.login(function(response) { 
-					$('#login').hide();
-					$('#logout').show();
-				});
-			} else {
-				FB.login(function(response) { 
-					$('#login').hide();
-					$('#logout').show();
-				});
-			}
-		});
-	};
-	// Load the SDK asynchronously
-	(function(d){
-		var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-	   if (d.getElementById(id)) {return;}
-	   js = d.createElement('script'); js.id = id; js.async = true;
-	   js.src = "//connect.facebook.net/en_US/all.js";
-	   ref.parentNode.insertBefore(js, ref);
-	}(document));
+	<script>
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId      : getFBAppID(), // App ID
+				channelUrl : '//localhost:8888/channel.html', // Channel File
+				status     : true, // check login status
+				cookie     : true, // enable cookies to allow the server to access the session
+				xfbml      : true  // parse XFBML
+			});
+			FB.Event.subscribe('auth.authResponseChange', function(response) {
+				if (response.status === 'connected') {
+				} else if (response.status === 'not_authorized') {
+					FB.login(function(response) { 
+						$('#login').hide();
+						$('#logout').show();
+					});
+				} else {
+					FB.login(function(response) { 
+						$('#login').hide();
+						$('#logout').show();
+					});
+				}
+			});
+		};
+		// Load the SDK asynchronously
+		(function(d){
+			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+		   if (d.getElementById(id)) {return;}
+		   js = d.createElement('script'); js.id = id; js.async = true;
+		   js.src = "//connect.facebook.net/en_US/all.js";
+		   ref.parentNode.insertBefore(js, ref);
+		}(document));
 	</script>
+	
+ 
 	<div class="container" style="text-align: center; max-width: 640px">
-        <jsp:include page="/logo.jsp"></jsp:include>
-		<%	if(u.getExperiment().getsTreatment("showHomeBadgeBox")){	%>
-	        <div id="showHomeBadgeBox">
-	        	<h4>Badges</h4>
-		    	<ul class="nav nav-pills">
-		    	<%
-		    	PersistenceManager	pm = PMF.getPM();
-		    	Query q = pm.newQuery(Badge.class);
-		    	@SuppressWarnings("unchecked")
-		    	List<Badge> allBadges = (List<Badge>) q.execute();
-		    	pm.close();
-		    	for (Badge b : allBadges) {
-		    		%>
-		    		<li style="width: 128px" data-original-title="<%=b.getBadgename()%>" 
-		    		<%
-		    		if(BadgeRepository.userHasBadge(u,b)){%>
-		    		class="active">
-		    		<%} else {%>
-		    		class="">
-		    		<%}%>
-		    			<a>
-		    		      <span class="badge pull-right"></span>
-		    		      <%=b.getShortname()%>
-		    	        </a>
-		    		</li>
-		    		<%
-		    	}%>
-		    	</ul>
-	    	</div>
-    	<%	}	%>
+        <h2>
+            <a href="/"><span style="color: maroon">Quizz</span>.us</a>
+        </h2>
+		
 		<span id='login' style='display: none'>
 			<a id='facebook-login' href="#"><img src="./assets/facebook_button.png" width="160px" height="80px"></a>
 		</span>
@@ -172,6 +141,7 @@
 	</script>
 
 	<%@ include file="assets/google-analytics.html"%>
+
 
 </body>
 </html>

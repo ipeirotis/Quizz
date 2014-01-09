@@ -71,6 +71,7 @@ public class QuizRepository {
 		}
 	}
 	
+
 	public static Integer getNumberOfGoldQuestions(String quizID, boolean useCache){
 		String key = "goldQuestions_"+quizID;
 		
@@ -92,6 +93,7 @@ public class QuizRepository {
 			pm.close();
 		}
 	}
+
 	
 	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
 		return getNumberOf("numquizquestions", usecache, quiz, Question.class);

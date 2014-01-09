@@ -1,20 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Badge"%>
-<%@ page import="javax.jdo.Query"%>
-<%@ page import="java.util.List"%>
-<%@ page import="us.quizz.repository.BadgeRepository"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
-<%@ page import="us.quizz.repository.UserRepository"%>
-<% User u = UserRepository.getUseridFromCookie(request, response); %>
 <jsp:include page="/header.jsp"></jsp:include>
 
 <body>
     <div class="container" style="text-align: center; max-width:720px">
 
-        <jsp:include page="/logo.jsp"></jsp:include>
-
+        <h2>
+            <a href="/"><span style="color: maroon">Quizz</span>.us</a>
+        </h2>
         <div id="scores" class="alert alert-info" style="text-align: center;">
             <div id="inScores">
                 <span class="label label-info" id="showScore"></span>
@@ -50,33 +42,8 @@
             </form>
         <span id="questionsPackProgress"></span>
         </div>
-        <div id="showQuizBadgeBox" style="display: none">
-	    	<h4>Badges</h4>
-	    	<ul class="nav nav-pills">
-	    	<%
-	    	PersistenceManager	pm = PMF.getPM();
-	    	Query q = pm.newQuery(Badge.class);
-	    	@SuppressWarnings("unchecked")
-	    	List<Badge> allBadges = (List<Badge>) q.execute();
-	    	pm.close();
-	    	for (Badge b : allBadges) {
-	    		%>
-	    		<li style="width: 128px" data-original-title="<%=b.getBadgename()%>" 
-	    		<%
-	    		if(BadgeRepository.userHasBadge(u,b)){%>
-	    		class="active">
-	    		<%} else {%>
-	    		class="">
-	    		<%}%>
-	    			<a>
-	    		      <span class="badge pull-right"></span>
-	    		      <%=b.getShortname()%>
-	    	        </a>
-	    		</li>
-	    		<%
-	    	}%>
-	    	</ul>
-    	</div>
+        
+
         <div id="quizEndSummary" style="display: none;">
             <!-- It will be moved (using JS) into form -->
             <h3>Thank you for completing quizz!</h3>

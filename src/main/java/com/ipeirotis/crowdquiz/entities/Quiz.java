@@ -12,7 +12,7 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 
 /** 
  * The Quiz is the basic unit of the application. Each quiz contains 
- * a set of QuizQuestions. 
+ * a set of Questions. 
  * 
  * @author ipeirotis
  *
@@ -40,17 +40,9 @@ public class Quiz {
 	@Persistent
 	private String quizID;
 
-	// The question that we will ask to the user
-	@Persistent
-	private String	questionText;
-
-	public void setFreebaseType(String freebaseType) {
-		this.freebaseType = freebaseType;
-	}
-
 	// The type of entry for the answer that we expect
 	// We do not use this for multiple choice questions
-	// but it is used for the fill-in questions, to enable
+	// but we may use it in the future for the fill-in questions, to enable
 	// autocompletion using the Freebase auto-suggest widget
 	@Persistent
 	private String	freebaseType;
@@ -58,145 +50,72 @@ public class Quiz {
 	// The id of the AdWords ad campaign that brings visitors to the quiz
 	@Persistent
 	private Long	campaignid;
+
 	
-	// The following numbers are statistics about the quiz
 	
 	// The number of users that arrived in a Quiz page
 	@Persistent
 	private Integer totalUsers;
 	
-	public String getCategory() {
-		return category;
-	}
-
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-
-	public Double getAvgAnswerCorrectness() {
-		return avgAnswerCorrectness;
-	}
-
-
-	public void setAvgAnswerCorrectness(Double avgAnswerCorrectness) {
-		this.avgAnswerCorrectness = avgAnswerCorrectness;
-	}
-
-
-	public Double getCapacity() {
-		return capacity;
-	}
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	public void setQuizID(String quizID) {
-		this.quizID = quizID;
-	}
-
-
-	public void setQuestionText(String questionText) {
-		this.questionText = questionText;
-	}
-
 	// The number of users that answered at least one non-IDK question
 	@Persistent
 	private Integer contributingUsers;
-
+	
 	// The conversion rate = contributingUsers/totalUsers
 	@Persistent
 	private Double conversionRate;
+
 
 	// The number of correct answers submitted
 	@Persistent
 	private Integer correctAnswers;
 
-	// The total number of non-IDK answers submitted
-	@Persistent
-	private Integer totalAnswers;
 
-	
+	//@Persistent
+	//private Integer totalAnswers;
+
+	// The average correctness of the users
 	@Persistent
 	private Double avgUserCorrectness;
 
-
+	// The probability that a submitted answer is correct
 	@Persistent
 	private Double avgAnswerCorrectness;
 
-
+	// The probability that a submitted answer is correct
 	@Persistent
 	private Double capacity;
-	
+
+	// The number of questions for the quiz
 	@Persistent
 	private Integer questions;
-	
+
 	@Persistent
 	private Integer gold;
-	
-	@Persistent
-	private Integer silver;
-	
+
+	//@Persistent
+	//private Integer silver;
+
+	// The total number of non-IDK answers submitted
 	@Persistent
 	private Integer submitted;
-
-
-	public Integer getQuestions() {
-		return questions;
-	}
-
-
-	public void setQuestions(Integer questions) {
-		this.questions = questions;
-	}
-
-
-	public Integer getGold() {
-		return gold;
-	}
-
-
-	public void setGold(Integer gold) {
-		this.gold = gold;
-	}
-
-
-	public Integer getSilver() {
-		return silver;
-	}
-
-
-	public void setSilver(Integer silver) {
-		this.silver = silver;
-	}
-
-
-	public Integer getSubmitted() {
-		return submitted;
-	}
-
-
-	public void setSubmitted(Integer submitted) {
-		this.submitted = submitted;
-	}
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key			key;
 
-
-	public Quiz(String name, String quizID, String questionText) {
+	public Quiz(String name, String quizID) {
 
 		this.name = name;
-		this.questionText = questionText;
 		this.quizID = quizID;
 		this.freebaseType = null;
 
 		this.key = generateKeyFromID(quizID);
+	}
+
+	
+	public Double getAvgAnswerCorrectness() {
+		return avgAnswerCorrectness;
 	}
 
 
@@ -209,8 +128,11 @@ public class Quiz {
 	
 		return campaignid;
 	}
-
-
+	
+	public Double getCapacity() {
+		return capacity;
+	}
+	
 	public Double getCapacity(Double error) {
 		
 		try {
@@ -220,8 +142,11 @@ public class Quiz {
 			return capacity;
 		}
 	}
-
-
+	
+	public String getCategory() {
+		return category;
+	}
+	
 	public Integer getContributingUsers() {
 		return contributingUsers;
 	}
@@ -236,26 +161,32 @@ public class Quiz {
 		return correctAnswers;
 	}
 
+
 	public String getFreebaseType() {
 
 		return freebaseType;
 	}
-	
+
+
+	public Integer getGold() {
+		return gold;
+	}
+
 
 	public Key getKey() {
 
 		return key;
 	}
-	
+
+
 	public String getName() {
 	
 		return name;
 	}
-	
 
-	public String getQuestionText() {
 
-		return questionText;
+	public Integer getQuestions() {
+		return questions;
 	}
 
 
@@ -263,19 +194,37 @@ public class Quiz {
 
 		return quizID;
 	}
-	
-	public Integer getTotalAnswers() {
-		return totalAnswers;
+
+
+	//public Integer getSilver() {
+	//	return silver;
+	//}
+
+
+	public Integer getSubmitted() {
+		return submitted;
 	}
-	
+
+
+	//public Integer getTotalAnswers() {
+	//	return totalAnswers;
+	//}
+
+
 	public Integer getTotalUsers() {
 		return totalUsers;
 	}
-	
-	
+
+
+	public void setAvgAnswerCorrectness(Double avgAnswerCorrectness) {
+		this.avgAnswerCorrectness = avgAnswerCorrectness;
+	}
+
+
 	public void setAvgUserCorrectness(Double avgUserCorrectness) {
 		this.avgUserCorrectness = avgUserCorrectness;
 	}
+
 
 	public void setCampaignid(Long campaignid) {
 	
@@ -285,31 +234,67 @@ public class Quiz {
 	public void setCapacity(Double capacity) {
 		this.capacity = capacity;
 	}
+	
 
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
 	public void setContributingUsers(Integer contributingUsers) {
 		this.contributingUsers = contributingUsers;
 	}
+	
 
 	public void setConversionRate(Double conversionRate) {
 		this.conversionRate = conversionRate;
 	}
 
+
 	public void setCorrectAnswers(Integer correctAnswers) {
 		this.correctAnswers = correctAnswers;
 	}
+	
+	public void setFreebaseType(String freebaseType) {
+		this.freebaseType = freebaseType;
+	}
+	
+	public void setGold(Integer gold) {
+		this.gold = gold;
+	}
+	
+	
+	public void setKey(Key key) {
+		this.key = key;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setQuestions(Integer questions) {
+		this.questions = questions;
+	}
+
+	public void setQuizID(String quizID) {
+		this.quizID = quizID;
+	}
+
+	//public void setSilver(Integer silver) {
+	//	this.silver = silver;
+	//}
 
 	
-	public void setTotalAnswers(Integer totalAnswers) {
-		this.totalAnswers = totalAnswers;
+	public void setSubmitted(Integer submitted) {
+		this.submitted = submitted;
 	}
+
+	//public void setTotalAnswers(Integer totalAnswers) {
+	//	this.totalAnswers = totalAnswers;
+	//}
+
 
 	public void setTotalUsers(Integer totalUsers) {
 		this.totalUsers = totalUsers;
-	}
-
-
-	public void setKey(Key key) {
-		this.key = key;
 	}
 
 }
