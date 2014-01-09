@@ -21,7 +21,7 @@ data, we have since depracated it.)
 
 The scripts/curl_example.sh file has a simple example on how to create a quiz.
 
-  $ curl "$WEB_URL/addQuiz" --data "quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored and removed in future"
+  $ curl http://www.quizz.us/addQuiz --data 'quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored'
 
 Each quiz contains questions. Each question can be of two types: 
 a. A multiple choice question
@@ -33,9 +33,9 @@ Here is an example of creating a multiple choice entry:
     "quizID": "'$QUIZ_ID'",
     "text": "Question text goes here",
     "weight": 1,
-    "answers": [{
-        "text": "Answer 1",
-        "kind": "selectable_not_gold"
+    "answers": [{ 
+      "text": "Answer 1",
+      "kind": "selectable_not_gold"
     }, {
         "text": "Answer 2 - it is gold one but do not tell anyone",
         "kind": "selectable_gold"
