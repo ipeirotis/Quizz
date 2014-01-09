@@ -19,7 +19,7 @@ curl "$WEB_URL/addQuestion" --data '{
         "kind": "selectable_gold"
     }]}'
 
-# add question with input text
+# add question with free-text input
 curl "$WEB_URL/addQuestion" --data '{
     "quizID": "'$QUIZ_ID'",
     "text": "Question with input text",
