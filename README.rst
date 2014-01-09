@@ -55,8 +55,8 @@ IDEs
 Eclipse
 -------
 
-Newest Eclipse version have Maven 3.0 installed.
-Unfortunatelly we need 3.1.
+The newest Eclipse version had Maven 3.0 installed.
+However, we need Maven 3.1.
 Install new version in your system and then enable in Eclipse.
 Last step can be done by going to *Window|Preferences* and in *Maven|Installations* adding new installation by giving proper path leading to Maven 3.1 installation.
 
