@@ -3,88 +3,88 @@
 
 	<servlet>
 		<servlet-name>AddQuiz</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuiz</servlet-class>
+		<servlet-class>us.quizz.servlets.AddQuiz</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>StartQuiz</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.StartQuiz</servlet-class>
+		<servlet-class>us.quizz.servlets.StartQuiz</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddQuestion</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuestion</servlet-class>
+		<servlet-class>us.quizz.servlets.AddQuestion</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddTreatment</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddTreatment</servlet-class>
+		<servlet-class>us.quizz.servlets.AddTreatment</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddBadge</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddBadge</servlet-class>
+		<servlet-class>us.quizz.servlets.AddBadge</servlet-class>
 	</servlet>
 		<servlet>
 		<servlet-name>AddUserAnswer</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddUserAnswer</servlet-class>
+		<servlet-class>us.quizz.servlets.AddUserAnswer</servlet-class>
 	</servlet>
 		<servlet>
 		<servlet-name>ProcessUserAnswer</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.ProcessUserAnswer</servlet-class>
+		<servlet-class>us.quizz.servlets.ProcessUserAnswer</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>DownloadUserAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.DownloadUserAnswers</servlet-class>
+		<servlet-class>us.quizz.servlets.DownloadUserAnswers</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>GetQuizCounts</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetQuizCounts</servlet-class>
+		<servlet-class>us.quizz.servlets.api.GetQuizCounts</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>GetNumberOfSubmittedAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.GetNumberOfSubmittedAnswers</servlet-class>
+		<servlet-class>us.quizz.servlets.api.GetNumberOfSubmittedAnswers</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>UpdateCountStatistics</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateCountStatistics</servlet-class>
+		<servlet-class>us.quizz.servlets.api.UpdateCountStatistics</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>CacheQuizQuestions</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.CacheQuizQuestions</servlet-class>
+		<servlet-class>us.quizz.servlets.api.CacheQuizQuestions</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>DeleteQuiz</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.DeleteQuiz</servlet-class>
+		<servlet-class>us.quizz.servlets.DeleteQuiz</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddCampaign</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddCampaign</servlet-class>
+		<servlet-class>us.quizz.servlets.AddCampaign</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddAdGroup</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAdGroup</servlet-class>
+		<servlet-class>us.quizz.servlets.AddAdGroup</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateAllQuestionStatistics</servlet-class>
+		<servlet-class>us.quizz.servlets.api.UpdateAllQuestionStatistics</servlet-class>
 	</servlet>
 
 	<servlet>
 		<servlet-name>UpdateQuestionStatistics</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateQuestionStatistics</servlet-class>
+		<servlet-class>us.quizz.servlets.api.UpdateQuestionStatistics</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>UpdateUserQuizStatistics</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateUserQuizStatistics</servlet-class>
+		<servlet-class>us.quizz.servlets.api.UpdateUserQuizStatistics</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>UpdateAllUserStatistics</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateAllUserStatistics</servlet-class>
+		<servlet-class>us.quizz.servlets.api.UpdateAllUserStatistics</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.ScanUserAnswersAndCreateUsers</servlet-class>
+		<servlet-class>us.quizz.servlets.ScanUserAnswersAndCreateUsers</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>FacebookLogin</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.FacebookLogin</servlet-class>
+		<servlet-class>us.quizz.servlets.FacebookLogin</servlet-class>
 	</servlet>
 
 
@@ -198,11 +198,11 @@
   <init-param>
    <param-name>services</param-name>
 	   <param-value>
-		com.ipeirotis.crowdquiz.entities.QuizEndpoint,
-		com.ipeirotis.crowdquiz.entities.QuizPerformanceEndpoint,
-		com.ipeirotis.crowdquiz.entities.UserAnswerFeedbackEndpoint,
-		com.ipeirotis.crowdquiz.entities.UserEndpoint,
-		com.ipeirotis.crowdquiz.entities.UserReferalEndpoint
+		us.quizz.entities.QuizEndpoint,
+		us.quizz.entities.QuizPerformanceEndpoint,
+		us.quizz.entities.UserAnswerFeedbackEndpoint,
+		us.quizz.entities.UserEndpoint,
+		us.quizz.entities.UserReferalEndpoint
 	  </param-value>
   </init-param>
  </servlet>

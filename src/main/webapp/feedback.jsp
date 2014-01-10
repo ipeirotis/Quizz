@@ -1,14 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.User"%>
+<%@ page import="us.quizz.utils.PMF"%>
+<%@ page import="us.quizz.entities.Quiz"%>
+<%@ page import="us.quizz.entities.User"%>
 <%@ page import="us.quizz.repository.UserRepository"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Question"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.QuizPerformance"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.FreebaseSearch"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.Helper"%>
+<%@ page import="us.quizz.entities.Question"%>
+<%@ page import="us.quizz.entities.QuizPerformance"%>
+<%@ page import="us.quizz.utils.FreebaseSearch"%>
+<%@ page import="us.quizz.utils.Helper"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>

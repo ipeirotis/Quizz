@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.ipeirotis.crowdquiz.entities.UserAnswer;
-import com.ipeirotis.crowdquiz.entities.UserAnswerFeedback;
-import com.ipeirotis.crowdquiz.utils.CachePMF;
-import com.ipeirotis.crowdquiz.utils.PMF;
+import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.PMF;
 
 
 public class UserAnswerRepository {

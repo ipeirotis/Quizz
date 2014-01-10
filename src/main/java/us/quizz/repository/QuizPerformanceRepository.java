@@ -9,9 +9,9 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.ipeirotis.crowdquiz.entities.QuizPerformance;
-import com.ipeirotis.crowdquiz.utils.CachePMF;
-import com.ipeirotis.crowdquiz.utils.PMF;
+import us.quizz.entities.QuizPerformance;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.PMF;
 
 public class QuizPerformanceRepository {
 

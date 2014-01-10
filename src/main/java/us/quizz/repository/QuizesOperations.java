@@ -3,9 +3,9 @@ package us.quizz.repository;
 import java.util.ArrayList;
 import java.util.Set;
 
-import com.ipeirotis.crowdquiz.entities.Question;
-import com.ipeirotis.crowdquiz.utils.CachePMF;
-import com.ipeirotis.crowdquiz.utils.Helper;
+import us.quizz.entities.Question;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.Helper;
 
 public class QuizesOperations {
 	

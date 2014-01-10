@@ -9,9 +9,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ipeirotis.crowdquiz.entities.Experiment;
-import com.ipeirotis.crowdquiz.entities.User;
-import com.ipeirotis.crowdquiz.utils.PMF;
+import us.quizz.entities.Experiment;
+import us.quizz.entities.User;
+import us.quizz.utils.PMF;
 
 public class UserRepository {
 	public static User getOrCreate(String userid){

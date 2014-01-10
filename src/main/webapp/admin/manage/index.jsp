@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Quiz"%>
+<%@ page import="us.quizz.entities.Quiz"%>
 <%@ page import="java.util.List"%>
 <%@ page import="us.quizz.repository.QuizRepository"%>
 

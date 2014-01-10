@@ -1,6 +1,6 @@
 package us.quizz.repository;
 
-import com.ipeirotis.crowdquiz.entities.Answer;
+import us.quizz.entities.Answer;
 
 public class AnswersRepository {
 	

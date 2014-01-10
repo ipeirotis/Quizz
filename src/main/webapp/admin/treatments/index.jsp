@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="com.ipeirotis.crowdquiz.utils.PMF"%>
-<%@ page import="com.ipeirotis.crowdquiz.entities.Treatment"%>
+<%@ page import="us.quizz.utils.PMF"%>
+<%@ page import="us.quizz.entities.Treatment"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
 

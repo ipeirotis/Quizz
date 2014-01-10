@@ -2,10 +2,10 @@ package us.quizz.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ipeirotis.crowdquiz.entities.Badge;
-import com.ipeirotis.crowdquiz.entities.BadgeAssignment;
-import com.ipeirotis.crowdquiz.entities.User;
-import com.ipeirotis.crowdquiz.utils.PMF;
+import us.quizz.entities.Badge;
+import us.quizz.entities.BadgeAssignment;
+import us.quizz.entities.User;
+import us.quizz.utils.PMF;
 
 public class BadgeRepository {
 	public static List<Badge> checkForNewBadges(User user, String quizID, String numCorrectAnswers, String numTotalAnswers){
