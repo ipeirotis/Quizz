@@ -12,8 +12,7 @@
                 <span class="label label-info" id="showScore"></span>
                 <span class="label label-info" id="showTotalCorrect"></span>
                 <span class="label label-info" id="showPercentageCorrect"></span>
-                <span class="label label-info" id="showPercentageRank"></span>
-                <span class="label label-info" id="showTotalCorrectRank"></span>
+                <span class="label label-info" id="showRankScore"></span>
             </div>
             <div id="scoresLoading">
                 <img src="assets/horizontal_loader.gif"/>

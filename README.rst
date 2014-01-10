@@ -6,12 +6,12 @@ Whole service can be setup using Maven.
 Recommended version is 3.1 (according to GAE documentation) and on this version it was tested.
 Also Java 7 is recommended.
 
-To check your Maven version run:
+To check your Maven version run::
 
   $ mvn --version
 
 It should also present your Java version.
-If it didn't than you can run this command to check it:
+If it didn't than you can run this command to check it::
 
   $ java -version
 
@@ -19,11 +19,11 @@ If it didn't than you can run this command to check it:
 Local version
 ~~~~~~~~~~~~~
 
-Cleaning content (removing generated content, etc.):
+Cleaning content (removing generated content, etc.)::
 
   $ mvn clean
 
-Running local dev server:
+Running local dev server::
 
   $ mvn appengine:devserver
 
@@ -41,9 +41,10 @@ If you are getting *Out of memory* then you should change option *instances* to 
 Deploy
 ~~~~~~
 
-In order to deploy version that is in current dir just type:
+In order to deploy version that is in current dir just type::
 
   $ mvn appengine:update
+  $ mvn appengine:backends_update
 
 It will open new tab in your browser with page containing generated code.
 You have to paste this code into console in order to proceed with deploy.
@@ -65,7 +66,7 @@ In new view provide path to project (where `pom.xml` file is located), mark prop
 Ignore 3 errors that might be listed in next view and click *Finish*.
 
 Now navigate through project files into `eclipse-launch-profiles` folder, R-Click on `DevAppServer.launch`, *Run as* and click *DevAppServer*.
-If it didn't work than you need to open this file and change line containing *M2_RUNTIME* key into:
+If it didn't work than you need to open this file and change line containing *M2_RUNTIME* key into::
 
   <stringAttribute key="M2_RUNTIME" value="YOUR PATH TO MAVEN 3.1"/>
 

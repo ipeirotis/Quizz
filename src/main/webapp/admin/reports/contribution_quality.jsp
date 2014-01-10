@@ -22,10 +22,13 @@
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Quiz</th>
+					<th>Total Users</th>
 					<th>Contributing Users</th>
-					<th>#Correct Answers</th>
+					<th>Conversion Rate</th>
 					<th>#Total Answers</th>
+					<th>#Correct Answers</th>
 					<th>Avg. User Quality</th>
+					<th>Avg. Answer Quality</th>
 					<th>Capacity @ 99%</th>
 					<th>Capacity @ 95%</th>
 					<th>Capacity @ 90%</th>
@@ -49,10 +52,13 @@
 					%>
 					<tr>
 						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getQuizID() %>&start=0&end=500"><%=quiz.getName()%></a></td>
+						<td><%=quiz.getTotalUsers()%></td>
 						<td><%=quiz.getContributingUsers()%></td>
-						<td><%=quiz.getCorrectAnswers()%></td>
+						<td><%=percentFormat.format(quiz.getConversionRate())%></td>
 						<td><%=quiz.getTotalAnswers()%></td>
+						<td><%=quiz.getCorrectAnswers()%></td>
 						<td><%=percentFormat.format(quiz.getAvgUserCorrectness())%></td>
+						<td><%=percentFormat.format(quiz.getAvgAnswerCorrectness())%></td>
 						<td><%=format.format(capacity99*totalUsers) %></td>
 						<td><%=format.format(capacity95*totalUsers) %></td>
 						<td><%=format.format(capacity90*totalUsers) %></td>

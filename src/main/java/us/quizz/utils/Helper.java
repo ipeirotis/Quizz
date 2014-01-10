@@ -56,7 +56,7 @@ public class Helper {
 	 * @return
 	 * @throws Exception
 	 */
-	public static double getBayesianInformationGain(double a, double b, int n) throws Exception {
+	public static double getBayesianMeanInformationGain(double a, double b, int n) throws Exception {
 	
 		// We have that limit(x*Psi(x), x=0) = -1
 		// Based on this, for the Bayesian Information Gain (BIG): 
@@ -71,6 +71,24 @@ public class Helper {
 		if (a>0 && b==0) return Math.log(n)/Math.log(2);
 		
 		double result = Math.log(n) - (b/(a+b)) * Math.log(n-1) - getBayesianEntropy(a,b);
+		
+		return result;
+		
+	}
+	
+	
+	/**
+	 * Computes a Bayesian version of Information Gain
+	 * 
+	 * @param a The number of correct answers (plus the prior)
+	 * @param b The number of incorrect answers (plus the prior)
+	 * @param n The number of multiple options in the quiz
+	 * @return
+	 * @throws Exception
+	 */
+	public static double getBayesianVarianceInformationGain(double a, double b, int n) throws Exception {
+	
+		double result = getBayesianInformationGainSquare(a, b, n) - Math.pow(getBayesianMeanInformationGain(a, b, n), 2);
 		
 		return result;
 		

@@ -349,8 +349,7 @@ ANSWERS_GENERATORS = {
 		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
 		$('#showPercentageCorrect').html("Correct (%): " + toSafePercentage(performance.percentageCorrect));
-		$('#showPercentageRank').html(ranksFormating("%", performance.rankPercentCorrect, performance.totalUsers));
-		$('#showTotalCorrectRank').html(ranksFormating("#", performance.rankTotalCorrect, performance.totalUsers));
+		$('#showRankScore').html(ranksFormating("%", performance.rankScore, performance.totalUsers));
 		$('#correctanswers').val(performance.correctanswers);
 		$('#totalanswers').val(performance.totalanswers);
 
@@ -397,8 +396,7 @@ ANSWERS_GENERATORS = {
 		$('#showScore').hide();
 		$('#showTotalCorrect').hide();
 		$('#showPercentageCorrect').hide();
-		$('#showPercentageRank').hide();
-		$('#showTotalCorrectRank').hide();
+		$('#showRankScore').hide();
 	}
 
 	function applyTreatments(userdata) {
