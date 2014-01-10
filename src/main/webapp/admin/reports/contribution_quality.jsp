@@ -1,17 +1,8 @@
 <%@ page language="java" contentType="text/html;charset=utf-8" pageEncoding="utf-8"%>
-<%@ page import="javax.jdo.PersistenceManager"%>
-<%@ page import="us.quizz.utils.PMF"%>
-<%@ page import="us.quizz.entities.Treatment"%>
 <%@ page import="us.quizz.entities.Quiz"%>
-<%@ page import="us.quizz.entities.QuizPerformance"%>
-<%@ page import="us.quizz.entities.UserReferal"%>
-<%@ page import="us.quizz.utils.Helper"%>
-<%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
-<%@ page import="java.util.TreeSet"%>
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="us.quizz.repository.QuizRepository"%>
-<%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
 
@@ -25,10 +16,12 @@
 					<th>Total Users</th>
 					<th>Contributing Users</th>
 					<th>Conversion Rate</th>
-					<th>#Total Answers</th>
+					<th>#All Answers</th>
+					<th>#NonIDK Answers</th>
 					<th>#Correct Answers</th>
 					<th>Avg. User Quality</th>
 					<th>Avg. Answer Quality</th>
+					<th>Bits/User</th>
 					<th>Capacity @ 99%</th>
 					<th>Capacity @ 95%</th>
 					<th>Capacity @ 90%</th>
@@ -38,8 +31,8 @@
 				percentFormat.setMaximumFractionDigits(0);
 				
 				NumberFormat format = NumberFormat.getInstance();
-				format.setMinimumFractionDigits(1);
-				format.setMaximumFractionDigits(1);
+				format.setMinimumFractionDigits(2);
+				format.setMaximumFractionDigits(2);
 
 				List<Quiz> quizzes = QuizRepository.getQuizzes();
 				for (Quiz quiz : quizzes) {
@@ -55,10 +48,12 @@
 						<td><%=quiz.getTotalUsers()%></td>
 						<td><%=quiz.getContributingUsers()%></td>
 						<td><%=percentFormat.format(quiz.getConversionRate())%></td>
+						<td><%=quiz.getSubmitted()%></td>
 						<td><%=quiz.getTotalAnswers()%></td>
 						<td><%=quiz.getCorrectAnswers()%></td>
 						<td><%=percentFormat.format(quiz.getAvgUserCorrectness())%></td>
 						<td><%=percentFormat.format(quiz.getAvgAnswerCorrectness())%></td>
+						<td><%=format.format(quiz.getCapacity()) %></td>
 						<td><%=format.format(capacity99*totalUsers) %></td>
 						<td><%=format.format(capacity95*totalUsers) %></td>
 						<td><%=format.format(capacity90*totalUsers) %></td>

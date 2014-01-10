@@ -43,7 +43,7 @@ public class Helper {
 	 * 
 	 */
 	public static double getInformationGain(double q, int n) throws Exception {
-		double informationGain = Helper.entropy(q,n) - Helper.entropy(1.0/n, n);
+		double informationGain = Helper.entropy(1.0/n, n) - Helper.entropy(q,n);
 		return informationGain;
 	}
 	

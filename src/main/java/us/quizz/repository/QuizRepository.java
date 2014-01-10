@@ -140,6 +140,7 @@ public class QuizRepository {
 		
 		int contributingUsers = perf.size();
 		q.setContributingUsers(contributingUsers+1); // +1 for smoothing, ensuring no division by 0
+		q.setConversionRate(1.0*q.getContributingUsers()/q.getTotalUsers());
 		
 		int totalCorrect = 1; // +1 for smoothing, ensuring no division by 0
 		int totalAnswers = 1; // +1 for smoothing, ensuring no division by 0
@@ -155,11 +156,10 @@ public class QuizRepository {
 		q.setCorrectAnswers(totalCorrect);
 		q.setTotalAnswers(totalAnswers);
 		
-		double capacity100 = (bits/2)/q.getTotalUsers();
-		q.setCapacity(capacity100);
+		q.setCapacity(bits/q.getContributingUsers());
 		
 		
-		q.setConversionRate(1.0*q.getContributingUsers()/q.getTotalUsers());
+		
 		q.setAvgUserCorrectness(avgCorrectness/q.getContributingUsers());
 		q.setAvgAnswerCorrectness(1.0*q.getCorrectAnswers()/q.getTotalAnswers());
 		

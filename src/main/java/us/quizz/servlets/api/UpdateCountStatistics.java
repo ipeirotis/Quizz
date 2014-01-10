@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
-import us.quizz.repository.QuizesOperations;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;

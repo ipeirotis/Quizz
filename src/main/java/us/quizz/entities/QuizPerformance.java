@@ -151,15 +151,15 @@ public class QuizPerformance {
 		double varInfoGainBayes = 0;
 		try {
 			meanInfoGainFrequentist = Helper.getInformationGain( getPercentageCorrect(), numberOfMultipleChoiceOptions);
-			meanInfoGainBayes = Helper.getInformationGain( getPercentageCorrect(), numberOfMultipleChoiceOptions);
+			meanInfoGainBayes = Helper.getBayesianMeanInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
 			varInfoGainBayes = Helper.getBayesianVarianceInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		this.freq_infogain = Math.max(this.totalanswers * meanInfoGainFrequentist, 0);
-		this.bayes_infogain = Math.max(this.totalanswers * meanInfoGainBayes, 0);
-		this.lcb_infogain = Math.max(this.totalanswers * (meanInfoGainBayes-Math.sqrt(varInfoGainBayes)), 0);
+		this.freq_infogain = this.totalanswers * meanInfoGainFrequentist;
+		this.bayes_infogain = this.totalanswers * meanInfoGainBayes;
+		this.lcb_infogain =  this.totalanswers * (meanInfoGainBayes-Math.sqrt(varInfoGainBayes));
 		
 
 	}

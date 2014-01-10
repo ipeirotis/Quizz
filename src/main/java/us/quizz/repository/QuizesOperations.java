@@ -15,6 +15,7 @@ public class QuizesOperations {
 
 	public static Set<Question> getNextQuizQuestions(String quiz, int n) {
 		String key  = "getquizquestion_" + quiz + n;
+		@SuppressWarnings("unchecked")
 		Set<Question> result = CachePMF.get(key, Set.class);
 		if (result != null) return result;
 		

@@ -44,8 +44,10 @@ public class ScanUserAnswersAndCreateUsers extends HttpServlet {
 		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(UserAnswer.class);
 
-		@SuppressWarnings("unchecked")
+
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
+		
+		@SuppressWarnings("unchecked")
 		List<UserAnswer> answers = (List<UserAnswer>) query.execute();
 		Set<String> userids = new TreeSet<String>();
 		for (UserAnswer answer : answers) {

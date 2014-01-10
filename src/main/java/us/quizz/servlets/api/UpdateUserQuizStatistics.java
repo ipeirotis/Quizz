@@ -33,16 +33,18 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		String quiz = req.getParameter("quizID");
 		String userid = req.getParameter("userid");
 
-		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(quiz, userid);
-		if (qp==null) {
-			qp = new QuizPerformance(quiz, userid);
-		}	
+		//QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(quiz, userid);
+		//if (qp==null) {
+		QuizPerformance	qp = new QuizPerformance(quiz, userid);
+		//}	
 		qp.computeCorrect();
 		
+		/*
 		if (qp.getTotalanswers()==0) {
 			QuizPerformanceRepository.deleteQuizPerformance(quiz, userid);
 			return;
 		}
+		*/
 		
 		qp.computeRank();
 		QuizPerformanceRepository.storeQuizPerformance(qp);

@@ -140,7 +140,7 @@ public class Quiz {
 	
 	public Double getCapacity(Double error) {
 		try {
-			return capacity/ (1-Helper.entropy(1-error,2));
+			return capacity/ (1-Helper.entropy(1.0-error,2));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return capacity;

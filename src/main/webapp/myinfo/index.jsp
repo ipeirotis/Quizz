@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="us.quizz.utils.PMF"%>
 <%@ page import="us.quizz.entities.QuizPerformance"%>
@@ -49,9 +49,8 @@
 					<tr>
 						<td  class="span2"><%= qp.getQuiz() %></td>
 						<td  class="span2">Correct (%)<br><%= qp.getCorrectanswers() %>/<%= qp.getTotalanswers() %> (<%= qp.displayPercentageCorrect() %>)</td>
-						<td  class="span2">Rank (%correct)<br><%= qp.getRankPercentCorrect() %>/<%=qp.getTotalUsers() %> (Top-<%= qp.displayRankPercentageCorrect() %>)</td>
-						<td  class="span2">Rank (#correct)<br><%= qp.getRankTotalCorrect() %>/<%=qp.getTotalUsers() %> (Top-<%= qp.displayRankTotalCorrect() %>)</td>
-		
+						<td  class="span2">Rank<br><%= qp.getRankScore() %>/<%=qp.getTotalUsers() %> (Top-<%= qp.displayRankScore() %>)</td>
+						
 					</tr>
 					<%	
 				}
