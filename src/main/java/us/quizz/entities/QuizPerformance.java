@@ -195,6 +195,19 @@ public class QuizPerformance {
 		int t = 0;
 		for (UserAnswer ua : results) {
 			Boolean correct = ua.getIsCorrect();
+			
+			/*
+			if (ua.getAnswerID() == -1) { // free text input
+				if (ua.getUserInput() == null || ua.getUserInput().length()<=1) {
+					ua.setAction("I don't know");
+					UserAnswerRepository.storeUserAnswer(ua);
+				}
+			} else {
+				ua.setAction("Submit");
+				UserAnswerRepository.storeUserAnswer(ua);
+			}
+			*/
+			
 			if (ua.getAction().equals("Submit")) {
 				t++;
 			}
