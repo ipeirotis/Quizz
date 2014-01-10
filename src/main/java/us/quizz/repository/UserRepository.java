@@ -1,6 +1,11 @@
 package us.quizz.repository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.jdo.PersistenceManager;
@@ -11,9 +16,40 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
+import us.quizz.entities.UserAnswer;
 import us.quizz.utils.PMF;
 
 public class UserRepository {
+	
+	public static Set<String> getUserIDs(String quiz) {
+
+		PersistenceManager pm = PMF.getPM();
+
+		Query q = pm.newQuery(UserAnswer.class);
+		q.setFilter("quizID == quizParam");
+		q.declareParameters("String quizParam");
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quiz);
+
+		Set<String> answers = new TreeSet<String>();
+		int limit = 1000;
+		int i=0;
+		while (true) {
+			q.setRange(i, i+limit);
+			@SuppressWarnings("unchecked")
+			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+			if (results.size()==0) break;
+			for (UserAnswer ua : results) {
+				answers.add(ua.getUserid());
+			}
+			i+=limit;
+		}
+		
+		pm.close();
+		return answers;
+	}
+	
 	public static User getOrCreate(String userid){
 		User user = PMF.singleGetObjectById(User.class, User.generateKeyFromID(userid));
 		if (user == null) {

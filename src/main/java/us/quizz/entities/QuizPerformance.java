@@ -160,6 +160,9 @@ public class QuizPerformance {
 		this.freq_infogain = this.totalanswers * meanInfoGainFrequentist;
 		this.bayes_infogain = this.totalanswers * meanInfoGainBayes;
 		this.lcb_infogain =  this.totalanswers * (meanInfoGainBayes-Math.sqrt(varInfoGainBayes));
+		if (Double.isNaN(this.lcb_infogain) ||  this.lcb_infogain<0) {
+			this.lcb_infogain = 0.0;
+		}
 		
 
 	}

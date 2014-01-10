@@ -78,10 +78,12 @@
 		<servlet-name>UpdateAllUserStatistics</servlet-name>
 		<servlet-class>us.quizz.servlets.api.UpdateAllUserStatistics</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
-		<servlet-class>us.quizz.servlets.ScanUserAnswersAndCreateUsers</servlet-class>
+		<servlet>
+		<servlet-name>UpdateUserExperiment</servlet-name>
+		<servlet-class>us.quizz.servlets.api.UpdateUserExperiment</servlet-class>
 	</servlet>
+	
+	
 	<servlet>
 		<servlet-name>FacebookLogin</servlet-name>
 		<servlet-class>us.quizz.servlets.FacebookLogin</servlet-class>
@@ -98,10 +100,6 @@
 	<servlet-mapping>
 		<servlet-name>StartQuiz</servlet-name>
 		<url-pattern>/startQuiz</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ScanUserAnswersAndCreateUsers</servlet-name>
-		<url-pattern>/scanUserAnswersAndCreateUsers</url-pattern>
 	</servlet-mapping>
 		<servlet-mapping>
 		<servlet-name>CacheQuizQuestions</servlet-name>
@@ -148,6 +146,10 @@
 	<servlet-mapping>
 		<servlet-name>UpdateCountStatistics</servlet-name>
 		<url-pattern>/api/updateCountStatistics</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UpdateUserExperiment</servlet-name>
+		<url-pattern>/api/updateUserExperiment</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UpdateQuestionStatistics</servlet-name>

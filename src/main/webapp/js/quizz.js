@@ -214,7 +214,7 @@ function shuffle(array) {
 			});
 			USER_ANSWERS.push(answer);
 			return false;
-		}
+		};
 	}
 
 	function clearString(str) {
@@ -222,7 +222,7 @@ function shuffle(array) {
 	}
 
 	function generateSelectableAnswer(htmlAnswers, index, answer, gatype, ganumber) {
-		value = answer.text
+		value = answer.text;
 		//  triming " chars and escaping internal ones
 		value = clearString(value);
 		value = $.trim(value).replace(/"/, "\\\"");
@@ -261,7 +261,7 @@ ANSWERS_GENERATORS = {
 	"selectable_gold": generateSelectableGoldAnswer,
 	"selectable_not_gold": generateSelectableWrongAnswer,
 	"input_text": generateInputTextAnswer,
-}
+};
 
 	function generateAnswers(answers) {
 		var htmlAnswers = $("#answers");
@@ -316,11 +316,11 @@ ANSWERS_GENERATORS = {
 	}
 
 	function toPercentage(fValue) {
-		return (100. * fValue).toFixed(0) + "%"
+		return (100. * fValue).toFixed(0) + "%";
 	}
 
 	function isNormalNumber(value) {
-		return ! (isNaN(value) || typeof value === "undefined");
+		return ! (isNaN(value) || typeof value === undefined);
 	}
 
 	function safeNumber(value) {
@@ -334,8 +334,8 @@ ANSWERS_GENERATORS = {
 			return "---";
 	}
 
-	function ranksFormating(kind, userValue, totalValue) {
-		var prefix = "Rank (" + kind + "correct): ";
+	function ranksFormating(userValue, totalValue) {
+		var prefix = "Rank: ";
 		var sufix = "---";
 		if (isNormalNumber(userValue) && isNormalNumber(totalValue)) {
 			var position = userValue / totalValue;
@@ -349,7 +349,7 @@ ANSWERS_GENERATORS = {
 		$('#showScore').html("Score: " + performance.score.toFixed(3) + " points");
 		$('#showTotalCorrect').html("Correct Answers: "+ performance.correctanswers + "/"+ performance.totalanswers);
 		$('#showPercentageCorrect').html("Correct (%): " + toSafePercentage(performance.percentageCorrect));
-		$('#showRankScore').html(ranksFormating("%", performance.rankScore, performance.totalUsers));
+		$('#showRankScore').html(ranksFormating(performance.rankScore, performance.totalUsers));
 		$('#correctanswers').val(performance.correctanswers);
 		$('#totalanswers').val(performance.totalanswers);
 
@@ -392,7 +392,7 @@ ANSWERS_GENERATORS = {
 		$('#showNewBadges').hide();
 		$('#showMessage').hide();
 		$('#showCorrect').hide();
-		$('#showCrowdAnswers')
+		$('#showCrowdAnswers').hide();
 		$('#showScore').hide();
 		$('#showTotalCorrect').hide();
 		$('#showPercentageCorrect').hide();
@@ -482,7 +482,7 @@ function showFeedback(feedback, callbackf) {
   var executedCallback = false;
   var intervalId;
   if (CURRENT_QUIZZ == QUIZZ_QUESTIONS.length - 1) {
-    $('#skipFeedbackBtn').val("Show Results")
+    $('#skipFeedbackBtn').val("Show Results");
   } else {
     // Set up event to go to next question after 5 seconds.
     setFeedbackBtnMsg(5);
@@ -525,7 +525,7 @@ function setUpPerformanceUpdatesChannel(token) {
 	socket.onmessage = handlePerfChannelMessage;
 	socket.onerror = function () {
 		console.log("Error in channel gathering updates in performance");
-	}
+	};
 }
 
 function hideQuestion() {
