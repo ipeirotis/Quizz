@@ -67,6 +67,12 @@ public class QuizPerformance {
 	// answers given (excluding the "I do not know" answers)
 	// multiplied with the Bayesian Information Gain.
 	@Persistent
+	Double percentageCorrect;
+	
+	// The total information gain by this user. This is the total number of
+	// answers given (excluding the "I do not know" answers)
+	// multiplied with the Bayesian Information Gain.
+	@Persistent
 	Double score;
 	
 
@@ -231,9 +237,11 @@ public class QuizPerformance {
 	public Double getPercentageCorrect() {
 		if (this.totalanswers != null && this.correctanswers != null
 				&& this.totalanswers > 0)
-			return Math.round(100.0 * this.correctanswers / this.totalanswers) / 100.0;
+			this.percentageCorrect = Math.round(100.0 * this.correctanswers / this.totalanswers) / 100.0;
 		else
-			return 0.0;
+			this.percentageCorrect =  0.0;
+		
+		return this.percentageCorrect;
 	}
 
 	public String getQuiz() {
