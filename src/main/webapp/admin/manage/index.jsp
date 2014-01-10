@@ -25,11 +25,7 @@
 							%>
 							<tr>
 								<td><%=q.getQuizID()%></td>
-								<td><%=q.getName()%><br>
-									<a 
-									href="listEntities.jsp?relation=<%=q.getQuizID()%>">List</a>|<a 
-									href="/api/deleteQuiz?relation=<%=q.getQuizID()%>">Delete</a>
-								</td>
+								<td><%=q.getName()%></td>
 								<td><a id="download" title="Download the answers submitted so far by the users" href="/admin/downloadUserAnswers?relation=<%=q.getQuizID()%>">Answers</a></td>
 							</tr>
 							<%

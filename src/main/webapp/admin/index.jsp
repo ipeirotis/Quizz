@@ -12,12 +12,7 @@
 				</tr>
 				<tr>
 					<td>
-						<a href="manage/create_quiz.jsp">Create a new quiz</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<a href="manage/index.jsp">Upload/download data from existing quizzes</a>
+						<a href="manage/index.jsp">Download data from existing quizzes</a>
 					</td>
 				</tr>
 				<tr>

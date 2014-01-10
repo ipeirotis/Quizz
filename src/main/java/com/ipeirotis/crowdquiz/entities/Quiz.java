@@ -12,7 +12,9 @@ import com.ipeirotis.crowdquiz.utils.Helper;
 
 /** 
  * The Quiz is the basic unit of the application. Each quiz contains 
- * a set of Questions. 
+ * a set of Questions. The Quiz object is essentially a placeholder
+ * for storing overall statistics about the quiz, and for storing 
+ * the id and the title of the quiz.
  * 
  * @author ipeirotis
  *
@@ -25,6 +27,7 @@ public class Quiz {
 		return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + quizID);
 	}
 
+	// CURRENTLY UNUSED
 	// The category of the quiz. This allows the quizzes to be grouped by category in the
 	// first page, instead of being a big list of quizzes.
 	@Persistent
@@ -40,6 +43,7 @@ public class Quiz {
 	@Persistent
 	private String quizID;
 
+	// CURRENTLY UNUSED
 	// The type of entry for the answer that we expect
 	// We do not use this for multiple choice questions
 	// but we may use it in the future for the fill-in questions, to enable
@@ -51,7 +55,8 @@ public class Quiz {
 	@Persistent
 	private Long	campaignid;
 
-	
+	// All the variables below are aggregate statistics about the quiz.
+	// We update these using the QuizRepository.updateQuizCounts() call
 	
 	// The number of users that arrived in a Quiz page
 	@Persistent
@@ -70,9 +75,14 @@ public class Quiz {
 	@Persistent
 	private Integer correctAnswers;
 
+	// The total number of non-IDK answers submitted
+	@Persistent
+	private Integer totalAnswers;
+	
+	// The total number of all answers submitted
+	@Persistent
+	private Integer submitted;
 
-	//@Persistent
-	//private Integer totalAnswers;
 
 	// The average correctness of the users
 	@Persistent
@@ -82,7 +92,7 @@ public class Quiz {
 	@Persistent
 	private Double avgAnswerCorrectness;
 
-	// The probability that a submitted answer is correct
+	// The average number of bits submitted by each user
 	@Persistent
 	private Double capacity;
 
@@ -90,15 +100,10 @@ public class Quiz {
 	@Persistent
 	private Integer questions;
 
+	// The number of questions for the quiz that have gold answers
 	@Persistent
 	private Integer gold;
 
-	//@Persistent
-	//private Integer silver;
-
-	// The total number of non-IDK answers submitted
-	@Persistent
-	private Integer submitted;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -125,7 +130,6 @@ public class Quiz {
 
 
 	public Long getCampaignid() {
-	
 		return campaignid;
 	}
 	
@@ -134,7 +138,6 @@ public class Quiz {
 	}
 	
 	public Double getCapacity(Double error) {
-		
 		try {
 			return capacity/ (1-Helper.entropy(1-error,2));
 		} catch (Exception e) {
@@ -196,19 +199,15 @@ public class Quiz {
 	}
 
 
-	//public Integer getSilver() {
-	//	return silver;
-	//}
-
 
 	public Integer getSubmitted() {
 		return submitted;
 	}
 
 
-	//public Integer getTotalAnswers() {
-	//	return totalAnswers;
-	//}
+	public Integer getTotalAnswers() {
+		return totalAnswers;
+	}
 
 
 	public Integer getTotalUsers() {
@@ -220,14 +219,11 @@ public class Quiz {
 		this.avgAnswerCorrectness = avgAnswerCorrectness;
 	}
 
-
 	public void setAvgUserCorrectness(Double avgUserCorrectness) {
 		this.avgUserCorrectness = avgUserCorrectness;
 	}
 
-
 	public void setCampaignid(Long campaignid) {
-	
 		this.campaignid = campaignid;
 	}
 
@@ -248,7 +244,6 @@ public class Quiz {
 	public void setConversionRate(Double conversionRate) {
 		this.conversionRate = conversionRate;
 	}
-
 
 	public void setCorrectAnswers(Integer correctAnswers) {
 		this.correctAnswers = correctAnswers;
@@ -278,20 +273,14 @@ public class Quiz {
 	public void setQuizID(String quizID) {
 		this.quizID = quizID;
 	}
-
-	//public void setSilver(Integer silver) {
-	//	this.silver = silver;
-	//}
-
 	
 	public void setSubmitted(Integer submitted) {
 		this.submitted = submitted;
 	}
 
-	//public void setTotalAnswers(Integer totalAnswers) {
-	//	this.totalAnswers = totalAnswers;
-	//}
-
+	public void setTotalAnswers(Integer totalAnswers) {
+		this.totalAnswers = totalAnswers;
+	}
 
 	public void setTotalUsers(Integer totalUsers) {
 		this.totalUsers = totalUsers;

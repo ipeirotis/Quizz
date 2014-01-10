@@ -21,7 +21,7 @@ public class UpdateCountStatistics extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.setContentType("text/plain");
+		resp.setContentType("text/plain;charset=utf-8");
 
 		Queue queue = QueueFactory.getQueue("default");
 		List<Quiz> list = QuizRepository.getQuizzes();

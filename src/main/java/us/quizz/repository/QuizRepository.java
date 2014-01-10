@@ -1,5 +1,6 @@
 package us.quizz.repository;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -8,6 +9,7 @@ import javax.jdo.Query;
 import com.ipeirotis.crowdquiz.entities.Quiz;
 import com.ipeirotis.crowdquiz.entities.Answer;
 import com.ipeirotis.crowdquiz.entities.Question;
+import com.ipeirotis.crowdquiz.entities.QuizPerformance;
 import com.ipeirotis.crowdquiz.entities.UserAnswer;
 import com.ipeirotis.crowdquiz.utils.CachePMF;
 import com.ipeirotis.crowdquiz.utils.PMF;
@@ -121,12 +123,46 @@ public class QuizRepository {
 	
 	public static void updateQuizCounts(String quiz){
 		Quiz q = QuizRepository.getQuiz(quiz);
+		
 		Integer count = QuizRepository.getNumberOfQuizQuestions(quiz, false);
 		q.setQuestions(count);
+		
 		count = QuizRepository.getNumberOfUserAnswers(quiz, false);
 		q.setSubmitted(count);
+		
 		count = QuizRepository.getNumberOfGoldQuestions(quiz, false);
 		q.setGold(count);
+		
+		count = UserReferralRepository.getUserIDsByQuiz(q.getQuizID()).size();
+		q.setTotalUsers(count+1); // +1 for smoothing, ensuring no division by 0
+		
+		List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformancesByQuiz(q.getQuizID());
+		
+		int contributingUsers = perf.size();
+		q.setContributingUsers(contributingUsers+1); // +1 for smoothing, ensuring no division by 0
+		
+		int totalCorrect = 1; // +1 for smoothing, ensuring no division by 0
+		int totalAnswers = 1; // +1 for smoothing, ensuring no division by 0
+		double bits = 0;
+		double avgCorrectness = 0;
+
+		for (QuizPerformance qp: perf) {
+			totalCorrect += qp.getCorrectanswers();
+			totalAnswers += qp.getTotalanswers();
+			avgCorrectness += qp.getPercentageCorrect();
+			bits += qp.getScore();
+		}
+		q.setCorrectAnswers(totalCorrect);
+		q.setTotalAnswers(totalAnswers);
+		
+		double capacity100 = (bits/2)/q.getTotalUsers();
+		q.setCapacity(capacity100);
+		
+		
+		q.setConversionRate(1.0*q.getContributingUsers()/q.getTotalUsers());
+		q.setAvgUserCorrectness(avgCorrectness/q.getContributingUsers());
+		q.setAvgAnswerCorrectness(1.0*q.getCorrectAnswers()/q.getTotalAnswers());
+		
 		storeQuiz(q);
 	}
 }

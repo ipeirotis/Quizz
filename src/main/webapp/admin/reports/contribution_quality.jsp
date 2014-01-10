@@ -31,48 +31,21 @@
 					<th>Capacity @ 90%</th>
 				</tr>
 				<%
+				NumberFormat percentFormat = NumberFormat.getPercentInstance();
+				percentFormat.setMaximumFractionDigits(0);
 				
+				NumberFormat format = NumberFormat.getInstance();
+				format.setMinimumFractionDigits(1);
+				format.setMaximumFractionDigits(1);
 
 				List<Quiz> quizzes = QuizRepository.getQuizzes();
 				for (Quiz quiz : quizzes) {
 					
-					List<QuizPerformance> perf = QuizPerformanceRepository.getQuizPerformancesByQuiz(quiz.getQuizID());
-					
-					int totalUsers = perf.size();
-					int totalCorrect = 0;
-					int totalAnswers = 0;
-					double bits = 0;
-					double avgCorrectness = 0;
-
-					for (QuizPerformance qp: perf) {
-						totalCorrect += qp.getCorrectanswers();
-						totalAnswers += qp.getTotalanswers();
-						avgCorrectness += qp.getPercentageCorrect();
-						bits += qp.getScore();
-						
-					}
-					
-					NumberFormat percentFormat = NumberFormat.getPercentInstance();
-					percentFormat.setMaximumFractionDigits(0);
-					String avgUserCorrectness = percentFormat.format(avgCorrectness/totalUsers);
-					
-					NumberFormat format = NumberFormat.getInstance();
-					format.setMinimumFractionDigits(1);
-					format.setMaximumFractionDigits(1);
-					
-					double capacity100 = (bits/2)/totalUsers;
-					quiz.setCapacity(capacity100);
+					int totalUsers = quiz.getContributingUsers();
 					
 					double capacity99 = quiz.getCapacity(0.01);
 					double capacity95 = quiz.getCapacity(0.05);
 					double capacity90 = quiz.getCapacity(0.10);
-
-					quiz.setContributingUsers(totalUsers);
-					quiz.setCorrectAnswers(totalCorrect);
-					quiz.setTotalAnswers(totalAnswers);
-					quiz.setAvgUserCorrectness(avgCorrectness/totalUsers);
-					
-					QuizRepository.storeQuiz(quiz);
 					%>
 					<tr>
 						<td><a href="qualityByTreatment.jsp?quiz=<%=quiz.getQuizID() %>&start=0&end=500"><%=quiz.getName()%></a></td>

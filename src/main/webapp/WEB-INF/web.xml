@@ -14,24 +14,12 @@
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddQuestion</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>UploadQuestions</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadQuestions</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>AddTreatment</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddTreatment</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AddBadge</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddBadge</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>UploadGoldAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadGoldAnswers</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>UploadSilverAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadSilverAnswers</servlet-class>
 	</servlet>
 		<servlet>
 		<servlet-name>AddUserAnswer</servlet-name>
@@ -40,10 +28,6 @@
 		<servlet>
 		<servlet-name>ProcessUserAnswer</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.ProcessUserAnswer</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>UploadCrowdAnswers</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.servlets.UploadCrowdAnswers</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>DownloadUserAnswers</servlet-name>
@@ -65,14 +49,10 @@
 		<servlet-name>CacheQuizQuestions</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.CacheQuizQuestions</servlet-class>
 	</servlet>
-
-
-
 	<servlet>
 		<servlet-name>DeleteQuiz</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.DeleteQuiz</servlet-class>
 	</servlet>
-
 	<servlet>
 		<servlet-name>AddCampaign</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddCampaign</servlet-class>
@@ -81,7 +61,6 @@
 		<servlet-name>AddAdGroup</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.AddAdGroup</servlet-class>
 	</servlet>
-
 	<servlet>
 		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
 		<servlet-class>com.ipeirotis.crowdquiz.servlets.api.UpdateAllQuestionStatistics</servlet-class>
@@ -132,28 +111,12 @@
 		<url-pattern>/addQuestion</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>UploadQuestions</servlet-name>
-		<url-pattern>/uploadQuestions</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>UploadGoldAnswers</servlet-name>
-		<url-pattern>/uploadGoldAnswers</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>UploadSilverAnswers</servlet-name>
-		<url-pattern>/uploadSilverAnswers</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
 		<servlet-name>AddUserAnswer</servlet-name>
 		<url-pattern>/addUserAnswer</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ProcessUserAnswer</servlet-name>
 		<url-pattern>/processUserAnswer</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>UploadCrowdAnswers</servlet-name>
-		<url-pattern>/uploadCrowdAnswers</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DownloadUserAnswers</servlet-name>
