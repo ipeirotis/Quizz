@@ -6,134 +6,112 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import us.quizz.utils.AuthUtils;
 
 import com.google.api.ads.adwords.jaxws.factory.AdWordsServices;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroup;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdOperation;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdReturnValue;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdServiceInterface;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAdStatus;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterion;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterionOperation;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterionReturnValue;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupCriterionServiceInterface;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupOperation;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupReturnValue;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupServiceInterface;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupStatus;
-import com.google.api.ads.adwords.jaxws.v201302.cm.ApiException;
-import com.google.api.ads.adwords.jaxws.v201302.cm.ApiException_Exception;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BiddableAdGroupCriterion;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BiddingStrategyConfiguration;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BiddingStrategyType;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Budget;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetBudgetDeliveryMethod;
-import com.google.api.ads.adwords.jaxws.v201302.cm.BudgetBudgetPeriod;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
-import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignOperation;
-import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignReturnValue;
-import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignServiceInterface;
-import com.google.api.ads.adwords.jaxws.v201302.cm.CampaignStatus;
-import com.google.api.ads.adwords.jaxws.v201302.cm.CpcBid;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Keyword;
-import com.google.api.ads.adwords.jaxws.v201302.cm.KeywordMatchSetting;
-import com.google.api.ads.adwords.jaxws.v201302.cm.KeywordMatchType;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Money;
-import com.google.api.ads.adwords.jaxws.v201302.cm.NetworkSetting;
-import com.google.api.ads.adwords.jaxws.v201302.cm.Operator;
-import com.google.api.ads.adwords.jaxws.v201302.cm.TextAd;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroup;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAd;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAdOperation;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAdReturnValue;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAdServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAdStatus;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupCriterion;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupCriterionOperation;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupCriterionReturnValue;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupCriterionServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupOperation;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupReturnValue;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupStatus;
+import com.google.api.ads.adwords.jaxws.v201309.cm.ApiException;
+import com.google.api.ads.adwords.jaxws.v201309.cm.ApiException_Exception;
+import com.google.api.ads.adwords.jaxws.v201309.cm.BiddableAdGroupCriterion;
+import com.google.api.ads.adwords.jaxws.v201309.cm.BiddingStrategyConfiguration;
+import com.google.api.ads.adwords.jaxws.v201309.cm.BiddingStrategyType;
+import com.google.api.ads.adwords.jaxws.v201309.cm.Budget;
+import com.google.api.ads.adwords.jaxws.v201309.cm.BudgetBudgetDeliveryMethod;
+import com.google.api.ads.adwords.jaxws.v201309.cm.BudgetBudgetPeriod;
+import com.google.api.ads.adwords.jaxws.v201309.cm.Campaign;
+import com.google.api.ads.adwords.jaxws.v201309.cm.CampaignOperation;
+import com.google.api.ads.adwords.jaxws.v201309.cm.CampaignReturnValue;
+import com.google.api.ads.adwords.jaxws.v201309.cm.CampaignServiceInterface;
+import com.google.api.ads.adwords.jaxws.v201309.cm.CampaignStatus;
+import com.google.api.ads.adwords.jaxws.v201309.cm.CpcBid;
+import com.google.api.ads.adwords.jaxws.v201309.cm.Keyword;
+import com.google.api.ads.adwords.jaxws.v201309.cm.KeywordMatchSetting;
+import com.google.api.ads.adwords.jaxws.v201309.cm.KeywordMatchType;
+import com.google.api.ads.adwords.jaxws.v201309.cm.Money;
+import com.google.api.ads.adwords.jaxws.v201309.cm.NetworkSetting;
+import com.google.api.ads.adwords.jaxws.v201309.cm.Operator;
+import com.google.api.ads.adwords.jaxws.v201309.cm.TextAd;
 import com.google.api.ads.adwords.lib.client.AdWordsSession;
-import com.google.api.ads.common.lib.auth.ClientLoginTokens;
-import com.google.api.ads.common.lib.auth.OfflineCredentials;
-import com.google.api.ads.common.lib.exception.ValidationException;
+import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.appengine.auth.oauth2.AbstractAppEngineAuthorizationCodeServlet;
 
 @SuppressWarnings("serial")
-public class CampaignManagement extends HttpServlet {
+public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServlet {
+	
+	private static final Logger logger = Logger.getLogger(CampaignManagement.class.getName());
+	
+	private static final String CLIENT_CUSTOMER_ID = System.getProperty("adwords.clientCustomerId");
+	private static final String DEVELOPER_TOKEN = System.getProperty("adwords.developerToken");
 
 	private static AdWordsServices	adWordsServices;
 	private static AdWordsSession	session;
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-		String action = "";
+		
 		try {
-			action = req.getParameter("action");
-			if (action == null) {
-				return;
+			Credential credential = getCredential();
+			credential.refreshToken();
+		
+			session = new AdWordsSession.Builder()
+				.withOAuth2Credential(credential)
+				.withDeveloperToken(DEVELOPER_TOKEN)
+				.withClientCustomerId(CLIENT_CUSTOMER_ID)
+				.withUserAgent("PanosIpeirotis-Test")
+				.build();
+			
+			adWordsServices = new AdWordsServices();
+			
+			String action = "";
+			try {
+				action = req.getParameter("action");
+				if (action == null) {
+					return;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			
+			switch (action) {
+				case "addCampaign": 
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		
-		switch (action) {
-			case "addCampaign": 
+			logger.severe(e.getMessage());
 		}
 		
 	}
 	
-	static {
-		Configuration config = new PropertiesConfiguration();
-
-		config.setProperty("api.adwords.developerToken", "xh5fcw0gDCw10sCVmBiMeg");
-		config.setProperty("api.adwords.clientCustomerId", "151-233-8808");
-		config.setProperty("api.adwords.email", "panos@quizz.us");
-		config.setProperty("api.adwords.password", "garbage123!");
-
-		config.setProperty("api.adwords.environment", "production");
-		config.setProperty("api.adwords.soapModule", "com.google.api.ads.adwords.jaxws.AdWordsJaxWsModule");
-		config.setProperty("api.adwords.userAgent", "PanosIpeirotis-Test");
-		
-		// api.adwords.isPartialFailure=false
-		// api.adwords.returnMoneyInMicros=true
-
-		// Get a ClientLogin AuthToken.
-		String clientLoginToken = null;
-		try {
-			clientLoginToken = new ClientLoginTokens.Builder().forApi(ClientLoginTokens.Api.ADWORDS).from(config)
-					.build().requestToken();
-		} catch (IOException | ValidationException e) {
-			e.printStackTrace();
-		}
-
-			try {
-				Credential oAuth2Credential = new OfflineCredentials.Builder()
-						.forApi(com.google.api.ads.common.lib.auth.OfflineCredentials.Api.ADWORDS)
-						.fromFile().build().generateCredential();
-					AdWordsSession awSession = new AdWordsSession.Builder()
-							.fromFile().withOAuth2Credential(oAuth2Credential)
-							.build();
-					Logger.getLogger("AdwordOAuth").info("ADWord Session OAuth2Credintial Access Token:   "+awSession.getOAuth2Credential().getAccessToken());
-					session = awSession;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-// Construct an AdWordsSession.
-//			try {
-//			session = new AdWordsSession.Builder().from(config).withClientLoginToken(clientLoginToken).build();
-//			
-//		} catch (ValidationException e) {
-//			e.printStackTrace();
-//		}
-
-		adWordsServices = new AdWordsServices();
+	@Override
+	protected String getRedirectUri(HttpServletRequest req)
+			throws ServletException, IOException {
+	    return AuthUtils.getRedirectUri(req);
 	}
 
-	public CampaignManagement() throws Exception {
-
-		// NOTE: We used to have session and adWordsServices as instance variables, but it seems that having them as static works better. 
-		// Need to test it further
-
+	@Override
+	protected AuthorizationCodeFlow initializeFlow() 
+			throws ServletException, IOException {
+		return AuthUtils.getAuthorizationCodeFlow();
 	}
 
 	public Campaign createCampaign(String campaignName, Integer dailyBudget) throws Exception {

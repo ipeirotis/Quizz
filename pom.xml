@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.google.api-ads</groupId>
             <artifactId>adwords-appengine</artifactId>
-            <version>1.19.0</version>
+            <version>1.22.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

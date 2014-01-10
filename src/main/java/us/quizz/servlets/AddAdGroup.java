@@ -14,8 +14,8 @@ import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroup;
-import com.google.api.ads.adwords.jaxws.v201302.cm.AdGroupAd;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroup;
+import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAd;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
 
-import com.google.api.ads.adwords.jaxws.v201302.cm.Campaign;
+import com.google.api.ads.adwords.jaxws.v201309.cm.Campaign;
 import com.ipeirotis.crowdquiz.ads.CampaignManagement;
 
 @SuppressWarnings("serial")
