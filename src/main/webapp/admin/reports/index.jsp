@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html;charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="us.quizz.utils.PMF"%>
 <%@ page import="us.quizz.entities.Treatment"%>

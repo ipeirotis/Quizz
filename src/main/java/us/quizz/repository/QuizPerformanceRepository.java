@@ -22,9 +22,11 @@ public class QuizPerformanceRepository {
 	} 
 	
 	protected static List<QuizPerformance> getQuizPerformanceFilterOnField(String field, String value) {
-		String valueName = field + "Param";
+		
 		PersistenceManager pm = PMF.getPM();
 		Query q = pm.newQuery(QuizPerformance.class);
+		
+		String valueName = field + "Param";
 		q.setFilter(field + " == " + valueName);
 		q.declareParameters("String " + valueName);
 
@@ -50,7 +52,7 @@ public class QuizPerformanceRepository {
 		
 		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(QuizPerformance.class);
-		query.getFetchPlan().setFetchSize(500);
+		//query.getFetchPlan().setFetchSize(500);
 		@SuppressWarnings("unchecked")
 		List<QuizPerformance> list = (List<QuizPerformance>) query.execute();
 		list = new LinkedList<QuizPerformance>(list);

@@ -16,7 +16,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.setContentType("text/plain");
+		resp.setContentType("text/plain;charset=utf-8");
 
 		String questionID = req.getParameter("questionID");
 		resp.getWriter().print("QuestionID:"+questionID+"\n");

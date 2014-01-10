@@ -33,7 +33,7 @@ public class GetNumberOfSubmittedAnswers extends HttpServlet {
 		Integer answers = UserAnswerRepository.getUserAnswers(quiz, userid)
 				.size();
 
-		resp.setContentType("application/json");
+		resp.setContentType("application/json;charset=utf-8");
 		Gson gson = new Gson();
 		Response result = new Response(quiz, answers);
 		String json = gson.toJson(result);

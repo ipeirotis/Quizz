@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Experiment;
+import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
+import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.utils.PMF;
 
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -43,11 +45,19 @@ public class ScanUserAnswersAndCreateUsers extends HttpServlet {
 		Query query = pm.newQuery(UserAnswer.class);
 
 		@SuppressWarnings("unchecked")
+		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 		List<UserAnswer> answers = (List<UserAnswer>) query.execute();
 		Set<String> userids = new TreeSet<String>();
 		for (UserAnswer answer : answers) {
 			String userid = answer.getUserid();
+			String quizid = answer.getQuizID();
 			userids.add(userid);
+			
+			queue.add(Builder.withUrl("/api/updateUserQuizStatistics")
+					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
+					.param("userid", userid)
+					.param("quizID", quizid)
+					.method(TaskOptions.Method.POST));
 		}
 		
 		for (String userid : userids) {

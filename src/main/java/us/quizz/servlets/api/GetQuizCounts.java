@@ -43,7 +43,7 @@ public class GetQuizCounts extends HttpServlet {
 			Quiz q = QuizRepository.getQuiz(quiz);
 			Preconditions.checkArgument(q != null, "Unknown quiz ID: " + quiz);
 			
-			resp.setContentType("application/json");
+			resp.setContentType("application/json;charset=utf-8");
 			Gson gson = new Gson();
 			Response result = new Response(quiz, q.getQuestions(),
 					q.getGold(),  q.getSubmitted());
