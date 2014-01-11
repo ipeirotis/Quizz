@@ -54,14 +54,6 @@
 		<servlet-class>us.quizz.servlets.DeleteQuiz</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddCampaign</servlet-name>
-		<servlet-class>us.quizz.servlets.AddCampaign</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>AddAdGroup</servlet-name>
-		<servlet-class>us.quizz.servlets.AddAdGroup</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>UpdateAllQuestionStatistics</servlet-name>
 		<servlet-class>us.quizz.servlets.api.UpdateAllQuestionStatistics</servlet-class>
 	</servlet>
@@ -90,11 +82,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>CampaignManagement</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.ads.CampaignManagement</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>oauth2callback</servlet-name>
-		<servlet-class>com.ipeirotis.crowdquiz.ads.OAuth2CallbackServlet</servlet-class>
+		<servlet-class>us.quizz.ads.CampaignManagement</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -174,24 +162,12 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>AddCampaign</servlet-name>
-		<url-pattern>/addCampaign</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AddAdGroup</servlet-name>
-		<url-pattern>/addAdGroup</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
 		<servlet-name>FacebookLogin</servlet-name>
 		<url-pattern>/fblogin</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>CampaignManagement</servlet-name>
 		<url-pattern>/campaignManagement</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>oauth2callback</servlet-name>
-		<url-pattern>/oauth2callback</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>
@@ -207,17 +183,6 @@
             <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
-
-    <security-constraint>
-		<web-resource-collection>
-			<web-resource-name>campaign management</web-resource-name>
-			<url-pattern>/campaignManagement</url-pattern>
-			<url-pattern>/oauth2callback</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>*</role-name>
-		</auth-constraint>
-	</security-constraint>
 
  <servlet>
   <servlet-name>SystemServiceServlet</servlet-name>

@@ -11,12 +11,6 @@
   <!-- Configure java.util.logging -->
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
-    
-    <!-- TODO: replace client id and secret -->
-    <property name="adwords.appengine.clientId" value="655490062464-g6667jttfubmm8kkppi5gsjhbsj4b5h8.apps.googleusercontent.com" />
-	<property name="adwords.appengine.clientSecret" value="u8Xc-Sg0zhkghkl7EoqV_tRd" />
-	<property name="adwords.clientCustomerId" value="151-233-8808" />
-	<property name="adwords.developerToken" value="xh5fcw0gDCw10sCVmBiMeg" />
   </system-properties>
 
   <!--
