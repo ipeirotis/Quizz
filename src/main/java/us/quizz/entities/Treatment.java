@@ -32,17 +32,17 @@ public class Treatment {
 	// The name of the treatment
 	@Persistent
 	String name;
-	
+
 	// The probability of assigning this treatment to a user
 	@Persistent
 	Double probability;
 
-	// This is to allow for the treatment to block other treatments 
+	// This is to allow for the treatment to block other treatments
 	// within the same experiment
 	@Persistent
 	Set<String> blocks;
 
-	// This is to allow for the treatment to be blocked by other treatments 
+	// This is to allow for the treatment to be blocked by other treatments
 	// within the same experiment
 	@Persistent
 	Set<String> blockedBy;
@@ -50,7 +50,6 @@ public class Treatment {
 	// If this treatment needs to run by itself
 	@Persistent
 	Boolean blocksAll;
-
 
 	public Treatment(String name, Double probability) {
 		this.key = Treatment.generateKeyFromID(name);
@@ -60,9 +59,10 @@ public class Treatment {
 		this.blockedBy = new HashSet<String>();
 		this.blocksAll = false;
 	}
-	
+
 	public static Key generateKeyFromID(String name) {
-		return KeyFactory.createKey(Treatment.class.getSimpleName(), "id_" + name);
+		return KeyFactory.createKey(Treatment.class.getSimpleName(), "id_"
+				+ name);
 	}
 
 	public Key getKey() {
@@ -112,7 +112,5 @@ public class Treatment {
 	public void setBlocksAll(Boolean blocksAll) {
 		this.blocksAll = blocksAll;
 	}
-
-
 
 }

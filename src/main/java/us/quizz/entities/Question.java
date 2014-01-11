@@ -10,7 +10,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
 
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Question {
 
@@ -47,7 +46,6 @@ public class Question {
 		this.numberOfSilverAnswers = numberOfSilverAnswers;
 	}
 
-
 	public Boolean getHasGoldAnswer() {
 		return hasGoldAnswer;
 	}
@@ -64,39 +62,39 @@ public class Question {
 
 	@Persistent
 	private Integer numberOfUserAnswers;
-	
+
 	@Persistent
 	private Boolean hasUserAnswers;
-	
+
 	@Persistent
 	private Double totalUserScore;
-	
-    @Persistent
-    private Boolean hasGoldAnswer;
 
-    @Persistent
-    private Integer numberOfGoldAnswers;
+	@Persistent
+	private Boolean hasGoldAnswer;
 
-    @Persistent
-    private Boolean hasSilverAnswers;
+	@Persistent
+	private Integer numberOfGoldAnswers;
 
-    @Persistent
-    private Integer numberOfSilverAnswers;
-    
-    @Persistent
-    private Integer numberOfCorrentUserAnswers;
-    
-    @Persistent(defaultFetchGroup = "true")
-    private ArrayList<Answer> answers;
+	@Persistent
+	private Boolean hasSilverAnswers;
+
+	@Persistent
+	private Integer numberOfSilverAnswers;
+
+	@Persistent
+	private Integer numberOfCorrentUserAnswers;
+
+	@Persistent(defaultFetchGroup = "true")
+	private ArrayList<Answer> answers;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
-	
+
 	public void setKey(Key key) {
 		this.key = key;
 	}
-	
+
 	public Question(String quizID, String text, Double weight) {
 		this.quizID = quizID;
 		this.weight = weight;
@@ -162,7 +160,7 @@ public class Question {
 	public void setNumberOfUserAnswers(Integer numberOfUserAnswers) {
 		this.numberOfUserAnswers = numberOfUserAnswers;
 	}
-	
+
 	public Integer getNumberOfCorrentUserAnswers() {
 		return numberOfCorrentUserAnswers;
 	}
@@ -190,42 +188,45 @@ public class Question {
 	public void setHasUserAnswers(Boolean hasUserAnswers) {
 		this.hasUserAnswers = hasUserAnswers;
 	}
-	
-	public Boolean getHasUserAnswers(){
+
+	public Boolean getHasUserAnswers() {
 		return hasUserAnswers;
 	}
-	
-	public ArrayList<Answer> getAnswers(){
+
+	public ArrayList<Answer> getAnswers() {
 		return answers;
 	}
-	
-	public void setAnswers(ArrayList<Answer> answers){
+
+	public void setAnswers(ArrayList<Answer> answers) {
 		this.answers = answers;
 	}
-	
-	public void addAnswer(Answer answer){
+
+	public void addAnswer(Answer answer) {
 		answers.add(answer);
 	}
-	
-	public Answer getAnswer(Integer answerID){
+
+	public Answer getAnswer(Integer answerID) {
 		return answers.get(answerID);
 	}
-	
-	public Answer goldAnswer(){
-		// check if there's any designate one of the golds as the feedback answer i.e. feedback_gold
-		for (Answer answer: answers) {
+
+	public Answer goldAnswer() {
+		// check if there's any designate one of the golds as the feedback
+		// answer i.e. feedback_gold
+		for (Answer answer : answers) {
 			Boolean isGold = answer.getIsGold();
-			if (isGold != null && isGold && answer.getKind().equals("feedback_gold")) {
+			if (isGold != null && isGold
+					&& answer.getKind().equals("feedback_gold")) {
 				return answer;
 			}
 		}
-		//if no feedback gold is there return first gold answer
-		for (Answer answer: answers) {
+		// if no feedback gold is there return first gold answer
+		for (Answer answer : answers) {
 			Boolean isGold = answer.getIsGold();
 			if (isGold != null && isGold) {
 				return answer;
 			}
 		}
-		throw new IllegalArgumentException("This question doesn't have gold answer");
+		throw new IllegalArgumentException(
+				"This question doesn't have gold answer");
 	}
 }

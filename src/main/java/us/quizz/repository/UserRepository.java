@@ -1,6 +1,5 @@
 package us.quizz.repository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.utils.PMF;
 
 public class UserRepository {
-	
+
 	public static Set<String> getUserIDs(String quiz) {
 
 		PersistenceManager pm = PMF.getPM();
@@ -28,30 +27,33 @@ public class UserRepository {
 		Query q = pm.newQuery(UserAnswer.class);
 		q.setFilter("quizID == quizParam");
 		q.declareParameters("String quizParam");
-		
+
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quiz);
 
 		Set<String> answers = new TreeSet<String>();
 		int limit = 1000;
-		int i=0;
+		int i = 0;
 		while (true) {
-			q.setRange(i, i+limit);
+			q.setRange(i, i + limit);
 			@SuppressWarnings("unchecked")
-			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-			if (results.size()==0) break;
+			List<UserAnswer> results = (List<UserAnswer>) q
+					.executeWithMap(params);
+			if (results.size() == 0)
+				break;
 			for (UserAnswer ua : results) {
 				answers.add(ua.getUserid());
 			}
-			i+=limit;
+			i += limit;
 		}
-		
+
 		pm.close();
 		return answers;
 	}
-	
-	public static User getOrCreate(String userid){
-		User user = PMF.singleGetObjectById(User.class, User.generateKeyFromID(userid));
+
+	public static User getOrCreate(String userid) {
+		User user = PMF.singleGetObjectById(User.class,
+				User.generateKeyFromID(userid));
 		if (user == null) {
 			user = new User(userid);
 			Experiment exp = new Experiment();
@@ -62,7 +64,8 @@ public class UserRepository {
 		return user;
 	}
 
-	public static User getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
+	public static User getUseridFromCookie(HttpServletRequest req,
+			HttpServletResponse resp) {
 
 		// Get an array of Cookies associated with this domain
 
@@ -85,7 +88,7 @@ public class UserRepository {
 		username.setMaxAge(60 * 24 * 3600);
 		username.setPath("/");
 		resp.addCookie(username);
-		
+
 		return getOrCreate(userid);
 	}
 
@@ -96,7 +99,7 @@ public class UserRepository {
 			Query query = pm.newQuery(User.class);
 			query.setFilter("fbid == fbidParam");
 			query.declareParameters("String fbidParam");
-			
+
 			@SuppressWarnings("unchecked")
 			List<User> users = (List<User>) query.execute(fbid);
 			user = users.get(0);

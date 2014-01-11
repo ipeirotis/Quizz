@@ -1,24 +1,17 @@
 package us.quizz.entities;
 
+import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import us.quizz.utils.PMF;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Key;
 
-import javax.annotation.Nullable;
-import javax.inject.Named;
-
-import us.quizz.utils.PMF;
-
-@Api(
-		name = "quizz",
-		description = "The API for Quizz.us",
-		version = "v1",
-		namespace = @ApiNamespace(
-				ownerDomain = "www.quizz.us", 
-				ownerName = "www.quizz.us", 
-				packagePath = "crowdquiz.entities"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.entities"))
 public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 
 	public UserReferalEndpoint() {
@@ -26,11 +19,11 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	}
 
 	/**
-	 * This method lists all the entities inserted in datastore.
-	 * It uses HTTP GET method and paging support.
-	 *
+	 * This method lists all the entities inserted in datastore. It uses HTTP
+	 * GET method and paging support.
+	 * 
 	 * @return A CollectionResponse class containing the list of all entities
-	 * persisted and a cursor to the next page.
+	 *         persisted and a cursor to the next page.
 	 */
 	@ApiMethod(name = "listUserReferal")
 	public CollectionResponse<UserReferal> listUserReferal(
@@ -40,9 +33,11 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	}
 
 	/**
-	 * This method gets the entity having primary key id. It uses HTTP GET method.
-	 *
-	 * @param id the primary key of the java bean.
+	 * This method gets the entity having primary key id. It uses HTTP GET
+	 * method.
+	 * 
+	 * @param id
+	 *            the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
 	@ApiMethod(name = "getUserReferal")
@@ -51,11 +46,12 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	}
 
 	/**
-	 * This inserts a new entity into App Engine datastore. If the entity already
-	 * exists in the datastore, an exception is thrown.
-	 * It uses HTTP POST method.
-	 *
-	 * @param userreferal the entity to be inserted.
+	 * This inserts a new entity into App Engine datastore. If the entity
+	 * already exists in the datastore, an exception is thrown. It uses HTTP
+	 * POST method.
+	 * 
+	 * @param userreferal
+	 *            the entity to be inserted.
 	 * @return The inserted entity.
 	 */
 	@ApiMethod(name = "insertUserReferal")
@@ -64,11 +60,12 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	}
 
 	/**
-	 * This method is used for updating an existing entity. If the entity does not
-	 * exist in the datastore, an exception is thrown.
-	 * It uses HTTP PUT method.
-	 *
-	 * @param userreferal the entity to be updated.
+	 * This method is used for updating an existing entity. If the entity does
+	 * not exist in the datastore, an exception is thrown. It uses HTTP PUT
+	 * method.
+	 * 
+	 * @param userreferal
+	 *            the entity to be updated.
 	 * @return The updated entity.
 	 */
 	@ApiMethod(name = "updateUserReferal")
@@ -77,10 +74,11 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	}
 
 	/**
-	 * This method removes the entity with primary key id.
-	 * It uses HTTP DELETE method.
-	 *
-	 * @param id the primary key of the entity to be deleted.
+	 * This method removes the entity with primary key id. It uses HTTP DELETE
+	 * method.
+	 * 
+	 * @param id
+	 *            the primary key of the entity to be deleted.
 	 */
 	@ApiMethod(name = "removeUserReferal")
 	public void removeUserReferal(@Named("id") Long id) {

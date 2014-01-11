@@ -11,71 +11,71 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Answer {
 
 	public static String generateKeyID(Long questionID, Integer internalID) {
 		return "id_" + questionID + "_" + internalID;
 	}
-	
+
 	public static Key generateKeyFromID(Long questionID, Integer internalID) {
 		return generateKeyFromKeyID(generateKeyID(questionID, internalID));
 	}
-	
+
 	public static Key generateKeyFromKeyID(String keyID) {
 		return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
 	}
-	
+
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key id;
-	
+
 	@Persistent
 	private Integer internalID;
 
 	@Persistent
 	private String text;
 	// contains html to put on the website?
-	
+
 	@Persistent
 	private Double score;
 	// represents value that is asociated with selecting this answer
-	
+
 	@Persistent
 	private String kind;
 	// used to identify what to expect in metadata and how to interpret score
-	
+
 	@Persistent
 	private String source;
-	
+
 	@Persistent
 	private JsonObject metadata;
-	
+
 	@Persistent
 	private Long questionID;
-	
+
 	@Persistent
 	private String quizID;
 
 	@Persistent
 	private Boolean isGold;
-	
+
 	@Persistent
 	private Double probability;
-	
-	public Answer(Long questionID, String quizID, String text, Integer internalID){
+
+	public Answer(Long questionID, String quizID, String text,
+			Integer internalID) {
 		this.questionID = questionID;
 		this.quizID = quizID;
 		this.text = text;
 		this.internalID = internalID;
 		this.id = generateKeyFromID(questionID, internalID);
 	}
-	
-	public Key getID(){
+
+	public Key getID() {
 		return id;
-	}	
-	
+	}
+
 	public Integer getInternalID() {
 		return internalID;
 	}
@@ -84,75 +84,75 @@ public class Answer {
 		this.internalID = internalID;
 	}
 
-	public String getText(){
+	public String getText() {
 		return text;
 	}
-	
-	public void setText(String text){
+
+	public void setText(String text) {
 		this.text = text;
 	}
-	
-	public Double getScore(){
+
+	public Double getScore() {
 		return score;
 	}
-	
-	public void setScore(Double score){
+
+	public void setScore(Double score) {
 		this.score = score;
 	}
-	
-	public String getKind(){
+
+	public String getKind() {
 		return kind;
 	}
-	
-	public void setKind(String kind){
+
+	public void setKind(String kind) {
 		this.kind = kind;
 	}
-	
-	public void setMetadata(JsonObject metadata){
+
+	public void setMetadata(JsonObject metadata) {
 		this.metadata = metadata;
 	}
-	
-	protected JsonPrimitive getPrimitiveMD(String key){
+
+	protected JsonPrimitive getPrimitiveMD(String key) {
 		return metadata.getAsJsonPrimitive(key);
 	}
-	
-	public String getStringMetadata(String key){
+
+	public String getStringMetadata(String key) {
 		return getPrimitiveMD(key).getAsString();
 	}
-	
-	public int getIntegerMetadata(String key){
+
+	public int getIntegerMetadata(String key) {
 		return getPrimitiveMD(key).getAsInt();
 	}
-	
-	public boolean getBoolMetadata(String key){
+
+	public boolean getBoolMetadata(String key) {
 		return getPrimitiveMD(key).getAsBoolean();
 	}
-	
-	public long getLongMetadata(String key){
+
+	public long getLongMetadata(String key) {
 		return getPrimitiveMD(key).getAsLong();
 	}
-	
+
 	public boolean isSilver() {
 		return probability != null;
 	}
-	
-	public Double getProbability(){
+
+	public Double getProbability() {
 		return probability;
 	}
-	
-	public void setProbability(Double probability){
+
+	public void setProbability(Double probability) {
 		this.probability = probability;
 	}
-	
-	public void setSource(String source){
+
+	public void setSource(String source) {
 		this.source = source;
 	}
-	
-	public void setQuizID(String quizID){
+
+	public void setQuizID(String quizID) {
 		this.quizID = quizID;
 	}
-	
-	public void setQuestionID(Long questionID){
+
+	public void setQuestionID(Long questionID) {
 		this.questionID = questionID;
 	}
 
@@ -184,23 +184,24 @@ public class Answer {
 		this.id = id;
 	}
 
-    public boolean checkIfCorrect(String userInput){
-    	if (kind.equals("feedback_gold")){
-    		return true;
-    	}
-    	if (kind.startsWith("selectable_")) {
-            return kind.equals("selectable_gold");
-        }
-        if (kind.equals("input_text")) {
-            return text.equals(userInput);
-        }
-        throw new UnsupportedOperationException("Undefined correctness for: " + kind);
-    }
+	public boolean checkIfCorrect(String userInput) {
+		if (kind.equals("feedback_gold")) {
+			return true;
+		}
+		if (kind.startsWith("selectable_")) {
+			return kind.equals("selectable_gold");
+		}
+		if (kind.equals("input_text")) {
+			return text.equals(userInput);
+		}
+		throw new UnsupportedOperationException("Undefined correctness for: "
+				+ kind);
+	}
 
-    public String userAnswerText(String userInput){
-        if (kind.equals("input_text")) {
-            return userInput;
-        }
-        return text;
-    }
+	public String userAnswerText(String userInput) {
+		if (kind.equals("input_text")) {
+			return userInput;
+		}
+		return text;
+	}
 }

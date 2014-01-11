@@ -20,26 +20,34 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 public class UpdateAllQuestionStatistics extends HttpServlet {
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		queue.add(Builder.withUrl("/api/updateAllQuestionStatistics")
-				.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
+		queue.add(Builder
+				.withUrl("/api/updateAllQuestionStatistics")
+				.header("Host",
+						BackendServiceFactory.getBackendService()
+								.getBackendAddress("backend"))
 				.method(TaskOptions.Method.POST));
 	}
-	
+
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		
-		List<Question> quizquestions = QuizQuestionRepository.getQuizQuestions();
-		
+
+		List<Question> quizquestions = QuizQuestionRepository
+				.getQuizQuestions();
+
 		for (Question quizquestion : quizquestions) {
-			queue.add(Builder.withUrl("/api/updateQuestionStatistics")
-					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("backend"))
+			queue.add(Builder
+					.withUrl("/api/updateQuestionStatistics")
+					.header("Host",
+							BackendServiceFactory.getBackendService()
+									.getBackendAddress("backend"))
 					.param("questionID", quizquestion.getKey().toString())
 					.method(TaskOptions.Method.POST));
 		}
 	}
-
 
 }

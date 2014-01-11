@@ -68,30 +68,31 @@ public class QuizPerformance {
 	// multiplied with the Bayesian Information Gain.
 	@Persistent
 	Double percentageCorrect;
-	
+
 	// The total information gain by this user. This is the total number of
 	// answers given (excluding the "I do not know" answers)
 	// multiplied with the Bayesian Information Gain.
 	@Persistent
 	Double score;
-	
 
 	// The total information gain by this user. This is the total number of
 	// answers given (excluding the "I do not know" answers)
 	// multiplied with the Bayesian Information Gain.
 	@Persistent
 	Double bayes_infogain;
-	
-	// The (frequentist) total information gain by this user. This is the total number of
+
+	// The (frequentist) total information gain by this user. This is the total
+	// number of
 	// answers given (excluding the "I do not know" answers)
 	// multiplied with the Information Gain, computed in a frequentist way.
 	@Persistent
 	Double freq_infogain;
-	
-	// The Bayesian information gain by this user, computed in an LCB fashion. 
+
+	// The Bayesian information gain by this user, computed in an LCB fashion.
 	// This is the total number of
 	// answers given (excluding the "I do not know" answers)
-	// multiplied with the Bayesian Information Gain minus one standard deviation.
+	// multiplied with the Bayesian Information Gain minus one standard
+	// deviation.
 	@Persistent
 	Double lcb_infogain;
 
@@ -131,12 +132,10 @@ public class QuizPerformance {
 			 * }
 			 * 
 			 * 
-			 * 	if (correct == null) {
-			 *		Answer answer = PMF.singleGetObjectById(Answer.class, ua.getAnswerID());
-			 *	correct = answer.getIsGold();
-			 *	ua.setIsCorrect(correct);
-			 *	UserAnswerRepository.storeUserAnswer(ua);
-			 * }
+			 * if (correct == null) { Answer answer =
+			 * PMF.singleGetObjectById(Answer.class, ua.getAnswerID()); correct
+			 * = answer.getIsGold(); ua.setIsCorrect(correct);
+			 * UserAnswerRepository.storeUserAnswer(ua); }
 			 */
 
 			if (ua.getAction().equals("Submit")) {
@@ -156,20 +155,27 @@ public class QuizPerformance {
 		double meanInfoGainBayes = 0;
 		double varInfoGainBayes = 0;
 		try {
-			meanInfoGainFrequentist = Helper.getInformationGain( getPercentageCorrect(), numberOfMultipleChoiceOptions);
-			meanInfoGainBayes = Helper.getBayesianMeanInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
-			varInfoGainBayes = Helper.getBayesianVarianceInformationGain(this.correctanswers, this.totalanswers-this.correctanswers, numberOfMultipleChoiceOptions);
+			meanInfoGainFrequentist = Helper.getInformationGain(
+					getPercentageCorrect(), numberOfMultipleChoiceOptions);
+			meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
+					this.correctanswers, this.totalanswers
+							- this.correctanswers,
+					numberOfMultipleChoiceOptions);
+			varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
+					this.correctanswers, this.totalanswers
+							- this.correctanswers,
+					numberOfMultipleChoiceOptions);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		this.freq_infogain = this.totalanswers * meanInfoGainFrequentist;
 		this.bayes_infogain = this.totalanswers * meanInfoGainBayes;
-		this.lcb_infogain =  this.totalanswers * (meanInfoGainBayes-Math.sqrt(varInfoGainBayes));
-		if (Double.isNaN(this.lcb_infogain) ||  this.lcb_infogain<0) {
+		this.lcb_infogain = this.totalanswers
+				* (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
+		if (Double.isNaN(this.lcb_infogain) || this.lcb_infogain < 0) {
 			this.lcb_infogain = 0.0;
 		}
-		
 
 	}
 
@@ -208,8 +214,8 @@ public class QuizPerformance {
 	}
 
 	public String displayRankScore() {
-		if (this.getRankScore() == null
-				|| this.getTotalUsers() == null || this.getTotalUsers() == 0) {
+		if (this.getRankScore() == null || this.getTotalUsers() == null
+				|| this.getTotalUsers() == 0) {
 			return "--";
 		}
 
@@ -237,10 +243,11 @@ public class QuizPerformance {
 	public Double getPercentageCorrect() {
 		if (this.totalanswers != null && this.correctanswers != null
 				&& this.totalanswers > 0)
-			this.percentageCorrect = Math.round(100.0 * this.correctanswers / this.totalanswers) / 100.0;
+			this.percentageCorrect = Math.round(100.0 * this.correctanswers
+					/ this.totalanswers) / 100.0;
 		else
-			this.percentageCorrect =  0.0;
-		
+			this.percentageCorrect = 0.0;
+
 		return this.percentageCorrect;
 	}
 
@@ -248,14 +255,13 @@ public class QuizPerformance {
 		return quiz;
 	}
 
-
 	public Integer getRankScore() {
 		return rankScore;
 	}
 
 	public Double getScore() {
 		this.score = this.freq_infogain;
-		
+
 		if (this.score == null)
 			return 0.0;
 		return score;

@@ -1,17 +1,18 @@
 package us.quizz.utils;
 
+import java.util.logging.Logger;
+
 import javax.jdo.JDOHelper;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
-import java.util.logging.Logger;
-
 public final class PMF {
-	
+
 	final static Logger logger = Logger.getLogger(PMF.class.getCanonicalName());
 
-	private static final PersistenceManagerFactory	pmfInstance	= JDOHelper.getPersistenceManagerFactory("transactions-optional");
+	private static final PersistenceManagerFactory pmfInstance = JDOHelper
+			.getPersistenceManagerFactory("transactions-optional");
 
 	private PMF() {
 	}
@@ -19,21 +20,21 @@ public final class PMF {
 	public static PersistenceManagerFactory get() {
 		return pmfInstance;
 	}
-	
+
 	public static PersistenceManager getPM() {
 		return pmfInstance.getPersistenceManager();
 	}
-	
+
 	public static void singleMakePersistent(Object... items) {
 		PersistenceManager pm = getPM();
-		try{
+		try {
 			pm.makePersistentAll(items);
 		} finally {
 			pm.close();
 		}
 	}
-	
-	public static void singleMakePersistent(Object item){
+
+	public static void singleMakePersistent(Object item) {
 		PersistenceManager pm = getPM();
 		try {
 			pm.makePersistent(item);
@@ -41,28 +42,28 @@ public final class PMF {
 			pm.close();
 		}
 	}
-	
-	public static void makePersistentIterative(Object... items){
+
+	public static void makePersistentIterative(Object... items) {
 		PersistenceManager pm = getPM();
 		try {
-			for (Object item: items) {
+			for (Object item : items) {
 				pm.makePersistent(item);
 			}
 		} finally {
 			pm.close();
 		}
 	}
-	
-	public static <T> T singleGetObjectById(Class<T> cls, Object key){
+
+	public static <T> T singleGetObjectById(Class<T> cls, Object key) {
 		try {
 			return singleGetObjectByIdThrowing(cls, key);
 		} catch (JDOObjectNotFoundException ex) {
-			logger.warning("PM: Didn't found object: " + cls.getCanonicalName() +
-					" , key: " + key.toString());
+			logger.warning("PM: Didn't found object: " + cls.getCanonicalName()
+					+ " , key: " + key.toString());
 			return null;
 		}
 	}
-	
+
 	public static <T> T singleGetObjectByIdThrowing(Class<T> cls, Object key) {
 		PersistenceManager pm = getPM();
 		try {
@@ -71,12 +72,15 @@ public final class PMF {
 			pm.close();
 		}
 	}
-	
-	public static <T> T singleGetObjectByIdWithCaching(String cacheKey, Class<T> cls, Object key){
+
+	public static <T> T singleGetObjectByIdWithCaching(String cacheKey,
+			Class<T> cls, Object key) {
 		T item = CachePMF.get(cacheKey, cls);
-		if (item != null) return item;
+		if (item != null)
+			return item;
 		item = singleGetObjectById(cls, key);
-		if (item != null) CachePMF.put(cacheKey, item);
+		if (item != null)
+			CachePMF.put(cacheKey, item);
 		return item;
 	}
 }

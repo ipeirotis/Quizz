@@ -54,67 +54,72 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.appengine.auth.oauth2.AbstractAppEngineAuthorizationCodeServlet;
 
 @SuppressWarnings("serial")
-public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServlet {
-	
-	private static final Logger logger = Logger.getLogger(CampaignManagement.class.getName());
-	
-	private static final String CLIENT_CUSTOMER_ID = System.getProperty("adwords.clientCustomerId");
-	private static final String DEVELOPER_TOKEN = System.getProperty("adwords.developerToken");
+public class CampaignManagement extends
+		AbstractAppEngineAuthorizationCodeServlet {
 
-	private static AdWordsServices	adWordsServices;
-	private static AdWordsSession	session;
+	private static final Logger logger = Logger
+			.getLogger(CampaignManagement.class.getName());
+
+	private static final String CLIENT_CUSTOMER_ID = System
+			.getProperty("adwords.clientCustomerId");
+	private static final String DEVELOPER_TOKEN = System
+			.getProperty("adwords.developerToken");
+
+	private static AdWordsServices adWordsServices;
+	private static AdWordsSession session;
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+
 		try {
 			Credential credential = getCredential();
 			credential.refreshToken();
-		
+
 			session = new AdWordsSession.Builder()
-				.withOAuth2Credential(credential)
-				.withDeveloperToken(DEVELOPER_TOKEN)
-				.withClientCustomerId(CLIENT_CUSTOMER_ID)
-				.withUserAgent("PanosIpeirotis-Test")
-				.build();
-			
+					.withOAuth2Credential(credential)
+					.withDeveloperToken(DEVELOPER_TOKEN)
+					.withClientCustomerId(CLIENT_CUSTOMER_ID)
+					.withUserAgent("PanosIpeirotis-Test").build();
+
 			adWordsServices = new AdWordsServices();
-			
+
 			String action = "";
 			try {
 				action = req.getParameter("action");
 				if (action == null) {
 					return;
 				}
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			switch (action) {
-				case "addCampaign": 
+			case "addCampaign":
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.severe(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@Override
 	protected String getRedirectUri(HttpServletRequest req)
 			throws ServletException, IOException {
-	    return AuthUtils.getRedirectUri(req);
+		return AuthUtils.getRedirectUri(req);
 	}
 
 	@Override
-	protected AuthorizationCodeFlow initializeFlow() 
-			throws ServletException, IOException {
+	protected AuthorizationCodeFlow initializeFlow() throws ServletException,
+			IOException {
 		return AuthUtils.getAuthorizationCodeFlow();
 	}
 
-	public Campaign createCampaign(String campaignName, Integer dailyBudget) throws Exception {
+	public Campaign createCampaign(String campaignName, Integer dailyBudget)
+			throws Exception {
 
 		// Create campaign.
 		Campaign campaign = new Campaign();
@@ -122,7 +127,8 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 		campaign.setStatus(CampaignStatus.ACTIVE);
 
 		BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
-		biddingStrategyConfiguration.setBiddingStrategyType(BiddingStrategyType.MANUAL_CPC);
+		biddingStrategyConfiguration
+				.setBiddingStrategyType(BiddingStrategyType.MANUAL_CPC);
 		campaign.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
 
 		// Create a budget, which can be shared by multiple campaigns.
@@ -136,14 +142,15 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 		budget.setPeriod(BudgetBudgetPeriod.DAILY);
 		campaign.setBudget(budget);
 
-		// Set required keyword match to TRUE to allow for "the broadening of exact and phrase
-		// keyword matches for this campaign to include small variations such as plurals,
+		// Set required keyword match to TRUE to allow for "the broadening of
+		// exact and phrase
+		// keyword matches for this campaign to include small variations such as
+		// plurals,
 		// common misspellings, diacriticals and acronyms"
 		KeywordMatchSetting keywordMatch = new KeywordMatchSetting();
 		keywordMatch.setOptIn(Boolean.TRUE);
 		campaign.getSettings().add(keywordMatch);
 
-		
 		// Set the campaign network options to Search only
 		NetworkSetting networkSetting = new NetworkSetting();
 		networkSetting.setTargetGoogleSearch(true);
@@ -155,31 +162,33 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 		// Add the campaign
 		return campaign;
 
-
 	}
 
 	/**
 	 * @param campaign
 	 * @throws RemoteException
-	 * @throws ApiException_Exception 
+	 * @throws ApiException_Exception
 	 * @throws ApiException
 	 */
-	public Long publishCampaign(Campaign campaign) throws RemoteException, ApiException_Exception {
+	public Long publishCampaign(Campaign campaign) throws RemoteException,
+			ApiException_Exception {
 
 		// Get the CampaignService.
-		CampaignServiceInterface campaignService = adWordsServices.get(session, CampaignServiceInterface.class);
-		
+		CampaignServiceInterface campaignService = adWordsServices.get(session,
+				CampaignServiceInterface.class);
+
 		CampaignOperation operation = new CampaignOperation();
 		operation.setOperand(campaign);
 		operation.setOperator(Operator.ADD);
 		List<CampaignOperation> operations = new ArrayList<CampaignOperation>();
 		operations.add(operation);
-	
+
 		CampaignReturnValue result = campaignService.mutate(operations);
 		if (result != null && result.getValue() != null) {
 			for (Campaign campaignResult : result.getValue()) {
-				System.out.println("Campaign with name \"" + campaignResult.getName() + "\" and id \"" + campaignResult.getId()
-						+ "\" was added.");
+				System.out.println("Campaign with name \""
+						+ campaignResult.getName() + "\" and id \""
+						+ campaignResult.getId() + "\" was added.");
 				return campaignResult.getId();
 			}
 		} else {
@@ -193,41 +202,41 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 	 * @param dailyAmount
 	 * @return
 	 * @throws RemoteException
-	 * @throws ApiException_Exception 
+	 * @throws ApiException_Exception
 	 * @throws ApiException
 	 */
 	/*
-	private Budget getBudget(int dailyBudget) throws RemoteException, ApiException_Exception {
+	 * private Budget getBudget(int dailyBudget) throws RemoteException,
+	 * ApiException_Exception {
+	 * 
+	 * 
+	 * 
+	 * // Get the BudgetService. BudgetServiceInterface budgetService =
+	 * adWordsServices.get(session, BudgetServiceInterface.class);
+	 * 
+	 * // Create a budget, which can be shared by multiple campaigns. Budget
+	 * budget = new Budget(); budget.setName("#" + System.currentTimeMillis());
+	 * Money budgetAmount = new Money();
+	 * budgetAmount.setMicroAmount(dailyAmount); budget.setAmount(budgetAmount);
+	 * budget.setDeliveryMethod(BudgetBudgetDeliveryMethod.STANDARD);
+	 * budget.setPeriod(BudgetBudgetPeriod.DAILY);
+	 * 
+	 * BudgetOperation budgetOperation = new BudgetOperation();
+	 * budgetOperation.setOperand(budget);
+	 * budgetOperation.setOperator(Operator.ADD); List<BudgetOperation>
+	 * budgetoperations = new ArrayList<BudgetOperation>();
+	 * budgetoperations.add(budgetOperation);
+	 * 
+	 * // Only the budgetId should be sent, all other fields will be ignored by
+	 * CampaignService. //Long budgetId =
+	 * budgetService.mutate(budgetoperations).getValue(0).getBudgetId(); Long
+	 * budgetId =
+	 * budgetService.mutate(budgetoperations).getValue().get(0).getBudgetId();
+	 * budget.setBudgetId(budgetId); return budget; }
+	 */
 
-		
-
-		// Get the BudgetService.
-		BudgetServiceInterface budgetService = adWordsServices.get(session, BudgetServiceInterface.class);
-
-		// Create a budget, which can be shared by multiple campaigns.
-		Budget budget = new Budget();
-		budget.setName("#" + System.currentTimeMillis());
-		Money budgetAmount = new Money();
-		budgetAmount.setMicroAmount(dailyAmount);
-		budget.setAmount(budgetAmount);
-		budget.setDeliveryMethod(BudgetBudgetDeliveryMethod.STANDARD);
-		budget.setPeriod(BudgetBudgetPeriod.DAILY);
-
-		BudgetOperation budgetOperation = new BudgetOperation();
-		budgetOperation.setOperand(budget);
-		budgetOperation.setOperator(Operator.ADD);
-		List<BudgetOperation> budgetoperations = new ArrayList<BudgetOperation>();
-		budgetoperations.add(budgetOperation);
-
-		// Only the budgetId should be sent, all other fields will be ignored by CampaignService.
-		//Long budgetId = budgetService.mutate(budgetoperations).getValue(0).getBudgetId();
-		Long budgetId = budgetService.mutate(budgetoperations).getValue().get(0).getBudgetId();
-		budget.setBudgetId(budgetId);
-		return budget;
-	}
-	*/
-
-	public AdGroup createAdgroup(String adGroupName, Long campaignId, Double bidAmount) {
+	public AdGroup createAdgroup(String adGroupName, Long campaignId,
+			Double bidAmount) {
 
 		// Create ad group.
 		AdGroup adGroup = new AdGroup();
@@ -241,8 +250,7 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 		Money m = new Money();
 		m.setMicroAmount(Math.round(bidAmount * 1000000L));
 		bid.setBid(m);
-		
-		
+
 		biddingStrategyConfiguration.getBids().add(bid);
 		adGroup.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
 
@@ -260,21 +268,23 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 		operations.add(operation);
 
 		// Add ad groups.
-		AdGroupServiceInterface adGroupService = adWordsServices.get(session, AdGroupServiceInterface.class);
+		AdGroupServiceInterface adGroupService = adWordsServices.get(session,
+				AdGroupServiceInterface.class);
 
 		AdGroupReturnValue result = adGroupService.mutate(operations);
 
 		// Display new ad groups.
 		for (AdGroup adGroupResult : result.getValue()) {
-			System.out.println("Ad group with name \"" + adGroupResult.getName() + "\" and id \"" + adGroupResult.getId()
-					+ "\" was added.");
+			System.out.println("Ad group with name \""
+					+ adGroupResult.getName() + "\" and id \""
+					+ adGroupResult.getId() + "\" was added.");
 			return adGroupResult.getId();
 		}
 		return null;
 	}
 
-	public AdGroupAd createTextAd(String adHeadline, String adDescr1, String adDescr2, String displayURL,
-			String targetURL, Long adGroupId) {
+	public AdGroupAd createTextAd(String adHeadline, String adDescr1,
+			String adDescr2, String displayURL, String targetURL, Long adGroupId) {
 
 		// Create text ad.
 		TextAd textAd = new TextAd();
@@ -298,7 +308,8 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 	public Long publishTextAd(AdGroupAd ad) throws Exception {
 
 		// Get the AdGroupAdService.
-		AdGroupAdServiceInterface adGroupAdService = adWordsServices.get(session, AdGroupAdServiceInterface.class);
+		AdGroupAdServiceInterface adGroupAdService = adWordsServices.get(
+				session, AdGroupAdServiceInterface.class);
 
 		// Create operations.
 		AdGroupAdOperation textAdGroupAdOperation = new AdGroupAdOperation();
@@ -307,13 +318,14 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 
 		List<AdGroupAdOperation> operations = new ArrayList<AdGroupAdOperation>();
 		operations.add(textAdGroupAdOperation);
-		
+
 		// Add ads.
 		AdGroupAdReturnValue result = adGroupAdService.mutate(operations);
 
 		// Display ads.
 		for (AdGroupAd adGroupAdResult : result.getValue()) {
-			System.out.println("Ad with id  \"" + adGroupAdResult.getAd().getId() + "\"" + " and type \""
+			System.out.println("Ad with id  \""
+					+ adGroupAdResult.getAd().getId() + "\"" + " and type \""
 					+ adGroupAdResult.getAd().getAdType() + "\" was added.");
 			return adGroupAdResult.getAd().getId();
 		}
@@ -333,23 +345,31 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 		keywordBiddableAdGroupCriterion.setCriterion(keyword);
 
 		AdGroupCriterionOperation keywordAdGroupCriterionOperation = new AdGroupCriterionOperation();
-		keywordAdGroupCriterionOperation.setOperand(keywordBiddableAdGroupCriterion);
+		keywordAdGroupCriterionOperation
+				.setOperand(keywordBiddableAdGroupCriterion);
 		keywordAdGroupCriterionOperation.setOperator(Operator.ADD);
 
 		List<AdGroupCriterionOperation> operations = new ArrayList<AdGroupCriterionOperation>();
 		operations.add(keywordAdGroupCriterionOperation);
 
-		AdGroupCriterionServiceInterface adGroupCriterionService = adWordsServices.get(session,
-				AdGroupCriterionServiceInterface.class);
+		AdGroupCriterionServiceInterface adGroupCriterionService = adWordsServices
+				.get(session, AdGroupCriterionServiceInterface.class);
 		// Add keywords.
-		AdGroupCriterionReturnValue result = adGroupCriterionService.mutate(operations);
+		AdGroupCriterionReturnValue result = adGroupCriterionService
+				.mutate(operations);
 
 		// Display results.
 		for (AdGroupCriterion adGroupCriterionResult : result.getValue()) {
-			System.out.println("Keyword ad group criterion with ad group id \"" + adGroupCriterionResult.getAdGroupId()
-					+ "\", criterion id \"" + adGroupCriterionResult.getCriterion().getId() + "\", text \""
-					+ ((Keyword) adGroupCriterionResult.getCriterion()).getText() + "\" and match type \""
-					+ ((Keyword) adGroupCriterionResult.getCriterion()).getMatchType() + "\" was added.");
+			System.out.println("Keyword ad group criterion with ad group id \""
+					+ adGroupCriterionResult.getAdGroupId()
+					+ "\", criterion id \""
+					+ adGroupCriterionResult.getCriterion().getId()
+					+ "\", text \""
+					+ ((Keyword) adGroupCriterionResult.getCriterion())
+							.getText()
+					+ "\" and match type \""
+					+ ((Keyword) adGroupCriterionResult.getCriterion())
+							.getMatchType() + "\" was added.");
 		}
 	}
 
@@ -373,12 +393,14 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 
 			String campaignName = "Test";
 			Integer dailyBudget = 10;
-			Campaign campaign = service.createCampaign(campaignName, dailyBudget);
+			Campaign campaign = service.createCampaign(campaignName,
+					dailyBudget);
 			Long campaignId = service.publishCampaign(campaign);
 
 			String adGroupName = "Test-Adgroup";
 			Double cpcbid = 0.05;
-			AdGroup adgroup = service.createAdgroup(adGroupName, campaignId, cpcbid);
+			AdGroup adgroup = service.createAdgroup(adGroupName, campaignId,
+					cpcbid);
 			Long adgroupId = service.publishAdgroup(adgroup);
 			for (int i = 1; i <= 5; i++) {
 				String bidKeyword = "Ipeirotis " + i;
@@ -390,11 +412,12 @@ public class CampaignManagement extends AbstractAppEngineAuthorizationCodeServle
 			String adDescr2 = "This is the second line";
 			String displayURL = "http://crowd-power.appspot.com";
 			String targetURL = "http://crowd-power.appspot.com";
-			AdGroupAd ad = service.createTextAd(adHeadline, adDescr1, adDescr2, displayURL, targetURL, adgroupId);
-			//Long textAdId = service.publishTextAd(ad);
+			AdGroupAd ad = service.createTextAd(adHeadline, adDescr1, adDescr2,
+					displayURL, targetURL, adgroupId);
+			// Long textAdId = service.publishTextAd(ad);
 			service.publishTextAd(ad);
 		} catch (Exception e) {
-			//logger.log(Level.SEVERE, "Exception in Testing.", e);
+			// logger.log(Level.SEVERE, "Exception in Testing.", e);
 			e.printStackTrace();
 		}
 	}

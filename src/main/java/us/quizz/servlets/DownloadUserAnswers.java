@@ -17,10 +17,11 @@ import us.quizz.utils.PMF;
 @SuppressWarnings("serial")
 public class DownloadUserAnswers extends HttpServlet {
 
-	final static Logger					logger						= Logger.getLogger("com.ipeirotis.crowdquiz");
+	final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 
 		String quizID = request.getParameter("quizID");
 		String name = QuizRepository.getQuiz(quizID).getName();
@@ -41,7 +42,7 @@ public class DownloadUserAnswers extends HttpServlet {
 		sbApp(sb, "timestamp");
 		sbApp(sb, "browser");
 		sb.append("referer").append("\n");
-			
+
 		for (UserAnswer ue : answers) {
 			String userid = safeStr(ue.getUserid());
 			String questionID = safeStr(ue.getQuestionID());
@@ -51,7 +52,7 @@ public class DownloadUserAnswers extends HttpServlet {
 			String timestamp = safeStr(ue.getTimestamp());
 			String browser = safeStr(ue.getBrowser());
 			String referer = safeStr(ue.getReferer());
-			
+
 			sbApp(sb, userid);
 			sbApp(sb, questionID);
 			sbApp(sb, useranswer);
@@ -62,21 +63,22 @@ public class DownloadUserAnswers extends HttpServlet {
 			sb.append(referer).append("\n");
 		}
 		pm.close();
-		
+
 		response.setContentType("text/tab-separated-values; charset=UTF-8");
 		response.addHeader("cache-control", "must-revalidate");
 		response.addHeader("pragma", "must-revalidate");
-		response.addHeader("content-disposition", "attachment; filename=\"" + name + "-answers.tsv\"");
+		response.addHeader("content-disposition", "attachment; filename=\""
+				+ name + "-answers.tsv\"");
 		response.resetBuffer();
 		response.setBufferSize(sb.length());
 		response.getOutputStream().print(sb.toString());
 		response.flushBuffer();
 	}
-	
+
 	protected String safeStr(Object obj) {
 		return (obj == null) ? "" : obj.toString();
 	}
-	
+
 	protected void sbApp(StringBuffer sb, String text) {
 		sb.append(text).append("\t");
 	}

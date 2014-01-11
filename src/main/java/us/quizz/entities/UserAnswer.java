@@ -11,48 +11,47 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswer {
-	
-    public static Key generateKeyFromID(String questionID, String userID) {
-        return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_" + questionID + "_" + userID);
-    }
 
+	public static Key generateKeyFromID(String questionID, String userID) {
+		return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_"
+				+ questionID + "_" + userID);
+	}
 
 	@Persistent
-	private String	userid;
-	
+	private String userid;
+
 	@Persistent
-	private Long	timestamp;
-	
+	private Long timestamp;
+
 	@Persistent
-	private String	ipaddress;
+	private String ipaddress;
 
 	@Persistent
 	private Integer answerID;
 
-    @Persistent
-    private String userInput;
-	
+	@Persistent
+	private String userInput;
+
 	@Persistent
 	private Double score;
 
 	@Persistent
-	private String	referer;
+	private String referer;
 
 	@Persistent
 	private Long questionID;
 
 	@Persistent
 	private String quizID;
-	
-	@Persistent
-	private String	browser;
 
 	@Persistent
-	private String	action;
+	private String browser;
 
 	@Persistent
-    private Boolean isCorrect;
+	private String action;
 
+	@Persistent
+	private Boolean isCorrect;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -63,16 +62,16 @@ public class UserAnswer {
 		this.answerID = useranswerID;
 		this.userid = userid;
 	}
-	
-    public UserAnswer(String userid, String questionID, String answerID) {
+
+	public UserAnswer(String userid, String questionID, String answerID) {
 		this(userid, Long.parseLong(questionID), Integer.parseInt(answerID));
 	}
 
-    public String getAction() {
+	public String getAction() {
 		return action;
 	}
 
-    public Integer getAnswerID() {
+	public Integer getAnswerID() {
 		return answerID;
 	}
 
@@ -80,25 +79,23 @@ public class UserAnswer {
 		return browser;
 	}
 
-
-	
 	public Boolean getCorrect() {
-        return isCorrect;
-    }
-	
+		return isCorrect;
+	}
+
 	public String getIpaddress() {
 		return ipaddress;
 	}
 
 	public Boolean getIsCorrect() {
-            return isCorrect;
-    }
-	
+		return isCorrect;
+	}
+
 	public Key getKey() {
 		return key;
 	}
 
-	public Long getQuestionID(){
+	public Long getQuestionID() {
 		return questionID;
 	}
 
@@ -121,10 +118,10 @@ public class UserAnswer {
 	public String getUserid() {
 		return userid;
 	}
-	
+
 	public String getUserInput() {
-        return userInput;
-    }
+		return userInput;
+	}
 
 	public void setAction(String action) {
 		this.action = action.replace('\t', ' ');
@@ -134,23 +131,21 @@ public class UserAnswer {
 		this.answerID = answerID;
 	}
 
-
 	public void setBrowser(String browser) {
 		this.browser = browser.replace('\t', ' ');
 	}
 
 	public void setCorrect(Boolean correct) {
-        isCorrect = correct;
-    }
+		isCorrect = correct;
+	}
 
 	public void setIpaddress(String ipaddress) {
 		this.ipaddress = ipaddress.replace('\t', ' ');
 	}
 
-
 	public void setIsCorrect(Boolean isCorrect) {
-            this.isCorrect = isCorrect;
-    }
+		this.isCorrect = isCorrect;
+	}
 
 	public void setQuestionID(Long questionID) {
 		this.questionID = questionID;
@@ -164,19 +159,19 @@ public class UserAnswer {
 		this.referer = referer.replace('\t', ' ');
 	}
 
-    public void setScore(Double score) {
+	public void setScore(Double score) {
 		this.score = score;
 	}
 
-    public void setTimestamp(Long timestamp) {
+	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
 
-    public void setUserid(String userid) {
+	public void setUserid(String userid) {
 		this.userid = userid.replace('\t', ' ');
 	}
 
-    public void setUserInput(String userInput) {
-        this.userInput = userInput;
-    }
+	public void setUserInput(String userInput) {
+		this.userInput = userInput;
+	}
 }

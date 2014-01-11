@@ -9,21 +9,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
-
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
+
 public class CachePMF {
-	
-	public static int DEFAULT_LIFETIME = 24*3600;
-	
+
+	public static int DEFAULT_LIFETIME = 24 * 3600;
+
 	public static <T> void put(String key, T obj) {
-		
+
 		put(key, obj, DEFAULT_LIFETIME);
-		
+
 	}
 
 	public static <T> void put(String key, T obj, int seconds) {
@@ -31,10 +31,11 @@ public class CachePMF {
 		Cache cache;
 
 		Map props = new HashMap();
-        props.put(GCacheFactory.EXPIRATION_DELTA, seconds);
-		
+		props.put(GCacheFactory.EXPIRATION_DELTA, seconds);
+
 		try {
-			CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
 			cache = cacheFactory.createCache(props);
 		} catch (CacheException e) {
 			cache = null;
@@ -53,7 +54,7 @@ public class CachePMF {
 		cache.put(key, bos.toByteArray());
 
 	}
-	
+
 	public static <T> T get(String key, Class<T> type) {
 
 		Cache cache = null;
@@ -66,7 +67,6 @@ public class CachePMF {
 			return null;
 		}
 
-
 		T result = null;
 		if (cache != null && cache.containsKey(key)) {
 			byte[] value = (byte[]) cache.get(key);
@@ -78,7 +78,7 @@ public class CachePMF {
 				e.printStackTrace();
 			}
 
-		} 
+		}
 		return result;
 	}
 

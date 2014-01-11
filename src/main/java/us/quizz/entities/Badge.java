@@ -14,24 +14,24 @@ public class Badge {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key	key;
-	
+	private Key key;
+
 	@Persistent
-	private String	badgename;
-	
+	private String badgename;
+
 	@Persistent
-	private String	shortname;
-	
+	private String shortname;
+
 	public Badge(String badgename, String shortname) {
 		this.key = generateKeyFromID(badgename);
 		this.badgename = badgename;
 		this.shortname = shortname;
 	}
-	
+
 	public static Key generateKeyFromID(String name) {
 		return KeyFactory.createKey(Badge.class.getSimpleName(), "id_" + name);
 	}
-	
+
 	public Key getKey() {
 		return key;
 	}
@@ -43,7 +43,7 @@ public class Badge {
 	public String getBadgename() {
 		return badgename;
 	}
-	
+
 	public void setBadgename(String badgename) {
 		this.badgename = badgename;
 	}
@@ -51,7 +51,7 @@ public class Badge {
 	public String getShortname() {
 		return shortname;
 	}
-	
+
 	public void setShortname(String shortname) {
 		this.shortname = shortname;
 	}

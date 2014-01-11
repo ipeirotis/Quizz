@@ -14,14 +14,16 @@ import us.quizz.utils.PMF;
 @SuppressWarnings("serial")
 public class AddUserAnswer extends HttpServlet {
 
-	final static Logger	logger	= Logger.getLogger("com.ipeirotis.crowdquiz");
+	final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 
 		resp.setContentType("text/plain");
 
-		Utils.ensureParameters(req, "action", "userid", "questionID", "useranswer");
+		Utils.ensureParameters(req, "action", "userid", "questionID",
+				"useranswer");
 
 		String action = req.getParameter("action").replace('\t', ' ');
 		String userid = req.getParameter("userid").replace('\t', ' ');
@@ -40,15 +42,17 @@ public class AddUserAnswer extends HttpServlet {
 		} else {
 			return;
 		}
-		
+
 		UserAnswer ue = new UserAnswer(userid, questionID, useranswerID);
 		ue.setReferer(referer);
 		ue.setBrowser(browser);
 		ue.setIpaddress(ipAddress);
 		ue.setTimestamp(timestamp);
 		ue.setAction(action);
-		ue.setQuizID(QuizQuestionRepository.getQuizQuestion(questionID).getQuizID());
-		if (isCorrect!=null) ue.setIsCorrect(isCorrect);
+		ue.setQuizID(QuizQuestionRepository.getQuizQuestion(questionID)
+				.getQuizID());
+		if (isCorrect != null)
+			ue.setIsCorrect(isCorrect);
 
 		PMF.singleMakePersistent(ue);
 

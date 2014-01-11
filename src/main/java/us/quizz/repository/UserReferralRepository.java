@@ -18,38 +18,37 @@ public class UserReferralRepository {
 		Query query = pm.newQuery(UserReferal.class);
 		query.setFilter("quiz == quizParam");
 		query.declareParameters("String quizParam");
-		
+
 		TreeSet<String> userids = new TreeSet<String>();
 		int limit = 1000;
-		int i=0;
+		int i = 0;
 		while (true) {
-			query.setRange(i, i+limit);
+			query.setRange(i, i + limit);
 			@SuppressWarnings("unchecked")
-			List<UserReferal> results = (List<UserReferal>) query.execute(quizid);
-			if (results.size()==0) break;
+			List<UserReferal> results = (List<UserReferal>) query
+					.execute(quizid);
+			if (results.size() == 0)
+				break;
 			for (UserReferal ur : results) {
 				userids.add(ur.getUserid());
 			}
-			i+=limit;
+			i += limit;
 		}
 		pm.close();
-		
+
 		return userids;
 	}
-	
-	public static void createAndStoreUserReferal(HttpServletRequest req, String userid) {
+
+	public static void createAndStoreUserReferal(HttpServletRequest req,
+			String userid) {
 
 		UserReferal ur = new UserReferal(userid);
 		ur.setQuiz(req.getParameter("quizID"));
 		ur.setReferer(req.getHeader("Referer"));
 		ur.setIpaddress(req.getRemoteAddr());
 		ur.setBrowser(req.getHeader("User-Agent"));
-		
+
 		PMF.singleMakePersistent(ur);
 	}
-	
-	
-	
-	
-	
+
 }

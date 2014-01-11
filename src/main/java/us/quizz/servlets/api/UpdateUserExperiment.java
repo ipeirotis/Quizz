@@ -7,30 +7,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
 import us.quizz.entities.Experiment;
-import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.User;
-import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.servlets.ChannelHelpers;
 import us.quizz.servlets.Utils;
 import us.quizz.utils.PMF;
 
 /**
  * 
- * Takes as input a userid and a quiz, updates the user scores for the quiz, and then computes
- * the rank of the user within the set of all other users. Finally, it puts the QuizPerformance object
- * in the memcache for quick retrieval.
+ * Takes as input a userid and a quiz, updates the user scores for the quiz, and
+ * then computes the rank of the user within the set of all other users.
+ * Finally, it puts the QuizPerformance object in the memcache for quick
+ * retrieval.
  * 
  * @author ipeirotis
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class UpdateUserExperiment extends HttpServlet {
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		resp.setContentType("text/plain");
 
 		Utils.ensureParameters(req, "userid");
@@ -50,6 +47,5 @@ public class UpdateUserExperiment extends HttpServlet {
 			pm.close();
 		}
 	}
-	
-	
+
 }

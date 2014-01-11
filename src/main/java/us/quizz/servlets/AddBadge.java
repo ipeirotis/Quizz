@@ -14,7 +14,8 @@ import us.quizz.utils.PMF;
 public class AddBadge extends HttpServlet {
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 
 		Utils.ensureParameters(req, "name");
 		String badgename = req.getParameter("name").trim();

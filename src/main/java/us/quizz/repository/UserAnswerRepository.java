@@ -4,21 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.entities.UserReferal;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.PMF;
 
-
 public class UserAnswerRepository {
-	
+
 	public static List<UserAnswer> getUserAnswers(String quiz) {
 
 		PersistenceManager pm = PMF.getPM();
@@ -26,22 +22,24 @@ public class UserAnswerRepository {
 		Query q = pm.newQuery(UserAnswer.class);
 		q.setFilter("quizID == quizParam");
 		q.declareParameters("String quizParam");
-		
+
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quiz);
 
 		List<UserAnswer> answers = new ArrayList<UserAnswer>();
 		int limit = 1000;
-		int i=0;
+		int i = 0;
 		while (true) {
-			q.setRange(i, i+limit);
+			q.setRange(i, i + limit);
 			@SuppressWarnings("unchecked")
-			List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-			if (results.size()==0) break;
+			List<UserAnswer> results = (List<UserAnswer>) q
+					.executeWithMap(params);
+			if (results.size() == 0)
+				break;
 			answers.addAll(results);
-			i+=limit;
+			i += limit;
 		}
-		
+
 		pm.close();
 		return answers;
 	}
@@ -56,7 +54,7 @@ public class UserAnswerRepository {
 		Query q = pm.newQuery(UserAnswer.class);
 		q.setFilter("quizID == quizParam && userid == useridParam");
 		q.declareParameters("String quizParam, String useridParam");
-		
+
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quiz);
 		params.put("useridParam", userid);
@@ -66,18 +64,20 @@ public class UserAnswerRepository {
 		pm.close();
 		return results;
 	}
-	
+
 	public static UserAnswer getUserAnswer(String questionID, String userID) {
 
 		String key = "useranswer_" + questionID + userID;
 		return PMF.singleGetObjectByIdWithCaching(key, UserAnswer.class,
 				UserAnswer.generateKeyFromID(questionID, userID));
 	}
-	
-	public static UserAnswerFeedback getUserAnswerFeedback(Long questionID, String userID) {
 
-		String key = "useranswerfeedback_"+questionID + userID;
-		return PMF.singleGetObjectByIdWithCaching(key, UserAnswerFeedback.class,
+	public static UserAnswerFeedback getUserAnswerFeedback(Long questionID,
+			String userID) {
+
+		String key = "useranswerfeedback_" + questionID + userID;
+		return PMF.singleGetObjectByIdWithCaching(key,
+				UserAnswerFeedback.class,
 				UserAnswerFeedback.generateKeyFromID(questionID, userID));
 	}
 
@@ -86,7 +86,8 @@ public class UserAnswerRepository {
 	}
 
 	public static void storeUserAnswerFeedback(UserAnswerFeedback uaf) {
-		String key = "useranswerfeedback_"+uaf.getQuestionID() + uaf.getUserid();
+		String key = "useranswerfeedback_" + uaf.getQuestionID()
+				+ uaf.getUserid();
 		CachePMF.put(key, uaf);
 		PMF.singleMakePersistent(uaf);
 	}

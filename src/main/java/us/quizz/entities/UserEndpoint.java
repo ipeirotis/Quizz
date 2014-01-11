@@ -13,26 +13,19 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Key;
 
-@Api(
-		name = "quizz",
-		description = "The API for Quizz.us",
-		version = "v1",
-		namespace = @ApiNamespace(
-				ownerDomain = "www.quizz.us", 
-				ownerName = "www.quizz.us", 
-				packagePath = "crowdquiz.entities"))
-public class UserEndpoint extends BaseCollectionEndpoint<User>{
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.entities"))
+public class UserEndpoint extends BaseCollectionEndpoint<User> {
 
-	public UserEndpoint(){
+	public UserEndpoint() {
 		super(User.class, "User");
 	}
-	
+
 	/**
-	 * This method lists all the entities inserted in datastore.
-	 * It uses HTTP GET method and paging support.
-	 *
+	 * This method lists all the entities inserted in datastore. It uses HTTP
+	 * GET method and paging support.
+	 * 
 	 * @return A CollectionResponse class containing the list of all entities
-	 * persisted and a cursor to the next page.
+	 *         persisted and a cursor to the next page.
 	 */
 	@ApiMethod(name = "listUser")
 	public CollectionResponse<User> listUser(
@@ -40,7 +33,7 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 			@Nullable @Named("limit") Integer limit) {
 		return listItems(cursorString, limit);
 	}
-	
+
 	@Override
 	protected void fetchItem(User user) {
 		user.getExperiment();
@@ -48,17 +41,20 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	}
 
 	/**
-	 * This method gets the entity having primary key id. It uses HTTP GET method.
-	 *
-	 * @param id the primary key of the java bean.
+	 * This method gets the entity having primary key id. It uses HTTP GET
+	 * method.
+	 * 
+	 * @param id
+	 *            the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
 	@ApiMethod(name = "getUser")
 	public User getUser(@Named("userid") String userid) {
-		User user = PMF.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
+		User user = PMF.singleGetObjectByIdThrowing(User.class,
+				User.generateKeyFromID(userid));
 		Experiment e = user.getExperiment();
 		for (String s : e.getTreatments().keySet())
-			 e.getTreatments().get(s);
+			e.getTreatments().get(s);
 		Map<String, Boolean> treatments = user.getTreatments();
 		for (String s : treatments.keySet())
 			treatments.get(s);
@@ -66,11 +62,12 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	}
 
 	/**
-	 * This inserts a new entity into App Engine datastore. If the entity already
-	 * exists in the datastore, an exception is thrown.
-	 * It uses HTTP POST method.
-	 *
-	 * @param user the entity to be inserted.
+	 * This inserts a new entity into App Engine datastore. If the entity
+	 * already exists in the datastore, an exception is thrown. It uses HTTP
+	 * POST method.
+	 * 
+	 * @param user
+	 *            the entity to be inserted.
 	 * @return The inserted entity.
 	 */
 	@ApiMethod(name = "insertUser")
@@ -79,11 +76,12 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	}
 
 	/**
-	 * This method is used for updating an existing entity. If the entity does not
-	 * exist in the datastore, an exception is thrown.
-	 * It uses HTTP PUT method.
-	 *
-	 * @param user the entity to be updated.
+	 * This method is used for updating an existing entity. If the entity does
+	 * not exist in the datastore, an exception is thrown. It uses HTTP PUT
+	 * method.
+	 * 
+	 * @param user
+	 *            the entity to be updated.
 	 * @return The updated entity.
 	 */
 	@ApiMethod(name = "updateUser")
@@ -92,10 +90,11 @@ public class UserEndpoint extends BaseCollectionEndpoint<User>{
 	}
 
 	/**
-	 * This method removes the entity with primary key id.
-	 * It uses HTTP DELETE method.
-	 *
-	 * @param id the primary key of the entity to be deleted.
+	 * This method removes the entity with primary key id. It uses HTTP DELETE
+	 * method.
+	 * 
+	 * @param id
+	 *            the primary key of the entity to be deleted.
 	 */
 	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("userid") String userid) {

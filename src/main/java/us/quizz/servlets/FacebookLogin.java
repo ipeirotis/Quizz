@@ -14,7 +14,8 @@ import us.quizz.utils.PMF;
 public class FacebookLogin extends HttpServlet {
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		User user = null;
 		Utils.ensureParameters(req, "fbid", "sessionid", "url");
 		String fbid = req.getParameter("fbid");

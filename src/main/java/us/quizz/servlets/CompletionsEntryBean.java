@@ -1,16 +1,15 @@
 package us.quizz.servlets;
 
-
 public class CompletionsEntryBean {
 
-	private String	mid;
-	private Double		coverage;
-	private Double		filled_entities;
-	private Double		unsupported_entities;
-	private Double		empty_entities;
-	private Double	empty_weight;
-	private Double	total_weight;
-	private Double	filled_weight;
+	private String mid;
+	private Double coverage;
+	private Double filled_entities;
+	private Double unsupported_entities;
+	private Double empty_entities;
+	private Double empty_weight;
+	private Double total_weight;
+	private Double filled_weight;
 
 	public String getMid() {
 

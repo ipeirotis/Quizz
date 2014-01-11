@@ -15,9 +15,11 @@ import com.google.api.client.util.store.MemoryDataStoreFactory;
 import com.google.common.collect.Lists;
 
 public class AuthUtils {
-	
-	public static final String CLIENT_ID = System.getProperty("adwords.appengine.clientId");
-	public static final String CLIENT_SECRET = System.getProperty("adwords.appengine.clientSecret");
+
+	public static final String CLIENT_ID = System
+			.getProperty("adwords.appengine.clientId");
+	public static final String CLIENT_SECRET = System
+			.getProperty("adwords.appengine.clientSecret");
 	public static final String CALLBACK_URI = "/oauth2callback";
 	public static final String SCOPE = "https://adwords.google.com/api/adwords/";
 
@@ -25,22 +27,17 @@ public class AuthUtils {
 
 	public static String getRedirectUri(HttpServletRequest req)
 			throws ServletException, IOException {
-	    GenericUrl url = new GenericUrl(req.getRequestURL().toString());
-	    url.setRawPath(CALLBACK_URI);
-	    return url.build(); 
+		GenericUrl url = new GenericUrl(req.getRequestURL().toString());
+		url.setRawPath(CALLBACK_URI);
+		return url.build();
 	}
 
-	public static AuthorizationCodeFlow getAuthorizationCodeFlow() throws ServletException,
-			IOException {
+	public static AuthorizationCodeFlow getAuthorizationCodeFlow()
+			throws ServletException, IOException {
 
-		return new GoogleAuthorizationCodeFlow.Builder(
-			     new NetHttpTransport(),
-			     new JacksonFactory(),
-			     CLIENT_ID,
-			     CLIENT_SECRET,
-			     Lists.newArrayList(SCOPE))
-			     .setDataStoreFactory(STORE_FACTORY)
-			     .setApprovalPrompt("force")
-			     .setAccessType("offline").build();
+		return new GoogleAuthorizationCodeFlow.Builder(new NetHttpTransport(),
+				new JacksonFactory(), CLIENT_ID, CLIENT_SECRET,
+				Lists.newArrayList(SCOPE)).setDataStoreFactory(STORE_FACTORY)
+				.setApprovalPrompt("force").setAccessType("offline").build();
 	}
 }

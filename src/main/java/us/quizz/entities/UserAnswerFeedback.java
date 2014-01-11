@@ -12,36 +12,37 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-/** 
- * The Quiz is the basic unit of the application. Each quiz contains 
- * a set of QuizQuestions. 
+/**
+ * The Quiz is the basic unit of the application. Each quiz contains a set of
+ * QuizQuestions.
  * 
  * @author ipeirotis
- *
+ * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswerFeedback {
 
 	public static Key generateKeyFromID(Long questionID, String userid) {
-		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(), "id_" + questionID + "_" + userid);
+		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(),
+				"id_" + questionID + "_" + userid);
 	}
-	
+
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
 
 	@Persistent
 	private Long questionID;
-	
+
 	@Persistent
-	private String	userid;
+	private String userid;
 
 	@Persistent
 	private Integer userAnswerID;
-	
+
 	@Persistent
 	private String userAnswerText;
-	
+
 	@Persistent
 	private String userNewBadges;
 
@@ -49,18 +50,19 @@ public class UserAnswerFeedback {
 	private Boolean isCorrect;
 
 	@Persistent
-	private String	correctAnswerText;
-	
+	private String correctAnswerText;
+
 	@Persistent
 	private Integer numCorrectAnswers;
-	
+
 	@Persistent
 	private Integer numTotalAnswers;
-	
-	@Persistent
-	private String	difficulty;
 
-	public UserAnswerFeedback(Long questionID, String userid, Integer userAnswerID, Boolean isCorrect) {
+	@Persistent
+	private String difficulty;
+
+	public UserAnswerFeedback(Long questionID, String userid,
+			Integer userAnswerID, Boolean isCorrect) {
 
 		this.questionID = questionID;
 		this.userid = userid;
@@ -112,7 +114,7 @@ public class UserAnswerFeedback {
 
 	public void setUserNewBadges(List<Badge> newBadges) {
 		String userNewBadges = "";
-		for(Badge b : newBadges){
+		for (Badge b : newBadges) {
 			userNewBadges += b.getBadgename() + "...";
 		}
 		this.userNewBadges = userNewBadges;
@@ -121,7 +123,7 @@ public class UserAnswerFeedback {
 	public void setDifficulty(String difficulty) {
 		this.difficulty = difficulty;
 	}
-	
+
 	public void setUserAnswerID(Integer userAnswerID) {
 		this.userAnswerID = userAnswerID;
 	}
@@ -163,17 +165,17 @@ public class UserAnswerFeedback {
 	}
 
 	public void computeDifficulty() {
-		if (numTotalAnswers==null || numCorrectAnswers==null || numTotalAnswers==0) {
+		if (numTotalAnswers == null || numCorrectAnswers == null
+				|| numTotalAnswers == 0) {
 			this.difficulty = "--";
 			return;
 		}
-		
-		double d = 1.0*this.numCorrectAnswers/this.numTotalAnswers;
+
+		double d = 1.0 * this.numCorrectAnswers / this.numTotalAnswers;
 		NumberFormat percentFormat = NumberFormat.getPercentInstance();
 		percentFormat.setMaximumFractionDigits(0);
 		this.difficulty = percentFormat.format(d);
-		
-	}
 
+	}
 
 }

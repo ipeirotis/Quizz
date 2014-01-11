@@ -17,25 +17,24 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.base.Strings;
 
 public abstract class BaseCollectionEndpoint<T> {
-	
+
 	private Class<T> cls;
 	private String name;
-	
+
 	protected BaseCollectionEndpoint(Class<T> cls, String name) {
 		this.cls = cls;
 		this.name = name;
 	}
-	
+
 	/**
-	 * This method lists all the entities inserted in datastore.
-	 * It uses HTTP GET method and paging support.
-	 *
+	 * This method lists all the entities inserted in datastore. It uses HTTP
+	 * GET method and paging support.
+	 * 
 	 * @return A CollectionResponse class containing the list of all entities
-	 * persisted and a cursor to the next page.
+	 *         persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings("unchecked")
-	protected CollectionResponse<T> listItems(
-				String cursorString, Integer limit) {
+	protected CollectionResponse<T> listItems(String cursorString, Integer limit) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
@@ -60,7 +59,8 @@ public abstract class BaseCollectionEndpoint<T> {
 			if (cursor != null)
 				cursorString = cursor.toWebSafeString();
 
-			// Tight loop for fetching all entities from datastore and accomodate
+			// Tight loop for fetching all entities from datastore and
+			// accomodate
 			// for lazy fetch.
 			for (T obj : execute) {
 				fetchItem(obj);
@@ -69,22 +69,24 @@ public abstract class BaseCollectionEndpoint<T> {
 			mgr.close();
 		}
 
-		return CollectionResponse.<T> builder()
-				.setItems(execute).setNextPageToken(cursorString).build();
+		return CollectionResponse.<T> builder().setItems(execute)
+				.setNextPageToken(cursorString).build();
 	}
-	
+
 	abstract protected Key getKey(T item);
-	
+
 	/**
 	 * In typical case we don't need to do anything
+	 * 
 	 * @param item
 	 */
-	protected void fetchItem(T item){};
-	
+	protected void fetchItem(T item) {
+	};
+
 	protected boolean contains(T item) {
 		return PMF.singleGetObjectById(cls, getKey(item)) != null;
 	}
-	
+
 	protected T insert(T item) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -97,8 +99,8 @@ public abstract class BaseCollectionEndpoint<T> {
 		}
 		return item;
 	}
-	
-	protected T update(T item){
+
+	protected T update(T item) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (!contains(item)) {
@@ -110,7 +112,7 @@ public abstract class BaseCollectionEndpoint<T> {
 		}
 		return item;
 	}
-	
+
 	protected void remove(Key key) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

@@ -19,23 +19,21 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 public class UpdateCountStatistics extends HttpServlet {
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		resp.setContentType("text/plain;charset=utf-8");
 
 		Queue queue = QueueFactory.getQueue("default");
 		List<Quiz> list = QuizRepository.getQuizzes();
 
 		for (Quiz quiz : list) {
-			
+
 			resp.getWriter().println("Updating quiz: " + quiz.getName());
-			
+
 			queue.add(Builder.withUrl("/api/getQuizCounts")
-					.param("quizID", quiz.getQuizID())
-					.param("cache", "no")
+					.param("quizID", quiz.getQuizID()).param("cache", "no")
 					.method(TaskOptions.Method.GET));
-			
-		
-			
+
 		}
 	}
 }
