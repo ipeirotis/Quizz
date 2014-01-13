@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
+import us.quizz.servlets.Utils;
 
 import com.google.api.ads.adwords.jaxws.factory.AdWordsServices;
 import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroup;
@@ -85,7 +86,7 @@ public class CampaignManagement extends HttpServlet {
 		        .build();
 
 			adWordsServices = new AdWordsServices();
-			/*
+			
 			try {
 				Utils.ensureParameters(req, "quizID", "budget", "cpcbid", "keywords", "adheadline",
 						"adline1", "adline2");
@@ -94,10 +95,8 @@ public class CampaignManagement extends HttpServlet {
 			} catch (IllegalArgumentException ex) {
 				resp.sendError(422);// 422 (Unprocessable Entity)
 				return;
-			}*/
-			
-			//TODO: remove test function after checking and enable code above
-			test(resp);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.severe(e.getMessage());
@@ -163,7 +162,7 @@ public class CampaignManagement extends HttpServlet {
 			Queue queueAdgroup = QueueFactory.getQueue("adgroup");
 			long delay = 10; // in seconds
 			long etaMillis = System.currentTimeMillis() + delay * 1000L;
-			TaskOptions taskOptions = Builder.withUrl("/addAdGroup")
+			TaskOptions taskOptions = Builder.withUrl("/campaignManagament")
 					.param("quizID", quizID)
 					.param("cpcbid", cpcbid)
 					.param("keywords", keywords)
