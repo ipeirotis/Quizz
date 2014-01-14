@@ -41,6 +41,48 @@ public class QuizPerformanceRepository {
 
 		return results;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static long getNumberOfAnswers(String quizID, int a, int b){
+		PersistenceManager pm = PMF.getPM();
+		Query q = pm.newQuery(QuizPerformance.class);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("correctanswers <= aParam");
+		if(quizID != null)
+			sb.append(" && quiz == quizIDparam");
+
+		q.setFilter(sb.toString());
+		q.declareParameters("Integer aParam");
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("aParam", a);
+		
+		if(quizID != null){
+			q.declareParameters("String quizIDparam");
+			params.put("quizIDparam", quizID);
+		}
+		
+		int i = 0;
+		int limit = 1000;
+		long result = 0;
+		
+		while (true) {
+			q.setRange(i, i + limit);
+			List<QuizPerformance> list = (List<QuizPerformance>) q.executeWithMap(params);
+			if (list.size() == 0)
+				break;
+			
+			for(QuizPerformance quizPerformance : list){
+				if(quizPerformance.getIncorrectanswers() <= b)
+					result++;
+			}
+			i += limit;
+		}
+		pm.close();
+
+		return result;
+	}
 
 	public static List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
 		return getQuizPerformanceFilterOnField("quiz", quizid);

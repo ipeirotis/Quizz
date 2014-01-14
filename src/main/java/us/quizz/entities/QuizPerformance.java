@@ -62,6 +62,10 @@ public class QuizPerformance {
 	// The number of correct answers given by the user
 	@Persistent
 	Integer correctanswers;
+	
+	// The number of incorrect answers given by the user
+	@Persistent
+	Integer incorrectanswers;
 
 	// The total information gain by this user. This is the total number of
 	// answers given (excluding the "I do not know" answers)
@@ -110,6 +114,7 @@ public class QuizPerformance {
 		this.quiz = quiz;
 		this.totalanswers = 0;
 		this.correctanswers = 0;
+		this.incorrectanswers = 0;
 		this.score = 0.0;
 	}
 
@@ -148,6 +153,7 @@ public class QuizPerformance {
 		}
 		this.correctanswers = c;
 		this.totalanswers = t;
+		this.incorrectanswers = t - c;
 
 		int numberOfMultipleChoiceOptions = 4;
 
@@ -235,6 +241,10 @@ public class QuizPerformance {
 	public Integer getCorrectanswers() {
 		return correctanswers;
 	}
+	
+	public Integer getIncorrectanswers() {
+		return incorrectanswers;
+	}
 
 	public Key getKey() {
 		return key;
@@ -282,6 +292,10 @@ public class QuizPerformance {
 	public void increaseCorrect() {
 		this.correctanswers++;
 	}
+	
+	public void increaseIncorrect() {
+		this.incorrectanswers++;
+	}
 
 	public void increaseTotal() {
 		this.totalanswers++;
@@ -289,6 +303,10 @@ public class QuizPerformance {
 
 	public void setCorrectanswers(Integer correctanswers) {
 		this.correctanswers = correctanswers;
+	}
+	
+	public void setIncorrectanswers(Integer incorrectanswers) {
+		this.incorrectanswers = incorrectanswers;
 	}
 
 	public void setKey(Key key) {

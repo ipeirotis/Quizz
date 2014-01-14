@@ -212,10 +212,14 @@ public class ProcessUserAnswer extends HttpServlet {
 
 		if (isCorrect) {
 			qp.increaseCorrect();
+		}else{
+			qp.increaseIncorrect();
 		}
+		
 		if (action.equals("Submit")) {
 			qp.increaseTotal();
 		}
+		
 		QuizPerformanceRepository.cacheQuizPerformance(qp);
 
 	}

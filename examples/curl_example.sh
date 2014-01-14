@@ -42,3 +42,5 @@ curl "$WEB_URL/api/updateCountStatistics"
 # update only given one:
 curl "$WEB_URL/api/getQuizCounts?quizID=$QUIZ_ID&cache=no"
 
+# get survival probability:
+curl "$WEB_URL/api/getSurvivalProbability?a_from=5&b_from=2&a_to=6&b_to=2"

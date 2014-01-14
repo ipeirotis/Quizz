@@ -74,7 +74,10 @@
 		<servlet-name>UpdateUserExperiment</servlet-name>
 		<servlet-class>us.quizz.servlets.api.UpdateUserExperiment</servlet-class>
 	</servlet>
-	
+	<servlet>
+		<servlet-name>GetSurvivalProbability</servlet-name>
+		<servlet-class>us.quizz.servlets.api.GetSurvivalProbability</servlet-class>
+	</servlet>
 	
 	<servlet>
 		<servlet-name>FacebookLogin</servlet-name>
@@ -159,6 +162,10 @@
 	<servlet-mapping>
 		<servlet-name>DeleteQuiz</servlet-name>
 		<url-pattern>/api/deleteQuiz</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetSurvivalProbability</servlet-name>
+		<url-pattern>/api/getSurvivalProbability</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
