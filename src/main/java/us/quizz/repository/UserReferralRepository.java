@@ -1,5 +1,8 @@
 package us.quizz.repository;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,6 +15,8 @@ import us.quizz.entities.UserReferal;
 import us.quizz.utils.PMF;
 
 public class UserReferralRepository {
+	
+	private static final List<String> URL_PARAMS = Arrays.asList("ref", "url");
 
 	public static Set<String> getUserIDsByQuiz(String quizid) {
 		PersistenceManager pm = PMF.getPM();
@@ -44,11 +49,33 @@ public class UserReferralRepository {
 
 		UserReferal ur = new UserReferal(userid);
 		ur.setQuiz(req.getParameter("quizID"));
-		ur.setReferer(req.getHeader("Referer"));
+		ur.setReferer(getReferer(req));
 		ur.setIpaddress(req.getRemoteAddr());
 		ur.setBrowser(req.getHeader("User-Agent"));
 
 		PMF.singleMakePersistent(ur);
+	}
+	
+	private static String getReferer(HttpServletRequest req){
+		String referer = req.getHeader("Referer");
+		if(referer != null && !referer.isEmpty()){
+        	try {
+				for(String pair : referer.split("&")){
+					int idx = pair.indexOf('=');
+			        if(idx > 0) {
+						String name = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+						for(String param : URL_PARAMS){
+							if(param.equals(name))
+								return URLDecoder.decode(pair.substring(idx+1), "UTF-8");
+						}
+			        }
+				}
+			} catch (UnsupportedEncodingException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+		
+		return referer;
 	}
 
 }
