@@ -16,7 +16,7 @@ import us.quizz.utils.PMF;
 
 public class UserReferralRepository {
 	
-	private static final List<String> URL_PARAMS = Arrays.asList("ref", "url");
+	private static final List<String> URL_PARAMS = Arrays.asList("url");
 
 	public static Set<String> getUserIDsByQuiz(String quizid) {
 		PersistenceManager pm = PMF.getPM();
