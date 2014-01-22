@@ -1,8 +1,5 @@
 package us.quizz.repository;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,11 +9,11 @@ import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.UserReferal;
+import us.quizz.entities.UserReferalCounter;
 import us.quizz.utils.PMF;
+import us.quizz.utils.UrlUtils;
 
 public class UserReferralRepository {
-	
-	private static final List<String> URL_PARAMS = Arrays.asList("url");
 
 	public static Set<String> getUserIDsByQuiz(String quizid) {
 		PersistenceManager pm = PMF.getPM();
@@ -49,33 +46,24 @@ public class UserReferralRepository {
 
 		UserReferal ur = new UserReferal(userid);
 		ur.setQuiz(req.getParameter("quizID"));
-		ur.setReferer(getReferer(req));
 		ur.setIpaddress(req.getRemoteAddr());
 		ur.setBrowser(req.getHeader("User-Agent"));
+		String referer = UrlUtils.extractUrl(req.getHeader("Referer"));
+		ur.setReferer(referer);
+		ur.setDomain(UrlUtils.extractDomain(referer));
 
 		PMF.singleMakePersistent(ur);
-	}
-	
-	private static String getReferer(HttpServletRequest req){
-		String referer = req.getHeader("Referer");
-		if(referer != null && !referer.isEmpty()){
-        	try {
-				for(String pair : referer.split("&")){
-					int idx = pair.indexOf('=');
-			        if(idx > 0) {
-						String name = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
-						for(String param : URL_PARAMS){
-							if(param.equals(name))
-								return URLDecoder.decode(pair.substring(idx+1), "UTF-8");
-						}
-			        }
-				}
-			} catch (UnsupportedEncodingException e) {
-				throw new IllegalArgumentException(e);
-			}
-		}
 		
-		return referer;
+		if(ur.getDomain() != null){
+			UserReferalCounter referalCounter = 
+					PMF.singleGetObjectById(UserReferalCounter.class, ur.getDomain());
+			
+			if(referalCounter == null)
+				referalCounter = new UserReferalCounter(ur.getDomain());
+			
+			referalCounter.incCount();
+			PMF.singleMakePersistent(referalCounter);
+		}
 	}
 
 }

@@ -197,13 +197,14 @@
   <init-param>
    <param-name>services</param-name>
 	   <param-value>
-		us.quizz.entities.QuizEndpoint,
-		us.quizz.entities.QuestionEndpoint,
-		us.quizz.entities.QuizPerformanceEndpoint,
-		us.quizz.entities.UserAnswerEndpoint,
-		us.quizz.entities.UserAnswerFeedbackEndpoint,
-		us.quizz.entities.UserEndpoint,
-		us.quizz.entities.UserReferalEndpoint
+	    us.quizz.endpoints.UtilEndpoint,
+		us.quizz.endpoints.QuizEndpoint,
+		us.quizz.endpoints.QuestionEndpoint,
+		us.quizz.endpoints.QuizPerformanceEndpoint,
+		us.quizz.endpoints.UserAnswerEndpoint,
+		us.quizz.endpoints.UserAnswerFeedbackEndpoint,
+		us.quizz.endpoints.UserEndpoint,
+		us.quizz.endpoints.UserReferalEndpoint
 	  </param-value>
   </init-param>
  </servlet>

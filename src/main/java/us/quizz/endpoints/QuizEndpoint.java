@@ -1,4 +1,4 @@
-package us.quizz.entities;
+package us.quizz.endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.QuizesOperations;
 import us.quizz.utils.PMF;
@@ -19,7 +21,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.entities"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
 public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 
 	protected static int QUESTION_PACKAGE_SIZE = 10;

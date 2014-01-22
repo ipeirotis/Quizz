@@ -1,4 +1,4 @@
-package us.quizz.entities;
+package us.quizz.endpoints;
 
 import java.util.HashMap;
 import java.util.List;

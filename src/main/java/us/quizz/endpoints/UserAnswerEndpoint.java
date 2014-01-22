@@ -1,9 +1,12 @@
-package us.quizz.entities;
+package us.quizz.endpoints;
 
 import java.util.List;
 
 import javax.inject.Named;
 
+import us.quizz.entities.AnswerChallengeCounter;
+import us.quizz.entities.User;
+import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerChallengeStatus;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.UserAnswerRepository;
@@ -16,7 +19,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.entities"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
 public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
 
 	public UserAnswerEndpoint() {
@@ -49,9 +52,7 @@ public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
 		List<UserAnswer> userAnswers = UserAnswerRepository
 				.getUserAnswersWithChallenge(quizID, userid);
 		
-		if(userAnswers.size() == 0)
-			userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
-		else{
+		if(userAnswers.size() != 0){
 			boolean exist = false;
 			for(UserAnswer ua : userAnswers){
 				if(ua.getAnswerChallengeText().equals(message)){
@@ -67,7 +68,6 @@ public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
 			if(!exist)
 				userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
 		}
-		
 		
 		return update(userAnswer);
 	}
