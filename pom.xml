@@ -217,6 +217,7 @@
 			</plugin>
 		</plugins>
 
+<!--  From https://code.google.com/p/google-web-toolkit/wiki/WorkingWithMaven  -->
 		<pluginManagement>
 			<plugins>
 				<plugin>
