@@ -13,6 +13,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class User {
+	
+	private static final Integer INITIAL_CHALLENGE_BUDGET = 3;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -33,10 +35,14 @@ public class User {
 	// The set of treatments assigned to the user
 	@Persistent(defaultFetchGroup = "true")
 	private Experiment experiment;
+	
+	@Persistent
+	private Integer challengeBudget;
 
 	public User(String userid) {
 		this.userid = userid;
 		this.key = generateKeyFromID(userid);
+		this.challengeBudget = INITIAL_CHALLENGE_BUDGET;
 	}
 
 	public static Key generateKeyFromID(String userid) {
@@ -91,4 +97,19 @@ public class User {
 		return this.experiment.treatments;
 	}
 
+	public Integer getChallengeBudget() {
+		return challengeBudget;
+	}
+
+	public void setChallengeBudget(Integer challengeBudget) {
+		this.challengeBudget = challengeBudget;
+	}
+	
+	public void incChallengeBudget() {
+		this.challengeBudget++;
+	}
+
+	public void decChallengeBudget() {
+		this.challengeBudget--;
+	}
 }

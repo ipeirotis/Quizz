@@ -34,10 +34,10 @@ public final class PMF {
 		}
 	}
 
-	public static void singleMakePersistent(Object item) {
+	public static <T> T singleMakePersistent(T item) {
 		PersistenceManager pm = getPM();
 		try {
-			pm.makePersistent(item);
+			return pm.makePersistent(item);
 		} finally {
 			pm.close();
 		}

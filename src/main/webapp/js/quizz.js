@@ -51,8 +51,8 @@ function shuffle(array) {
 		if (!username) {
 			username = createUsername();
 		}
-		
-		return username;
+		return   'a0c4886a-eb56-4e29-9202-2b4852b63e31';
+		//return username;
 		//return "3a94d8ff-dfc6-4c1e-94d2-3f6548f80aaa";
 	}
 
@@ -172,6 +172,18 @@ function shuffle(array) {
 				console.log("Sending your answer failed: " + textStatus);
 			});
 	}
+	
+	function sendAnswerChallenge(data){
+		var url = getAPIURL() + 'addAnswerChallenge';
+		$.post(url, data)
+		.done(function(response) {
+		   	console.log(response);
+		   	$('#challengeModal').modal('hide');
+		})
+		.fail(function(jqXHR, textStatus, errorThrown) {
+			console.log("Sending challenge answer failed: " + textStatus);
+		});
+	}
 
 	function endOfQuizzPack () {
 		$('#addUserEntry').hide();
@@ -206,11 +218,11 @@ function shuffle(array) {
 			hideFeedback();
 			makeLoadingScreen("Loading feedback");
 			sendSingleQuestionResults(formData).done(
-				function (feedback) {
-					USER_FEEDBACKS.push(feedback);
+				function (response) {console.log(response);
+					USER_FEEDBACKS.push(response.userAnswerFeedback);
 					disableLoadingScreen();
 					hideQuestion();
-					showFeedback(feedback, prepareNextQuestion);
+					showFeedback(response.userAnswerFeedback, response.userAnswer, prepareNextQuestion);
 			});
 			USER_ANSWERS.push(answer);
 			return false;
@@ -357,7 +369,7 @@ ANSWERS_GENERATORS = {
 		$("#scoresLoading").hide();
 	}
 
-	function displayFeedback(feedback) {
+	function displayFeedback(feedback, userAnswer) {
 		var newBadgeHtml = 'New Badges: ';
 		if(feedback.userNewBadges != "" && $('#showNewBadges').hasClass('show')){
 			$('#showNewBadges').html(newBadgeHtml + feedback.userNewBadges);
@@ -375,7 +387,15 @@ ANSWERS_GENERATORS = {
 				$('#showMessage').html('The answer <span class="label label-important">'+feedback.userAnswerText+'</span> was <span class="label label-important">incorrect</span>!');
 				$('#showMessage').attr('class', 'alert alert-error');
 			}
-			$('#showCorrect').show().html('The correct answer was <span class="label label-success">'+feedback.correctAnswerText+'</span>.');
+			$('#showCorrect').show().html('The correct answer was <span class="label label-success">'+feedback.correctAnswerText+'</span>.' +
+					'<a href="#challengeModal" role="button" class="btn btn-small" data-toggle="modal">Challenge the answer</a>');
+			$('#sendChallengeAnswerBtn').click (function () {
+				sendAnswerChallenge({quizID: getURLParameterByName('quizID'), 
+									 questionID: feedback.questionID, 
+									 userAnswerID: userAnswer.key.id,
+									 userid: feedback.userid,
+									 message: $('#challengeAnswerMessage').val()});
+			});
 		}
 
 		var crowdPerformance;
@@ -471,8 +491,8 @@ function setFeedbackBtnMsg(val) {
 // Shows the feedback page of the previous question and calls the callbackf
 // if either the user clicks on the #skipFeedbackBtn or 5 seconds elapsed
 // if there is another question.
-function showFeedback(feedback, callbackf) {
-  displayFeedback(feedback);
+function showFeedback(feedback, userAnswer, callbackf) {
+  displayFeedback(feedback, userAnswer);
   if($('#feedback').has("#skipFeedbackBtn").length == 0){
     $('#feedback').append('<input id="skipFeedbackBtn" type="submit"' +
         ' class="btn btn-info"/>');

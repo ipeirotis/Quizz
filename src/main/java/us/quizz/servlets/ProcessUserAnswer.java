@@ -2,7 +2,9 @@ package us.quizz.servlets;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -117,16 +119,19 @@ public class ProcessUserAnswer extends HttpServlet {
 				useranswerID, userInput, isCorrect, numCorrectAnswers,
 				numTotalAnswers, newBadges);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
-		storeUserAnswer(user, quizID, questionID, action, useranswerID,
+		UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, useranswerID,
 				userInput, ipAddress, browser, referer, timestamp, isCorrect);
 		updateQuizPerformance(user, questionID);
-		returnUserAnswerFeedback(uaf, resp);
+		returnUserAnswerFeedback(ua, uaf, resp);
 	}
 
-	protected void returnUserAnswerFeedback(UserAnswerFeedback uaf,
+	protected void returnUserAnswerFeedback(UserAnswer ua, UserAnswerFeedback uaf,
 			HttpServletResponse resp) throws IOException {
 		resp.setContentType("application/json;charset=UTF-8");
-		new Gson().toJson(uaf, resp.getWriter());
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("userAnswer", ua);
+		result.put("userAnswerFeedback", uaf);
+		new Gson().toJson(result, resp.getWriter());
 	}
 
 	protected UserAnswerFeedback createUserAnswerFeedback(User user,
@@ -173,7 +178,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	 * @param timestamp
 	 * @param isCorrect
 	 */
-	private void storeUserAnswer(User user, String quizID, Long questionID,
+	private UserAnswer storeUserAnswer(User user, String quizID, Long questionID,
 			String action, Integer useranswerID, String userInput,
 			String ipAddress, String browser, String referer, Long timestamp,
 			Boolean isCorrect) {
@@ -188,7 +193,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		ue.setIsCorrect(isCorrect);
 		ue.setQuizID(quizID);
 		ue.setUserInput(userInput);
-		PMF.singleMakePersistent(ue);
+		return PMF.singleMakePersistent(ue);
 	}
 
 	/**

@@ -80,6 +80,23 @@ public class UserAnswerRepository {
 				UserAnswerFeedback.class,
 				UserAnswerFeedback.generateKeyFromID(questionID, userID));
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<UserAnswer> getUserAnswersWithChallenge(String quiz, String userid) {
+		PersistenceManager pm = PMF.getPM();
+		Query q = pm.newQuery(UserAnswer.class);
+		q.setFilter("quizID == quizParam && userid == useridParam");
+		q.declareParameters("String quizParam, String useridParam");
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quiz);
+		params.put("useridParam", userid);
+		
+		List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
+		pm.close();
+		
+		return result;
+	}
 
 	public static void storeUserAnswer(UserAnswer ua) {
 		PMF.singleMakePersistent(ua);

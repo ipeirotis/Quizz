@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.google.appengine.api.datastore.Key;
+
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
@@ -137,6 +139,12 @@ public class QuizQuestionRepository {
 		String declaredParameters = "String quizParam, Boolean hasGoldParam";
 		return getQuestionsWithCaching(key, filter, declaredParameters,
 				getQuizGoldQuestionsParameters(quizID));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Question> getQuizQuestionsByKeys(List<Key> keys) {
+		Query q = PMF.getPM().newQuery("select from " + Question.class.getName() + " where key == :keys");
+	    return (List<Question>) q.execute(keys);
 	}
 
 	public static void storeQuizQuestion(Question q) {

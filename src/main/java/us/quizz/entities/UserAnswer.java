@@ -6,8 +6,11 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import us.quizz.enums.AnswerChallengeStatus;
+
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswer {
@@ -52,6 +55,15 @@ public class UserAnswer {
 
 	@Persistent
 	private Boolean isCorrect;
+
+	@Persistent
+	private Text answerChallengeText;
+	
+	@Persistent
+	private AnswerChallengeStatus answerChallengeStatus;
+	
+	@Persistent
+	private Double answerChallengeWeight = 0.0d;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -174,4 +186,29 @@ public class UserAnswer {
 	public void setUserInput(String userInput) {
 		this.userInput = userInput;
 	}
+
+	public Double getAnswerChallengeWeight() {
+		return answerChallengeWeight;
+	}
+
+	public void setAnswerChallengeWeight(Double answerChallengeWeight) {
+		this.answerChallengeWeight = answerChallengeWeight;
+	}
+
+	public AnswerChallengeStatus getAnswerChallengeStatus() {
+		return answerChallengeStatus;
+	}
+
+	public void setAnswerChallengeStatus(AnswerChallengeStatus answerChallengeStatus) {
+		this.answerChallengeStatus = answerChallengeStatus;
+	}
+
+	public Text getAnswerChallengeText() {
+		return answerChallengeText;
+	}
+
+	public void setAnswerChallengeText(Text answerChallengeText) {
+		this.answerChallengeText = answerChallengeText;
+	}
+
 }

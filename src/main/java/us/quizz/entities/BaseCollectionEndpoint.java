@@ -84,7 +84,10 @@ public abstract class BaseCollectionEndpoint<T> {
 	};
 
 	protected boolean contains(T item) {
-		return PMF.singleGetObjectById(cls, getKey(item)) != null;
+		if(getKey(item) == null)
+			return false;
+		else
+			return PMF.singleGetObjectById(cls, getKey(item)) != null;
 	}
 
 	protected T insert(T item) {
@@ -121,6 +124,17 @@ public abstract class BaseCollectionEndpoint<T> {
 		} finally {
 			mgr.close();
 		}
+	}
+	
+	protected T get(Long id){
+		PersistenceManager mgr = getPersistenceManager();
+		T item = null;
+		try {
+			item = mgr.getObjectById(cls, id);
+		} finally {
+			mgr.close();
+		}
+		return item;
 	}
 
 	protected static PersistenceManager getPersistenceManager() {

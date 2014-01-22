@@ -80,7 +80,21 @@
         </div>
     </div>
 
-    <script>
+	<div class="modal hide" id="challengeModal" role="dialog">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h4>Challenge the answer</h4>
+		</div>
+		<div class="modal-body">
+			<textarea rows="4" style="width:500px" id="challengeAnswerMessage"></textarea>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		    <button class="btn btn-primary" id="sendChallengeAnswerBtn">Send</button>
+		</div>
+	</div>
+
+	<script>
     $(document).ready(function() {
 		$('.nav-pills li').tooltip();
         setUpPerformanceUpdatesChannel(getURLParameterByName('changelToken'));
