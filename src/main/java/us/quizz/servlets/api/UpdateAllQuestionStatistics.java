@@ -45,7 +45,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 					.header("Host",
 							BackendServiceFactory.getBackendService()
 									.getBackendAddress("backend"))
-					.param("questionID", quizquestion.getKey().toString())
+					.param("questionID", quizquestion.getID().toString())
 					.method(TaskOptions.Method.POST));
 		}
 	}
