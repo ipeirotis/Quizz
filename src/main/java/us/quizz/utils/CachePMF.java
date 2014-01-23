@@ -1,10 +1,6 @@
 package us.quizz.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,68 +13,45 @@ import net.sf.jsr107cache.CacheManager;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 
 public class CachePMF {
-
+	
 	public static int DEFAULT_LIFETIME = 24 * 3600;
 
 	public static <T> void put(String key, T obj) {
-
 		put(key, obj, DEFAULT_LIFETIME);
-
 	}
 
 	public static <T> void put(String key, T obj, int seconds) {
 
-		Cache cache;
-
-		Map props = new HashMap();
+		Map<Integer, Integer> props = new HashMap<Integer, Integer>();
 		props.put(GCacheFactory.EXPIRATION_DELTA, seconds);
 
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance()
 					.getCacheFactory();
-			cache = cacheFactory.createCache(props);
+			Cache cache = cacheFactory.createCache(props);
+			cache.put(key, obj);
 		} catch (CacheException e) {
-			cache = null;
-			return;
+			PrintStream printStream = new PrintStream(System.err, true);
+			e.printStackTrace(printStream);
 		}
-
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream out;
-		try {
-			out = new ObjectOutputStream(bos);
-			out.writeObject(obj);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		cache.put(key, bos.toByteArray());
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T get(String key, Class<T> type) {
 
-		Cache cache = null;
-
+		T result = null;
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance()
 					.getCacheFactory();
-			cache = cacheFactory.createCache(Collections.emptyMap());
+			Cache cache = cacheFactory.createCache(Collections.emptyMap());
+			if (cache != null && cache.containsKey(key)) 
+				result = (T) cache.get(key);
 		} catch (CacheException e) {
-			return null;
+			PrintStream printStream = new PrintStream(System.err, true);
+			e.printStackTrace(printStream);
 		}
 
-		T result = null;
-		if (cache != null && cache.containsKey(key)) {
-			byte[] value = (byte[]) cache.get(key);
-			ObjectInputStream in;
-			try {
-				in = new ObjectInputStream(new ByteArrayInputStream(value));
-				result = type.cast(in.readObject());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
 		return result;
 	}
 

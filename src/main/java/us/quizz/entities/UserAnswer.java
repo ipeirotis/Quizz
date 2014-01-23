@@ -1,5 +1,7 @@
 package us.quizz.entities;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -13,7 +15,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UserAnswer {
+public class UserAnswer implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 
 	public static Key generateKeyFromID(String questionID, String userID) {
 		return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_"

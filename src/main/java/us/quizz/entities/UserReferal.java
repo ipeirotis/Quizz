@@ -34,6 +34,9 @@ public class UserReferal {
 
 	@Persistent
 	private Text referer;
+	
+	@Persistent
+	private String domain;
 
 	/**
 	 * @return the browser
@@ -144,6 +147,14 @@ public class UserReferal {
 	public Long getTimestamp() {
 
 		return timestamp;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
 }

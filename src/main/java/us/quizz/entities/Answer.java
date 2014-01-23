@@ -1,5 +1,7 @@
 package us.quizz.entities;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -12,7 +14,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Answer {
+public class Answer implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	public static String generateKeyID(Long questionID, Integer internalID) {
 		return "id_" + questionID + "_" + internalID;

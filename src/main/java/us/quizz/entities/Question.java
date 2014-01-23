@@ -1,5 +1,6 @@
 package us.quizz.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -11,8 +12,10 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Question {
+public class Question implements Serializable{
 
+	private static final long serialVersionUID = 1L;
+	
 	@Persistent
 	private String quizID;
 
