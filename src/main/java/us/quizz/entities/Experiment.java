@@ -1,5 +1,6 @@
 package us.quizz.entities;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +24,9 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Experiment {
+public class Experiment implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

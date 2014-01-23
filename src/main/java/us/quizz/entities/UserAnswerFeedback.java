@@ -1,5 +1,6 @@
 package us.quizz.entities;
 
+import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.List;
 
@@ -20,7 +21,9 @@ import com.google.appengine.api.datastore.KeyFactory;
  * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UserAnswerFeedback {
+public class UserAnswerFeedback implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	public static Key generateKeyFromID(Long questionID, String userid) {
 		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(),

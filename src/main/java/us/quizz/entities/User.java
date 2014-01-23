@@ -1,5 +1,6 @@
 package us.quizz.entities;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -12,7 +13,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class User {
+public class User implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	
 	private static final Integer INITIAL_CHALLENGE_BUDGET = 3;
 
