@@ -41,7 +41,7 @@
  
 	<div class="container" style="text-align: center; max-width: 640px">
         <h2>
-            <a href="/"><span style="color: maroon">Quizz</span>.us</a>
+            <img src="assets/logo.png" width=320px />
         </h2>
 		
 		<span id='login' style='display: none'>
