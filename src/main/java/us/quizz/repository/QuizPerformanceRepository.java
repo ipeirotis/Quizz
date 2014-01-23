@@ -45,23 +45,23 @@ public class QuizPerformanceRepository {
 	@SuppressWarnings("unchecked")
 	public static long getNumberOfAnswers(String quizID, int a, int b){
 		PersistenceManager pm = PMF.getPM();
+		Map<String, Object> params = new HashMap<String, Object>();
 		Query q = pm.newQuery(QuizPerformance.class);
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("correctanswers <= aParam");
 		if(quizID != null)
-			sb.append(" && quiz == quizIDparam");
-
-		q.setFilter(sb.toString());
-		q.declareParameters("Integer aParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("aParam", a);
+			sb.append("quiz == quizIDparam && ");
+		
+		sb.append("correctanswers <= aParam");
 		
 		if(quizID != null){
 			q.declareParameters("String quizIDparam");
 			params.put("quizIDparam", quizID);
 		}
+		
+		params.put("aParam", a);
+		q.setFilter(sb.toString());
+		q.declareParameters("Integer aParam");
 		
 		int i = 0;
 		int limit = 1000;

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-
 	<servlet>
 		<servlet-name>AddQuiz</servlet-name>
 		<servlet-class>us.quizz.servlets.AddQuiz</servlet-class>
@@ -74,11 +73,6 @@
 		<servlet-name>UpdateUserExperiment</servlet-name>
 		<servlet-class>us.quizz.servlets.api.UpdateUserExperiment</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>GetSurvivalProbability</servlet-name>
-		<servlet-class>us.quizz.servlets.api.GetSurvivalProbability</servlet-class>
-	</servlet>
-	
 	<servlet>
 		<servlet-name>FacebookLogin</servlet-name>
 		<servlet-class>us.quizz.servlets.FacebookLogin</servlet-class>
@@ -163,10 +157,6 @@
 		<servlet-name>DeleteQuiz</servlet-name>
 		<url-pattern>/api/deleteQuiz</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>GetSurvivalProbability</servlet-name>
-		<url-pattern>/api/getSurvivalProbability</url-pattern>
-	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>FacebookLogin</servlet-name>
@@ -197,6 +187,7 @@
   <init-param>
    <param-name>services</param-name>
 	   <param-value>
+	    us.quizz.endpoints.SurvivalProbabilityEndpoint,
 	    us.quizz.endpoints.UtilEndpoint,
 		us.quizz.endpoints.QuizEndpoint,
 		us.quizz.endpoints.QuestionEndpoint,
