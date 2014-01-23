@@ -297,6 +297,8 @@ public class QuizPerformance implements Serializable {
 	}
 	
 	public void increaseIncorrect() {
+		if(this.incorrectanswers == null)
+			this.incorrectanswers = 0;
 		this.incorrectanswers++;
 	}
 
