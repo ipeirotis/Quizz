@@ -32,7 +32,7 @@ function shuffle(array) {
 	}
 
 	function getAPIURL() {
-		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/';
+		return /*'https://crowd-power.appspot.com*/'https://intapp1.appspot.com/_ah/api/quizz/v1/';
 	}
 	
 	function getFBAppID() {
@@ -51,8 +51,8 @@ function shuffle(array) {
 		if (!username) {
 			username = createUsername();
 		}
-		return   'a0c4886a-eb56-4e29-9202-2b4852b63e31';
-		//return username;
+		
+		return username;
 		//return "3a94d8ff-dfc6-4c1e-94d2-3f6548f80aaa";
 	}
 
