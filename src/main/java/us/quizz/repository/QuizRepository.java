@@ -1,5 +1,6 @@
 package us.quizz.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -120,8 +121,8 @@ public class QuizRepository {
 		Query query = pm.newQuery(Quiz.class);
 		quizlist = (List<Quiz>) query.execute();
 		pm.close();
-
-		CachePMF.put(key, quizlist);
+		List<Quiz> list = new ArrayList<>(quizlist);
+		CachePMF.put(key, list);
 		return quizlist;
 	}
 
