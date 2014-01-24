@@ -35,7 +35,7 @@ public class UrlUtils {
 	public static String extractDomain(String url){
 		try{
 			return InternetDomainName.from(url).topPrivateDomain().name();
-		}catch(IllegalArgumentException e){
+		}catch(Exception e){
 			return null;
 		}
 	}
