@@ -4,10 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.common.net.InternetDomainName;
 
 public class UrlUtils {
+	
+	final static Logger logger = Logger.getLogger(UrlUtils.class.getName());
 	
 	private static final List<String> URL_PARAMS = Arrays.asList("url");
 
@@ -33,10 +36,23 @@ public class UrlUtils {
 	}
 	
 	public static String extractDomain(String url){
-		try{
-			return InternetDomainName.from(url).topPrivateDomain().name();
-		}catch(Exception e){
+		if(url == null || url.isEmpty())	
 			return null;
+		
+		String domain = new String(url);
+		int index = domain.indexOf("://");
+
+		if (index != -1) {
+			domain = domain.substring(index + 3);
 		}
+
+		index = domain.indexOf('/');
+
+		if (index != -1) {
+			domain = domain.substring(0, index);
+		}
+
+		domain = domain.replaceFirst("^www.*?\\.", "");
+		return domain;
 	}
 }
