@@ -52,3 +52,4 @@ quizz-v1-rest.discovery
 .env/
 
 /bin
+/target
