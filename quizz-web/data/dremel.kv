@@ -1,0 +1,108 @@
+set accounting_group knowledge-panels-users
+
+DEFINE INLINE TABLE collection_mids
+SELECT
+    member_id AS mid,
+    scores.score AS score
+FROM
+    kgraph.collection_memberships.latest
+WHERE
+    scores.label='notable_within' AND
+    collection_id.id="xxxxxxxxxx"
+ORDER BY
+    score DESC
+LIMIT question_count;
+
+DEFINE INLINE TABLE predicates yyyyyyyyyy;
+
+DEFINE INLINE TABLE collection_mids_names
+SELECT
+    b.sub AS mid,
+    b.obj AS name
+FROM (
+    SELECT mid
+    FROM collection_mids
+    SHUFFLE BY hash(mid,1000)
+) c
+JOIN (
+    SELECT obj, sub
+    FROM kgraph.base.triples.latest
+    WHERE pred = "/type/object/name"
+          AND text_lang="en"
+          AND sub IN (SELECT mid FROM collection_mids)
+    SHUFFLE BY hash(sub,1000)
+) b
+ON b.sub=c.mid;
+
+define table kv /namespace/knowledge-vault/data/latest/final/columnio/kv_final.columnio*;
+SELECT
+    mid_table.mid AS question,
+    mid_table.name AS question_text,
+    kv_table.kv_pred AS pred,
+    kv_table.answer AS answer,
+    kv_table.answer_name AS answer_name,
+    kv_table.probability AS probability,
+    kv_table.source AS source
+FROM (
+    SELECT mid, name
+    FROM collection_mids_names
+    SHUFFLE BY hash(mid, 1000)
+) mid_table
+JOIN (
+    SELECT triple.sub AS mid,
+           triple.pred AS kv_pred,
+           triple.obj AS answer,
+           kv_triple.obj_name AS answer_name,
+           kv_triple.belief.prob_true AS probability,
+           kv_triple.belief.system AS source
+    FROM kv
+    WHERE triple.text_lang="en"
+          AND kv_triple.obj_name <> ""
+          AND triple.pred IN (SELECT kv_pred FROM predicates)
+          AND triple.sub IN (SELECT mid FROM collection_mids_names)
+          AND kv_triple.belief.system="KNOWLEDGE_VAULT"
+          AND ((kv_triple.belief.prob_true == 0 AND rand() < 0.033) OR
+                kv_triple.belief.prob_true == 0.99)
+    SHUFFLE BY hash(mid, 1000)
+) kv_table
+ON mid_table.mid=kv_table.mid
+ORDER BY question, pred, probability DESC;
+# Hack: limit golden count to be question_count * 10.
+# LIMIT question_count0;
+
+define table kv /namespace/knowledge-vault/data/latest/final/columnio/kv_final.columnio*;
+SELECT
+    mid_table.mid AS question,
+    mid_table.name AS question_text,
+    kv_table.kv_pred AS pred,
+    kv_table.answer AS answer,
+    kv_table.answer_name AS answer_name,
+    kv_table.probability AS probability,
+    kv_table.source AS source
+FROM (
+    SELECT mid, name
+    FROM collection_mids_names
+    SHUFFLE BY hash(mid, 1000)
+) mid_table
+JOIN (
+    SELECT triple.sub AS mid,
+           triple.pred AS kv_pred,
+           triple.obj AS answer,
+           kv_triple.obj_name AS answer_name,
+           kv_triple.belief.prob_true AS probability,
+           kv_triple.belief.system AS source
+    FROM kv
+    WHERE triple.text_lang="en"
+          AND kv_triple.obj_name <> ""
+          AND triple.pred IN (SELECT kv_pred FROM predicates)
+          AND triple.sub IN (SELECT mid FROM collection_mids_names)
+          AND kv_triple.belief.system="KNOWLEDGE_VAULT"
+          AND kv_triple.belief.prob_true != 0
+          AND kv_triple.belief.prob_true != 0.99
+          AND kv_triple.belief.prob_true >= 0.5
+    SHUFFLE BY hash(mid, 1000)
+) kv_table
+ON mid_table.mid=kv_table.mid
+ORDER BY question, pred, probability DESC;
+# Hack: limit kv count to be question_count * 10.
+# LIMIT question_count0;

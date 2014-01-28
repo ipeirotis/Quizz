@@ -1,0 +1,15 @@
+### Collection Id [TAB] Predicates File [TAB] Quizz id [TAB] Max questions [TAB] Quizz name.
+# Uncomment # to generate quizz for the line needed.
+###
+#/collection/us_presidents	us_president_predicates.csv	us_presidents	1000	"US Presidents"
+#/collection/information_technology_businesses	businesses_predicates.csv	it_businesses	1000	"Information Technology Businesses"
+#/collection/corporations	businesses_predicates.csv	corporations	1000	"Corporations"
+#/collection/celebrities	person_predicates.csv	celebrities	2500	"celebrity"
+#/collection/scientists	person_predicates.csv	scientists	2500	"scientist"
+#/collection/politicians	person_predicates.csv	politicians	2500	"politician"
+#/collection/authors	person_predicates.csv	authors	2500	"author"
+#/collection/entrepreneurs	person_predicates.csv	entrepreneurs	2500	"entrepreneur"
+#TOO FEW: /collection/programmers	person_predicates.csv	programmers	2500	"programmer"
+#TOO FEW: /collection/physicists	person_predicates.csv	physicists	2500	"physicist"
+#/collection/physicians	person_predicates.csv	physicians	2500	"physician"
+#TOO FEW: /collection/historians	person_predicates.csv	historians	2500	"historian"

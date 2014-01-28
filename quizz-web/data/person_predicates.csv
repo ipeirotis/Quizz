@@ -1,0 +1,6 @@
+kp_pred, kv_pred
+kc:/people/person:children, /people/person/children
+kc:/people/person:place of birth, /people/person/place_of_birth
+kc:/people/person:education, /people/person/education./education/education/institution
+kc:/people/person:parents, /people/person/parents
+kc:/people/person:spouse, /people/person/spouse_s./people/marriage/spouse
