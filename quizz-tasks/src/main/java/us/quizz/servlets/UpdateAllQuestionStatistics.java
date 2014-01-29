@@ -14,9 +14,19 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class UpdateAllQuestionStatistics extends HttpServlet {
+	
+	private QuizQuestionRepository quizQuestionRepository;
+	
+	@Inject
+	public UpdateAllQuestionStatistics(QuizQuestionRepository quizQuestionRepository){
+		this.quizQuestionRepository = quizQuestionRepository;
+	}
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -32,7 +42,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 			throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
 
-		List<Question> quizquestions = QuizQuestionRepository
+		List<Question> quizquestions = quizQuestionRepository
 				.getQuizQuestions();
 
 		for (Question quizquestion : quizquestions) {

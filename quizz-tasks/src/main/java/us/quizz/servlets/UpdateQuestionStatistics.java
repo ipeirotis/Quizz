@@ -9,9 +9,20 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.entities.Question;
 import us.quizz.repository.QuizQuestionRepository;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 @SuppressWarnings("serial")
+@Singleton
 public class UpdateQuestionStatistics extends HttpServlet {
 
+	private QuizQuestionRepository quizQuestionRepository;
+	
+	@Inject
+	public UpdateQuestionStatistics(QuizQuestionRepository quizQuestionRepository){
+		this.quizQuestionRepository = quizQuestionRepository;
+	}
+	
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -20,7 +31,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
 		String questionID = req.getParameter("questionID");
 		resp.getWriter().print("QuestionID:" + questionID + "\n");
 
-		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
+		Question question = quizQuestionRepository.getQuizQuestion(questionID);
 		if (question == null)
 			return;
 
@@ -33,16 +44,16 @@ public class UpdateQuestionStatistics extends HttpServlet {
 		question.setNumberOfCorrentUserAnswers(c);
 		resp.getWriter().print("Number of correct user answers:" + c + "\n");
 
-		QuizQuestionRepository.storeQuizQuestion(question);
+		quizQuestionRepository.storeQuizQuestion(question);
 	}
 
 	private int getNumberOfUserAnswers(String questionID) {
-		return QuizQuestionRepository
+		return quizQuestionRepository
 				.getNumberOfUserAnswersExcludingIDK(questionID);
 	}
 
 	private int getNumberOfCorrectUserAnswers(String questionID) {
-		return QuizQuestionRepository.getNumberOfCorrectUserAnswers(questionID);
+		return quizQuestionRepository.getNumberOfCorrectUserAnswers(questionID);
 	}
 
 }

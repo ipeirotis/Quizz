@@ -9,19 +9,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Quiz;
-import us.quizz.utils.PMF;
+import us.quizz.repository.QuizRepository;
 import us.quizz.utils.ServletUtils;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class AddQuizAdCampaign extends HttpServlet {
 
 	private HttpServletResponse r;
 	final static Logger logger = Logger.getLogger("com.ipeirotis.adcrowdkg");
+	
+	private QuizRepository quizRepository;
+	
+	@Inject
+	public AddQuizAdCampaign(QuizRepository quizRepository){
+		this.quizRepository = quizRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -95,7 +105,7 @@ public class AddQuizAdCampaign extends HttpServlet {
 			}
 
 			Quiz q = new Quiz(name, quizID);
-			PMF.singleMakePersistent(q);
+			quizRepository.singleMakePersistent(q);
 
 			Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");
 

@@ -10,6 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Question implements Serializable{
@@ -24,6 +25,10 @@ public class Question implements Serializable{
 
 	@Persistent
 	private String text;
+	
+	public static Key generateKeyFromID(Long id) {
+		return KeyFactory.createKey(Question.class.getSimpleName(), id);
+	}
 
 	public String getQuizID() {
 		return quizID;

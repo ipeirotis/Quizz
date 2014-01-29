@@ -14,17 +14,27 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class UpdateCountStatistics extends HttpServlet {
 
+	private QuizRepository quizRepository;
+	
+	@Inject
+	public UpdateCountStatistics(QuizRepository quizRepository){
+		this.quizRepository = quizRepository;
+	}
+	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		resp.setContentType("text/plain;charset=utf-8");
 
 		Queue queue = QueueFactory.getQueue("default");
-		List<Quiz> list = QuizRepository.getQuizzes();
+		List<Quiz> list = quizRepository.getQuizzes();
 
 		for (Quiz quiz : list) {
 			resp.getWriter().println("Updating quiz: " + quiz.getName());

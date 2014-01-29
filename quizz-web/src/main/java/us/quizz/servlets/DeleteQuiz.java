@@ -6,12 +6,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import us.quizz.repository.QuizRepository;
 import us.quizz.utils.Helper;
 import us.quizz.utils.ServletUtils;
 
 @SuppressWarnings("serial")
+@Singleton
 public class DeleteQuiz extends HttpServlet {
+	
+	private QuizRepository quizRepository;
+	
+	@Inject
+	public DeleteQuiz(QuizRepository quizRepository){
+		this.quizRepository = quizRepository;
+	}
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -23,7 +34,7 @@ public class DeleteQuiz extends HttpServlet {
 		ServletUtils.ensureParameters(req, "quizID");
 
 		String quizID = req.getParameter("quizID");
-		QuizRepository.deleteQuiz(quizID);
+		quizRepository.deleteQuiz(quizID);
 	}
 
 }

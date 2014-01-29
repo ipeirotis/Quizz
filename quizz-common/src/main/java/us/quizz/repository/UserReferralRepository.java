@@ -13,9 +13,20 @@ import us.quizz.entities.UserReferalCounter;
 import us.quizz.utils.PMF;
 import us.quizz.utils.UrlUtils;
 
-public class UserReferralRepository {
+import com.google.appengine.api.datastore.Key;
 
-	public static Set<String> getUserIDsByQuiz(String quizid) {
+public class UserReferralRepository extends BaseRepository<UserReferal>{
+	
+	public UserReferralRepository() {
+		super(UserReferal.class);
+	}
+	
+	@Override
+	protected Key getKey(UserReferal item) {
+		return item.getKey();
+	}
+
+	public Set<String> getUserIDsByQuiz(String quizid) {
 		PersistenceManager pm = PMF.getPM();
 		Query query = pm.newQuery(UserReferal.class);
 		query.setFilter("quiz == quizParam");
@@ -41,7 +52,7 @@ public class UserReferralRepository {
 		return userids;
 	}
 
-	public static void createAndStoreUserReferal(HttpServletRequest req,
+	public void createAndStoreUserReferal(HttpServletRequest req,
 			String userid) {
 
 		UserReferal ur = new UserReferal(userid);

@@ -12,14 +12,16 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class QuizPerformanceEndpoint extends
-		BaseCollectionEndpoint<QuizPerformance> {
-
-	public QuizPerformanceEndpoint() {
-		super(QuizPerformance.class, "Quiz performance");
+public class QuizPerformanceEndpoint {
+	
+	private QuizPerformanceRepository quizPerformanceRepository;
+	
+	@Inject
+	public QuizPerformanceEndpoint(QuizPerformanceRepository quizPerformanceRepository){
+		this.quizPerformanceRepository = quizPerformanceRepository;
 	}
 
 	/**
@@ -33,7 +35,7 @@ public class QuizPerformanceEndpoint extends
 	public CollectionResponse<QuizPerformance> listQuizPerformance(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
-		return listItems(cursorString, limit);
+		return quizPerformanceRepository.listItems(cursorString, limit);
 	}
 
 	/**
@@ -47,7 +49,7 @@ public class QuizPerformanceEndpoint extends
 	public CollectionResponse<QuizPerformance> listQuizPerformanceByUser(
 			@Named("user") String userid) {
 
-		List<QuizPerformance> execute = QuizPerformanceRepository
+		List<QuizPerformance> execute = quizPerformanceRepository
 				.getQuizPerformancesByUser(userid);
 		return CollectionResponse.<QuizPerformance> builder().setItems(execute)
 				.build();
@@ -65,7 +67,7 @@ public class QuizPerformanceEndpoint extends
 	public QuizPerformance getQuizPerformance(@Named("quiz") String quiz,
 			@Named("user") String userid) {
 
-		QuizPerformance quizperformance = QuizPerformanceRepository
+		QuizPerformance quizperformance = quizPerformanceRepository
 				.getQuizPerformance(quiz, userid);
 		if (quizperformance == null)
 			quizperformance = new QuizPerformance(quiz, userid);
@@ -84,7 +86,7 @@ public class QuizPerformanceEndpoint extends
 	 */
 	@ApiMethod(name = "insertQuizPerformance")
 	public QuizPerformance insertQuizPerformance(QuizPerformance quizperformance) {
-		return insert(quizperformance);
+		return quizPerformanceRepository.insert(quizperformance);
 	}
 
 	/**
@@ -98,7 +100,7 @@ public class QuizPerformanceEndpoint extends
 	 */
 	@ApiMethod(name = "updateQuizPerformance")
 	public QuizPerformance updateQuizPerformance(QuizPerformance quizperformance) {
-		return update(quizperformance);
+		return quizPerformanceRepository.update(quizperformance);
 	}
 
 	/**
@@ -111,11 +113,7 @@ public class QuizPerformanceEndpoint extends
 	@ApiMethod(name = "removeQuizPerformance")
 	public void removeQuizPerformance(@Named("quizid") String quiz,
 			@Named("userid") String userid) {
-		remove(QuizPerformance.generateKeyFromID(quiz, userid));
+		quizPerformanceRepository.remove(QuizPerformance.generateKeyFromID(quiz, userid));
 	}
-
-	@Override
-	protected Key getKey(QuizPerformance item) {
-		return item.getKey();
-	}
+	
 }

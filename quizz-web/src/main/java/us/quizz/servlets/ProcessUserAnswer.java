@@ -26,7 +26,6 @@ import us.quizz.repository.UserRepository;
 import us.quizz.scoring.ExplorationExploitation;
 import us.quizz.scoring.ExplorationExploitation.Result;
 import us.quizz.utils.LevenshteinAlgorithm;
-import us.quizz.utils.PMF;
 import us.quizz.utils.ServletUtils;
 
 import com.google.appengine.api.taskqueue.Queue;
@@ -35,9 +34,32 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class ProcessUserAnswer extends HttpServlet {
+	
+	private UserRepository userRepository;
+	private AnswersRepository answersRepository;
+	private QuizQuestionRepository quizQuestionRepository;
+	private BadgeRepository badgeRepository;
+	private QuizPerformanceRepository quizPerformanceRepository;
+	private UserAnswerRepository userAnswerRepository;
+	
+	@Inject
+	public ProcessUserAnswer(UserRepository userRepository,	AnswersRepository answersRepository,
+			QuizQuestionRepository quizQuestionRepository,	BadgeRepository badgeRepository,
+			QuizPerformanceRepository quizPerformanceRepository, 
+			UserAnswerRepository userAnswerRepository){
+		this.userRepository = userRepository;
+		this.answersRepository = answersRepository;
+		this.quizQuestionRepository = quizQuestionRepository;
+		this.badgeRepository = badgeRepository;
+		this.quizPerformanceRepository = quizPerformanceRepository;
+		this.userAnswerRepository = userAnswerRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -46,7 +68,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		ServletUtils.ensureParameters(req, "quizID", "questionID", "answerID",
 				"correctanswers", "totalanswers", "userInput");
 
-		User user = UserRepository.getUseridFromCookie(req, resp);
+		User user = userRepository.getUseridFromCookie(req, resp);
 		Long questionID = Long.parseLong(req.getParameter("questionID"));
 		String quizID = req.getParameter("quizID");
 		String action;
@@ -57,11 +79,11 @@ public class ProcessUserAnswer extends HttpServlet {
 		Boolean isCorrect = false;
 		if (useranswerID != -1) {
 			action = "Submit";
-			Answer answer = AnswersRepository.getAnswer(questionID,
+			Answer answer = answersRepository.getAnswer(questionID,
 					useranswerID);
 			if (answer.getKind().equals("input_text")) { // check in all
 															// possible answers
-				Question question = QuizQuestionRepository
+				Question question = quizQuestionRepository
 						.getQuizQuestion(questionID);
 				answers = question.getAnswers();
 
@@ -108,7 +130,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		String numCorrectAnswers = Integer.toString(correctAnswers);
 		String numTotalAnswers = Integer.toString(totalAnswers);
 
-		List<Badge> newBadges = BadgeRepository.checkForNewBadges(user, quizID,
+		List<Badge> newBadges = badgeRepository.checkForNewBadges(user, quizID,
 				numCorrectAnswers, numTotalAnswers);
 
 		String ipAddress = req.getRemoteAddr();
@@ -165,19 +187,19 @@ public class ProcessUserAnswer extends HttpServlet {
 			uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
 		if (!Strings.isNullOrEmpty(numTotalAnswers))
 			uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
-		Question question = QuizQuestionRepository.getQuizQuestion(questionID);
+		Question question = quizQuestionRepository.getQuizQuestion(questionID);
 		uaf.setUserNewBadges(newBadges);
 		uaf.setUserAnswerText((useranswerID == -1) ? "" : question.getAnswer(
 				useranswerID).userAnswerText(userInput));
 		uaf.setCorrectAnswerText(question.goldAnswer().getText());
 		uaf.computeDifficulty();
-		UserAnswerRepository.storeUserAnswerFeedback(uaf);
+		userAnswerRepository.storeUserAnswerFeedback(uaf);
 		return uaf;
 	}
 
 	private void updateQuizPerformance(User user, Long questionID) {
 		Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
-		String quizID = QuizQuestionRepository.getQuizQuestion(questionID)
+		String quizID = quizQuestionRepository.getQuizQuestion(questionID)
 				.getQuizID();
 		queueUserStats
 				.add(Builder.withUrl("/api/updateUserQuizStatistics")
@@ -214,7 +236,7 @@ public class ProcessUserAnswer extends HttpServlet {
 		ue.setIsCorrect(isCorrect);
 		ue.setQuizID(quizID);
 		ue.setUserInput(userInput);
-		return PMF.singleMakePersistent(ue);
+		return userAnswerRepository.singleMakePersistent(ue);
 	}
 
 	/**
@@ -230,7 +252,7 @@ public class ProcessUserAnswer extends HttpServlet {
 	private void quickUpdateQuizPerformance(User user, String quizID,
 			Boolean isCorrect, String action) {
 
-		QuizPerformance qp = QuizPerformanceRepository.getQuizPerformance(
+		QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(
 				quizID, user.getUserid());
 		if (qp == null) {
 			qp = new QuizPerformance(quizID, user.getUserid());
@@ -246,7 +268,7 @@ public class ProcessUserAnswer extends HttpServlet {
 			qp.increaseTotal();
 		}
 		
-		QuizPerformanceRepository.cacheQuizPerformance(qp);
+		quizPerformanceRepository.cacheQuizPerformance(qp);
 
 	}
 

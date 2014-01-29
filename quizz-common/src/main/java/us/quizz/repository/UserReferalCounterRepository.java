@@ -10,22 +10,28 @@ import us.quizz.entities.UserReferalCounter;
 import us.quizz.utils.PMF;
 
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.base.Strings;
 
-public class UserReferalCounterRepository {
+public class UserReferalCounterRepository extends BaseRepository<UserReferalCounter>{
+	
+	public UserReferalCounterRepository() {
+		super(UserReferalCounter.class);
+	}
+	
+	@Override
+	protected Key getKey(UserReferalCounter item) {
+		return item.getKey();
+	}
 
-	public static UserReferalCounter get(String domain){
+	public UserReferalCounter get(String domain){
 		return PMF.singleGetObjectById(UserReferalCounter.class, 
 				UserReferalCounter.generateKey(domain));
 	}
 	
-	public static void save(UserReferalCounter userReferalCounter) {
-		PMF.singleMakePersistent(userReferalCounter);
-	}
-	
 	@SuppressWarnings("unchecked")
-	public static List<UserReferalCounter> list(String cursorString, Integer limit) {
+	public List<UserReferalCounter> list(String cursorString, Integer limit) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;

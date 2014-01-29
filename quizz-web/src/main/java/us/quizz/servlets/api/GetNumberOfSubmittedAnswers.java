@@ -9,18 +9,18 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.repository.UserAnswerRepository;
 
 import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class GetNumberOfSubmittedAnswers extends HttpServlet {
-
-	class Response {
-		String quiz;
-		Integer answers;
-
-		Response(String quiz, Integer answers) {
-			this.quiz = quiz;
-			this.answers = answers;
-		}
+	
+	UserAnswerRepository userAnswerRepository;
+	
+	@Inject
+	public GetNumberOfSubmittedAnswers(UserAnswerRepository userAnswerRepository){
+		this.userAnswerRepository = userAnswerRepository;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class GetNumberOfSubmittedAnswers extends HttpServlet {
 		String quiz = req.getParameter("quiz");
 		String userid = req.getParameter("userid");
 
-		Integer answers = UserAnswerRepository.getUserAnswers(quiz, userid)
+		Integer answers = userAnswerRepository.getUserAnswers(quiz, userid)
 				.size();
 
 		resp.setContentType("application/json;charset=utf-8");
@@ -39,6 +39,16 @@ public class GetNumberOfSubmittedAnswers extends HttpServlet {
 		String json = gson.toJson(result);
 		resp.getWriter().println(json);
 
+	}
+
+	class Response {
+		String quiz;
+		Integer answers;
+
+		Response(String quiz, Integer answers) {
+			this.quiz = quiz;
+			this.answers = answers;
+		}
 	}
 
 }

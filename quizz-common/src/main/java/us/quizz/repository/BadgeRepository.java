@@ -8,8 +8,20 @@ import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.User;
 import us.quizz.utils.PMF;
 
-public class BadgeRepository {
-	public static List<Badge> checkForNewBadges(User user, String quizID,
+import com.google.appengine.api.datastore.Key;
+
+public class BadgeRepository extends BaseRepository<Badge>{
+	
+	public BadgeRepository() {
+		super(Badge.class);
+	}
+	
+	@Override
+	protected Key getKey(Badge item) {
+		return item.getKey();
+	}
+	
+	public List<Badge> checkForNewBadges(User user, String quizID,
 			String numCorrectAnswers, String numTotalAnswers) {
 		List<Badge> badges = getBadges(user, quizID, numCorrectAnswers,
 				numTotalAnswers);
@@ -21,7 +33,7 @@ public class BadgeRepository {
 		return badges;
 	}
 
-	public static List<Badge> getBadges(User user, String quizID,
+	public List<Badge> getBadges(User user, String quizID,
 			String numCorrectAnswers, String numTotalAnswers) {
 		List<Badge> badgelist = new ArrayList<Badge>();
 		if (numTotalAnswers.equals("1")) {
@@ -50,7 +62,7 @@ public class BadgeRepository {
 		return badgelist;
 	}
 
-	public static Badge getBadge(String name, String sname) {
+	public Badge getBadge(String name, String sname) {
 		Badge badge = PMF.singleGetObjectById(Badge.class,
 				Badge.generateKeyFromID(name));
 		if (badge == null) {
@@ -61,7 +73,7 @@ public class BadgeRepository {
 		return badge;
 	}
 
-	public static Boolean userHasBadge(User u, Badge b) {
+	public Boolean userHasBadge(User u, Badge b) {
 		BadgeAssignment ba = PMF.singleGetObjectById(
 				BadgeAssignment.class,
 				BadgeAssignment.generateKeyFromUserBadge(u.getUserid(),

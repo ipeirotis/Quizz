@@ -12,10 +12,21 @@ import us.quizz.repository.QuizRepository;
 import us.quizz.utils.Helper;
 import us.quizz.utils.ServletUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 @SuppressWarnings("serial")
+@Singleton
 public class AddQuiz extends HttpServlet {
 
 	final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
+	
+	private QuizRepository quizRepository;
+	
+	@Inject
+	public AddQuiz(QuizRepository quizRepository){
+		this.quizRepository = quizRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -29,7 +40,7 @@ public class AddQuiz extends HttpServlet {
 		resp.getWriter().println("Quiz Name: " + name);
 
 		Quiz q = new Quiz(name, quizID);
-		QuizRepository.storeQuiz(q);
+		quizRepository.storeQuiz(q);
 
 		resp.setContentType("text/plain");
 		String baseURL = Helper.getBaseURL(req);

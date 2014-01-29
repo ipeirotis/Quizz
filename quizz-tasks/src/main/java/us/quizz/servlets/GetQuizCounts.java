@@ -11,9 +11,40 @@ import us.quizz.repository.QuizRepository;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class GetQuizCounts extends HttpServlet {
+
+	private QuizRepository quizRepository;
+	
+	@Inject
+	public GetQuizCounts(QuizRepository quizRepository){
+		this.quizRepository = quizRepository;
+	}
+
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+
+		String quiz = req.getParameter("quizID");
+		String cache = req.getParameter("cache");
+		if (cache != null && cache.equals("no")) {
+			quizRepository.updateQuizCounts(quiz);
+		}
+
+		Quiz q = quizRepository.getQuiz(quiz);
+		Preconditions.checkArgument(q != null, "Unknown quiz ID: " + quiz);
+
+		resp.setContentType("application/json;charset=utf-8");
+		Gson gson = new Gson();
+		Response result = new Response(quiz, q.getQuestions(), q.getGold(),
+				q.getSubmitted());
+		String json = gson.toJson(result);
+		resp.getWriter().println(json);
+	}
 
 	class Response {
 		String quiz;
@@ -28,26 +59,5 @@ public class GetQuizCounts extends HttpServlet {
 
 			this.submitted = submitted;
 		}
-	}
-
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-
-		String quiz = req.getParameter("quizID");
-		String cache = req.getParameter("cache");
-		if (cache != null && cache.equals("no")) {
-			QuizRepository.updateQuizCounts(quiz);
-		}
-
-		Quiz q = QuizRepository.getQuiz(quiz);
-		Preconditions.checkArgument(q != null, "Unknown quiz ID: " + quiz);
-
-		resp.setContentType("application/json;charset=utf-8");
-		Gson gson = new Gson();
-		Response result = new Response(quiz, q.getQuestions(), q.getGold(),
-				q.getSubmitted());
-		String json = gson.toJson(result);
-		resp.getWriter().println(json);
 	}
 }

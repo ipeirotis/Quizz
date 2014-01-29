@@ -14,17 +14,36 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.PMF;
 
-public class QuizRepository {
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
-	public static Quiz getQuiz(String id) {
+public class QuizRepository extends BaseRepository<Quiz>{
+	
+	@Inject
+	private QuizQuestionRepository quizQuestionRepository;
+	@Inject
+	private UserReferralRepository userReferralRepository;
+	@Inject
+	private QuizPerformanceRepository quizPerformanceRepository;
+
+	public QuizRepository() {
+		super(Quiz.class);
+	}
+	
+	@Override
+	protected Key getKey(Quiz item) {
+		return item.getKey();
+	}
+
+	public Quiz getQuiz(String id) {
 		return PMF.singleGetObjectById(Quiz.class, Quiz.generateKeyFromID(id));
 	}
 
-	public static void storeQuiz(Quiz q) {
+	public void storeQuiz(Quiz q) {
 		PMF.singleMakePersistent(q);
 	}
 
-	protected static <T> void deleteAll(PersistenceManager pm, String quizID,
+	protected <T> void deleteAll(PersistenceManager pm, String quizID,
 			Class<T> itemsClass) {
 		Query q = pm.newQuery(itemsClass);
 		q.setFilter("quizID == quizIDParam");
@@ -33,7 +52,7 @@ public class QuizRepository {
 		pm.deletePersistentAll(items);
 	}
 
-	public static void deleteQuiz(String quizID) {
+	public void deleteQuiz(String quizID) {
 		Quiz quiz = null;
 		PersistenceManager pm = PMF.getPM();
 		try {
@@ -50,7 +69,7 @@ public class QuizRepository {
 		}
 	}
 
-	protected static <T> Integer getNumberOf(String keyPrefix,
+	protected <T> Integer getNumberOf(String keyPrefix,
 			boolean useCache, String quiz, Class<T> queryClass) {
 		String key = keyPrefix + "_" + quiz;
 
@@ -76,7 +95,7 @@ public class QuizRepository {
 		}
 	}
 
-	public static Integer getNumberOfGoldQuestions(String quizID,
+	public Integer getNumberOfGoldQuestions(String quizID,
 			boolean useCache) {
 		String key = "goldQuestions_" + quizID;
 
@@ -88,10 +107,10 @@ public class QuizRepository {
 
 		PersistenceManager pm = PMF.getPM();
 		try {
-			Query q = QuizQuestionRepository.getQuizGoldQuestionsQuery(pm,
+			Query q = quizQuestionRepository.getQuizGoldQuestionsQuery(pm,
 					quizID);
 			q.setResult("quizID");
-			List<?> results = (List<?>) q.executeWithMap(QuizQuestionRepository
+			List<?> results = (List<?>) q.executeWithMap(quizQuestionRepository
 					.getQuizGoldQuestionsParameters(quizID));
 			Integer result = results.size();
 			CachePMF.put(key, result);
@@ -101,16 +120,16 @@ public class QuizRepository {
 		}
 	}
 
-	public static Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
+	public Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
 		return getNumberOf("numquizquestions", usecache, quiz, Question.class);
 	}
 
-	public static Integer getNumberOfUserAnswers(String quiz, boolean usecache) {
+	public Integer getNumberOfUserAnswers(String quiz, boolean usecache) {
 		return getNumberOf("quizuseranswers", usecache, quiz, UserAnswer.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<Quiz> getQuizzes() {
+	public List<Quiz> getQuizzes() {
 
 		String key = "list_quizzes";
 		List<Quiz> quizlist = CachePMF.get(key, List.class);
@@ -126,23 +145,23 @@ public class QuizRepository {
 		return quizlist;
 	}
 
-	public static void updateQuizCounts(String quiz) {
-		Quiz q = QuizRepository.getQuiz(quiz);
+	public void updateQuizCounts(String quiz) {
+		Quiz q = getQuiz(quiz);
 
-		Integer count = QuizRepository.getNumberOfQuizQuestions(quiz, false);
+		Integer count = getNumberOfQuizQuestions(quiz, false);
 		q.setQuestions(count);
 
-		count = QuizRepository.getNumberOfUserAnswers(quiz, false);
+		count = getNumberOfUserAnswers(quiz, false);
 		q.setSubmitted(count);
 
-		count = QuizRepository.getNumberOfGoldQuestions(quiz, false);
+		count = getNumberOfGoldQuestions(quiz, false);
 		q.setGold(count);
 
-		count = UserReferralRepository.getUserIDsByQuiz(q.getQuizID()).size();
+		count = userReferralRepository.getUserIDsByQuiz(q.getQuizID()).size();
 		q.setTotalUsers(count + 1); // +1 for smoothing, ensuring no division by
 									// 0
 
-		List<QuizPerformance> perf = QuizPerformanceRepository
+		List<QuizPerformance> perf = quizPerformanceRepository
 				.getQuizPerformancesByQuiz(q.getQuizID());
 
 		int contributingUsers = perf.size();
@@ -173,4 +192,5 @@ public class QuizRepository {
 
 		storeQuiz(q);
 	}
+
 }

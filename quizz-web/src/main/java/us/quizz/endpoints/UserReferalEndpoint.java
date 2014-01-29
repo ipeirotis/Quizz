@@ -8,19 +8,25 @@ import javax.inject.Named;
 import us.quizz.entities.UserReferal;
 import us.quizz.entities.UserReferalCounter;
 import us.quizz.repository.UserReferalCounterRepository;
-import us.quizz.utils.PMF;
+import us.quizz.repository.UserReferralRepository;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
-
-	public UserReferalEndpoint() {
-		super(UserReferal.class, "User referal");
+public class UserReferalEndpoint {
+	
+	private UserReferralRepository userReferalRepository;
+	private UserReferalCounterRepository userReferalCounterRepository;
+	
+	@Inject
+	public UserReferalEndpoint(UserReferralRepository userReferalRepository,
+			UserReferalCounterRepository userReferalCounterRepository){
+		this.userReferalRepository = userReferalRepository;
+		this.userReferalCounterRepository = userReferalCounterRepository;
 	}
 
 	/**
@@ -34,7 +40,7 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	public CollectionResponse<UserReferal> listUserReferal(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
-		return listItems(cursorString, limit);
+		return userReferalRepository.listItems(cursorString, limit);
 	}
 
 	/**
@@ -47,7 +53,7 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	 */
 	@ApiMethod(name = "getUserReferal")
 	public UserReferal getUserReferal(@Named("id") Long id) {
-		return PMF.singleGetObjectByIdThrowing(UserReferal.class, id);
+		return userReferalRepository.singleGetObjectByIdThrowing(UserReferal.class, id);
 	}
 
 	/**
@@ -61,7 +67,7 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	 */
 	@ApiMethod(name = "insertUserReferal")
 	public UserReferal insertUserReferal(UserReferal userreferal) {
-		return insert(userreferal);
+		return userReferalRepository.insert(userreferal);
 	}
 
 	/**
@@ -75,7 +81,7 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	 */
 	@ApiMethod(name = "updateUserReferal")
 	public UserReferal updateUserReferal(UserReferal userreferal) {
-		return update(userreferal);
+		return userReferalRepository.update(userreferal);
 	}
 
 	/**
@@ -87,23 +93,18 @@ public class UserReferalEndpoint extends BaseCollectionEndpoint<UserReferal> {
 	 */
 	@ApiMethod(name = "removeUserReferal")
 	public void removeUserReferal(@Named("id") Long id) {
-		UserReferal ur = PMF.singleGetObjectByIdThrowing(UserReferal.class, id);
-		remove(ur.getKey());
+		UserReferal ur = userReferalRepository.singleGetObjectByIdThrowing(UserReferal.class, id);
+		userReferalRepository.remove(ur.getKey());
 	}
 	
 	@ApiMethod(name = "listDomains", path="listDomains")
 	public CollectionResponse<UserReferalCounter> listDomains(
 			@Nullable @Named("cursor") String cursor,
 			@Nullable @Named("limit") Integer limit) {
-		List<UserReferalCounter> result = UserReferalCounterRepository.list(cursor, limit);
+		List<UserReferalCounter> result = userReferalCounterRepository.list(cursor, limit);
 		
 		return CollectionResponse.<UserReferalCounter> builder().setItems(result)
 				.setNextPageToken(cursor).build();
-	}
-
-	@Override
-	protected Key getKey(UserReferal item) {
-		return item.getKey();
 	}
 
 }

@@ -10,24 +10,28 @@ import javax.jdo.PersistenceManager;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
+import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
-import us.quizz.repository.QuizesOperations;
-import us.quizz.utils.PMF;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
-
+public class QuizEndpoint {
+	
 	protected static int QUESTION_PACKAGE_SIZE = 10;
-
-	public QuizEndpoint() {
-		super(Quiz.class, "Quizz");
+	
+	private QuizRepository quizRepository;
+	private QuizQuestionRepository quizQuestionRepository;
+	
+	@Inject
+	public QuizEndpoint(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository){
+		this.quizRepository = quizRepository;
+		this.quizQuestionRepository = quizQuestionRepository;
 	}
 
 	/**
@@ -45,7 +49,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
-		List<Quiz> execute = QuizRepository.getQuizzes();
+		List<Quiz> execute = quizRepository.getQuizzes();
 
 		/*
 		 * try { mgr = getPersistenceManager(); Query query =
@@ -80,7 +84,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 	 */
 	@ApiMethod(name = "getQuiz")
 	public Quiz getQuiz(@Named("id") String id) {
-		return PMF.singleGetObjectByIdThrowing(Quiz.class,
+		return quizRepository.singleGetObjectByIdThrowing(Quiz.class,
 				Quiz.generateKeyFromID(id));
 	}
 
@@ -93,7 +97,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 		if (num == null)
 			num = QUESTION_PACKAGE_SIZE;
 		
-		return QuizesOperations.getNextQuizQuestions(quiz, num);
+		return quizQuestionRepository.getNextQuizQuestions(quiz, num);
 	}
 
 	/**
@@ -107,7 +111,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 	 */
 	@ApiMethod(name = "insertQuiz")
 	public Quiz insertQuiz(Quiz quiz) {
-		return insert(quiz);
+		return quizRepository.insert(quiz);
 	}
 
 	/**
@@ -121,7 +125,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 	 */
 	@ApiMethod(name = "updateQuiz")
 	public Quiz updateQuiz(Quiz quiz) {
-		return update(quiz);
+		return quizRepository.update(quiz);
 	}
 
 	/**
@@ -132,11 +136,7 @@ public class QuizEndpoint extends BaseCollectionEndpoint<Quiz> {
 	 */
 	@ApiMethod(name = "removeQuiz")
 	public void removeQuiz(@Named("id") String id) {
-		remove(Quiz.generateKeyFromID(id));
+		quizRepository.remove(Quiz.generateKeyFromID(id));
 	}
-
-	@Override
-	protected Key getKey(Quiz item) {
-		return item.getKey();
-	}
+	
 }

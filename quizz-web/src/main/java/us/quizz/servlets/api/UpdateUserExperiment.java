@@ -2,15 +2,17 @@ package us.quizz.servlets.api;
 
 import java.io.IOException;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
-import us.quizz.utils.PMF;
+import us.quizz.repository.UserRepository;
 import us.quizz.utils.ServletUtils;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * 
@@ -23,7 +25,15 @@ import us.quizz.utils.ServletUtils;
  * 
  */
 @SuppressWarnings("serial")
+@Singleton
 public class UpdateUserExperiment extends HttpServlet {
+	
+	private UserRepository userRepository;
+	
+	@Inject
+	public UpdateUserExperiment(UserRepository userRepository){
+		this.userRepository = userRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -33,18 +43,16 @@ public class UpdateUserExperiment extends HttpServlet {
 		ServletUtils.ensureParameters(req, "userid");
 		String userid = req.getParameter("userid");
 
-		PersistenceManager pm = PMF.getPM();
 		User user = null;
 		try {
-			user = pm.getObjectById(User.class, User.generateKeyFromID(userid));
+			user = userRepository.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
 		} catch (Exception e) {
 			user = new User(userid);
 		} finally {
 			Experiment exp = new Experiment();
 			exp.assignTreatments();
 			user.setExperiment(exp);
-			pm.makePersistent(user);
-			pm.close();
+			userRepository.save(user);
 		}
 	}
 

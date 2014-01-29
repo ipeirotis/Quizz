@@ -9,13 +9,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Treatment;
-import us.quizz.utils.PMF;
+import us.quizz.repository.TreatmentRepository;
 import us.quizz.utils.ServletUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 @SuppressWarnings("serial")
+@Singleton
 public class AddTreatment extends HttpServlet {
 
 	final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
+	
+	private TreatmentRepository treatmentRepository;
+
+	@Inject
+	public AddTreatment(TreatmentRepository treatmentRepository){
+		this.treatmentRepository = treatmentRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -38,7 +49,7 @@ public class AddTreatment extends HttpServlet {
 			}
 
 			Treatment treatment = new Treatment(name, p);
-			PMF.singleMakePersistent(treatment);
+			treatmentRepository.singleMakePersistent(treatment);
 
 			resp.getWriter().println("OK");
 			resp.sendRedirect("/admin/treatments/");

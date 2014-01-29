@@ -6,25 +6,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
-import us.quizz.utils.PMF;
+import us.quizz.repository.AnswersRepository;
+import us.quizz.repository.QuizQuestionRepository;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class AddQuestion extends HttpServlet {
 
 	final static Logger logger = Logger.getLogger("com.ipeirotis.quizz");
+	
+	private QuizQuestionRepository questionRepositary;
+	private AnswersRepository answersRepository;
+	
+	@Inject
+	public AddQuestion(QuizQuestionRepository questionRepositary, AnswersRepository answersRepository){
+		this.questionRepositary = questionRepositary;
+		this.answersRepository = answersRepository;
+	}
 
 	static protected JsonParser jParser = new JsonParser();
 	static protected Gson gson = new Gson();
@@ -40,20 +52,17 @@ public class AddQuestion extends HttpServlet {
 		String text = jobject.get("text").getAsString();
 		Double weight = jobject.get("weight").getAsDouble();
 		Question question = new Question(quizID, text, weight);
-		PersistenceManager pm = PMF.getPM();
-		try {
-			pm.makePersistent(question); // To generate key
-			for (JsonElement je : jobject.get("answers").getAsJsonArray()) {
-				Integer internalID = question.getAnswers().size();
-				Answer answer = parseAnswer(je.getAsJsonObject(), question,
-						internalID);
-				question.addAnswer(answer);
-			}
-			pm.makePersistentAll(question.getAnswers());
-			pm.makePersistent(question);
-		} finally {
-			pm.close();
+
+		questionRepositary.singleMakePersistent(question);
+		for (JsonElement je : jobject.get("answers").getAsJsonArray()) {
+			Integer internalID = question.getAnswers().size();
+			Answer answer = parseAnswer(je.getAsJsonObject(), question,
+					internalID);
+			question.addAnswer(answer);
 		}
+		answersRepository.saveAll(question.getAnswers());
+		questionRepositary.singleMakePersistent(question);
+
 		Status status = new Status(quizID, text, weight, question.getID());
 
 		resp.setContentType("application/json");

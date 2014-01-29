@@ -18,9 +18,26 @@ import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.utils.PMF;
 
-public class UserRepository {
+import com.google.appengine.api.datastore.Key;
 
-	public static Set<String> getUserIDs(String quiz) {
+public class UserRepository extends BaseRepository<User>{
+	
+	public UserRepository() {
+		super(User.class);
+	}
+	
+	@Override
+	protected Key getKey(User item) {
+		return item.getKey();
+	}
+	
+	@Override
+	public void fetchItem(User user) {
+		user.getExperiment();
+		user.getTreatments();
+	}
+
+	public Set<String> getUserIDs(String quiz) {
 
 		PersistenceManager pm = PMF.getPM();
 
@@ -51,7 +68,7 @@ public class UserRepository {
 		return answers;
 	}
 
-	public static User getOrCreate(String userid) {
+	public User getOrCreate(String userid) {
 		User user = PMF.singleGetObjectById(User.class,
 				User.generateKeyFromID(userid));
 		if (user == null) {
@@ -64,7 +81,7 @@ public class UserRepository {
 		return user;
 	}
 
-	public static User getUseridFromCookie(HttpServletRequest req,
+	public User getUseridFromCookie(HttpServletRequest req,
 			HttpServletResponse resp) {
 
 		// Get an array of Cookies associated with this domain
@@ -92,7 +109,7 @@ public class UserRepository {
 		return getOrCreate(userid);
 	}
 
-	public static User getUseridFromSocialid(String fbid) {
+	public User getUseridFromSocialid(String fbid) {
 		PersistenceManager pm = PMF.getPM();
 		User user;
 		try {

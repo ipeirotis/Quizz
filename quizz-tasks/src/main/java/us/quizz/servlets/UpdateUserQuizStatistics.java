@@ -1,17 +1,22 @@
 package us.quizz.servlets;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.ChannelHelpers;
 import us.quizz.utils.ServletUtils;
 
 import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * 
@@ -24,7 +29,18 @@ import com.google.gson.Gson;
  * 
  */
 @SuppressWarnings("serial")
+@Singleton
 public class UpdateUserQuizStatistics extends HttpServlet {
+	
+	private UserAnswerRepository userAnswerRepository;
+	private QuizPerformanceRepository quizPerformanceRepository;
+	
+	@Inject
+	public UpdateUserQuizStatistics(UserAnswerRepository userAnswerRepository,
+			QuizPerformanceRepository quizPerformanceRepository){
+		this.userAnswerRepository = userAnswerRepository;
+		this.quizPerformanceRepository = quizPerformanceRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -40,16 +56,19 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		// if (qp==null) {
 		QuizPerformance qp = new QuizPerformance(quiz, userid);
 		// }
-		qp.computeCorrect();
+		
+		List<UserAnswer> userAnswerList = userAnswerRepository.getUserAnswers(quiz, userid);
+		qp.computeCorrect(userAnswerList);
 
 		/*
 		 * if (qp.getTotalanswers()==0) {
 		 * QuizPerformanceRepository.deleteQuizPerformance(quiz, userid);
 		 * return; }
 		 */
-
-		qp.computeRank();
-		QuizPerformanceRepository.storeQuizPerformance(qp);
+		List<QuizPerformance> quizPerformanceList = quizPerformanceRepository
+				.getQuizPerformancesByQuiz(quiz);
+		qp.computeRank(quizPerformanceList);
+		quizPerformanceRepository.storeQuizPerformance(qp);
 		String channelNotify = req.getParameter("channelNotify");
 		if (Boolean.parseBoolean(channelNotify)) {
 			notifyUserViaChannel(userid, quiz);
@@ -59,7 +78,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 	protected void notifyUserViaChannel(String userId, String quizID) {
 		ChannelHelpers ch = new ChannelHelpers();
 		String channelId = ch.generateUserQuizChannelID(userId, quizID);
-		String jQuizPerformance = new Gson().toJson(QuizPerformanceRepository
+		String jQuizPerformance = new Gson().toJson(quizPerformanceRepository
 				.getQuizPerformance(quizID, userId));
 		ch.sendMessage(channelId, jQuizPerformance);
 	}

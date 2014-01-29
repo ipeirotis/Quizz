@@ -4,35 +4,71 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
-import com.google.appengine.api.datastore.Key;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
 import us.quizz.utils.CachePMF;
+import us.quizz.utils.Helper;
 import us.quizz.utils.PMF;
 
-public class QuizQuestionRepository {
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
-	public static Question getQuizQuestion(String questionID) {
+public class QuizQuestionRepository extends BaseRepository<Question>{
+	
+	@Inject
+	QuizRepository quizRepository;
+	
+	public QuizQuestionRepository() {
+		super(Question.class);
+	}
+	
+	@Override
+	protected Key getKey(Question item) {
+		return item.getKey();
+	}
+	
+	public Map<String, Set<Question>> getNextQuizQuestions(String quiz, int n) {
+		String key = "getquizquestion_" + quiz + n;
+		@SuppressWarnings("unchecked")
+		Map<String, Set<Question>> result = CachePMF.get(key, Map.class);
+		if (result != null)
+			return result;
+		else
+			result = new HashMap<String, Set<Question>>();
+
+		int N = n * 5;
+		ArrayList<Question> goldQuestions = getSomeQuizQuestionsWithGold(quiz, N);
+		result.put("gold", Helper.trySelectingRandomElements(goldQuestions, n));
+		ArrayList<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quiz, N);
+		result.put("silver", Helper.trySelectingRandomElements(silverQuestions, n));
+		
+		int cached_lifetime = 5 * 60; // 10 minutes
+		CachePMF.put(key, result, cached_lifetime);
+
+		return result;
+	}
+
+	public Question getQuizQuestion(String questionID) {
 		return getQuizQuestion(Long.parseLong(questionID));
 	}
 
-	public static Question getQuizQuestion(Long questionID) {
+	public Question getQuizQuestion(Long questionID) {
 		return PMF.singleGetObjectById(Question.class, questionID);
 	}
 
-	protected static Query getQuestionBaseQuery(PersistenceManager pm) {
+	protected Query getQuestionBaseQuery(PersistenceManager pm) {
 		Query query = pm.newQuery(Question.class);
 		query.getFetchPlan().setFetchSize(1000);
 		return query;
 	}
 
-	protected static Query getQuestionQuery(PersistenceManager pm,
+	protected Query getQuestionQuery(PersistenceManager pm,
 			String filter, String declaredParameters) {
 		Query query = getQuestionBaseQuery(pm);
 		query.setFilter(filter);
@@ -40,7 +76,7 @@ public class QuizQuestionRepository {
 		return query;
 	}
 
-	public static ArrayList<Question> getQuizQuestions() {
+	public ArrayList<Question> getQuizQuestions() {
 
 		PersistenceManager pm = PMF.getPM();
 		try {
@@ -53,7 +89,7 @@ public class QuizQuestionRepository {
 		}
 	}
 
-	protected static ArrayList<Question> getQuestions(String filter,
+	protected ArrayList<Question> getQuestions(String filter,
 			String declaredParameters, Map<String, Object> params) {
 		PersistenceManager pm = PMF.getPM();
 		try {
@@ -68,7 +104,7 @@ public class QuizQuestionRepository {
 		}
 	}
 
-	protected static ArrayList<Question> getQuestionsWithCaching(String key,
+	protected ArrayList<Question> getQuestionsWithCaching(String key,
 			String filter, String declaredParameters, Map<String, Object> params) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Question> questions = CachePMF.get(key, ArrayList.class);
@@ -79,7 +115,7 @@ public class QuizQuestionRepository {
 		return questions;
 	}
 
-	public static ArrayList<Question> getQuizQuestions(String quizid) {
+	public ArrayList<Question> getQuizQuestions(String quizid) {
 
 		String key = "quizquestions_all_" + quizid;
 		String filter = "quizID == quizParam";
@@ -89,14 +125,14 @@ public class QuizQuestionRepository {
 		return getQuestionsWithCaching(key, filter, declaredParameters, params);
 	}
 
-	protected static Query getQuizGoldQuestionsQuery(PersistenceManager pm,
+	protected Query getQuizGoldQuestionsQuery(PersistenceManager pm,
 			String quizID) {
 		String filter = "quizID == quizParam && hasGoldAnswer==hasGoldParam";
 		String declaredParameters = "String quizParam, Boolean hasGoldParam";
 		return getQuestionQuery(pm, filter, declaredParameters);
 	}
 
-	protected static Map<String, Object> getQuizGoldQuestionsParameters(
+	protected Map<String, Object> getQuizGoldQuestionsParameters(
 			String quizID) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizID);
@@ -104,14 +140,14 @@ public class QuizQuestionRepository {
 		return params;
 	}
 	
-	protected static Query getQuizSilverQuestionsQuery(PersistenceManager pm,
+	protected Query getQuizSilverQuestionsQuery(PersistenceManager pm,
 			String quizID) {
 		String filter = "quizID == quizParam && hasSilverAnswer==hasSilverParam";
 		String declaredParameters = "String quizParam, Boolean hasSilverParam";
 		return getQuestionQuery(pm, filter, declaredParameters);
 	}
 	
-	protected static Map<String, Object> getQuizSilverQuestionsParameters(
+	protected Map<String, Object> getQuizSilverQuestionsParameters(
 			String quizID) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("quizParam", quizID);
@@ -120,12 +156,12 @@ public class QuizQuestionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Question> getSomeQuizQuestionsWithGold(
+	public ArrayList<Question> getSomeQuizQuestionsWithGold(
 			String quizID, int amount) {
 		PersistenceManager pm = PMF.getPM();
 
 		try {
-			Quiz quiz = QuizRepository.getQuiz(quizID);
+			Quiz quiz = quizRepository.getQuiz(quizID);
 			int questionsWithGold = quiz.getGold();
 			Query query = getQuizGoldQuestionsQuery(pm, quizID);
 			setRandomRange(query, questionsWithGold, amount);
@@ -142,12 +178,12 @@ public class QuizQuestionRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Question> getSomeQuizQuestionsWithSilver(
+	public ArrayList<Question> getSomeQuizQuestionsWithSilver(
 			String quizID, int amount) {
 		PersistenceManager pm = PMF.getPM();
 
 		try {
-			Quiz quiz = QuizRepository.getQuiz(quizID);
+			Quiz quiz = quizRepository.getQuiz(quizID);
 			int questionsWithSilver = quiz.getQuestions() - quiz.getGold();
 			Query query = getQuizSilverQuestionsQuery(pm, quizID);
 			setRandomRange(query, questionsWithSilver, amount);
@@ -163,13 +199,13 @@ public class QuizQuestionRepository {
 
 	}
 
-	public static void setRandomRange(Query query, int size, int amount) {
+	public void setRandomRange(Query query, int size, int amount) {
 		int lower = (int) (Math.random() * Math.max(0, size - amount));
 		int upper = Math.min(size, lower + amount);
 		query.setRange(lower, upper); // upper is excluded index
 	}
 
-	public static ArrayList<Question> getQuizQuestionsWithGold(String quizID) {
+	public ArrayList<Question> getQuizQuestionsWithGold(String quizID) {
 
 		String key = "quizquestions_gold_" + quizID;
 		String filter = "quizID == quizParam && hasGoldAnswer==hasGoldParam";
@@ -179,16 +215,16 @@ public class QuizQuestionRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static List<Question> getQuizQuestionsByKeys(List<Key> keys) {
+	public List<Question> getQuizQuestionsByKeys(List<Key> keys) {
 		Query q = PMF.getPM().newQuery("select from " + Question.class.getName() + " where key == :keys");
 	    return (List<Question>) q.execute(keys);
 	}
 
-	public static void storeQuizQuestion(Question q) {
+	public void storeQuizQuestion(Question q) {
 		PMF.singleMakePersistent(q);
 	}
 
-	public static void removeWithoutUpdates(Long questionID) {
+	public void removeWithoutUpdates(Long questionID) {
 		PersistenceManager pm = PMF.getPM();
 		try {
 			Question qq = pm.getObjectById(Question.class, questionID);
@@ -198,7 +234,7 @@ public class QuizQuestionRepository {
 		}
 	}
 
-	public static List<UserAnswer> getUserAnswers(Question question) {
+	public List<UserAnswer> getUserAnswers(Question question) {
 
 		PersistenceManager pm = PMF.getPM();
 		try {
@@ -218,7 +254,7 @@ public class QuizQuestionRepository {
 		}
 	}
 
-	public static int getNumberOfUserAnswersExcludingIDK(String questionID) {
+	public int getNumberOfUserAnswersExcludingIDK(String questionID) {
 		PersistenceManager pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(UserAnswer.class);
@@ -238,7 +274,7 @@ public class QuizQuestionRepository {
 		}
 	}
 
-	public static int getNumberOfCorrectUserAnswers(String questionID) {
+	public int getNumberOfCorrectUserAnswers(String questionID) {
 		PersistenceManager pm = PMF.getPM();
 		try {
 			Query q = pm.newQuery(UserAnswer.class);

@@ -7,19 +7,22 @@ import javax.inject.Named;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
-import us.quizz.utils.PMF;
+import us.quizz.repository.UserRepository;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class UserEndpoint extends BaseCollectionEndpoint<User> {
-
-	public UserEndpoint() {
-		super(User.class, "User");
+public class UserEndpoint {
+	
+	private UserRepository userRepository;
+	
+	@Inject
+	public UserEndpoint(UserRepository userRepository){
+		this.userRepository = userRepository;
 	}
 
 	/**
@@ -33,13 +36,7 @@ public class UserEndpoint extends BaseCollectionEndpoint<User> {
 	public CollectionResponse<User> listUser(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
-		return listItems(cursorString, limit);
-	}
-
-	@Override
-	protected void fetchItem(User user) {
-		user.getExperiment();
-		user.getTreatments();
+		return userRepository.listItems(cursorString, limit);
 	}
 
 	/**
@@ -52,7 +49,7 @@ public class UserEndpoint extends BaseCollectionEndpoint<User> {
 	 */
 	@ApiMethod(name = "getUser")
 	public User getUser(@Named("userid") String userid) {
-		User user = PMF.singleGetObjectByIdThrowing(User.class,
+		User user = userRepository.singleGetObjectByIdThrowing(User.class,
 				User.generateKeyFromID(userid));
 		Experiment e = user.getExperiment();
 		for (String s : e.getTreatments().keySet())
@@ -74,7 +71,7 @@ public class UserEndpoint extends BaseCollectionEndpoint<User> {
 	 */
 	@ApiMethod(name = "insertUser")
 	public User insertUser(User user) {
-		return insert(user);
+		return userRepository.insert(user);
 	}
 
 	/**
@@ -88,7 +85,7 @@ public class UserEndpoint extends BaseCollectionEndpoint<User> {
 	 */
 	@ApiMethod(name = "updateUser")
 	public User updateUser(User user) {
-		return update(user);
+		return userRepository.update(user);
 	}
 
 	/**
@@ -100,11 +97,7 @@ public class UserEndpoint extends BaseCollectionEndpoint<User> {
 	 */
 	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("userid") String userid) {
-		remove(User.generateKeyFromID(userid));
+		userRepository.remove(User.generateKeyFromID(userid));
 	}
-
-	@Override
-	protected Key getKey(User item) {
-		return item.getKey();
-	}
+	
 }

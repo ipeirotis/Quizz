@@ -27,8 +27,10 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
+@Singleton
 public class UploadCrowdAnswers extends HttpServlet {
 
 	final static Logger logger = Logger.getLogger("com.ipeirotis.adcrowdkg");

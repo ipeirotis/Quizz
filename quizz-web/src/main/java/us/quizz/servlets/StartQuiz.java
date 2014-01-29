@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import us.quizz.entities.User;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
@@ -14,7 +17,17 @@ import us.quizz.utils.ChannelHelpers;
 import us.quizz.utils.Helper;
 
 @SuppressWarnings("serial")
+@Singleton
 public class StartQuiz extends HttpServlet {
+	
+	private UserRepository userRepository;
+	private UserReferralRepository userReferralRepository;
+	
+	@Inject
+	public StartQuiz(UserRepository userRepository, UserReferralRepository userReferralRepository){
+		this.userRepository = userRepository;
+		this.userReferralRepository = userReferralRepository;
+	}
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -24,9 +37,9 @@ public class StartQuiz extends HttpServlet {
 
 		String gclid = req.getParameter("gclid");
 
-		User user = UserRepository.getUseridFromCookie(req, resp);
+		User user = userRepository.getUseridFromCookie(req, resp);
 		String userid = user.getUserid();
-		UserReferralRepository.createAndStoreUserReferal(req, userid);
+		userReferralRepository.createAndStoreUserReferal(req, userid);
 
 		String nextURL = Helper.getBaseURL(req)
 				+ "/multiChoiceMulti.jsp?quizID="

@@ -10,8 +10,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.Helper;
 
 import com.google.appengine.api.datastore.Key;
@@ -121,11 +119,8 @@ public class QuizPerformance implements Serializable {
 		this.score = 0.0;
 	}
 
-	public void computeCorrect() {
-
-		List<UserAnswer> results = UserAnswerRepository.getUserAnswers(
-				this.quiz, this.userid);
-
+	public void computeCorrect(List<UserAnswer> results) {
+		
 		int c = 0;
 		int t = 0;
 		for (UserAnswer ua : results) {
@@ -188,10 +183,7 @@ public class QuizPerformance implements Serializable {
 
 	}
 
-	public void computeRank() {
-
-		List<QuizPerformance> results = QuizPerformanceRepository
-				.getQuizPerformancesByQuiz(this.quiz);
+	public void computeRank(List<QuizPerformance> results) {
 		this.totalUsers = results.size();
 
 		int higherScore = 0;

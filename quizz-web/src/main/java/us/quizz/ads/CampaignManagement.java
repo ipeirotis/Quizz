@@ -62,13 +62,19 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 @SuppressWarnings("serial")
+@Singleton
 public class CampaignManagement extends HttpServlet {
 	
 	private static final Logger logger = Logger.getLogger(CampaignManagement.class.getName());
 
 	private AdWordsServices	adWordsServices;
 	private AdWordsSession session;
+	
+	@Inject
+	private QuizRepository quizRepository;
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -136,9 +142,9 @@ public class CampaignManagement extends HttpServlet {
 		Campaign campaign = createCampaign(campaignName, dailyBudget);
 		Long campaignId = publishCampaign(campaign);
 		
-		Quiz q = QuizRepository.getQuiz(quizID);
+		Quiz q = quizRepository.getQuiz(quizID);
 		q.setCampaignid(campaignId);
-		QuizRepository.storeQuiz(q);
+		quizRepository.storeQuiz(q);
 	}
 	
 	private void addAdGroup(HttpServletRequest req, HttpServletResponse resp) throws Exception{		
@@ -149,7 +155,7 @@ public class CampaignManagement extends HttpServlet {
 		String adline1 = req.getParameter("adline1").trim();
 		String adline2 = req.getParameter("adline2").trim();
 
-		Quiz q = QuizRepository.getQuiz(quizID);
+		Quiz q = quizRepository.getQuiz(quizID);
 		Long campaignId = q.getCampaignid();
 		
 		

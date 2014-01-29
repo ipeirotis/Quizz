@@ -4,20 +4,22 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 
 import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.utils.PMF;
+import us.quizz.repository.UserAnswerFeedbackRepository;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class UserAnswerFeedbackEndpoint extends
-		BaseCollectionEndpoint<UserAnswerFeedback> {
-
-	public UserAnswerFeedbackEndpoint() {
-		super(UserAnswerFeedback.class, "UserAnswerFeedback");
+public class UserAnswerFeedbackEndpoint {
+	
+	private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
+	
+	@Inject
+	public UserAnswerFeedbackEndpoint(UserAnswerFeedbackRepository userAnswerFeedbackRepository){
+		this.userAnswerFeedbackRepository = userAnswerFeedbackRepository;
 	}
 
 	/**
@@ -31,7 +33,7 @@ public class UserAnswerFeedbackEndpoint extends
 	public CollectionResponse<UserAnswerFeedback> listUserAnswerFeedback(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
-		return listItems(cursorString, limit);
+		return userAnswerFeedbackRepository.listItems(cursorString, limit);
 	}
 
 	/**
@@ -45,7 +47,7 @@ public class UserAnswerFeedbackEndpoint extends
 	@ApiMethod(name = "getUserAnswerFeedback")
 	public UserAnswerFeedback getUserAnswerFeedback(
 			@Named("question") Long questionID, @Named("userid") String userid) {
-		return PMF.singleGetObjectByIdThrowing(UserAnswerFeedback.class,
+		return userAnswerFeedbackRepository.singleGetObjectByIdThrowing(UserAnswerFeedback.class,
 				UserAnswerFeedback.generateKeyFromID(questionID, userid));
 	}
 
@@ -61,7 +63,7 @@ public class UserAnswerFeedbackEndpoint extends
 	@ApiMethod(name = "insertUserAnswerFeedback")
 	public UserAnswerFeedback insertUserAnswerFeedback(
 			UserAnswerFeedback useranswerfeedback) {
-		return insert(useranswerfeedback);
+		return userAnswerFeedbackRepository.insert(useranswerfeedback);
 	}
 
 	/**
@@ -76,7 +78,7 @@ public class UserAnswerFeedbackEndpoint extends
 	@ApiMethod(name = "updateUserAnswerFeedback")
 	public UserAnswerFeedback updateUserAnswerFeedback(
 			UserAnswerFeedback useranswerfeedback) {
-		return update(useranswerfeedback);
+		return userAnswerFeedbackRepository.update(useranswerfeedback);
 	}
 
 	/**
@@ -88,13 +90,9 @@ public class UserAnswerFeedbackEndpoint extends
 	 */
 	@ApiMethod(name = "removeUserAnswerFeedback")
 	public void removeUserAnswerFeedback(@Named("id") Long id) {
-		UserAnswerFeedback uaf = PMF.singleGetObjectByIdThrowing(
+		UserAnswerFeedback uaf = userAnswerFeedbackRepository.singleGetObjectByIdThrowing(
 				UserAnswerFeedback.class, id);
-		remove(uaf.getKey());
+		userAnswerFeedbackRepository.remove(uaf.getKey());
 	}
-
-	@Override
-	protected Key getKey(UserAnswerFeedback item) {
-		return item.getKey();
-	}
+	
 }

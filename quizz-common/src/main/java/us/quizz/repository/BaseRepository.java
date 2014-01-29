@@ -1,8 +1,9 @@
-package us.quizz.endpoints;
+package us.quizz.repository;
 
 import java.util.HashMap;
 import java.util.List;
 
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
@@ -16,15 +17,15 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.base.Strings;
 
-public abstract class BaseCollectionEndpoint<T> {
+public abstract class BaseRepository<T> {
 
 	private Class<T> cls;
-	private String name;
 
-	protected BaseCollectionEndpoint(Class<T> cls, String name) {
+	protected BaseRepository(Class<T> cls) {
 		this.cls = cls;
-		this.name = name;
 	}
+	
+	abstract protected Key getKey(T item);
 
 	/**
 	 * This method lists all the entities inserted in datastore. It uses HTTP
@@ -34,7 +35,7 @@ public abstract class BaseCollectionEndpoint<T> {
 	 *         persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings("unchecked")
-	protected CollectionResponse<T> listItems(String cursorString, Integer limit) {
+	public CollectionResponse<T> listItems(String cursorString, Integer limit) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
@@ -72,29 +73,38 @@ public abstract class BaseCollectionEndpoint<T> {
 		return CollectionResponse.<T> builder().setItems(execute)
 				.setNextPageToken(cursorString).build();
 	}
-
-	abstract protected Key getKey(T item);
+	
+	@SuppressWarnings("unchecked")
+	public List<T> list(){
+		PersistenceManager pm = PMF.getPM();
+		try{
+			Query query = pm.newQuery(cls);
+			return (List<T>)query.execute();
+		}finally{
+			pm.close();
+		}
+	}
 
 	/**
 	 * In typical case we don't need to do anything
 	 * 
 	 * @param item
 	 */
-	protected void fetchItem(T item) {
+	public void fetchItem(T item) {
 	};
 
-	protected boolean contains(T item) {
+	public boolean contains(T item) {
 		if(getKey(item) == null)
 			return false;
 		else
 			return PMF.singleGetObjectById(cls, getKey(item)) != null;
 	}
 
-	protected T insert(T item) {
+	public T insert(T item) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (contains(item)) {
-				throw new EntityExistsException(name + " already exists");
+				throw new EntityExistsException(cls.getSimpleName() + " already exists");
 			}
 			mgr.makePersistent(item);
 		} finally {
@@ -103,11 +113,11 @@ public abstract class BaseCollectionEndpoint<T> {
 		return item;
 	}
 
-	protected T update(T item) {
+	public T update(T item) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (!contains(item)) {
-				throw new EntityNotFoundException(name + " does not exist");
+				throw new EntityNotFoundException(cls.getSimpleName() + " does not exist");
 			}
 			mgr.makePersistent(item);
 		} finally {
@@ -115,8 +125,18 @@ public abstract class BaseCollectionEndpoint<T> {
 		}
 		return item;
 	}
+	
+	public T save(T item) {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(item);
+		} finally {
+			mgr.close();
+		}
+		return item;
+	}
 
-	protected void remove(Key key) {
+	public void remove(Key key) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			T item = mgr.getObjectById(cls, key);
@@ -126,7 +146,7 @@ public abstract class BaseCollectionEndpoint<T> {
 		}
 	}
 	
-	protected T get(Long id){
+	public T get(Long id){
 		PersistenceManager mgr = getPersistenceManager();
 		T item = null;
 		try {
@@ -136,8 +156,44 @@ public abstract class BaseCollectionEndpoint<T> {
 		}
 		return item;
 	}
+	
+	public T singleMakePersistent(T item) {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			return mgr.makePersistent(item);
+		} finally {
+			mgr.close();
+		}
+	}
+	
+	public T singleGetObjectByIdThrowing(Class<T> cls, Object key) {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			return mgr.getObjectById(cls, key);
+		} finally {
+			mgr.close();
+		}
+	}
+	
+	public T singleGetObjectById(Class<T> cls, Object key) {
+		try {
+			return singleGetObjectByIdThrowing(cls, key);
+		} catch (JDOObjectNotFoundException ex) {
+			return null;
+		}
+	}
+	
+	public void saveAll(List<T> list){
+		PersistenceManager mgr = getPersistenceManager();
+	
+		try {
+			mgr.makePersistentAll(list);
+		} finally {
+			mgr.close();
+		}
+	}
 
-	protected static PersistenceManager getPersistenceManager() {
+	public PersistenceManager getPersistenceManager() {
 		return PMF.getPM();
 	}
 }

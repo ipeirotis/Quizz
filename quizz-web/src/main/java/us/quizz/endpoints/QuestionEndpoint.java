@@ -10,7 +10,6 @@ import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Question;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.utils.PMF;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -18,23 +17,25 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class QuestionEndpoint extends BaseCollectionEndpoint<Question> {
-
-	public QuestionEndpoint() {
-		super(Question.class, "Question");
-	}
-
-	@Override
-	protected Key getKey(Question item) {
-		return item.getKey();
+public class QuestionEndpoint {
+	
+	private QuizQuestionRepository quizQuestionRepository;
+	private AnswerChallengeCounterRepository answerChallengeCounterRepository;
+	
+	@Inject
+	public QuestionEndpoint(QuizQuestionRepository quizQuestionRepository,
+			AnswerChallengeCounterRepository answerChallengeCounterRepository){
+		this.quizQuestionRepository = quizQuestionRepository;
+		this.answerChallengeCounterRepository = answerChallengeCounterRepository;
 	}
 
 	@ApiMethod(name = "listQuestions")
 	public CollectionResponse<Question> listQuestions(
 			@Nullable @Named("cursor") String cursor) {
-		List<Question> questions = QuizQuestionRepository.getQuizQuestions();
+		List<Question> questions = quizQuestionRepository.getQuizQuestions();
 		return CollectionResponse.<Question> builder().setItems(questions)
 				.setNextPageToken(cursor).build();
 	}
@@ -43,7 +44,7 @@ public class QuestionEndpoint extends BaseCollectionEndpoint<Question> {
 	public CollectionResponse<QuestionWithChallenges> listQuestionsWithChallenges(
 			@Nullable @Named("cursor") String cursor,
 			@Nullable @Named("limit") Integer limit) {
-		List<AnswerChallengeCounter> challenges = AnswerChallengeCounterRepository.list(cursor, limit);
+		List<AnswerChallengeCounter> challenges = answerChallengeCounterRepository.list(cursor, limit);
 
 		List<Key> keys = new ArrayList<Key>();
 		for(AnswerChallengeCounter c : challenges){
@@ -52,7 +53,7 @@ public class QuestionEndpoint extends BaseCollectionEndpoint<Question> {
 		
 		List<QuestionWithChallenges> result = new ArrayList<QuestionWithChallenges>();
 		if(keys.size() != 0){
-			List<Question> questions = QuizQuestionRepository.getQuizQuestionsByKeys(keys);
+			List<Question> questions = quizQuestionRepository.getQuizQuestionsByKeys(keys);
 			int i = 0;
 			for(Question question : questions){
 				result.add(new QuestionWithChallenges(question, challenges.get(i).getCount()));
@@ -66,22 +67,22 @@ public class QuestionEndpoint extends BaseCollectionEndpoint<Question> {
 
 	@ApiMethod(name = "getQuestion")
 	public Question getQuestion(@Named("questionID") Long questionID) {
-		return PMF.singleGetObjectById(Question.class, questionID);
+		return quizQuestionRepository.singleGetObjectById(Question.class, questionID);
 	}
 
 	@ApiMethod(name = "insertQuestion")
 	public Question insertQuestion(Question newQuestion) {
-		return insert(newQuestion);
+		return quizQuestionRepository.insert(newQuestion);
 	}
 
 	@ApiMethod(name = "updateQuestion")
 	public Question updateQuestion(Question newQuestion) {
-		return update(newQuestion);
+		return quizQuestionRepository.update(newQuestion);
 	}
 
 	@ApiMethod(name = "removeQuestion")
 	public void removeQuestion(@Named("questionID") Long questionID) {
-		remove(getKey(getQuestion(questionID)));
+		quizQuestionRepository.remove(Question.generateKeyFromID(questionID));
 	}
 	
 	class QuestionWithChallenges {

@@ -9,13 +9,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.utils.PMF;
+import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.ServletUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 @SuppressWarnings("serial")
+@Singleton
 public class AddUserAnswer extends HttpServlet {
 
 	final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
+	
+	private QuizQuestionRepository quizQuestionRepository;
+	private UserAnswerRepository userAnswerRepository;
+	
+	@Inject
+	public AddUserAnswer(QuizQuestionRepository quizQuestionRepository,
+		UserAnswerRepository userAnswerRepository){
+		this.quizQuestionRepository = quizQuestionRepository;
+		this.userAnswerRepository = userAnswerRepository;
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -50,12 +64,12 @@ public class AddUserAnswer extends HttpServlet {
 		ue.setIpaddress(ipAddress);
 		ue.setTimestamp(timestamp);
 		ue.setAction(action);
-		ue.setQuizID(QuizQuestionRepository.getQuizQuestion(questionID)
+		ue.setQuizID(quizQuestionRepository.getQuizQuestion(questionID)
 				.getQuizID());
 		if (isCorrect != null)
 			ue.setIsCorrect(isCorrect);
 
-		PMF.singleMakePersistent(ue);
+		userAnswerRepository.singleMakePersistent(ue);
 
 		resp.getWriter().println("OK");
 	}

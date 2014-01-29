@@ -10,22 +10,28 @@ import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.utils.PMF;
 
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.base.Strings;
 
-public class AnswerChallengeCounterRepository {
+public class AnswerChallengeCounterRepository extends BaseRepository<AnswerChallengeCounter>{
+	
+	public AnswerChallengeCounterRepository() {
+		super(AnswerChallengeCounter.class);
+	}
+	
+	@Override
+	protected Key getKey(AnswerChallengeCounter item) {
+		return item.getKey();
+	}
 
-	public static AnswerChallengeCounter get(String quizID, Long questionID){
+	public AnswerChallengeCounter get(String quizID, Long questionID){
 		return PMF.singleGetObjectById(AnswerChallengeCounter.class, 
 				AnswerChallengeCounter.generateKey(quizID, questionID));
 	}
 	
-	public static void save(AnswerChallengeCounter challengeCounter) {
-		PMF.singleMakePersistent(challengeCounter);
-	}
-	
 	@SuppressWarnings("unchecked")
-	public static List<AnswerChallengeCounter> list(String cursorString, Integer limit) {
+	public List<AnswerChallengeCounter> list(String cursorString, Integer limit) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;

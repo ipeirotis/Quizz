@@ -10,25 +10,28 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerChallengeStatus;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.UserAnswerRepository;
-import us.quizz.utils.PMF;
+import us.quizz.repository.UserRepository;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
-public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
-
-	public UserAnswerEndpoint() {
-		super(UserAnswer.class, "User answer");
-	}
-
-	@Override
-	protected Key getKey(UserAnswer item) {
-		return item.getKey();
+public class UserAnswerEndpoint {
+	
+	private UserAnswerRepository userAnswerRepository;
+	private UserRepository userRepository;
+	private AnswerChallengeCounterRepository answerChallengeCounterRepository;
+	
+	@Inject
+	public UserAnswerEndpoint(UserAnswerRepository userAnswerRepository, UserRepository userRepository,
+			AnswerChallengeCounterRepository answerChallengeCounterRepository){
+		this.userAnswerRepository = userAnswerRepository;
+		this.userRepository = userRepository;
+		this.answerChallengeCounterRepository = answerChallengeCounterRepository;
 	}
 
 	@ApiMethod(name = "addAnswerChallenge", httpMethod=HttpMethod.POST, path="addAnswerChallenge")
@@ -37,19 +40,19 @@ public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
 			@Named("userAnswerID") Long userAnswerID,
 			@Named("userid") String userid,
 			@Named("message") String message) {
-		AnswerChallengeCounter cc = AnswerChallengeCounterRepository.get(quizID, questionID);
+		AnswerChallengeCounter cc = answerChallengeCounterRepository.get(quizID, questionID);
 		if(cc == null){
 			cc = new AnswerChallengeCounter(quizID, questionID);
 			cc.setCount(1L);
 		} else {
 			cc.incCount();
 		}
-		AnswerChallengeCounterRepository.save(cc);
+		answerChallengeCounterRepository.save(cc);
 		
-		UserAnswer userAnswer = get(userAnswerID);
+		UserAnswer userAnswer = userAnswerRepository.get(userAnswerID);
 		userAnswer.setAnswerChallengeText(new Text(message));
 		
-		List<UserAnswer> userAnswers = UserAnswerRepository
+		List<UserAnswer> userAnswers = userAnswerRepository
 				.getUserAnswersWithChallenge(quizID, userid);
 		
 		if(userAnswers.size() != 0){
@@ -58,9 +61,9 @@ public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
 				if(ua.getAnswerChallengeText().equals(message)){
 					userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 					
-					User user = PMF.singleGetObjectById(User.class, userAnswer.getUserid());
+					User user = userRepository.singleGetObjectById(User.class, userAnswer.getUserid());
 					user.incChallengeBudget();
-					PMF.singleMakePersistent(user);
+					userRepository.singleMakePersistent(user);
 					exist = true;
 					break;
 				}
@@ -69,31 +72,31 @@ public class UserAnswerEndpoint extends BaseCollectionEndpoint<UserAnswer> {
 				userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
 		}
 		
-		return update(userAnswer);
+		return userAnswerRepository.update(userAnswer);
 	}
 	
 	@ApiMethod(name = "approveAnswerChallenge", path="answerChallenge/approve")
 	public UserAnswer approveChallenge(@Named("userAnswerID") Long userAnswerID) {
-		UserAnswer userAnswer = PMF.singleGetObjectById(UserAnswer.class, userAnswerID);
+		UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(UserAnswer.class, userAnswerID);
 		userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 		
-		User user = PMF.singleGetObjectById(User.class, userAnswer.getUserid());
+		User user = userRepository.singleGetObjectById(User.class, userAnswer.getUserid());
 		user.incChallengeBudget();
-		PMF.singleMakePersistent(user);
+		userRepository.singleMakePersistent(user);
 		
-		return update(userAnswer);
+		return userAnswerRepository.update(userAnswer);
 	}
 
 	@ApiMethod(name = "rejectAnswerChallenge", path="answerChallenge/reject")
 	public UserAnswer rejectChallenge(@Named("userAnswerID") Long userAnswerID) {
-		UserAnswer userAnswer = PMF.singleGetObjectById(UserAnswer.class, userAnswerID);
+		UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(UserAnswer.class, userAnswerID);
 		userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
 		
-		User user = PMF.singleGetObjectById(User.class, userAnswer.getUserid());
+		User user = userRepository.singleGetObjectById(User.class, userAnswer.getUserid());
 		user.decChallengeBudget();
-		PMF.singleMakePersistent(user);
+		userRepository.singleMakePersistent(user);
 		
-		return update(userAnswer);
+		return userAnswerRepository.update(userAnswer);
 	} 
 
 }

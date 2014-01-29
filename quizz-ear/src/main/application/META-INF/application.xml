@@ -13,5 +13,4 @@
       <context-root>/quizz-tasks</context-root>
     </web>
   </module>
-  <library-directory>lib</library-directory>
 </application>
