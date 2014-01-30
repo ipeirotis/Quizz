@@ -9,6 +9,7 @@ import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerChallengeStatus;
 import us.quizz.repository.AnswerChallengeCounterRepository;
+import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
 
@@ -25,16 +26,54 @@ public class UserAnswerEndpoint {
 	private UserAnswerRepository userAnswerRepository;
 	private UserRepository userRepository;
 	private AnswerChallengeCounterRepository answerChallengeCounterRepository;
+	private QuizQuestionRepository quizQuestionRepository;
 	
 	@Inject
-	public UserAnswerEndpoint(UserAnswerRepository userAnswerRepository, UserRepository userRepository,
-			AnswerChallengeCounterRepository answerChallengeCounterRepository){
+	public UserAnswerEndpoint(UserAnswerRepository userAnswerRepository, 
+			UserRepository userRepository,
+			AnswerChallengeCounterRepository answerChallengeCounterRepository,
+			QuizQuestionRepository quizQuestionRepository){
 		this.userAnswerRepository = userAnswerRepository;
 		this.userRepository = userRepository;
 		this.answerChallengeCounterRepository = answerChallengeCounterRepository;
+		this.quizQuestionRepository = quizQuestionRepository;
+	}
+	
+	@ApiMethod(name = "addUserAnswer", httpMethod=HttpMethod.POST, path="addUserAnswer")
+	public void addUserAnswer(@Named("userid") String userid,
+			@Named("quizID") String quizID,
+			@Named("questionID") String questionID,
+			@Named("useranswerID") String useranswerID,
+			@Named("referer") String referer,
+			@Named("browser") String browser,
+			@Named("ipAddress") String ipAddress,
+			@Named("timestamp") Long timestamp,
+			@Named("action") String action,
+			@Named("isCorrect") Boolean isCorrect){
+		
+		UserAnswer ue = new UserAnswer(userid, questionID, useranswerID);
+		ue.setReferer(referer);
+		ue.setBrowser(browser);
+		ue.setIpaddress(ipAddress);
+		ue.setTimestamp(timestamp);
+		ue.setAction(action);
+		ue.setQuizID(quizQuestionRepository.getQuizQuestion(questionID)
+				.getQuizID());
+		if (isCorrect != null)
+			ue.setIsCorrect(isCorrect);
+
+		userAnswerRepository.singleMakePersistent(ue);
+	}
+	
+	@ApiMethod(name = "getNumberOfSubmittedAnswers", httpMethod=HttpMethod.POST, path="getNumberOfSubmittedAnswers")
+	public NumberOfUnswersResponse getNumberOfSubmittedAnswers(@Named("quiz") String quiz,
+								@Named("userid") String userid){
+		int answers = userAnswerRepository.getUserAnswers(quiz, userid)
+				.size();
+		return new NumberOfUnswersResponse(quiz, answers);
 	}
 
-	@ApiMethod(name = "addAnswerChallenge", httpMethod=HttpMethod.POST, path="addAnswerChallenge")
+	@ApiMethod(name = "addAnswerFeedBack", httpMethod=HttpMethod.POST, path="addAnswerFeedBack")
 	public UserAnswer addAnswerFeedBack(@Named("quizID") String quizID,
 			@Named("questionID") Long questionID, 
 			@Named("userAnswerID") Long userAnswerID,
@@ -97,6 +136,32 @@ public class UserAnswerEndpoint {
 		userRepository.singleMakePersistent(user);
 		
 		return userAnswerRepository.update(userAnswer);
-	} 
+	}
+	
+	class NumberOfUnswersResponse {
+		private String quiz;
+		private int answers;
+
+		NumberOfUnswersResponse(String quiz, int answers) {
+			this.quiz = quiz;
+			this.answers = answers;
+		}
+
+		public String getQuiz() {
+			return quiz;
+		}
+
+		public void setQuiz(String quiz) {
+			this.quiz = quiz;
+		}
+
+		public int getAnswers() {
+			return answers;
+		}
+
+		public void setAnswers(int answers) {
+			this.answers = answers;
+		}
+	}
 
 }

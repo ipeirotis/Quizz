@@ -11,8 +11,16 @@
 <%@ page import="java.util.HashMap"%>
 
 <%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
+<%@ page import="com.google.inject.Injector"%>
+<%@ page import="com.google.inject.Guice"%>
+<%@ page import="us.quizz.di.CommonModule"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="User info" /></jsp:include>
+<% 
+Injector i = Guice.createInjector(new CommonModule());
+UserRepository userRepository = i.getInstance(UserRepository.class);
+QuizPerformanceRepository quizPerformanceRepository = i.getInstance(QuizPerformanceRepository.class);
+%>
 
 <body>
 	<div class="container pagination-centered">
@@ -21,7 +29,7 @@
 			<table class="table table-striped  table-bordered">
 			
 				<tr><th colspan="4">User Information</th></tr>
-				<% User u = UserRepository.getUseridFromCookie(request, response); %>
+				<% User u = userRepository.getUseridFromCookie(request, response); %>
 				<tr>
 					<td  class="span2">Userid:</td>
 					<td class="span6" colspan="3"><%=u.getUserid() %></td>
@@ -42,7 +50,7 @@
 			
 				<tr><th colspan="4">Quiz Performance</th></tr>
 				<%
-				List<QuizPerformance> results = QuizPerformanceRepository.getQuizPerformancesByUser(u.getUserid());				
+				List<QuizPerformance> results = quizPerformanceRepository.getQuizPerformancesByUser(u.getUserid());				
 			
 				for (QuizPerformance qp : results) {
 					%> 

@@ -80,6 +80,10 @@ public class UserRepository extends BaseRepository<User>{
 		}
 		return user;
 	}
+	
+	public User getUseridFromCookie(HttpServletRequest req){
+		return getUseridFromCookie(req, null);
+	}
 
 	public User getUseridFromCookie(HttpServletRequest req,
 			HttpServletResponse resp) {
@@ -101,10 +105,12 @@ public class UserRepository extends BaseRepository<User>{
 			userid = UUID.randomUUID().toString();
 		}
 
-		Cookie username = new Cookie("username", userid);
-		username.setMaxAge(60 * 24 * 3600);
-		username.setPath("/");
-		resp.addCookie(username);
+		if(resp != null){
+			Cookie username = new Cookie("username", userid);
+			username.setMaxAge(60 * 24 * 3600);
+			username.setPath("/");
+			resp.addCookie(username);
+		}
 
 		return getOrCreate(userid);
 	}

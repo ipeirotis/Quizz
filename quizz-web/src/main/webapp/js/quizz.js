@@ -36,7 +36,7 @@ function shuffle(array) {
 	}
 
 	function getAPIURL() {
-		return 'http://localhost:8888/_ah/api/quizz/v1/';//  'https://intapp1.appspot.com/_ah/api/quizz/v1/';
+		return 'https://crowd-power.appspot.com/_ah/api/quizz/v1/';
 	}
 	
 	function getFBAppID() {
@@ -56,8 +56,8 @@ function shuffle(array) {
 			username = createUsername();
 		}
 		//return 'cab3813a-4fe0-4355-92e5-18a2c669b817';
-		return 'a0c4886a-eb56-4e29-9202-2b4852b63e31';
-		//return username;
+		//return 'a0c4886a-eb56-4e29-9202-2b4852b63e31';
+		return username;
 		//return "3a94d8ff-dfc6-4c1e-94d2-3f6548f80aaa";
 	}
 
@@ -79,7 +79,7 @@ function shuffle(array) {
 	}
 
 	function loginFB(fbid) {
-		var url = getWebURL() + 'fblogin';
+		var url = getAPIURL() + 'fblogin';
 		sessionid = createSession();
 		var params = {
 			'fbid' : fbid,
@@ -179,7 +179,7 @@ function shuffle(array) {
 	}
 
 	function sendSingleQuestionResults(formData) {
-		var url = getWebURL() + 'processUserAnswer';
+		var url = getAPIURL() + 'processUserAnswer';
 		return $.post(url, formData)
 			.fail( function(jqXHR, textStatus, errorThrown) {
 				console.log("Sending your answer failed: " + textStatus);

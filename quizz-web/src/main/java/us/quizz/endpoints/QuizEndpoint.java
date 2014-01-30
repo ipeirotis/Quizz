@@ -16,6 +16,7 @@ import us.quizz.repository.QuizRepository;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.inject.Inject;
@@ -137,6 +138,12 @@ public class QuizEndpoint {
 	@ApiMethod(name = "removeQuiz")
 	public void removeQuiz(@Named("id") String id) {
 		quizRepository.remove(Quiz.generateKeyFromID(id));
+	}
+	
+	@ApiMethod(name = "addQuiz", path="addQuiz", httpMethod=HttpMethod.POST)
+	public void addQuiz(@Named("name") String name, @Named("quizID") String quizID) {
+		Quiz q = new Quiz(name, quizID);
+		quizRepository.storeQuiz(q);
 	}
 	
 }

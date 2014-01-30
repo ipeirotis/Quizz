@@ -7,9 +7,16 @@
 <%@ page import="us.quizz.repository.UserRepository"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
+<%@ page import="com.google.inject.Injector"%>
+<%@ page import="com.google.inject.Guice"%>
+<%@ page import="us.quizz.di.CommonModule"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="List of Earned Badges" /></jsp:include>
-<% User u = UserRepository.getUseridFromCookie(request, response); %>
+<% 
+Injector i = Guice.createInjector(new CommonModule());
+UserRepository userRepository = i.getInstance(UserRepository.class);
+User u = userRepository.getUseridFromCookie(request, response); 
+%>
 
 <body>
 	<div class="container pagination-centered">

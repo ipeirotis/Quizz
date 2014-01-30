@@ -3,10 +3,13 @@ package us.quizz.di;
 import java.util.HashSet;
 import java.util.Set;
 
+import us.quizz.endpoints.BadgeEndpoint;
+import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
 import us.quizz.endpoints.QuizEndpoint;
 import us.quizz.endpoints.QuizPerformanceEndpoint;
 import us.quizz.endpoints.SurvivalProbabilityEndpoint;
+import us.quizz.endpoints.TreatmentEndpoint;
 import us.quizz.endpoints.UserAnswerEndpoint;
 import us.quizz.endpoints.UserAnswerFeedbackEndpoint;
 import us.quizz.endpoints.UserEndpoint;
@@ -25,6 +28,9 @@ public class EndpointsModule extends GuiceSystemServiceServletModule {
 	    super.configureServlets();
 
 	    Set<Class<?>> serviceClasses = new HashSet<Class<?>>();
+	    serviceClasses.add(BadgeEndpoint.class);
+	    serviceClasses.add(ProcessUserAnswerEndpoint.class);
+	    serviceClasses.add(TreatmentEndpoint.class);
 	    serviceClasses.add(QuestionEndpoint.class);
 	    serviceClasses.add(QuizEndpoint.class);
 	    serviceClasses.add(QuizPerformanceEndpoint.class);

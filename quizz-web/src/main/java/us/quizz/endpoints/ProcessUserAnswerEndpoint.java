@@ -1,14 +1,12 @@
-package us.quizz.servlets;
+package us.quizz.endpoints;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Badge;
@@ -26,20 +24,20 @@ import us.quizz.repository.UserRepository;
 import us.quizz.scoring.ExplorationExploitation;
 import us.quizz.scoring.ExplorationExploitation.Result;
 import us.quizz.utils.LevenshteinAlgorithm;
-import us.quizz.utils.ServletUtils;
 
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
-@SuppressWarnings("serial")
-@Singleton
-public class ProcessUserAnswer extends HttpServlet {
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
+public class ProcessUserAnswerEndpoint {
 	
 	private UserRepository userRepository;
 	private AnswersRepository answersRepository;
@@ -49,8 +47,10 @@ public class ProcessUserAnswer extends HttpServlet {
 	private UserAnswerRepository userAnswerRepository;
 	
 	@Inject
-	public ProcessUserAnswer(UserRepository userRepository,	AnswersRepository answersRepository,
-			QuizQuestionRepository quizQuestionRepository,	BadgeRepository badgeRepository,
+	public ProcessUserAnswerEndpoint(UserRepository userRepository,	
+			AnswersRepository answersRepository,
+			QuizQuestionRepository quizQuestionRepository,	
+			BadgeRepository badgeRepository,
 			QuizPerformanceRepository quizPerformanceRepository, 
 			UserAnswerRepository userAnswerRepository){
 		this.userRepository = userRepository;
@@ -61,26 +61,28 @@ public class ProcessUserAnswer extends HttpServlet {
 		this.userAnswerRepository = userAnswerRepository;
 	}
 
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+	@ApiMethod(name = "processUserAnswer", path="processUserAnswer", httpMethod=HttpMethod.POST)
+	public Map<String, Object> processUserAnswer(HttpServletRequest req,
+							@Named("quizID") String quizID, 
+							@Named("questionID") Long questionID,
+							@Named("answerID") Integer answerID,
+							@Named("correctanswers") Integer correctanswers,
+							@Named("totalanswers") Integer totalanswers,
+							@Named("userInput") String userInput,
+							@Named("a") Integer a,
+							@Named("b") Integer b,
+							@Named("c") Integer c) {
 
-		ServletUtils.ensureParameters(req, "quizID", "questionID", "answerID",
-				"correctanswers", "totalanswers", "userInput");
+		User user = userRepository.getUseridFromCookie(req);
 
-		User user = userRepository.getUseridFromCookie(req, resp);
-		Long questionID = Long.parseLong(req.getParameter("questionID"));
-		String quizID = req.getParameter("quizID");
 		String action;
-		Integer useranswerID = Integer.parseInt(req.getParameter("answerID"));
-		String userInput = req.getParameter("userInput");
 
 		List<Answer> answers = null;
 		Boolean isCorrect = false;
-		if (useranswerID != -1) {
+		if (answerID != -1) {
 			action = "Submit";
 			Answer answer = answersRepository.getAnswer(questionID,
-					useranswerID);
+					answerID);
 			if (answer.getKind().equals("input_text")) { // check in all
 															// possible answers
 				Question question = quizQuestionRepository
@@ -119,16 +121,14 @@ public class ProcessUserAnswer extends HttpServlet {
 		} else {
 			action = "I don't know";
 		}
-		Integer correctAnswers = Integer.parseInt(req
-				.getParameter("correctanswers"));
+
 		if (isCorrect) {
-			correctAnswers += 1;
+			correctanswers += 1;
 		}
-		Integer totalAnswers = Integer.parseInt(req
-				.getParameter("totalanswers"));
-		totalAnswers += 1;
-		String numCorrectAnswers = Integer.toString(correctAnswers);
-		String numTotalAnswers = Integer.toString(totalAnswers);
+
+		totalanswers += 1;
+		String numCorrectAnswers = Integer.toString(correctanswers);
+		String numTotalAnswers = Integer.toString(totalanswers);
 
 		List<Badge> newBadges = badgeRepository.checkForNewBadges(user, quizID,
 				numCorrectAnswers, numTotalAnswers);
@@ -141,21 +141,23 @@ public class ProcessUserAnswer extends HttpServlet {
 		Long timestamp = (new Date()).getTime();
 
 		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
-				useranswerID, userInput, isCorrect, numCorrectAnswers,
+				answerID, userInput, isCorrect, numCorrectAnswers,
 				numTotalAnswers, newBadges);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
-		UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, useranswerID,
+		UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
 				userInput, ipAddress, browser, referer, timestamp, isCorrect);
 		updateQuizPerformance(user, questionID);
 		
-		returnUserAnswerFeedback(ua, uaf, isExploit(req), resp);
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("userAnswer", ua);
+		result.put("userAnswerFeedback", uaf);
+		result.put("exploit", isExploit(a, b, c));
+		
+		return result;
 	}
 	
-	private boolean isExploit(HttpServletRequest req){
-		Integer a = Integer.parseInt(req.getParameter("a"));
-		Integer b = Integer.parseInt(req.getParameter("b"));
-		Integer c = Integer.parseInt(req.getParameter("c"));
-		
+	
+	private boolean isExploit(int a, int b, int c){
 		try {
 			ExplorationExploitation ex = new ExplorationExploitation(10);
 
@@ -165,16 +167,6 @@ public class ProcessUserAnswer extends HttpServlet {
 			//TODO
 			throw new RuntimeException();
 		}	
-	}
-
-	protected void returnUserAnswerFeedback(UserAnswer ua, UserAnswerFeedback uaf, 
-			boolean isExploit, HttpServletResponse resp) throws IOException {
-		resp.setContentType("application/json;charset=UTF-8");
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("userAnswer", ua);
-		result.put("userAnswerFeedback", uaf);
-		result.put("exploit", isExploit);
-		new Gson().toJson(result, resp.getWriter());
 	}
 
 	protected UserAnswerFeedback createUserAnswerFeedback(User user,
@@ -271,5 +263,6 @@ public class ProcessUserAnswer extends HttpServlet {
 		quizPerformanceRepository.cacheQuizPerformance(qp);
 
 	}
+
 
 }

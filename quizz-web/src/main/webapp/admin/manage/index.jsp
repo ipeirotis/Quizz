@@ -1,7 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="us.quizz.entities.Quiz"%>
 <%@ page import="java.util.List"%>
+<%@ page import="com.google.inject.Injector"%>
+<%@ page import="com.google.inject.Guice"%>
 <%@ page import="us.quizz.repository.QuizRepository"%>
+<%@ page import="us.quizz.di.CommonModule"%>
 
 <jsp:include page="/header.jsp"><jsp:param name="title" value="Manage available quizzes" /></jsp:include>
 
@@ -17,7 +20,9 @@
 				</tr>
 
 				<%
-					List<Quiz> quizzes = QuizRepository.getQuizzes();
+					Injector i = Guice.createInjector(new CommonModule());
+					QuizRepository quizRepository = i.getInstance(QuizRepository.class);
+					List<Quiz> quizzes = quizRepository.getQuizzes();
 					if (quizzes.isEmpty()) {
 						;
 					} else {
