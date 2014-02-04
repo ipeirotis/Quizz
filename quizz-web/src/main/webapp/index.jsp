@@ -1,147 +1,66 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html ng-app="quizz">
+<head>
+<title>Quizz</title>
 
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="Test yourself, Compare yourself, Learn new things" /></jsp:include>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/css/bootstrap-custom.css">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=20140204203136">
+
+<!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+   	
+<script	src="/lib/jquery.min.js" type="text/javascript"></script>
+<script	src="/lib/jquery.cookie.js" type="text/javascript"></script>
+<script	src="/lib/angular.js" type="text/javascript"></script>
+<script	src="/lib/angular-resource.js" type="text/javascript"></script>
+<script	src="/lib/angular-route.js" type="text/javascript"></script>
+<script	src="/lib/angular-sanitize.js" type="text/javascript"></script>
+<script src="/lib/bootstrap.js" type="text/javascript"></script>
+<script src="/js/all.js?v=20140204203136" type="text/javascript"></script>
+
+<script>
+	var Config = {
+		api : 'http://localhost:8888/_ah/api/quizz/v1'
+	};
+</script>
+
+</head>
+
 <body>
-<div id="fb-root"></div>
-	<script>
-		window.fbAsyncInit = function() {
-			FB.init({
-				appId      : getFBAppID(), // App ID
-				channelUrl : '//localhost:8888/channel.html', // Channel File
-				status     : true, // check login status
-				cookie     : true, // enable cookies to allow the server to access the session
-				xfbml      : true  // parse XFBML
-			});
-			FB.Event.subscribe('auth.authResponseChange', function(response) {
-				if (response.status === 'connected') {
-				} else if (response.status === 'not_authorized') {
-					FB.login(function(response) { 
-						$('#login').hide();
-						$('#logout').show();
-					});
-				} else {
-					FB.login(function(response) { 
-						$('#login').hide();
-						$('#logout').show();
-					});
-				}
-			});
-		};
-		// Load the SDK asynchronously
-		(function(d){
-			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-		   if (d.getElementById(id)) {return;}
-		   js = d.createElement('script'); js.id = id; js.async = true;
-		   js.src = "//connect.facebook.net/en_US/all.js";
-		   ref.parentNode.insertBefore(js, ref);
-		}(document));
-	</script>
-	
- 
-	<div class="container" style="text-align: center; max-width: 640px">
-        <h2>
-            <img src="assets/logo.png" width=320px />
-        </h2>
-		
-		<span id='login' style='display: none'>
-			<a id='facebook-login' href="#"><img src="./assets/facebook_button.png" width="160px" height="80px"></a>
-		</span>
-		<span id='logout' style='display: none'><a href="#">Logout</a></span>
-		<table class="table table-striped  table-bordered" id="quizzes">
-			<tbody>
-				<tr>
-					<th>Quiz</th>
-				</tr>
-			</tbody>
-
-		</table>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
+			<div class="text-center">
+				<a href="/">
+					<img src="assets/logo.png" width="320px" />
+				</a>
+			</div>
+			<div id="content" ng-view></div>
+        </div>
 	</div>
+</div>
 
-	<script type="text/javascript">
+<script>
+	(function(i, s, o, g, r, a, m) {
+		i['GoogleAnalyticsObject'] = r;
+		i[r] = i[r] || function() {
+			(i[r].q = i[r].q || []).push(arguments)
+		}, i[r].l = 1 * new Date();
+		a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+		a.async = 1;
+		a.src = g;
+		m.parentNode.insertBefore(a, m)
+	})(window, document, 'script', '//www.google-analytics.com/analytics.js',
+			'ga');
 
-	$(document).ready(function() {
-		$('.nav-pills li').tooltip();
-		function showLogin(){
-			$('#logout').hide();
-			$('#login').show();
-		}
-		function hideLogin(){
-			$('#login').hide();
-			$('#logout').show();
-		}
-		
-		$.when(getUser()).done(function(response){
-			try{
-				if(response.sessionid == getSession() && response.sessionid != undefined) {
-					hideLogin();
-				} else {
-					showLogin();
-				}
-			} catch(err) {
-				showLogin();
-			}
-		}).fail(function(){
-			showLogin();
-		});
-		$('#facebook-login').on('click', function(){
-			facebookID = FB.getUserID();
-			if(facebookID != '') {
-				$.when(loginFB(facebookID)).done(function(){
-					hideLogin();
-				}).fail(function(){
-					showLogin();
-				});
-			} else {
-	      		FB.login(function(response) { 
-			        if ( response.status === 'connected' ) {
-						FBID = response.authResponse.userID;
-						$.when(loginFB(FBID)).done(function(){
-							hideLogin();
-						}).fail(function(){
-							showLogin();
-						});
-			        } else {
-			        	html = $('#facebook-login').html();
-			        	$('#facebook-login').html('Failed to Login. Please try again.', setTimeout( function(){
-			        		$('#facebook-login').html(html);
-		        		}, 3000));
-			        }
-	   			});
-			}
-		});
-		$('#logout').on('click', function(){
-			logout();
-			showLogin();
-		});
-		var user = getUsername();
-		$.when(getQuizzes(), getUserQuizPerformances(user)).done(function(a1, a2){
-
-			// The a1, a2 contain the return values from the getJSON as an array with three elements
-			// The [0] element contains the data
-			quizItems = a1[0];
-			quizperformanceItems = a2[0];
-
-			var table = $("#quizzes tr:first");
-			$.each(quizItems.items, function(key, quiz) {
-				var row = $('<tr />');
-				var cell = $('<td />');
-				cell.append($('<a href="/startQuiz?quizID=' + quiz.quizID + '">' + quiz.name + '</a>'));
-				cell.append($('<br><small>(Your progress: <span id="' + quiz.quizID + '">0</span>/' + quiz.questions + ')</small>'));
-				row.append(cell);
-				table.after(row);
-			});
-
-			$.each(quizperformanceItems.items, function(key, quizperf) {
-				var element = $(document.getElementById(quizperf.quiz));
-				element.text(quizperf.totalanswers);
-			});
-		});
-	});
-	</script>
-
-	<%@ include file="assets/google-analytics.html"%>
-
-
+	ga('create', 'UA-42553914-1', 'quizz.us');
+	ga('send', 'pageview');
+</script>
 </body>
 </html>

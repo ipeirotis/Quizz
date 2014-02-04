@@ -7,7 +7,7 @@
 
 	<instance-class>F4_1G</instance-class>
 	<automatic-scaling>
-		<min-idle-instances>1</min-idle-instances>
+		<min-idle-instances>0</min-idle-instances>
 		<max-pending-latency>1.0s</max-pending-latency>
 	</automatic-scaling>
 

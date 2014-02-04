@@ -1,0 +1,31 @@
+<div ng-show="readyToShow == true">
+	<div class="alert alert-warning text-center" ng-show="showPerformance">
+		<span class="label label-default">Score: {{performance.score.toFixed(3)}} points</span>
+		<span class="label label-default">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
+		<span class="label label-default">Correct (%): {{performance.percentageCorrect}}</span>
+		<span class="label label-default">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
+	</div>
+	
+	<div class="lead text-center">{{question.text}}</div>
+	<div></div>
+	
+	<div class="answers">
+		<button type="button" class="btn btn-default btn-lg btn-block" 
+			ng-click="answerQuestion(answer.internalID, getGaType(answer.kind))"
+			ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">{{answer.text}}</button>
+		
+		<div ng-repeat="answer in currentQuestion.answers |filter:filterNotSelectable">
+			<h4>Your answer:</h4> 
+			<input type="text" class="form-control" ng-model="userInput">
+			<button type="button" class="btn btn-default" 
+				ng-click="answerQuestion(-1, 'input_text')">Send</button>
+		</div>
+			
+		<button type="button" class="btn btn-default btn-lg btn-block dontknow" 
+			ng-click="answerQuestion(-1, 'multiple-choice-idk')">Don't know</button>
+	</div>
+	
+	<div class="text-center">
+		Question {{currentQuestionIndex}} out of {{numOfQuestions}}
+	</div>
+</div>
