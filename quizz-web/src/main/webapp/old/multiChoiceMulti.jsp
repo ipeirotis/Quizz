@@ -1,6 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<jsp:include page="/header.jsp"></jsp:include>
-
 <body>
     <div class="container" style="text-align: center; max-width:720px">
 
@@ -121,6 +119,5 @@
 
     });
     </script>
-<%@ include file="assets/google-analytics.html" %>
 </body>
 </html>

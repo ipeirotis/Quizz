@@ -4,8 +4,9 @@ angular.module('quizz').factory('workflowService', [function(){
 	var userAnswers = [];
 	var userFeedbacks = [];
 	var currentQuestionIndex = 0;
-	var numOfQuestions = 1;
+	var numOfQuestions = 10;
 	var numOfCorrectAnswers = 0;
+	var channelToken = '';
 	
 	return {
 		clear: function(){
@@ -49,7 +50,13 @@ angular.module('quizz').factory('workflowService', [function(){
         },
         incCurrentQuestionIndex: function() {
         	currentQuestionIndex++;
-        }
+        },
+        setChannelToken: function(t) {
+        	channelToken = t;
+		},
+		getChannelToken: function(){
+			return channelToken;
+		}
     };
 	
 }]);

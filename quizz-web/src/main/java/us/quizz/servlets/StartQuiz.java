@@ -48,10 +48,9 @@ public class StartQuiz extends HttpServlet {
 			nextURL += "&gclid=" + gclid;
 		}
 
-		ChannelHelpers channelHelpers = new ChannelHelpers();
-		String userChannelId = channelHelpers.generateUserQuizChannelID(user,
+		String userChannelId = ChannelHelpers.generateUserQuizChannelID(user,
 				quizID);
-		String token = channelHelpers.createChannel(userChannelId);
+		String token = ChannelHelpers.createChannel(userChannelId);
 
 		nextURL += "&changelToken=" + URLEncoder.encode(token, "UTF-8");
 		resp.sendRedirect(nextURL);

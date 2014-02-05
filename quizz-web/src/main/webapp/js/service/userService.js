@@ -1,16 +1,18 @@
-angular.module('quizz').factory('userService', [function(){
+angular.module('quizz').factory('userService', ['$http', function($http){
 	
 	var options = {headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}};
 	
     return {
+    	getUser: function(success, error) {
+    		var url = Config.api + '/user?userid=' + this.getUsername();
+        	$http.get(url).success(success).error(error);
+        },
     	getUsername: function() {
     		var username = $.cookie("username");
     		if (!username) {
     			username = this.createUsername();
     		}
-    		//return 'cab3813a-4fe0-4355-92e5-18a2c669b817';
-    		return 'a0c4886a-eb56-4e29-9202-2b4852b63e31';
-    		//return username;
+    		return username;
         },
         createUsername: function() {
     		var username = utils.createUUID();

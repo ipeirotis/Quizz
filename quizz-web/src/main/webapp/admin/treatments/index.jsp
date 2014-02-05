@@ -5,7 +5,7 @@
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="List of available treatments" /></jsp:include>
+<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="List of available treatments" /></jsp:include>
 
 <body>
 	<div class="container pagination-centered">

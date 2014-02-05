@@ -1,4 +1,4 @@
-angular.module('quizz', ['ngRoute'])
+angular.module('quizz', ['ngRoute', 'ezfb'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {	
 	$routeProvider
 	.when('/feedback', {templateUrl: templates.feedback, controller: 'FeedbackController'})
@@ -8,8 +8,12 @@ angular.module('quizz', ['ngRoute'])
 	.otherwise({redirectTo: '/list'});
 }])
 
-.config(['$httpProvider', function($httpProvider) {
-	$httpProvider.responseInterceptors.push('interceptor');
+.config(['$httpProvider', '$FBProvider', function($httpProvider, $FBProvider) {
+	$httpProvider.interceptors.push('interceptor');
+	
+	$FBProvider.setInitParams({
+	    appId: '220743704753581'
+	});  
 }])
 
 .run(['$rootScope', 'utils', 

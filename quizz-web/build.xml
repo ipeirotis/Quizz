@@ -55,6 +55,8 @@
 			<fileset dir="src/main/webapp" includes="js/**"/>
 			<fileset dir="src/main/webapp" includes="css/**"/>
 			<fileset dir="src/main/webapp" includes="views/**"/>
+			<fileset file="src/main/webapp/index.jsp"/>
+			<fileset file="src/main/webapp/index1.jsp"/>
 		</copy>
 	</target>
 	

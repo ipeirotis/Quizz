@@ -20,7 +20,7 @@ public class WebModule extends ServletModule {
 		  super.configureServlets();
 		  
 		  serve("/addQuiz").with(AddQuiz.class);//TODO:remove, use endpoint
-		  serve("/startQuiz").with(StartQuiz.class);
+		  serve("/startQuiz").with(StartQuiz.class);//TODO:remove
 		  serve("/addQuestion").with(AddQuestion.class);
 		  serve("/addTreatment").with(AddTreatment.class);//TODO: remove, use endpoint
 		  serve("/addBadge").with(AddBadge.class);//TODO: remove, use endpoint

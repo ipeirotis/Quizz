@@ -1,13 +1,13 @@
 angular.module('quizz').controller('FeedbackController', 
-		['$scope', '$routeParams', '$location', '$q', '$modal', 'questionService', 'workflowService',
-		 function ($scope, $routeParams, $location, $q, $modal, questionService, workflowService) {
+		['$scope', '$routeParams', '$location', '$q', '$modal', 'questionService', 'workflowService', 'templates',
+		 function ($scope, $routeParams, $location, $q, $modal, questionService, workflowService, templates) {
 
 	$scope.feedback = workflowService.getLastFeedback();
 	$scope.currentQuestionIndex = workflowService.getCurrentQuestionIndex() + 1;
 	$scope.numOfQuestions = workflowService.getNumOfQuestions();	
 	
 	$scope.challengeAnswer = function() {
-		var modalPromise = $modal({template: '/views/modals/challengeAnswer.html', 
+		var modalPromise = $modal({template: templates.challengeAnswer, 
 			persist: false, show: false, keyboard: true, 
 			data: {}});
 		

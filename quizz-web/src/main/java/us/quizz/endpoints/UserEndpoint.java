@@ -1,13 +1,17 @@
 package us.quizz.endpoints;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
+import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
+import us.quizz.utils.ChannelHelpers;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -19,10 +23,12 @@ import com.google.inject.Inject;
 public class UserEndpoint {
 	
 	private UserRepository userRepository;
+	private UserReferralRepository userReferralRepository;
 	
 	@Inject
-	public UserEndpoint(UserRepository userRepository){
+	public UserEndpoint(UserRepository userRepository, UserReferralRepository userReferralRepository){
 		this.userRepository = userRepository;
+		this.userReferralRepository = userReferralRepository;
 	}
 
 	/**
@@ -32,7 +38,7 @@ public class UserEndpoint {
 	 * @return A CollectionResponse class containing the list of all entities
 	 *         persisted and a cursor to the next page.
 	 */
-	@ApiMethod(name = "listUser")
+	@ApiMethod(name = "listUser", path="user/list")
 	public CollectionResponse<User> listUser(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
@@ -47,17 +53,28 @@ public class UserEndpoint {
 	 *            the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(name = "getUser")
-	public User getUser(@Named("userid") String userid) {
+	@ApiMethod(name = "getUser", path="user")
+	public Map<String, Object> getUser(HttpServletRequest req, @Named("userid") String userid) {
 		User user = userRepository.singleGetObjectByIdThrowing(User.class,
 				User.generateKeyFromID(userid));
+		
+		userReferralRepository.createAndStoreUserReferal(req, userid);
+		
 		Experiment e = user.getExperiment();
-		for (String s : e.getTreatments().keySet())
-			e.getTreatments().get(s);
+		if(e != null && e.getTreatments() != null){
+			for (String s : e.getTreatments().keySet())
+				e.getTreatments().get(s);
+		}
 		Map<String, Boolean> treatments = user.getTreatments();
-		for (String s : treatments.keySet())
-			treatments.get(s);
-		return user;
+		if(treatments != null){
+			for (String s : treatments.keySet())
+				treatments.get(s);
+		}
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("user", user);
+		result.put("token", ChannelHelpers.createChannel(userid));
+		return result;
 	}
 
 	/**

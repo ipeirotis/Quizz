@@ -1,7 +1,8 @@
 <div class="text-center">
-	<a id='facebook-login' href="#"><img src="./assets/facebook_button.png" width="160px" height="80px"></a>
+	<a id='facebook-login' href="" ng-click="facebookLogin()" ng-hide="loginStatus.status == 'connected'">
+	<img src="./assets/facebook_button.png" width="160px" height="80px"></a>
+	<button type="button" class="btn btn-default" ng-click="logout()" ng-hide="!loginStatus || loginStatus.status != 'connected'">Logout</button>
 </div>
-<span style='display: none'><a href="#">Logout</a></span>
 <table class="table table-hover" ng-show="readyToShow == true">
 	<thead>
 		<tr>

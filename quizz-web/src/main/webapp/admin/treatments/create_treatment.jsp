@@ -7,7 +7,7 @@
 <%@ page import="us.quizz.utils.FreebaseSearch"%>
 <%@ page import="java.util.List"%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="Create new treatment" /></jsp:include>
+<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="Create new treatment" /></jsp:include>
 
 <body>
 

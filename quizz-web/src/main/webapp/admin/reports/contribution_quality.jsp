@@ -7,7 +7,7 @@
 <%@ page import="us.quizz.repository.QuizRepository"%>
 <%@ page import="us.quizz.di.CommonModule"%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
+<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
 
 <body>
 	<div class="container">

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Quizz</title>
+<title>Quizz.us</title>
 <meta name="description" content="">
 </head>
 

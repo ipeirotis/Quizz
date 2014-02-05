@@ -1,5 +1,28 @@
 <div class="text-center">
 	<h3>Thank you for completing quizz!</h3>
 	<p>You have answered correctly for {{getCorrectAnswersCount()}} out of {{numOfQuestions}} questions.</p>
+
+	<div>
+		<h4>Share your results:</h4>
+		<table width="50%" height="100%" align="center" valign="center">
+			<tr>
+				<td valign="top">
+				<button class="btn btn-primary btn-sm" ng-click="shareFacebook()">Facebook</button>
+                </td>
+				<td><a href="https://twitter.com/share"
+					class="twitter-share-button" data-url="http://www.quizz.us"
+					data-text="I have just answered {{getCorrectAnswersCount()}} out of {{numOfQuestions}} questions correctly!"
+					data-size="large" data-count="none">Tweet</a> 
+					<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+				</td>
+				<td>
+					<div class="g-plus" data-action="share" data-annotation="none"
+						data-height="24" data-href="http://www.quizz.us"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+
 	<button type="button" class="btn btn-default" ng-click="startAgain()">Click here to start again</button>
 </div>

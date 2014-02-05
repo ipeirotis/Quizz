@@ -1,9 +1,14 @@
 angular.module('quizz').controller('QuizController', 
-	['$scope', '$routeParams', '$location', 'questionService', 'quizService', 'workflowService', 'userService',
-	 function ($scope, $routeParams, $location, questionService, quizService, workflowService, userService) {
+	['$scope', '$rootScope', '$routeParams', '$location', 'questionService', 'quizService', 'workflowService', 'userService',
+	 function ($scope, $rootScope, $routeParams, $location, questionService, quizService, workflowService, userService) {
 		
 		$scope.currentQuestionIndex = workflowService.getCurrentQuestionIndex() + 1;
 		$scope.numOfQuestions = workflowService.getNumOfQuestions();
+		
+		$rootScope.$on("event:channel", function (event, data) {
+			console.log(data);
+			$scope.performance = data;
+		});
 		
 		$scope.fetchQuestions = function(){
 			questionService.list($scope.numOfQuestions, $routeParams.quizId,

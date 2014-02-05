@@ -71,15 +71,11 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		quizPerformanceRepository.storeQuizPerformance(qp);
 		String channelNotify = req.getParameter("channelNotify");
 		if (Boolean.parseBoolean(channelNotify)) {
-			notifyUserViaChannel(userid, quiz);
+			notifyUserViaChannel(userid, quiz, qp);
 		}
 	}
 
-	protected void notifyUserViaChannel(String userId, String quizID) {
-		ChannelHelpers ch = new ChannelHelpers();
-		String channelId = ch.generateUserQuizChannelID(userId, quizID);
-		String jQuizPerformance = new Gson().toJson(quizPerformanceRepository
-				.getQuizPerformance(quizID, userId));
-		ch.sendMessage(channelId, jQuizPerformance);
+	protected void notifyUserViaChannel(String userId, String quizID, QuizPerformance qp) {
+		ChannelHelpers.sendMessage(userId, new Gson().toJson(qp));
 	}
 }

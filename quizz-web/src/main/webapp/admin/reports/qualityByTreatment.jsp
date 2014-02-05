@@ -12,7 +12,7 @@
 <%@ page import="java.util.TreeSet"%>
 <%@ page import="java.text.NumberFormat"%>
 
-<jsp:include page="/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
+<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
 <% String relation = request.getParameter("quiz"); %>
 <% int start = Integer.parseInt(request.getParameter("start")); %>
 <% int end   = Integer.parseInt(request.getParameter("end")); %>
