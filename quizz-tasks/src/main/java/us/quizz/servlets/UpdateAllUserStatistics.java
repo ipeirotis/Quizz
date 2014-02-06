@@ -35,35 +35,18 @@ public class UpdateAllUserStatistics extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		response.setContentType("text/plain");
-
 		List<Quiz> quizzes = quizRepository.getQuizzes();
+		
 		for (Quiz q : quizzes) {
-
+			Set<String> userids = userRepository.getUserIDs(q.getQuizID());
 			Queue queue = QueueFactory.getQueue("updateUserStatistics");
-			queue.add(Builder
-					.withUrl("/api/updateAllUserStatistics")
-					.param("quizID", q.getQuizID())
-					.method(TaskOptions.Method.POST));
+			for (String userid : userids) {
 
-			response.getWriter().println(
-					"Process started for quiz:" + q.getName());
-		}
-	}
-
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-
-		String quiz = req.getParameter("quizID");
-		Set<String> userids = userRepository.getUserIDs(quiz);
-		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		for (String userid : userids) {
-
-			queue.add(Builder
-					.withUrl("/api/updateUserQuizStatistics")
-					.param("userid", userid).param("quizID", quiz)
-					.method(TaskOptions.Method.POST));
+				queue.add(Builder
+						.withUrl("/api/updateUserQuizStatistics")
+						.param("userid", userid).param("quizID", q.getQuizID())
+						.method(TaskOptions.Method.POST));
+			}
 		}
 	}
 

@@ -11,10 +11,8 @@ import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.UserAnswerRepository;
-import us.quizz.utils.ChannelHelpers;
 import us.quizz.utils.ServletUtils;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -45,8 +43,6 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		resp.setContentType("text/plain");
-
 		ServletUtils.ensureParameters(req, "quizID", "userid");
 		String quiz = req.getParameter("quizID");
 		String userid = req.getParameter("userid");
@@ -69,17 +65,6 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 				.getQuizPerformancesByQuiz(quiz);
 		qp.computeRank(quizPerformanceList);
 		quizPerformanceRepository.storeQuizPerformance(qp);
-		String channelNotify = req.getParameter("channelNotify");
-		if (Boolean.parseBoolean(channelNotify)) {
-			notifyUserViaChannel(userid, quiz);
-		}
 	}
-
-	protected void notifyUserViaChannel(String userId, String quizID) {
-		ChannelHelpers ch = new ChannelHelpers();
-		String channelId = ch.generateUserQuizChannelID(userId, quizID);
-		String jQuizPerformance = new Gson().toJson(quizPerformanceRepository
-				.getQuizPerformance(quizID, userId));
-		ch.sendMessage(channelId, jQuizPerformance);
-	}
+	
 }

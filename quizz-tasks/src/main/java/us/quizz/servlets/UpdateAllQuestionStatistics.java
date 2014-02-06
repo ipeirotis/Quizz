@@ -32,23 +32,14 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-		queue.add(Builder
-				.withUrl("/api/updateAllQuestionStatistics")
-				.method(TaskOptions.Method.POST));
-	}
 
-	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-		Queue queue = QueueFactory.getQueue("updateUserStatistics");
-
-		List<Question> quizquestions = quizQuestionRepository
+		List<Question> questions = quizQuestionRepository
 				.getQuizQuestions();
 
-		for (Question quizquestion : quizquestions) {
+		for (Question question : questions) {
 			queue.add(Builder
 					.withUrl("/api/updateQuestionStatistics")
-					.param("questionID", quizquestion.getID().toString())
+					.param("questionID", question.getID().toString())
 					.method(TaskOptions.Method.POST));
 		}
 	}
