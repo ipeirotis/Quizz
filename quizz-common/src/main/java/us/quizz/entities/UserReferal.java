@@ -114,7 +114,9 @@ public class UserReferal implements Serializable{
 	 */
 	public void setIpaddress(String ipaddress) {
 
-		this.ipaddress = ipaddress;
+		// anonymizing the last 4 digits
+		ipaddress = ipaddress.substring(0, ipaddress.length()-4); 
+		this.ipaddress = ipaddress + "XXXX";
 	}
 
 	/**
