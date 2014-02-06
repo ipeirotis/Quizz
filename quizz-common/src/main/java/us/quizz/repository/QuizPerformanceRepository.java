@@ -60,19 +60,17 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 		Query q = pm.newQuery(QuizPerformance.class);
 		
 		StringBuilder sb = new StringBuilder();
-		if(quizID != null)
-			sb.append("quiz == quizIDparam && ");
-		
-		sb.append("correctanswers <= aParam");
-		
-		if(quizID != null){
-			q.declareParameters("String quizIDparam");
+		if(quizID != null) {
+			sb.append("quiz == quizIDparam && correctanswers >= aParam");
+			q.declareParameters("String quizIDparam, Integer aParam");
 			params.put("quizIDparam", quizID);
+			params.put("aParam", a);
+			
+		} else {
+			q.setFilter("correctanswers >= aParam");
+			q.declareParameters("Integer aParam");
+			params.put("aParam", a);
 		}
-		
-		params.put("aParam", a);
-		q.setFilter(sb.toString());
-		q.declareParameters("Integer aParam");
 		
 		int i = 0;
 		int limit = 1000;
@@ -86,7 +84,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 			
 			for(QuizPerformance quizPerformance : list){
 				if(quizPerformance.getIncorrectanswers() == null ||
-						quizPerformance.getIncorrectanswers() <= b)
+						quizPerformance.getIncorrectanswers() >= b)
 					result++;
 			}
 			i += limit;

@@ -30,7 +30,7 @@ public class SurvivalProbabilityEndpoint {
 				.getNumberOfAnswers(quizID, a_from, b_from);
 		long u_to = quizPerformanceRepository
 				.getNumberOfAnswers(quizID, a_to, b_to);
-		double psurvival = (u_from == 0) ? u_from : u_to/u_from;
+		double psurvival = (u_from == 0) ? 1.0 : 1.0*u_to/u_from;
 		
 		return new Response(u_from, u_to, psurvival);
 	}
