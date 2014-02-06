@@ -55,6 +55,7 @@
 		<init-param>
 			<param-name>services</param-name>
 			<param-value>
+				us.quizz.endpoints.CampaignManagementEndpoint,
 				us.quizz.endpoints.BadgeEndpoint,
 				us.quizz.endpoints.ProcessUserAnswerEndpoint,
 				us.quizz.endpoints.TreatmentEndpoint,
