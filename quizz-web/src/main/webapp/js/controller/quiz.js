@@ -40,10 +40,10 @@ angular.module('quizz').controller('QuizController',
 				questionID: workflowService.getCurrentQuestion().id,
 				answerID: answerID,
 				userInput: userInput || '',
-				totalanswers: 0,//TODO
-				correctanswers: 0,
-				a: 0,
-				b: 0,
+				totalanswers: $scope.performance.totalanswers,
+				correctanswers: $scope.performance.correctanswers,
+				a: workflowService.getNumOfCorrectAnswers(),
+				b: workflowService.getNumOfQuestions()-workflowService.getNumOfCorrectAnswers(),
 				c: 0
 			};
 			questionService.sendAnswer(params,
@@ -79,7 +79,7 @@ angular.module('quizz').controller('QuizController',
 	    };
 	    
 		$scope.filterNotSelectable = function(answer) {
-	        return answer.kind == 'input-text-correct';
+	        return answer.kind == 'input-text-correct' || answer.kind == 'input_text';
 	    };
 
 	    $scope.ranksFormating = function(userValue, totalValue) {

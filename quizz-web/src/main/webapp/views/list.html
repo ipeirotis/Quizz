@@ -14,7 +14,7 @@
 			<td>
 				<a href="#/quiz?quizId={{quiz.quizID}}">{{quiz.name}}</a>
 				<div>
-					<small>(Your progress: {{quiz.totalanswers}}/{{quiz.questions}})</small>
+					<small>(Your progress: {{quiz.totalanswers || 0}}/{{quiz.questions}})</small>
 				</div>
 			</td>
 		</tr>

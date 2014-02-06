@@ -1,4 +1,4 @@
-angular.module('quizz', ['ngRoute', 'ezfb'])
+angular.module('quizz', ['ngRoute', 'ngSanitize', 'ezfb'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {	
 	$routeProvider
 	.when('/feedback', {templateUrl: templates.feedback, controller: 'FeedbackController'})
@@ -19,7 +19,6 @@ angular.module('quizz', ['ngRoute', 'ezfb'])
 .run(['$rootScope', 'utils', 
     function($rootScope, utils) {
 	$rootScope.utils = utils;
-
 }]);angular.module('quizz').controller('FeedbackController', 
 		['$scope', '$routeParams', '$location', '$q', '$modal', 'questionService', 'workflowService', 'templates',
 		 function ($scope, $routeParams, $location, $q, $modal, questionService, workflowService, templates) {
@@ -176,10 +175,10 @@ angular.module('quizz', ['ngRoute', 'ezfb'])
 				questionID: workflowService.getCurrentQuestion().id,
 				answerID: answerID,
 				userInput: userInput || '',
-				totalanswers: 0,//TODO
-				correctanswers: 0,
-				a: 0,
-				b: 0,
+				totalanswers: $scope.performance.totalanswers,
+				correctanswers: $scope.performance.correctanswers,
+				a: workflowService.getNumOfCorrectAnswers(),
+				b: workflowService.getNumOfQuestions()-workflowService.getNumOfCorrectAnswers(),
 				c: 0
 			};
 			questionService.sendAnswer(params,
@@ -215,7 +214,7 @@ angular.module('quizz', ['ngRoute', 'ezfb'])
 	    };
 	    
 		$scope.filterNotSelectable = function(answer) {
-	        return answer.kind == 'input-text-correct';
+	        return answer.kind == 'input-text-correct' || answer.kind == 'input_text';
 	    };
 
 	    $scope.ranksFormating = function(userValue, totalValue) {

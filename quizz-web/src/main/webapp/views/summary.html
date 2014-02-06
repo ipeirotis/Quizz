@@ -2,7 +2,7 @@
 	<h3>Thank you for completing quizz!</h3>
 	<p>You have answered correctly for {{getCorrectAnswersCount()}} out of {{numOfQuestions}} questions.</p>
 
-	<div>
+	<div class="share">
 		<h4>Share your results:</h4>
 		<table width="50%" height="100%" align="center" valign="center">
 			<tr>
@@ -23,6 +23,5 @@
 		</table>
 	</div>
 
-
-	<button type="button" class="btn btn-default" ng-click="startAgain()">Click here to start again</button>
+	<button type="button" class="btn btn-default btn-again" ng-click="startAgain()">Click here to start again</button>
 </div>

@@ -1,4 +1,4 @@
-angular.module('quizz', ['ngRoute', 'ezfb'])
+angular.module('quizz', ['ngRoute', 'ngSanitize', 'ezfb'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {	
 	$routeProvider
 	.when('/feedback', {templateUrl: templates.feedback, controller: 'FeedbackController'})
