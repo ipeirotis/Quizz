@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +22,8 @@ import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
-import us.quizz.scoring.ExplorationExploitation;
-import us.quizz.scoring.ExplorationExploitation.Result;
+import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.ExplorationExploitationService.Result;
 import us.quizz.utils.LevenshteinAlgorithm;
 
 import com.google.api.server.spi.config.Api;
@@ -39,12 +40,15 @@ import com.google.inject.Inject;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
 public class ProcessUserAnswerEndpoint {
 	
+	private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
+	
 	private UserRepository userRepository;
 	private AnswersRepository answersRepository;
 	private QuizQuestionRepository quizQuestionRepository;
 	private BadgeRepository badgeRepository;
 	private QuizPerformanceRepository quizPerformanceRepository;
 	private UserAnswerRepository userAnswerRepository;
+	private ExplorationExploitationService explorationExploitationService;
 	
 	@Inject
 	public ProcessUserAnswerEndpoint(UserRepository userRepository,	
@@ -52,13 +56,15 @@ public class ProcessUserAnswerEndpoint {
 			QuizQuestionRepository quizQuestionRepository,	
 			BadgeRepository badgeRepository,
 			QuizPerformanceRepository quizPerformanceRepository, 
-			UserAnswerRepository userAnswerRepository){
+			UserAnswerRepository userAnswerRepository,
+			ExplorationExploitationService explorationExploitationService){
 		this.userRepository = userRepository;
 		this.answersRepository = answersRepository;
 		this.quizQuestionRepository = quizQuestionRepository;
 		this.badgeRepository = badgeRepository;
 		this.quizPerformanceRepository = quizPerformanceRepository;
 		this.userAnswerRepository = userAnswerRepository;
+		this.explorationExploitationService = explorationExploitationService;
 	}
 
 	@ApiMethod(name = "processUserAnswer", path="processUserAnswer", httpMethod=HttpMethod.POST)
@@ -71,7 +77,7 @@ public class ProcessUserAnswerEndpoint {
 							@Named("userInput") String userInput,
 							@Named("a") Integer a,
 							@Named("b") Integer b,
-							@Named("c") Integer c) {
+							@Named("c") Integer c) throws Exception {
 
 		User user = userRepository.getUseridFromCookie(req);
 
@@ -156,17 +162,12 @@ public class ProcessUserAnswerEndpoint {
 		return result;
 	}
 	
-	
-	private boolean isExploit(int a, int b, int c){
-		try {
-			ExplorationExploitation ex = new ExplorationExploitation(10);
-
-			Result r = ex.getUtility(a, b, c, 0.01);
-			return r.getAction();
-		} catch (Exception e) {
-			//TODO
-			throw new RuntimeException();
-		}	
+	private boolean isExploit(int a, int b, int c) throws Exception{
+		//TODO: enable code
+		//explorationExploitationService.setN(10);
+		//Result r = explorationExploitationService.getUtility(a, b, c, 0.01);
+		//return r.getAction();
+		return true;
 	}
 
 	protected UserAnswerFeedback createUserAnswerFeedback(User user,

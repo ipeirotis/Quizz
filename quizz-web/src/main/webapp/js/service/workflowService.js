@@ -4,8 +4,13 @@ angular.module('quizz').factory('workflowService', [function(){
 	var userAnswers = [];
 	var userFeedbacks = [];
 	var currentQuestionIndex = 0;
+	var currentGoldQuestionIndex = 0;
+	var currentSilverQuestionIndex = 0;
 	var numOfQuestions = 10;
+	var numOfGoldQuestions = 0;
+	var numOfSilverQuestions = 0;
 	var numOfCorrectAnswers = 0;
+	var isNextQuestionGold = true;
 	var channelToken = '';
 	
 	return {
@@ -14,15 +19,28 @@ angular.module('quizz').factory('workflowService', [function(){
 			userFeedbacks = [];
 			currentQuestionIndex = 0;
 			numOfCorrectAnswers = 0;
+			numOfGoldQuestions = 0;
+			numOfSilverQuestions = 0;
 		},
 		setQuestions: function(q) {
 			questions = q;
+			if(q.gold){
+				numOfGoldQuestions = q.gold.length;
+			}
+			if(q.silver){
+				numOfSilverQuestions = q.silver.length;
+			}
 		},
 		getQuestions: function() {
 			return questions;
 		},
 		getCurrentQuestion: function() {
-			return questions.gold[currentQuestionIndex];
+			if((isNextQuestionGold == true && currentQuestionIndex < numOfGoldQuestions) ||
+					currentQuestionIndex >= numOfSilverQuestions){
+				return questions.gold[currentQuestionIndex];
+			}else{
+				return questions.silver[currentQuestionIndex];
+			}
 		},
 		getCurrentQuestionIndex: function() {
         	return currentQuestionIndex;
@@ -50,12 +68,17 @@ angular.module('quizz').factory('workflowService', [function(){
         },
         incCurrentQuestionIndex: function() {
         	currentQuestionIndex++;
+        	currentGoldQuestionIndex++;
+        	currentSilverQuestionIndex++;
         },
         setChannelToken: function(t) {
         	channelToken = t;
 		},
 		getChannelToken: function(){
 			return channelToken;
+		},
+		setNextQuestionGold: function(g){
+			isNextQuestionGold = g;
 		}
     };
 	

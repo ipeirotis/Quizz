@@ -50,6 +50,7 @@ angular.module('quizz').controller('QuizController',
 				function(response) {
 					workflowService.addUserAnswer(response.userAnswer);
 					workflowService.addUserFeedback(response.userAnswerFeedback);
+					workflowService.setNextQuestionGold(response.exploit);
 					$scope.showFeedback();
 				},
 				function(error) {

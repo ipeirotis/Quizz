@@ -11,6 +11,8 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferalCounterRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
+import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.SurvivalProbabilityService;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
@@ -30,6 +32,9 @@ public class CommonModule extends AbstractModule {
 		bind(UserReferalCounterRepository.class).in(Singleton.class);
 		bind(UserReferralRepository.class).in(Singleton.class);
 		bind(UserRepository.class).in(Singleton.class);
+		
+		bind(ExplorationExploitationService.class);
+		bind(SurvivalProbabilityService.class).in(Singleton.class);
 	}
 
 }

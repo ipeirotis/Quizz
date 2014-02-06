@@ -5,6 +5,7 @@ import java.util.Set;
 
 import us.quizz.endpoints.CampaignManagementEndpoint;
 import us.quizz.endpoints.BadgeEndpoint;
+import us.quizz.endpoints.ExplorationExploitationEndpoint;
 import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
 import us.quizz.endpoints.QuizEndpoint;
@@ -31,6 +32,7 @@ public class EndpointsModule extends GuiceSystemServiceServletModule {
 		Set<Class<?>> serviceClasses = new HashSet<Class<?>>();
 		serviceClasses.add(BadgeEndpoint.class);
 		serviceClasses.add(CampaignManagementEndpoint.class);
+		serviceClasses.add(ExplorationExploitationEndpoint.class);
 		serviceClasses.add(ProcessUserAnswerEndpoint.class);
 		serviceClasses.add(TreatmentEndpoint.class);
 		serviceClasses.add(QuestionEndpoint.class);
