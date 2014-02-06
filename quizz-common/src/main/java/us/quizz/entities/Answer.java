@@ -18,18 +18,6 @@ public class Answer implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
-	public static String generateKeyID(Long questionID, Integer internalID) {
-		return "id_" + questionID + "_" + internalID;
-	}
-
-	public static Key generateKeyFromID(Long questionID, Integer internalID) {
-		return generateKeyFromKeyID(generateKeyID(questionID, internalID));
-	}
-
-	public static Key generateKeyFromKeyID(String keyID) {
-		return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
-	}
-
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key id;
@@ -74,6 +62,18 @@ public class Answer implements Serializable{
 		this.text = text;
 		this.internalID = internalID;
 		this.id = generateKeyFromID(questionID, internalID);
+	}
+	
+	public static String generateKeyID(Long questionID, Integer internalID) {
+		return "id_" + questionID + "_" + internalID;
+	}
+
+	public static Key generateKeyFromID(Long questionID, Integer internalID) {
+		return generateKeyFromKeyID(generateKeyID(questionID, internalID));
+	}
+
+	public static Key generateKeyFromKeyID(String keyID) {
+		return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
 	}
 
 	public Key getID() {

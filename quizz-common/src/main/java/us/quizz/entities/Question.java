@@ -25,42 +25,6 @@ public class Question implements Serializable{
 
 	@Persistent
 	private String text;
-	
-	public static Key generateKeyFromID(Long id) {
-		return KeyFactory.createKey(Question.class.getSimpleName(), id);
-	}
-
-	public String getQuizID() {
-		return quizID;
-	}
-
-	public void setQuizID(String quizID) {
-		this.quizID = quizID;
-	}
-
-	public Integer getNumberOfGoldAnswers() {
-		return numberOfGoldAnswers;
-	}
-
-	public void setNumberOfGoldAnswers(Integer numberOfGoldAnswers) {
-		this.numberOfGoldAnswers = numberOfGoldAnswers;
-	}
-
-	public Integer getNumberOfSilverAnswers() {
-		return numberOfSilverAnswers;
-	}
-
-	public void setNumberOfSilverAnswers(Integer numberOfSilverAnswers) {
-		this.numberOfSilverAnswers = numberOfSilverAnswers;
-	}
-
-	public Boolean getHasGoldAnswer() {
-		return hasGoldAnswer;
-	}
-
-	public Boolean getHasSilverAnswers() {
-		return hasSilverAnswers;
-	}
 
 	@Persistent
 	private Long adGroupId;
@@ -98,16 +62,52 @@ public class Question implements Serializable{
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
-
-	public void setKey(Key key) {
-		this.key = key;
-	}
-
+	
 	public Question(String quizID, String text, Double weight) {
 		this.quizID = quizID;
 		this.weight = weight;
 		this.text = text;
-		answers = new ArrayList<Answer>();
+		this.answers = new ArrayList<Answer>();
+	}
+	
+	public static Key generateKeyFromID(Long id) {
+		return KeyFactory.createKey(Question.class.getSimpleName(), id);
+	}
+
+	public String getQuizID() {
+		return quizID;
+	}
+
+	public void setQuizID(String quizID) {
+		this.quizID = quizID;
+	}
+
+	public Integer getNumberOfGoldAnswers() {
+		return numberOfGoldAnswers;
+	}
+
+	public void setNumberOfGoldAnswers(Integer numberOfGoldAnswers) {
+		this.numberOfGoldAnswers = numberOfGoldAnswers;
+	}
+
+	public Integer getNumberOfSilverAnswers() {
+		return numberOfSilverAnswers;
+	}
+
+	public void setNumberOfSilverAnswers(Integer numberOfSilverAnswers) {
+		this.numberOfSilverAnswers = numberOfSilverAnswers;
+	}
+
+	public Boolean getHasGoldAnswer() {
+		return hasGoldAnswer;
+	}
+
+	public Boolean getHasSilverAnswers() {
+		return hasSilverAnswers;
+	}
+
+	public void setKey(Key key) {
+		this.key = key;
 	}
 
 	public Long getAdGroupId() {

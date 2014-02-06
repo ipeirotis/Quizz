@@ -6,11 +6,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Question;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
 
+import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -71,8 +73,37 @@ public class QuestionEndpoint {
 	}
 
 	@ApiMethod(name = "insertQuestion")
-	public Question insertQuestion(Question newQuestion) {
-		return quizQuestionRepository.insert(newQuestion);
+	public Question insertQuestion(Question question) {
+		if(question.getAnswers() != null){
+			int internalID = 0;
+			for(Answer answer : question.getAnswers()){
+				answer.setQuizID(question.getQuizID());
+				answer.setInternalID(internalID);
+				
+				Preconditions.checkNotNull(answer.getKind(), "Answer kind can't be empty");
+				
+				switch(answer.getKind()){
+					case "silver": {
+						question.setHasSilverAnswers(true);
+						break;
+					}
+					case "selectable_gold": {
+						question.setHasGoldAnswer(true);
+						answer.setIsGold(true);
+						break;
+					}
+					case "input_text": {
+						question.setHasGoldAnswer(true);
+						answer.setIsGold(true);
+						break;
+					}
+					default:
+						break;
+				}				
+				internalID++;
+			}
+		}
+		return quizQuestionRepository.insert(question);
 	}
 
 	@ApiMethod(name = "updateQuestion")

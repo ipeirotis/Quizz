@@ -117,4 +117,19 @@ public class UserEndpoint {
 		userRepository.remove(User.generateKeyFromID(userid));
 	}
 	
+	@ApiMethod(name = "updateUserExperiment", path="updateUserExperiment")
+	public void updateUserExperiment(@Named("userid") String userid) {
+		User user = null;
+		try {
+			user = userRepository.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
+		} catch (Exception e) {
+			user = new User(userid);
+		} finally {
+			Experiment exp = new Experiment();
+			exp.assignTreatments();
+			user.setExperiment(exp);
+			userRepository.save(user);
+		}
+	}
+	
 }
