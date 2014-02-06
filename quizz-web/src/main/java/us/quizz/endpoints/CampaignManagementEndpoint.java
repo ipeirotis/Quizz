@@ -200,7 +200,7 @@ public class CampaignManagementEndpoint {
 	}
  
 
-	public Campaign createCampaign(String campaignName, Integer dailyBudget)
+	private Campaign createCampaign(String campaignName, Integer dailyBudget)
 			throws Exception {
 
 		// Create campaign.
@@ -252,7 +252,7 @@ public class CampaignManagementEndpoint {
 	 * @throws ApiException_Exception
 	 * @throws ApiException
 	 */
-	public Long publishCampaign(Campaign campaign) throws RemoteException,
+	private Long publishCampaign(Campaign campaign) throws RemoteException,
 			ApiException_Exception {
 
 		// Get the CampaignService.
@@ -317,7 +317,7 @@ public class CampaignManagementEndpoint {
 	 * budget.setBudgetId(budgetId); return budget; }
 	 */
 
-	public AdGroup createAdgroup(String adGroupName, Long campaignId,
+	private AdGroup createAdgroup(String adGroupName, Long campaignId,
 			Double bidAmount) {
 
 		// Create ad group.
@@ -339,7 +339,7 @@ public class CampaignManagementEndpoint {
 		return adGroup;
 	}
 
-	public Long publishAdgroup(AdGroup adGroup) throws Exception {
+	private Long publishAdgroup(AdGroup adGroup) throws Exception {
 
 		// Create operations.
 		AdGroupOperation operation = new AdGroupOperation();
@@ -365,7 +365,7 @@ public class CampaignManagementEndpoint {
 		return null;
 	}
 
-	public AdGroupAd createTextAd(String adHeadline, String adDescr1,
+	private AdGroupAd createTextAd(String adHeadline, String adDescr1,
 			String adDescr2, String displayURL, String targetURL, Long adGroupId) {
 
 		// Create text ad.
@@ -387,7 +387,7 @@ public class CampaignManagementEndpoint {
 		return textAdGroupAd;
 	}
 
-	public Long publishTextAd(AdGroupAd ad) throws Exception {
+	private Long publishTextAd(AdGroupAd ad) throws Exception {
 
 		// Get the AdGroupAdService.
 		AdGroupAdServiceInterface adGroupAdService = adWordsServices.get(
@@ -414,7 +414,7 @@ public class CampaignManagementEndpoint {
 		return null;
 	}
 
-	public void addKeyword(String word, Long adGroupId) throws Exception {
+	private void addKeyword(String word, Long adGroupId) throws Exception {
 
 		// Create keywords.
 		Keyword keyword = new Keyword();

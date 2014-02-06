@@ -85,7 +85,8 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 				break;
 			
 			for(QuizPerformance quizPerformance : list){
-				if(quizPerformance.getIncorrectanswers() <= b)
+				if(quizPerformance.getIncorrectanswers() == null ||
+						quizPerformance.getIncorrectanswers() <= b)
 					result++;
 			}
 			i += limit;
