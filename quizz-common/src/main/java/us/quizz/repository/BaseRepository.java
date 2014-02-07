@@ -157,6 +157,17 @@ public abstract class BaseRepository<T> {
 		return item;
 	}
 	
+	public T get(String id){
+		PersistenceManager mgr = getPersistenceManager();
+		T item = null;
+		try {
+			item = mgr.getObjectById(cls, id);
+		} finally {
+			mgr.close();
+		}
+		return item;
+	}
+	
 	public T singleMakePersistent(T item) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -166,7 +177,7 @@ public abstract class BaseRepository<T> {
 		}
 	}
 	
-	public T singleGetObjectByIdThrowing(Class<T> cls, Object key) {
+	public T singleGetObjectByIdThrowing(Object key) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			return mgr.getObjectById(cls, key);
@@ -175,9 +186,9 @@ public abstract class BaseRepository<T> {
 		}
 	}
 	
-	public T singleGetObjectById(Class<T> cls, Object key) {
+	public T singleGetObjectById(Object key) {
 		try {
-			return singleGetObjectByIdThrowing(cls, key);
+			return singleGetObjectByIdThrowing(key);
 		} catch (JDOObjectNotFoundException ex) {
 			return null;
 		}

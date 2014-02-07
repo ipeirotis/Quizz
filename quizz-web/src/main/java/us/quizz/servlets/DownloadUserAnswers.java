@@ -35,7 +35,7 @@ public class DownloadUserAnswers extends HttpServlet {
 			throws IOException {
 
 		String quizID = request.getParameter("quizID");
-		String name = quizRepository.getQuiz(quizID).getName();
+		String name = quizRepository.get(quizID).getName();
 
 		List<UserAnswer> answers = userAnswerRepository.getUserAnswers(quizID);
 		StringBuffer sb = new StringBuffer();

@@ -35,7 +35,7 @@ public class GetQuizCounts extends HttpServlet {
 			quizRepository.updateQuizCounts(quiz);
 		}
 
-		Quiz q = quizRepository.getQuiz(quiz);
+		Quiz q = quizRepository.get(quiz);
 		Preconditions.checkArgument(q != null, "Unknown quiz ID: " + quiz);
 
 		resp.setContentType("application/json;charset=utf-8");

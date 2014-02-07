@@ -26,8 +26,7 @@ public class AnswerChallengeCounterRepository extends BaseRepository<AnswerChall
 	}
 
 	public AnswerChallengeCounter get(String quizID, Long questionID){
-		return PMF.singleGetObjectById(AnswerChallengeCounter.class, 
-				AnswerChallengeCounter.generateKey(quizID, questionID));
+		return singleGetObjectById(AnswerChallengeCounter.generateKey(quizID, questionID));
 	}
 	
 	@SuppressWarnings("unchecked")

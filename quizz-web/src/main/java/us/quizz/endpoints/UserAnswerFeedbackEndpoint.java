@@ -47,7 +47,7 @@ public class UserAnswerFeedbackEndpoint {
 	@ApiMethod(name = "getUserAnswerFeedback")
 	public UserAnswerFeedback getUserAnswerFeedback(
 			@Named("question") Long questionID, @Named("userid") String userid) {
-		return userAnswerFeedbackRepository.singleGetObjectByIdThrowing(UserAnswerFeedback.class,
+		return userAnswerFeedbackRepository.singleGetObjectByIdThrowing(
 				UserAnswerFeedback.generateKeyFromID(questionID, userid));
 	}
 
@@ -90,8 +90,7 @@ public class UserAnswerFeedbackEndpoint {
 	 */
 	@ApiMethod(name = "removeUserAnswerFeedback")
 	public void removeUserAnswerFeedback(@Named("id") Long id) {
-		UserAnswerFeedback uaf = userAnswerFeedbackRepository.singleGetObjectByIdThrowing(
-				UserAnswerFeedback.class, id);
+		UserAnswerFeedback uaf = userAnswerFeedbackRepository.singleGetObjectByIdThrowing(id);
 		userAnswerFeedbackRepository.remove(uaf.getKey());
 	}
 	

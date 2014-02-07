@@ -53,7 +53,7 @@ public class UserReferalEndpoint {
 	 */
 	@ApiMethod(name = "getUserReferal")
 	public UserReferal getUserReferal(@Named("id") Long id) {
-		return userReferalRepository.singleGetObjectByIdThrowing(UserReferal.class, id);
+		return userReferalRepository.singleGetObjectByIdThrowing(id);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class UserReferalEndpoint {
 	 */
 	@ApiMethod(name = "removeUserReferal")
 	public void removeUserReferal(@Named("id") Long id) {
-		UserReferal ur = userReferalRepository.singleGetObjectByIdThrowing(UserReferal.class, id);
+		UserReferal ur = userReferalRepository.singleGetObjectByIdThrowing(id);
 		userReferalRepository.remove(ur.getKey());
 	}
 	

@@ -69,7 +69,7 @@ public class QuestionEndpoint {
 
 	@ApiMethod(name = "getQuestion")
 	public Question getQuestion(@Named("questionID") Long questionID) {
-		return quizQuestionRepository.singleGetObjectById(Question.class, questionID);
+		return quizQuestionRepository.singleGetObjectById(questionID);
 	}
 
 	@ApiMethod(name = "insertQuestion")

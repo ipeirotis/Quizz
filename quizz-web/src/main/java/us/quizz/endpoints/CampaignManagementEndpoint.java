@@ -131,9 +131,9 @@ public class CampaignManagementEndpoint {
 		Campaign campaign = createCampaign(campaignName, dailyBudget);
 		Long campaignId = publishCampaign(campaign);
 		
-		Quiz q = quizRepository.getQuiz(quizID);
+		Quiz q = quizRepository.get(quizID);
 		q.setCampaignid(campaignId);
-		quizRepository.storeQuiz(q);
+		quizRepository.save(q);
 	}
 	
 	private void addAdGroup(HttpServletRequest req) throws Exception{		
@@ -144,7 +144,7 @@ public class CampaignManagementEndpoint {
 		String adline1 = req.getParameter("adline1").trim();
 		String adline2 = req.getParameter("adline2").trim();
 
-		Quiz q = quizRepository.getQuiz(quizID);
+		Quiz q = quizRepository.get(quizID);
 		Long campaignId = q.getCampaignid();
 		
 		

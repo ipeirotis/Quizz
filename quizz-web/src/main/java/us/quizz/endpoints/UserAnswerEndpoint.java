@@ -100,7 +100,7 @@ public class UserAnswerEndpoint {
 				if(ua.getAnswerChallengeText().equals(message)){
 					userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 					
-					User user = userRepository.singleGetObjectById(User.class, userAnswer.getUserid());
+					User user = userRepository.singleGetObjectById(userAnswer.getUserid());
 					user.incChallengeBudget();
 					userRepository.singleMakePersistent(user);
 					exist = true;
@@ -116,10 +116,10 @@ public class UserAnswerEndpoint {
 	
 	@ApiMethod(name = "approveAnswerChallenge", path="answerChallenge/approve")
 	public UserAnswer approveChallenge(@Named("userAnswerID") Long userAnswerID) {
-		UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(UserAnswer.class, userAnswerID);
+		UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(userAnswerID);
 		userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 		
-		User user = userRepository.singleGetObjectById(User.class, userAnswer.getUserid());
+		User user = userRepository.singleGetObjectById(userAnswer.getUserid());
 		user.incChallengeBudget();
 		userRepository.singleMakePersistent(user);
 		
@@ -128,10 +128,10 @@ public class UserAnswerEndpoint {
 
 	@ApiMethod(name = "rejectAnswerChallenge", path="answerChallenge/reject")
 	public UserAnswer rejectChallenge(@Named("userAnswerID") Long userAnswerID) {
-		UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(UserAnswer.class, userAnswerID);
+		UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(userAnswerID);
 		userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
 		
-		User user = userRepository.singleGetObjectById(User.class, userAnswer.getUserid());
+		User user = userRepository.singleGetObjectById(userAnswer.getUserid());
 		user.decChallengeBudget();
 		userRepository.singleMakePersistent(user);
 		

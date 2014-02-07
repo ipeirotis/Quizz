@@ -55,8 +55,7 @@ public class UserEndpoint {
 	 */
 	@ApiMethod(name = "getUser", path="user")
 	public Map<String, Object> getUser(HttpServletRequest req, @Named("userid") String userid) {
-		User user = userRepository.singleGetObjectByIdThrowing(User.class,
-				User.generateKeyFromID(userid));
+		User user = userRepository.singleGetObjectByIdThrowing(User.generateKeyFromID(userid));
 		
 		userReferralRepository.createAndStoreUserReferal(req, userid);
 		
@@ -121,7 +120,7 @@ public class UserEndpoint {
 	public void updateUserExperiment(@Named("userid") String userid) {
 		User user = null;
 		try {
-			user = userRepository.singleGetObjectByIdThrowing(User.class, User.generateKeyFromID(userid));
+			user = userRepository.singleGetObjectByIdThrowing(User.generateKeyFromID(userid));
 		} catch (Exception e) {
 			user = new User(userid);
 		} finally {

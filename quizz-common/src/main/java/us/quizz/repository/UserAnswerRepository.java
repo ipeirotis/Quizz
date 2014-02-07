@@ -109,10 +109,6 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer>{
 		return result;
 	}
 
-	public void storeUserAnswer(UserAnswer ua) {
-		PMF.singleMakePersistent(ua);
-	}
-
 	public void storeUserAnswerFeedback(UserAnswerFeedback uaf) {
 		String key = "useranswerfeedback_" + uaf.getQuestionID()
 				+ uaf.getUserid();

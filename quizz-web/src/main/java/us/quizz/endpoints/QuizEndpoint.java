@@ -85,8 +85,7 @@ public class QuizEndpoint {
 	 */
 	@ApiMethod(name = "getQuiz")
 	public Quiz getQuiz(@Named("id") String id) {
-		return quizRepository.singleGetObjectByIdThrowing(Quiz.class,
-				Quiz.generateKeyFromID(id));
+		return quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(id));
 	}
 
 	/**
@@ -143,7 +142,7 @@ public class QuizEndpoint {
 	@ApiMethod(name = "addQuiz", path="addQuiz", httpMethod=HttpMethod.POST)
 	public void addQuiz(@Named("name") String name, @Named("quizID") String quizID) {
 		Quiz q = new Quiz(name, quizID);
-		quizRepository.storeQuiz(q);
+		quizRepository.save(q);
 	}
 	
 }

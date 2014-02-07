@@ -59,7 +59,7 @@ public class QuizQuestionRepository extends BaseRepository<Question>{
 	}
 
 	public Question getQuizQuestion(Long questionID) {
-		return PMF.singleGetObjectById(Question.class, questionID);
+		return singleGetObjectById(questionID);
 	}
 
 	protected Query getQuestionBaseQuery(PersistenceManager pm) {
@@ -161,7 +161,7 @@ public class QuizQuestionRepository extends BaseRepository<Question>{
 		PersistenceManager pm = PMF.getPM();
 
 		try {
-			Quiz quiz = quizRepository.getQuiz(quizID);
+			Quiz quiz = quizRepository.get(quizID);
 			int questionsWithGold = quiz.getGold();
 			Query query = getQuizGoldQuestionsQuery(pm, quizID);
 			setRandomRange(query, questionsWithGold, amount);
@@ -183,7 +183,7 @@ public class QuizQuestionRepository extends BaseRepository<Question>{
 		PersistenceManager pm = PMF.getPM();
 
 		try {
-			Quiz quiz = quizRepository.getQuiz(quizID);
+			Quiz quiz = quizRepository.get(quizID);
 			int questionsWithSilver = quiz.getQuestions() - quiz.getGold();
 			Query query = getQuizSilverQuestionsQuery(pm, quizID);
 			setRandomRange(query, questionsWithSilver, amount);

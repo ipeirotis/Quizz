@@ -35,14 +35,6 @@ public class QuizRepository extends BaseRepository<Quiz>{
 		return item.getKey();
 	}
 
-	public Quiz getQuiz(String id) {
-		return PMF.singleGetObjectById(Quiz.class, Quiz.generateKeyFromID(id));
-	}
-
-	public void storeQuiz(Quiz q) {
-		PMF.singleMakePersistent(q);
-	}
-
 	protected <T> void deleteAll(PersistenceManager pm, String quizID,
 			Class<T> itemsClass) {
 		Query q = pm.newQuery(itemsClass);
@@ -53,10 +45,9 @@ public class QuizRepository extends BaseRepository<Quiz>{
 	}
 
 	public void deleteQuiz(String quizID) {
-		Quiz quiz = null;
 		PersistenceManager pm = PMF.getPM();
 		try {
-			quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(quizID));
+			Quiz quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(quizID));
 			pm.deletePersistent(quiz);
 
 			Class<?>[] itemsClasses = new Class<?>[] { UserAnswer.class,
@@ -146,7 +137,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
 	}
 
 	public void updateQuizCounts(String quiz) {
-		Quiz q = getQuiz(quiz);
+		Quiz q = singleGetObjectById(quiz);
 
 		Integer count = getNumberOfQuizQuestions(quiz, false);
 		q.setQuestions(count);
@@ -190,7 +181,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
 		q.setAvgAnswerCorrectness(1.0 * q.getCorrectAnswers()
 				/ q.getTotalAnswers());
 
-		storeQuiz(q);
+		singleMakePersistent(q);
 	}
 
 }
