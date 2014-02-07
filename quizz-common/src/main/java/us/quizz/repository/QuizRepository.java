@@ -34,6 +34,10 @@ public class QuizRepository extends BaseRepository<Quiz>{
 	protected Key getKey(Quiz item) {
 		return item.getKey();
 	}
+	
+	public Quiz get(String id){
+		return singleGetObjectById(Quiz.generateKeyFromID(id));
+	}
 
 	protected <T> void deleteAll(PersistenceManager pm, String quizID,
 			Class<T> itemsClass) {
@@ -137,7 +141,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
 	}
 
 	public void updateQuizCounts(String quiz) {
-		Quiz q = singleGetObjectById(quiz);
+		Quiz q = singleGetObjectById(Quiz.generateKeyFromID(quiz));
 
 		Integer count = getNumberOfQuizQuestions(quiz, false);
 		q.setQuestions(count);

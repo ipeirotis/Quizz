@@ -157,17 +157,6 @@ public abstract class BaseRepository<T> {
 		return item;
 	}
 	
-	public T get(String id){
-		PersistenceManager mgr = getPersistenceManager();
-		T item = null;
-		try {
-			item = mgr.getObjectById(cls, id);
-		} finally {
-			mgr.close();
-		}
-		return item;
-	}
-	
 	public T singleMakePersistent(T item) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
