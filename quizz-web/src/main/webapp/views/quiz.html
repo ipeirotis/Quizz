@@ -1,15 +1,15 @@
 <div ng-show="readyToShow == true">
-	<div class="alert alert-warning text-center" ng-show="showPerformance">
-		<span class="label label-warning">Score: {{performance.score.toFixed(3)}} points</span>
-		<span class="label label-warning">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
-		<span class="label label-warning">Correct (%): {{performance.percentageCorrect}}</span>
-		<span class="label label-warning">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
+	<div class="alert alert-info text-center" ng-show="showPerformance">
+		<span class="label label-primary">Score: {{performance.score.toFixed(3)}} points</span>
+		<span class="label label-primary">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
+		<span class="label label-primary">Correct (%): {{performance.percentageCorrect}}</span>
+		<span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
 	</div>
 	
 	<div class="lead text-center" ng-bind-html="currentQuestion.text"></div>
 	
 	<div class="answers">
-		<button type="button" class="btn btn-default btn-lg btn-block" 
+		<button type="button" class="btn btn-primary btn-lg btn-block" 
 			ng-click="answerQuestion(answer.internalID, getGaType(answer.kind))"
 			ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">{{answer.text}}</button>
 		
@@ -20,7 +20,7 @@
 				ng-click="answerQuestion(-1, 'input_text')">Send</button>
 		</div>
 			
-		<button type="button" class="btn btn-default btn-lg btn-block dontknow" 
+		<button type="button" class="btn btn-danger btn-lg btn-block" 
 			ng-click="answerQuestion(-1, 'multiple-choice-idk')">Don't know</button>
 	</div>
 	
