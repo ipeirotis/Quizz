@@ -1,9 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ page import="com.google.appengine.api.utils.SystemProperty"%>
-
 <!DOCTYPE html>
-<html ng-app="quizz">
+<html>
 <head>
 <title>Quizz.us</title>
 
@@ -56,29 +52,7 @@
   {parsetags: 'explicit'}
 </script>
 </head>
-<%
-	boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
-	String apiUrl;
-	String serverName = request.getServerName();
-	if (isDev)
-		apiUrl = "http://" + serverName + ":" + request.getServerPort();
-	else {
 
-		if (serverName.startsWith("www.quizz.us")
-				|| serverName.startsWith("quizz.us"))
-			apiUrl = "https://crowd-power.appspot.com";
-		else
-			apiUrl = "https://" + serverName;
-	}
-%>
-
-<script>
-	var Config = {
-		api : '<%=apiUrl%>/_ah/api/quizz/v1'
-	};
-</script>
-
-</head>
 
 <body>
 	<div id="wrap">
@@ -86,33 +60,14 @@
 			<div class="row">
 				<div class="col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
 					<div class="text-center">
-						<a href="/"> <img src="assets/logo.png" width="320px" />
-						</a>
+						This website is an experiment by Google. The details of the experiment are described in the WWW2014 paper <a href="http://www.ipeirotis.com/research/publications/quizz-targeted-crowdsourcing-with-a-billion-potential-users">Quizz: Targeted Crowdsourcing with a Billion (Potential) Users</a>.
 					</div>
-					<div id="content" ng-view></div>
+					
 				</div>
 			</div>
 		</div>
 		<div id="push"></div>
 	</div>
-
-	<div id="footer">
-		<div class="container">
-			<div
-				class="col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
-				<div class="text-center">
-					<small> <a
-						href="https://www.google.com/intl/en/policies/terms/">Terms
-							of Service </a> - <a
-						href="https://www.google.com/intl/en/policies/privacy/">Privacy
-							Policy </a> - <a href="about.html">About</a>
-					</small>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
