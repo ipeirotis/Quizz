@@ -72,6 +72,7 @@ public class ProcessUserAnswerEndpoint {
 							@Named("quizID") String quizID, 
 							@Named("questionID") Long questionID,
 							@Named("answerID") Integer answerID,
+							@Named("userID") String userID,
 							@Named("correctanswers") Integer correctanswers,
 							@Named("totalanswers") Integer totalanswers,
 							@Named("userInput") String userInput,
@@ -79,7 +80,7 @@ public class ProcessUserAnswerEndpoint {
 							@Named("b") Integer b,
 							@Named("c") Integer c) throws Exception {
 
-		User user = userRepository.getUseridFromCookie(req);
+		User user = userRepository.get(userID);
 
 		String action;
 

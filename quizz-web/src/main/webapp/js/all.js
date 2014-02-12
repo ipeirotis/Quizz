@@ -79,6 +79,8 @@ angular.module('quizz', ['ngRoute', 'ngSanitize', 'ezfb'])
 		var channel = new goog.appengine.Channel(token);
 		var socket = channel.open();
 		socket.onmessage = function(data){
+			console.log('data from channel:');
+			console.log(data);
 			$rootScope.$broadcast('event:channel', data);
 		};
 		socket.onerror = function () {
@@ -174,6 +176,7 @@ angular.module('quizz', ['ngRoute', 'ngSanitize', 'ezfb'])
 				quizID: $routeParams.quizId,
 				questionID: workflowService.getCurrentQuestion().id,
 				answerID: answerID,
+				userID: userService.getUsername(),
 				userInput: userInput || '',
 				totalanswers: $scope.performance.totalanswers,
 				correctanswers: $scope.performance.correctanswers,

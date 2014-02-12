@@ -36,6 +36,10 @@ public class UserRepository extends BaseRepository<User>{
 		user.getExperiment();
 		user.getTreatments();
 	}
+	
+	public User get(String id){
+		return singleGetObjectById(User.generateKeyFromID(id));
+	}
 
 	public Set<String> getUserIDs(String quiz) {
 
