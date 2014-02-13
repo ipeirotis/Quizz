@@ -165,8 +165,11 @@ public class ProcessUserAnswerEndpoint {
 	
 	private boolean isExploit(int a, int b, int c) throws Exception{
 		//TODO: enable code
-		//explorationExploitationService.setN(10);
-		//Result r = explorationExploitationService.getUtility(a, b, c, 0.01);
+		explorationExploitationService.setN(10);
+		Result r = explorationExploitationService.getUtility(a, b, c, 0.01);
+		
+		logger.warning(">>>>set size=" + explorationExploitationService.getSet().size());
+		logger.warning(explorationExploitationService.getSet().toString());
 		//return r.getAction();
 		return true;
 	}

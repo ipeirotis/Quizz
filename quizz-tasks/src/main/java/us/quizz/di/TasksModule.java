@@ -1,6 +1,7 @@
 package us.quizz.di;
 
 import us.quizz.servlets.CacheQuizQuestions;
+import us.quizz.servlets.CacheSurvivalProbability;
 import us.quizz.servlets.GetQuizCounts;
 import us.quizz.servlets.UpdateAllQuestionStatistics;
 import us.quizz.servlets.UpdateAllUserStatistics;
@@ -20,6 +21,7 @@ public class TasksModule extends ServletModule {
 		  serve("/api/updateQuestionStatistics").with(UpdateQuestionStatistics.class);
 		  serve("/api/updateUserQuizStatistics").with(UpdateUserQuizStatistics.class);
 		  serve("/api/updateAllUserStatistics").with(UpdateAllUserStatistics.class);
+		  serve("/api/cacheSurvivalProbability").with(CacheSurvivalProbability.class);
 		  serve("/api/cacheQuizQuestions").with(CacheQuizQuestions.class);
 		  serve("/api/updateCountStatistics").with(UpdateCountStatistics.class);
 		  serve("/api/getQuizCounts").with(GetQuizCounts.class);

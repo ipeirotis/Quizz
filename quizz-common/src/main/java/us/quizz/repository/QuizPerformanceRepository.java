@@ -59,7 +59,6 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 		Map<String, Object> params = new HashMap<String, Object>();
 		Query q = pm.newQuery(QuizPerformance.class);
 		
-
 		if(quizID != null) {
 			q.setFilter("quiz == quizIDparam && correctanswers >= aParam");
 			q.declareParameters("String quizIDparam, Integer aParam");

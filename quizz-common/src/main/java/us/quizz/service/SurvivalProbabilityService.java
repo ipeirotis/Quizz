@@ -1,6 +1,7 @@
 package us.quizz.service;
 
 import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.utils.CachePMF;
 
 import com.google.inject.Inject;
 
@@ -15,11 +16,24 @@ public class SurvivalProbabilityService {
 
 	public Result getSurvivalProbability(String quizID, Integer a_from, Integer a_to,
 			Integer b_from, Integer b_to) {
-		long u_from = quizPerformanceRepository.getNumberOfAnswers(quizID, a_from, b_from);
-		long u_to = quizPerformanceRepository.getNumberOfAnswers(quizID, a_to, b_to);
+		Long u_from = CachePMF.get(getKey(a_from, b_from), Long.class);
+		Long u_to = CachePMF.get(getKey(a_to, b_to), Long.class);
+		
+		if(u_from == null || u_to == null)
+			return new Result(1L, 1L, 1.0d);//TODO: perhaps other values
+
 		double psurvival = (u_from == 0) ? 1.0 : 1.0*u_to/u_from;
 
 		return new Result(u_from, u_to, psurvival);
+	}
+	
+	public void cacheValue(Integer a, Integer b){
+		long value = quizPerformanceRepository.getNumberOfAnswers(null, a, b);
+		CachePMF.put(getKey(a, b), value, 60*60*25 );
+	}
+	
+	private String getKey(Integer a, Integer b){
+		return "survivalProbability_" + a + "_" + b;
 	}
 
 	public class Result {

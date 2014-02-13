@@ -18,19 +18,16 @@
     <schedule>every 5 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
-  
   <cron>
     <url>/api/cacheQuizQuestions</url>
     <description>Cache the 10 questions that will be asked for each quiz in memcache, so that the quiz starts quickly</description>
     <schedule>every 5 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
-  <!-- 
   <cron>
-    <url>/cacheExplorationExplotation?sched=true</url>
-    <description>Cache ExplorationExplotation</description>
-    <schedule>every 120 minutes</schedule>
+    <url>/api/cacheSurvivalProbability?sched=true</url>
+    <description>Cache SurvivalProbability</description>
+    <schedule>every day 00:00</schedule>
     <target>quizz-tasks</target>
   </cron>
-   -->
 </cronentries>
