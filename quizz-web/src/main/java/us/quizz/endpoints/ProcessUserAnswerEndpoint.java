@@ -134,11 +134,11 @@ public class ProcessUserAnswerEndpoint {
 		}
 
 		totalanswers += 1;
-		String numCorrectAnswers = Integer.toString(correctanswers);
-		String numTotalAnswers = Integer.toString(totalanswers);
+		//String numCorrectAnswers = Integer.toString(correctanswers);
+		//String numTotalAnswers = Integer.toString(totalanswers);
 
 		List<Badge> newBadges = badgeRepository.checkForNewBadges(user, quizID,
-				numCorrectAnswers, numTotalAnswers);
+				correctanswers, totalanswers);
 
 		String ipAddress = req.getRemoteAddr();
 		String browser = req.getHeader("User-Agent");
@@ -148,8 +148,8 @@ public class ProcessUserAnswerEndpoint {
 		Long timestamp = (new Date()).getTime();
 
 		UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
-				answerID, userInput, isCorrect, numCorrectAnswers,
-				numTotalAnswers, newBadges);
+				answerID, userInput, isCorrect, correctanswers,
+				totalanswers, newBadges);
 		quickUpdateQuizPerformance(user, quizID, isCorrect, action);
 		UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
 				userInput, ipAddress, browser, referer, timestamp, isCorrect);
@@ -173,14 +173,12 @@ public class ProcessUserAnswerEndpoint {
 
 	protected UserAnswerFeedback createUserAnswerFeedback(User user,
 			Long questionID, Integer useranswerID, String userInput,
-			Boolean isCorrect, String numCorrectAnswers,
-			String numTotalAnswers, List<Badge> newBadges) {
+			Boolean isCorrect, Integer correctanswers,
+			Integer totalanswers, List<Badge> newBadges) {
 		UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
 				user.getUserid(), useranswerID, isCorrect);
-		if (!Strings.isNullOrEmpty(numCorrectAnswers))
-			uaf.setNumCorrectAnswers(Integer.parseInt(numCorrectAnswers));
-		if (!Strings.isNullOrEmpty(numTotalAnswers))
-			uaf.setNumTotalAnswers(Integer.parseInt(numTotalAnswers));
+		uaf.setNumCorrectAnswers(correctanswers);
+		uaf.setNumTotalAnswers(totalanswers);
 		Question question = quizQuestionRepository.getQuizQuestion(questionID);
 		uaf.setUserNewBadges(newBadges);
 		uaf.setUserAnswerText((useranswerID == -1) ? "" : question.getAnswer(
