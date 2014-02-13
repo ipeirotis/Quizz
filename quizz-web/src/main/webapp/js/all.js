@@ -79,8 +79,6 @@ angular.module('quizz', ['ngRoute', 'ngSanitize', 'ezfb'])
 		var channel = new goog.appengine.Channel(token);
 		var socket = channel.open();
 		socket.onmessage = function(data){
-			console.log('data from channel:');
-			console.log(data);
 			$rootScope.$broadcast('event:channel', data);
 		};
 		socket.onerror = function () {
@@ -799,7 +797,7 @@ angular.module('quizz').factory('interceptor',
 	    			  'eventCategory': 'quiz-submission',
 	    			  'eventAction': type,
 	    			  'eventLabel': quizId,
-	    			  'eventValue': 1.0*response.score/response.totalanswers,
+	    			  'eventValue': Math.round(100.*response.score/response.totalanswers),
 	    			  } );
         	});
         },
@@ -946,6 +944,21 @@ angular.module('quizz').factory('interceptor',
 		},
 	    isNormalNumber: function(value) {
 			return ! (isNaN(value) || typeof value === undefined);
+		},
+		toPercentage: function(fValue) {
+			return (100. * fValue).toFixed(0) + "%";
+		},
+		safeNumber: function(value) {
+			return  this.isNormalNumber(value) ? value.toString() : "---" ;
+		},
+		toPercentage: function(fValue) {
+			return (100. * fValue).toFixed(0) + "%";
+		},
+		toSafePercentage: function(fValue) {
+			if (this.isNormalNumber(fValue))
+				return this.toPercentage(fValue);
+			else
+				return "---";
 		}
 	};
 	return utils;

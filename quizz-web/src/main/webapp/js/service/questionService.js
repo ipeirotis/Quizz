@@ -22,7 +22,7 @@ angular.module('quizz').factory('questionService', ['$http', function($http){
 	    			  'eventCategory': 'quiz-submission',
 	    			  'eventAction': type,
 	    			  'eventLabel': quizId,
-	    			  'eventValue': 1.0*response.score/response.totalanswers,
+	    			  'eventValue': Math.round(100.*response.score/response.totalanswers),
 	    			  } );
         	});
         },
