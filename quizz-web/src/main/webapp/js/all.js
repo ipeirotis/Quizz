@@ -867,7 +867,7 @@ angular.module('quizz').factory('interceptor',
 			return {data:{items: result}};
         }
     };
-}]);angular.module('quizz').factory('userService', ['$http', function($http){
+}]);angular.module('quizz').factory('userService', ['$http', '$rootScope', function($http, $rootScope){
 	
 	var options = {headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}};
 	
@@ -884,7 +884,7 @@ angular.module('quizz').factory('interceptor',
     		return username;
         },
         createUsername: function() {
-    		var username = utils.createUUID();
+    		var username = $rootScope.utils.createUUID();
     		$.cookie("username", username, { expires: 365, path: "/"});
     		return username;
         },
