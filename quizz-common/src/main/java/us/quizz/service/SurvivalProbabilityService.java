@@ -16,15 +16,18 @@ public class SurvivalProbabilityService {
 
 	public Result getSurvivalProbability(String quizID, Integer a_from, Integer a_to,
 			Integer b_from, Integer b_to) {
-		Long u_from = CachePMF.get(getKey(a_from, b_from), Long.class);
-		Long u_to = CachePMF.get(getKey(a_to, b_to), Long.class);
+		Long users_from = CachePMF.get(getKey(a_from, b_from), Long.class);
+		Long users_to = CachePMF.get(getKey(a_to, b_to), Long.class);
 		
-		if(u_from == null || u_to == null)
-			return new Result(1L, 1L, 1.0d);//TODO: perhaps other values
+		if(users_from == null || users_from == 0)
+			return new Result(1L, 1L, 0.5d); // We assume a default survival probability of 0.5
+		
+		if(users_to == null)
+			return new Result(1L, 1L, 0.5d); // We assume a default survival probability of 0.5
 
-		double psurvival = (u_from == 0) ? 1.0 : 1.0*u_to/u_from;
+		double psurvival = 1.0*users_to/users_from;
 
-		return new Result(u_from, u_to, psurvival);
+		return new Result(users_from, users_to, psurvival);
 	}
 	
 	public void cacheValue(Integer a, Integer b){
@@ -37,30 +40,30 @@ public class SurvivalProbabilityService {
 	}
 
 	public class Result {
-		private long u_from;
-		private long u_to;
+		private long users_from;
+		private long users_to;
 		private double psurvival;
 
 		public Result(long u_from, long u_to, double psurvival) {
-			this.u_from = u_from;
-			this.u_to = u_to;
+			this.users_from = u_from;
+			this.users_to = u_to;
 			this.psurvival = psurvival;
 		}
 
 		public long getU_from() {
-			return u_from;
+			return users_from;
 		}
 
 		public void setU_from(long u_from) {
-			this.u_from = u_from;
+			this.users_from = u_from;
 		}
 
 		public long getU_to() {
-			return u_to;
+			return users_to;
 		}
 
 		public void setU_to(long u_to) {
-			this.u_to = u_to;
+			this.users_to = u_to;
 		}
 
 		public double getPsurvival() {

@@ -2,7 +2,7 @@
 <!--<div class="alert alert-success" ng-show="feedback.isCorrect == true">The answer <span class="label label-success">{{feedback.userAnswerText}}</span>.</div>
   -->
 <div class="alert alert-danger" ng-show="feedback.isCorrect == false">The answer <span class="label label-danger">{{feedback.userAnswerText}}</span> was <span class="label label-danger">incorrect</span>!</div>
-<div class="alert alert-success" ng-show="feedback.isCorrect == false">The correct answer was <span class="label label-success">{{feedback.correctAnswerText}}</span>.<button class="btn btn-default btn-xs" ng-click="challengeAnswer()">Challenge the answer</a></div>
+<div class="alert alert-success" ng-show="feedback.isCorrect == false">The correct answer was <span class="label label-success">{{feedback.correctAnswerText}}</span>.<button class="btn btn-default btn-xs" ng-click="challengeAnswer()">Challenge the answer</button></div>
 
 <div class="alert alert-info">Crowd performance: <span class="label label-info">{{feedback.numCorrectAnswers}} out of the {{feedback.numTotalAnswers}} users {{feedback.difficulty}} answered correctly.</span></div>
 
