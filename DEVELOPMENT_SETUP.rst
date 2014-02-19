@@ -25,6 +25,7 @@ Cleaning content (removing generated content, etc.)::
 
 Running local dev server::
 
+  $ cd quizz-ear/
   $ mvn appengine:devserver
 
 Now you have your server running at `localhost:8888`.
@@ -43,8 +44,8 @@ Deploy
 
 In order to deploy version that is in current dir just type::
 
+  $ cd quizz-ear/
   $ mvn appengine:update
-  $ mvn appengine:backends_update
 
 It will open new tab in your browser with page containing generated code.
 You have to paste this code into console in order to proceed with deploy.
