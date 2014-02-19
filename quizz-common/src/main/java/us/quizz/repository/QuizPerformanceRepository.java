@@ -1,5 +1,6 @@
 package us.quizz.repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,6 +113,36 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 		pm.close();
 		return list;
 	}
+	
+	public List<QuizPerformance> getQuizPerformances(String quiz) {
+
+		PersistenceManager pm = PMF.getPM();
+
+		Query q = pm.newQuery(QuizPerformance.class);
+		q.setFilter("quiz == quizParam");
+		q.declareParameters("String quizParam");
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("quizParam", quiz);
+
+		List<QuizPerformance> quizPerfomances = new ArrayList<QuizPerformance>();
+		int limit = 1000;
+		int i = 0;
+		while (true) {
+			q.setRange(i, i + limit);
+			@SuppressWarnings("unchecked")
+			List<QuizPerformance> results = (List<QuizPerformance>) q
+					.executeWithMap(params);
+			if (results.size() == 0)
+				break;
+			quizPerfomances.addAll(results);
+			i += limit;
+		}
+
+		pm.close();
+		return quizPerfomances;
+	}
+
 
 	public void storeQuizPerformance(QuizPerformance qp) {
 		cacheQuizPerformance(qp);

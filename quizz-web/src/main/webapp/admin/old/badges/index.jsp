@@ -1,39 +1,37 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="us.quizz.utils.PMF"%>
-<%@ page import="us.quizz.entities.Treatment"%>
+<%@ page import="us.quizz.entities.Badge"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
 
-<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="List of available treatments" /></jsp:include>
+<jsp:include page="../header.jsp"><jsp:param name="title" value="List of Badges" /></jsp:include>
 
 <body>
 	<div class="container pagination-centered">
 		<div class="row span6 offset4">
-			<h2>Available treatments</h2>
+			<h2>Available Badges</h2>
 			<table class="table table-striped  table-bordered">
 				<tr>
 					<th>Name</th>
-					<th>Probability</th>
 				</tr>
 				<%
 				PersistenceManager	pm = PMF.getPM();
-				Query q = pm.newQuery(Treatment.class);
+				Query q = pm.newQuery(Badge.class);
 				@SuppressWarnings("unchecked")
-				List<Treatment> allTreatments = (List<Treatment>) q.execute();
+				List<Badge> allBadges = (List<Badge>) q.execute();
 				pm.close();
-				for (Treatment t : allTreatments) {
+				for (Badge b : allBadges) {
 					%>
 					<tr>
-						<td><%=t.getName()%><br>
-						<td><%=t.getProbability()%></td>
+						<td><%=b.getBadgename()%></td>
 					</tr>
 					<%
 				}
 				%>
 				<tr>
 					<td colspan="2" style="text-align: center">
-						<a href="create_treatment.jsp">Create a new treatment</a>
+						<a href="create_badge.jsp">Create a new badge</a>
 					</td>
 				</tr>
 			</table>

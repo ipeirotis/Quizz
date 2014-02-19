@@ -54,6 +54,12 @@ public class Answer implements Serializable{
 
 	@Persistent
 	private Double probability;
+	
+	@Persistent
+	private Long numberOfPicks;
+	
+	@Persistent
+	private Double bits;
 
 	public Answer(Long questionID, String quizID, String text,
 			Integer internalID) {
@@ -207,5 +213,21 @@ public class Answer implements Serializable{
 			return userInput;
 		}
 		return text;
+	}
+
+	public Long getNumberOfPicks() {
+		return numberOfPicks;
+	}
+
+	public void setNumberOfPicks(Long numberOfPicks) {
+		this.numberOfPicks = numberOfPicks;
+	}
+
+	public Double getBits() {
+		return bits;
+	}
+
+	public void setBits(Double bits) {
+		this.bits = bits;
 	}
 }

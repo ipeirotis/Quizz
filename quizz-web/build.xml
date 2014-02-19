@@ -3,9 +3,12 @@
 	<property name="JS_DIR" value="src/main/webapp/js"/>
 	<property name="JS" value="${JS_DIR}/all.js" />
 	<property name="JS_MIN" value="${JS_DIR}/all.min.js" />
+	<property name="JS_ADMIN_DIR" value="src/main/webapp/admin/js"/>
+	<property name="JS_ADMIN" value="${JS_ADMIN_DIR}/all.js" />
+	<property name="JS_ADMIN_MIN" value="${JS_ADMIN_DIR}/all.min.js" />
 	<property name="YUI" value="war/WEB-INF/lib/yuicompressor-2.4.7.jar"/>
 
-	<target name="build" depends="concatenate, update-version, copyui"/>
+	<target name="build" depends="concatenate, concatenate-admin, update-version, copyui"/>
 
 	<target name="update-version">
 		<propertyset id="tdate">
@@ -18,6 +21,9 @@
 			<regexp pattern="\?v=([0-9]+)&quot;"/>
 			<substitution expression="\?v=${tdate}&quot;"/>
 			<fileset dir="src/main/webapp/">
+				<include name="index.jsp"/>
+			</fileset>
+			<fileset dir="src/main/webapp/admin">
 				<include name="index.jsp"/>
 			</fileset>
 		</replaceregexp>
@@ -50,11 +56,22 @@
 		<echo message="${JS} built." />
 	</target>
 	
+	<target name="concatenate-admin" description="Concatenate admin's JavaScript source files">
+		<echo message="Building ${JS_ADMIN}" />
+		<delete file="${JS_ADMIN_MIN}"/>
+		<delete file="${JS_ADMIN}"/>
+		<concat destfile="${JS_ADMIN}" force="yes">
+			<fileset dir="${JS_ADMIN_DIR}" includes="**/*.js"/>
+		</concat>
+		<echo message="${JS_ADMIN} built." />
+	</target>
+	
 	<target name="copyui" description="Copy ui to dev server">
 		<copy todir="c:/Workspaces/QuizzWorkspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/quizz-ear/quizz-web-1.0-SNAPSHOT.war" >  
 			<fileset dir="src/main/webapp" includes="js/**"/>
 			<fileset dir="src/main/webapp" includes="css/**"/>
 			<fileset dir="src/main/webapp" includes="views/**"/>
+			<fileset dir="src/main/webapp" includes="admin/**"/>
 			<fileset file="src/main/webapp/index.jsp"/>
 			<fileset file="src/main/webapp/index1.jsp"/>
 		</copy>

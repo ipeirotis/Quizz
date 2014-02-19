@@ -15,7 +15,7 @@
 <%@ page import="com.google.inject.Guice"%>
 <%@ page import="us.quizz.di.CommonModule"%>
 
-<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="User info" /></jsp:include>
+<jsp:include page="../header.jsp"><jsp:param name="title" value="User info" /></jsp:include>
 <% 
 Injector i = Guice.createInjector(new CommonModule());
 UserRepository userRepository = i.getInstance(UserRepository.class);

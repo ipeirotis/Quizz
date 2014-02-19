@@ -1,55 +1,84 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="com.google.appengine.api.utils.SystemProperty"%>
 
-<jsp:include page="header.jsp"><jsp:param name="title" value="Admin actions" /></jsp:include>
+<!DOCTYPE html>
+<html ng-app="quizz-admin">
+<head>
+<title>Quizz.us</title>
+
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144"
+	href="/assets/144x144.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114"
+	href="/assets/114x114.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72"
+	href="/assets/72x72.png">
+<link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
+
+<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css?v=20140219153146">
+<link rel="stylesheet" type="text/css" href="css/style.css?v=20140219153146">
+
+<!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script src="/lib/jquery.min.js" type="text/javascript"></script>
+<script src="/lib/angular.js" type="text/javascript"></script>
+<script src="/lib/angular-resource.js" type="text/javascript"></script>
+<script src="/lib/angular-route.js" type="text/javascript"></script>
+<script src="/lib/angular-sanitize.js" type="text/javascript"></script>
+<script src="/lib/bootstrap.js" type="text/javascript"></script>
+<script src="js/all.js?v=20140219153146" type="text/javascript"></script>
+<script src='/_ah/channel/jsapi'></script>
+
+</head>
+<%
+	boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
+	String apiUrl;
+	String serverName = request.getServerName();
+	if (isDev)
+		apiUrl = "http://" + serverName + ":" + request.getServerPort();
+	else {
+
+		if (serverName.startsWith("www.quizz.us")
+				|| serverName.startsWith("quizz.us"))
+			apiUrl = "https://crowd-power.appspot.com";
+		else
+			apiUrl = "https://" + serverName;
+	}
+%>
+
+<script>
+	var Config = {
+		api : '<%=apiUrl%>/_ah/api/quizz/v1'
+	};
+</script>
+
+</head>
 
 <body>
-	<div class="container">
-		<div class="row">
-		
-			<table class="span6 table table-striped  table-bordered">
-				<tr>
-					<th>Available actions</th>
-				</tr>
-				<tr>
-					<td>
-						<a href="manage/index.jsp">Download data from existing quizzes</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<a href="treatments/create_treatment.jsp">Create new treatment</a>
-					</td>
-				</tr>				
-				<tr>
-					<td>
-						<a href="treatments/index.jsp">See available treatments</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<a href="reports/conversion_rate.jsp">Conversion rate</a>
-					</td>
-				</tr>	
-				<tr>
-				<td>
-						<a href="reports/contribution_quality.jsp">Quality of contributions</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<a href="badges/create_badge.jsp">Create new badge</a>
-					</td>
-				</tr>				
-				<tr>
-					<td>
-						<a href="badges/">See all badges</a>
-					</td>
-				</tr>				
-			</table>
-			
+	<nav class="navbar navbar-default" role="navigation" ng-controller="MenuController" navbar>
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		   </div>
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li data-match-route="/quizzes"><a href="#/quizzes">Quizzes</a></li>
+				<li data-match-route="/report"><a href="#/report">Reports</a></li>
+			</ul>
 		</div>
-	</div>
-
-
+	</nav>
+	<div id="content" ng-view></div>
 </body>
 </html>

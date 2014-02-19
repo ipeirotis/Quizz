@@ -1,11 +1,11 @@
-<%@ page language="java" contentType="text/html;charset=utf-8" pageEncoding="utf-8"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="javax.jdo.PersistenceManager"%>
 <%@ page import="us.quizz.utils.PMF"%>
 <%@ page import="us.quizz.entities.Treatment"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
 
-<jsp:include page="/admin/header.jsp"><jsp:param name="title" value="List of available treatments" /></jsp:include>
+<jsp:include page="../header.jsp"><jsp:param name="title" value="List of available treatments" /></jsp:include>
 
 <body>
 	<div class="container pagination-centered">

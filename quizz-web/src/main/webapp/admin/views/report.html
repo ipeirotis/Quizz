@@ -1,0 +1,17 @@
+<div class="container" ng-show="readyToShow == true">
+	<div class="table-toolbar">
+		<span>Select quiz:</span>
+		<select ng-model="quizID">
+			<option value=""></option>
+		   	<option ng-repeat="quiz in quizes" value="{{quiz.quizID}}">{{quiz.name}}</option>
+		</select>
+	</div>
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr answersheader></tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="question in reportData" answers></tr>
+		</tbody>
+	</table>
+</div>

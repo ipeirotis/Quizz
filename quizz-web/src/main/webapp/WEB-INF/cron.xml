@@ -30,4 +30,16 @@
     <schedule>every day 00:00</schedule>
     <target>quizz-tasks</target>
   </cron>
+  <cron>
+    <url>/api/updateAnswerCountsStatistics?all=true</url>
+    <description>Update answers statistics</description>
+    <schedule>every day 00:30</schedule>
+    <target>quizz-tasks</target>
+  </cron>
+  <cron>
+    <url>/api/updateAnswerBitsStatistics?all=true</url>
+    <description>Update answers statistics</description>
+    <schedule>every day 01:00</schedule>
+    <target>quizz-tasks</target>
+  </cron>
 </cronentries>
