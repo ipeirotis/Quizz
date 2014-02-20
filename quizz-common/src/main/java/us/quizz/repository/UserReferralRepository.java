@@ -15,6 +15,8 @@ import us.quizz.utils.UrlUtils;
 
 import com.google.appengine.api.datastore.Key;
 
+import eu.bitwalker.useragentutils.Browser;
+
 public class UserReferralRepository extends BaseRepository<UserReferal>{
 	
 	public UserReferralRepository() {
@@ -58,7 +60,7 @@ public class UserReferralRepository extends BaseRepository<UserReferal>{
 		UserReferal ur = new UserReferal(userid);
 		ur.setQuiz(req.getParameter("quizID"));
 		ur.setIpaddress(req.getRemoteAddr());
-		ur.setBrowser(req.getHeader("User-Agent"));
+		ur.setBrowser(Browser.parseUserAgentString(req.getHeader("User-Agent")));
 		String referer = UrlUtils.extractUrl(req.getHeader("Referer"));
 		ur.setReferer(referer);
 		ur.setDomain(UrlUtils.extractDomain(referer));

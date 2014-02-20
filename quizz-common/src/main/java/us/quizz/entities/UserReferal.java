@@ -12,6 +12,8 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
+import eu.bitwalker.useragentutils.Browser;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserReferal implements Serializable{
 	
@@ -41,25 +43,8 @@ public class UserReferal implements Serializable{
 	@Persistent
 	private String domain;
 
-	/**
-	 * @return the browser
-	 */
-	public String getBrowser() {
-
-		return browser;
-	}
-
-	/**
-	 * @param browser
-	 *            the browser to set
-	 */
-	public void setBrowser(String browser) {
-
-		this.browser = browser;
-	}
-
 	@Persistent
-	private String browser;
+	private Browser browser;
 
 	public UserReferal(String userid) {
 		this.userid = userid;
@@ -162,4 +147,20 @@ public class UserReferal implements Serializable{
 		this.domain = domain;
 	}
 
+	/**
+	 * @return the browser
+	 */
+	public Browser getBrowser() {
+
+		return browser;
+	}
+
+	/**
+	 * @param browser
+	 *            the browser to set
+	 */
+	public void setBrowser(Browser browser) {
+
+		this.browser = browser;
+	}
 }
