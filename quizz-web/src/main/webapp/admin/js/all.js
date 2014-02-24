@@ -2,7 +2,10 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {	
 	$routeProvider
 	.when('/quizzes', {templateUrl: templates.quizzes, controller: 'QuizzesController'})
-	.when('/report', {templateUrl: templates.report, controller: 'ReportController', reloadOnSearch:false})
+	.when('/reports/answers', {templateUrl: templates.answersReport, controller: 'AnswersReportController', reloadOnSearch:false})
+	.when('/reports/scoreByBrowser', {templateUrl: templates.scoreByBrowserReport, controller: 'ScoreByBrowserReportController', reloadOnSearch:false})
+	.when('/reports/scoreByDomain', {templateUrl: templates.scoreByDomainReport, controller: 'ScoreByDomainReportController', reloadOnSearch:false})
+	.when('/reports/contributionQuality', {templateUrl: templates.contributionQualityReport, controller: 'ContributionQualityReportController', reloadOnSearch:false})
 	.otherwise({redirectTo: '/report'});
 }])
 
@@ -22,13 +25,13 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 }]);angular.module('quizz-admin').controller('QuizzesController', 
 	['$scope', function ($scope) {
 	
-}]);angular.module('quizz-admin').controller('ReportController', 
+}]);angular.module('quizz-admin').controller('AnswersReportController', 
 	['$scope', '$rootScope', '$routeParams', '$location', 'reportService',
 	 function ($scope, $rootScope, $routeParams, $location, reportService) {
 		
 	$scope.quizID = $routeParams.quizId;
 	
-	$scope.$watch('quizID', function(newValue, oldValue) {console.log(newValue)
+	$scope.$watch('quizID', function(newValue, oldValue) {
 		if(newValue && newValue != ''){
 			$scope.load(newValue);
 			$location.search('quizId', newValue);
@@ -53,7 +56,7 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 	$scope.loadQuizes();
 	
 	$scope.load = function(quizID){
-		reportService.load($scope.quizID,
+		reportService.loadAnswersReport($scope.quizID,
 			function(response) {
 				$scope.reportData = response.items;
 			},
@@ -61,6 +64,55 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 		});
 	};
 	
+}]);angular.module('quizz-admin').controller('ContributionQualityReportController', 
+	['$scope', 'reportService', function ($scope, reportService) {
+	
+	$scope.load = function(){
+		reportService.loadContributionQualityReport(
+			function(response) {
+				$scope.reportData = response.items;
+				$scope.readyToShow = true;
+			},
+			function(error) {
+		});
+	};
+	
+	$scope.load();
+	
+	$scope.toPercentage = function(value) {
+		return (100. * value).toFixed(0) + "%";
+	};
+	
+}]);angular.module('quizz-admin').controller('ScoreByBrowserReportController', 
+	['$scope', 'reportService', function($scope, reportService) {
+		
+	$scope.load = function(){
+		reportService.loadScoreByBrowserReport(
+			function(response) {
+				$scope.reportData = response.items;
+				$scope.readyToShow = true;
+			},
+			function(error) {
+		});
+	};
+	
+	$scope.load();
+		
+}]);angular.module('quizz-admin').controller('ScoreByDomainReportController', 
+	['$scope', 'reportService', function($scope, reportService) {
+		
+	$scope.load = function(){
+		reportService.loadScoreByDomainReport(
+			function(response) {
+				$scope.reportData = response.items;
+				$scope.readyToShow = true;
+			},
+			function(error) {
+		});
+	};
+	
+	$scope.load();
+		
 }]);angular.module('quizz-admin').directive('navbar', ['$location',
 	function ($location) {
 	  return {
@@ -166,8 +218,20 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 	return service;
 });angular.module('quizz-admin').factory('reportService', ['$http', function($http){
     return {
-    	load: function(quizId, success, error) {
-    		var url = Config.api + '/report?quizID=' + quizId;
+    	loadAnswersReport: function(quizId, success, error) {
+    		var url = Config.api + '/reports/answers?quizID=' + quizId;
+        	$http.get(url).success(success).error(error);
+        },
+    	loadScoreByBrowserReport: function(success, error) {
+    		var url = Config.api + '/reports/scoreByBrowser';
+        	$http.get(url).success(success).error(error);
+        },
+    	loadScoreByDomainReport: function(success, error) {
+    		var url = Config.api + '/reports/scoreByDomain';
+        	$http.get(url).success(success).error(error);
+        },
+    	loadContributionQualityReport: function(success, error) {
+    		var url = Config.api + '/reports/contributionQuality';
         	$http.get(url).success(success).error(error);
         },
     	listQuizes: function(success, error) {
@@ -176,5 +240,8 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
     };
 }]);angular.module('quizz-admin').constant('templates', {
 	quizzes: 'views/quizzes.html?v=1',
-	report: 'views/report.html?v=1'
+	answersReport: 'views/reports/answersReport.html?v=1',
+	scoreByBrowserReport: 'views/reports/scoreByBrowserReport.html?v=1',
+	scoreByDomainReport: 'views/reports/scoreByDomainReport.html?v=1',
+	contributionQualityReport: 'views/reports/contributionQualityReport.html?v=1'
 });

@@ -8,8 +8,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 
+import us.quizz.entities.DomainStats;
 import us.quizz.entities.UserReferal;
-import us.quizz.entities.UserReferalCounter;
 import us.quizz.utils.PMF;
 import us.quizz.utils.UrlUtils;
 
@@ -68,15 +68,41 @@ public class UserReferralRepository extends BaseRepository<UserReferal>{
 		PMF.singleMakePersistent(ur);
 		
 		if(ur.getDomain() != null){
-			UserReferalCounter referalCounter = 
-					PMF.singleGetObjectById(UserReferalCounter.class, ur.getDomain());
+			DomainStats domainStats = 
+					PMF.singleGetObjectById(DomainStats.class, ur.getDomain());
 			
-			if(referalCounter == null)
-				referalCounter = new UserReferalCounter(ur.getDomain());
+			if(domainStats == null)
+				domainStats = new DomainStats(ur.getDomain(), 0, 0);
 			
-			referalCounter.incCount();
-			PMF.singleMakePersistent(referalCounter);
+			domainStats.incUserCount();
+			PMF.singleMakePersistent(domainStats);
 		}
+	}
+	
+	public long getCountByBrowser(Browser browser){
+		PersistenceManager pm = PMF.getPM();
+		long result = 0;
+
+		Query q = pm.newQuery(UserReferal.class);
+		q.setFilter("browser == browserParam");
+		q.declareParameters("String browserParam");
+
+		int limit = 1000;
+		int i = 0;
+		while (true) {
+			q.setRange(i, i + limit);
+			@SuppressWarnings("unchecked")
+			List<UserReferal> results = (List<UserReferal>) q.execute(browser);
+			if (results.size() == 0)
+				break;
+			else
+				result += results.size();
+			
+			i += limit;
+		}
+
+		pm.close();
+		return result;
 	}
 
 }

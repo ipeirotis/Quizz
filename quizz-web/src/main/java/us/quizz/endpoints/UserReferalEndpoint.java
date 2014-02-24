@@ -5,9 +5,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
+import us.quizz.entities.DomainStats;
 import us.quizz.entities.UserReferal;
-import us.quizz.entities.UserReferalCounter;
-import us.quizz.repository.UserReferalCounterRepository;
+import us.quizz.repository.DomainStatsRepository;
 import us.quizz.repository.UserReferralRepository;
 
 import com.google.api.server.spi.config.Api;
@@ -20,13 +20,13 @@ import com.google.inject.Inject;
 public class UserReferalEndpoint {
 	
 	private UserReferralRepository userReferalRepository;
-	private UserReferalCounterRepository userReferalCounterRepository;
+	private DomainStatsRepository domainStatsRepository;
 	
 	@Inject
 	public UserReferalEndpoint(UserReferralRepository userReferalRepository,
-			UserReferalCounterRepository userReferalCounterRepository){
+			DomainStatsRepository domainStatsRepository){
 		this.userReferalRepository = userReferalRepository;
-		this.userReferalCounterRepository = userReferalCounterRepository;
+		this.domainStatsRepository = domainStatsRepository;
 	}
 
 	/**
@@ -98,13 +98,8 @@ public class UserReferalEndpoint {
 	}
 	
 	@ApiMethod(name = "listDomains", path="listDomains")
-	public CollectionResponse<UserReferalCounter> listDomains(
-			@Nullable @Named("cursor") String cursor,
-			@Nullable @Named("limit") Integer limit) {
-		List<UserReferalCounter> result = userReferalCounterRepository.list(cursor, limit);
-		
-		return CollectionResponse.<UserReferalCounter> builder().setItems(result)
-				.setNextPageToken(cursor).build();
+	public List<DomainStats> listDomains() {
+		return domainStatsRepository.list();
 	}
 
 }

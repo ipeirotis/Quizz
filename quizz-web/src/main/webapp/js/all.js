@@ -19,10 +19,7 @@ angular.module('quizz', ['ngRoute', 'ngSanitize', 'ezfb'])
 .run(['$rootScope', 'utils', 
     function($rootScope, utils) {
 	$rootScope.utils = utils;
-}]);
-
-
-angular.module('quizz').controller('FeedbackController', 
+}]);angular.module('quizz').controller('FeedbackController', 
 		['$scope', '$routeParams', '$location', '$q', '$modal', 'questionService', 'workflowService', 'templates',
 		 function ($scope, $routeParams, $location, $q, $modal, questionService, workflowService, templates) {
 
@@ -50,9 +47,7 @@ angular.module('quizz').controller('FeedbackController',
 		}
 	};
 	
-}]);
-
-angular.module('quizz').controller('ListController', 
+}]);angular.module('quizz').controller('ListController', 
 	['$scope', '$rootScope', 'quizService', 'userService', 'workflowService', '$FB',
 	 function ($scope, $rootScope, quizService, userService, workflowService, $FB) {
 		
@@ -119,9 +114,7 @@ angular.module('quizz').controller('ListController',
 		});
 	}
 	
-}]);
-
-angular.module('quizz').controller('ChallengeAnswerController', 
+}]);angular.module('quizz').controller('ChallengeAnswerController', 
 	['$scope', '$routeParams', 'questionService', 'workflowService', 
 	 function ($scope, $routeParams, questionService, workflowService) {
 	
@@ -140,9 +133,7 @@ angular.module('quizz').controller('ChallengeAnswerController',
 				function(error) {
 		});
 	};
-}]);
-
-angular.module('quizz').controller('QuizController', 
+}]);angular.module('quizz').controller('QuizController', 
 	['$scope', '$rootScope', '$routeParams', '$location', 'questionService', 'quizService', 'workflowService', 'userService',
 	 function ($scope, $rootScope, $routeParams, $location, questionService, quizService, workflowService, userService) {
 		
@@ -246,9 +237,7 @@ angular.module('quizz').controller('QuizController',
 			return (100. * fValue).toFixed(0) + "%";
 		};
 		
-}]);
-
-angular.module('quizz').controller('SummaryController', 
+}]);angular.module('quizz').controller('SummaryController', 
 	['$scope', '$routeParams', '$location', 'workflowService', 
 	 function ($scope, $routeParams, $location, workflowService) {
 	
@@ -282,7 +271,6 @@ angular.module('quizz').controller('SummaryController',
 	
 	gapi.plus.go();//TODO: check
 }]);/*global angular*/
-
 angular.module('ezfb', [])
 
 .provider('$FB', function () {

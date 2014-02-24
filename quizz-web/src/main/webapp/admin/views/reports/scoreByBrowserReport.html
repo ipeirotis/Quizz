@@ -1,0 +1,18 @@
+<div class="container" ng-show="readyToShow == true">
+	<table class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>Browser</th>
+				<th>Users</th>
+				<th>Score</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="row in reportData">
+				<td>{{row.browser}}</td>
+				<td>{{row.userCount}}</td>
+				<td>{{row.userScores}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

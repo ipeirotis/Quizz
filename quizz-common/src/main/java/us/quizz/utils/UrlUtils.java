@@ -50,4 +50,8 @@ public class UrlUtils {
 		domain = domain.replaceFirst("^www.*?\\.", "");
 		return domain;
 	}
+	
+	public static String extractUrlAndDomain(String referer){
+		return extractDomain(extractUrl(referer));
+	}
 }

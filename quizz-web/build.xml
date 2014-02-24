@@ -67,7 +67,7 @@
 	</target>
 	
 	<target name="copyui" description="Copy ui to dev server">
-		<copy todir="c:/Workspaces/QuizzWorkspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/quizz-ear/quizz-web-1.0-SNAPSHOT.war" >  
+		<copy todir="c:/Workspaces/QuizzWorkspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/quizz-ear/quizz-web-1.0-SNAPSHOT.war" >  
 			<fileset dir="src/main/webapp" includes="js/**"/>
 			<fileset dir="src/main/webapp" includes="css/**"/>
 			<fileset dir="src/main/webapp" includes="views/**"/>

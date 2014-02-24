@@ -1,10 +1,10 @@
-angular.module('quizz-admin').controller('ReportController', 
+angular.module('quizz-admin').controller('AnswersReportController', 
 	['$scope', '$rootScope', '$routeParams', '$location', 'reportService',
 	 function ($scope, $rootScope, $routeParams, $location, reportService) {
 		
 	$scope.quizID = $routeParams.quizId;
 	
-	$scope.$watch('quizID', function(newValue, oldValue) {console.log(newValue)
+	$scope.$watch('quizID', function(newValue, oldValue) {
 		if(newValue && newValue != ''){
 			$scope.load(newValue);
 			$location.search('quizId', newValue);
@@ -29,7 +29,7 @@ angular.module('quizz-admin').controller('ReportController',
 	$scope.loadQuizes();
 	
 	$scope.load = function(quizID){
-		reportService.load($scope.quizID,
+		reportService.loadAnswersReport($scope.quizID,
 			function(response) {
 				$scope.reportData = response.items;
 			},
