@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -165,6 +166,34 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 		} finally {
 			pm.close();
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public double getScoreSumByIds(Set<Key> ids){
+		if(ids.size() == 0)
+			return 0d;
+
+		PersistenceManager mgr = null;
+		double result = 0d;
+		Query q = PMF.getPM().newQuery("select from " + QuizPerformance.class.getName() + " where key == :keys");
+		
+		List<Key> list = new ArrayList<Key>(ids);
+		
+		try {
+			mgr = PMF.getPM();
+			for (int i = 0; i < list.size(); i += 1000) {
+				List<Key> sublist = list.subList(i, Math.min(i + 1000, list.size()));
+				List<QuizPerformance> results = (List<QuizPerformance>) q.execute(sublist);
+				for (QuizPerformance qp : results) {
+					result += qp.getScore();
+				}
+			}
+
+		} finally {
+			mgr.close();
+		}
+		
+		return result;
 	}
 
 }

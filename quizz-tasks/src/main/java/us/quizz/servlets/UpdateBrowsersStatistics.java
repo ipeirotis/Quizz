@@ -12,10 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.entities.BrowserStats;
 import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
+import us.quizz.repository.UserReferralRepository.Result;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -33,22 +31,15 @@ public class UpdateBrowsersStatistics extends HttpServlet {
 	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(UpdateBrowsersStatistics.class.getName());
-	
-	private QuizRepository quizRepository;
+
 	private BrowserStatsRepository browserStatsRepository;
-	private QuizQuestionRepository quizQuestionRepository;
-	private UserAnswerRepository userAnswerRepository;
 	private QuizPerformanceRepository quizPerformanceRepository;
 	private UserReferralRepository userReferralRepository;
 	
 	@Inject
-	public UpdateBrowsersStatistics(QuizRepository quizRepository, 
-			QuizQuestionRepository quizQuestionRepository, UserAnswerRepository userAnswerRepository,
-			QuizPerformanceRepository quizPerformanceRepository, UserReferralRepository userReferralRepository,
+	public UpdateBrowsersStatistics(QuizPerformanceRepository quizPerformanceRepository, 
+			UserReferralRepository userReferralRepository,
 			BrowserStatsRepository browserStatsRepository){
-		this.quizRepository = quizRepository;
-		this.quizQuestionRepository = quizQuestionRepository;
-		this.userAnswerRepository = userAnswerRepository;
 		this.quizPerformanceRepository = quizPerformanceRepository;
 		this.userReferralRepository = userReferralRepository;
 		this.browserStatsRepository = browserStatsRepository;
@@ -62,14 +53,14 @@ public class UpdateBrowsersStatistics extends HttpServlet {
 			
 			Set<Browser> browsers = new HashSet<Browser>();
 			for (Browser browser : Browser.values()) {
-				browsers.add(browser);
+				browsers.add(browser.getGroup());
 			}
 	
 			for (Browser browser : browsers) {
 				queue.add(Builder
 						.withUrl("/api/updateBrowsersStatistics")
 						.param("browser", browser.getGroup().toString())
-						.retryOptions(RetryOptions.Builder.withTaskRetryLimit(1))
+						.retryOptions(RetryOptions.Builder.withTaskRetryLimit(0))
 						.method(TaskOptions.Method.GET));
 			}
 		}else{
@@ -79,9 +70,11 @@ public class UpdateBrowsersStatistics extends HttpServlet {
 	
 	private void updateStatistics(String browser){
 		Browser b = Browser.valueOf(browser);
-		long count = userReferralRepository.getCountByBrowser(b);
-		if(count > 0){
-			BrowserStats bs = new BrowserStats(b, userReferralRepository.getCountByBrowser(b), 0.0d);
+		Result res = userReferralRepository.getCountByBrowser(b);
+
+		Double userScores = quizPerformanceRepository.getScoreSumByIds(res.getUsers());
+		if(res.getCount() > 0){
+			BrowserStats bs = new BrowserStats(b, res.getCount(), userScores);
 			browserStatsRepository.save(bs);
 		}
 	}

@@ -1,5 +1,7 @@
 package us.quizz.repository;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -9,11 +11,15 @@ import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.DomainStats;
+import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserReferal;
 import us.quizz.utils.PMF;
 import us.quizz.utils.UrlUtils;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import eu.bitwalker.useragentutils.Browser;
 
@@ -79,30 +85,65 @@ public class UserReferralRepository extends BaseRepository<UserReferal>{
 		}
 	}
 	
-	public long getCountByBrowser(Browser browser){
-		PersistenceManager pm = PMF.getPM();
-		long result = 0;
+	@SuppressWarnings("unchecked")
+	public Result getCountByBrowser(Browser browser){
 
-		Query q = pm.newQuery(UserReferal.class);
-		q.setFilter("browser == browserParam");
-		q.declareParameters("String browserParam");
+		PersistenceManager mgr = null;
+		long count = 0;
+		Set<Key> users = new HashSet<Key>();
+		Cursor cursor = null;
+		List<UserReferal> list = null;
+		
+		try {
+			mgr = PMF.getPM();
+			while (true) {
+				Query q = mgr.newQuery(UserReferal.class);
+				q.setFilter("browser == browserParam");
+				q.declareParameters("String browserParam");
+				if (cursor != null) {
+					HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+					extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+					q.setExtensions(extensionMap);
+				}
+	
+				q.setRange(0, 1000);
+				list = (List<UserReferal>) q.execute(browser);
+				cursor = JDOCursorHelper.getCursor(list);
+				
+				if (list.size() == 0)
+					break;
+	
+				count += list.size();
+				for(UserReferal ref : list){
+					users.add(KeyFactory.createKey(QuizPerformance.class.getSimpleName(), 
+						"id_" + ref.getUserid() + "_" + ref.getQuiz()));
+				}
+			}
 
-		int limit = 1000;
-		int i = 0;
-		while (true) {
-			q.setRange(i, i + limit);
-			@SuppressWarnings("unchecked")
-			List<UserReferal> results = (List<UserReferal>) q.execute(browser);
-			if (results.size() == 0)
-				break;
-			else
-				result += results.size();
-			
-			i += limit;
+		} finally {
+			mgr.close();
 		}
 
-		pm.close();
-		return result;
+		return new Result(count, users);
+	}
+	
+	public class Result{
+		private long count;
+		private Set<Key> users;
+		
+		public Result(long count, Set<Key> users) {
+
+			this.count = count;
+			this.users = users;
+		}
+
+		public long getCount() {
+			return count;
+		}
+
+		public Set<Key> getUsers() {
+			return users;
+		}
 	}
 
 }

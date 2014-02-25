@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 
 import us.quizz.entities.BrowserStats;
@@ -19,6 +20,7 @@ import us.quizz.repository.QuizRepository;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
@@ -51,8 +53,10 @@ public class ReportsEndpoint {
 	}
 	
 	@ApiMethod(name = "reports.scoreByDomain", path="reports/scoreByDomain")
-	public List<DomainStats> getScoreByDomainReport() {
-		return domainStatsRepository.list();
+	public CollectionResponse<DomainStats> getScoreByDomainReport(
+			@Nullable @Named("cursor") String cursorString,
+			@Nullable @Named("limit") Integer limit) {
+		return domainStatsRepository.listItems(cursorString, limit);
 	}
 	
 	@ApiMethod(name = "reports.contributionQuality", path="reports/contributionQuality")

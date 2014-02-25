@@ -33,13 +33,19 @@
   <cron>
     <url>/api/updateAnswerCountsStatistics?all=true</url>
     <description>Update answers statistics</description>
-    <schedule>every day 00:30</schedule>
+    <schedule>every day 00:10</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>
     <url>/api/updateAnswerBitsStatistics?all=true</url>
     <description>Update answers statistics</description>
-    <schedule>every day 01:00</schedule>
+    <schedule>every day 00:20</schedule>
+    <target>quizz-tasks</target>
+  </cron>
+    <cron>
+    <url>/api/updateBrowsersStatistics?all=true</url>
+    <description>Update browser statistics</description>
+    <schedule>every day 00:30</schedule>
     <target>quizz-tasks</target>
   </cron>
 </cronentries>

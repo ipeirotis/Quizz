@@ -1,4 +1,11 @@
 <div class="container" ng-show="readyToShow == true">
+	<div class="pull-right">
+		<ul class="pager">
+			<li>Page {{pageNumber + 1}}</li>
+			 <li><a href="" ng-click="prevPage()" ng-class="{disabled: pageNumber==0}">Previous</a></li>
+			 <li><a href="" ng-click="nextPage()">Next</a></li>
+		</ul>
+	</div>
 	<table class="table table-bordered table-hover">
 		<thead>
 			<tr>
