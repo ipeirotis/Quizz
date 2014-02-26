@@ -8,7 +8,7 @@ QUIZ_ID=$3
 curl "$API_URL/quiz" --data "quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored and removed in future"
 
 # add question with multiple options
-curl "$API_URL/question" --data '{
+curl "$API_URL/question" --header 'Content-Type: application/json; charset=utf-8' --data '{
     "quizID": "'$QUIZ_ID'",
     "text": "Question text goes here",
     "weight": 1,
@@ -21,7 +21,7 @@ curl "$API_URL/question" --data '{
     }]}'
 
 # add question with free-text input
-curl "$API_URL/question" --data '{
+curl "$API_URL/question" --header 'Content-Type: application/json; charset=utf-8' --data '{
     "quizID": "'$QUIZ_ID'",
     "text": "Question with input text",
     "weight": 1,
