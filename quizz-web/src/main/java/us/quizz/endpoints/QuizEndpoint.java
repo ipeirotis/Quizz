@@ -111,6 +111,7 @@ public class QuizEndpoint {
 	 */
 	@ApiMethod(name = "insertQuiz")
 	public Quiz insertQuiz(Quiz quiz) {
+		quiz.setKey(Quiz.generateKeyFromID(quiz.getQuizID()));
 		return quizRepository.insert(quiz);
 	}
 

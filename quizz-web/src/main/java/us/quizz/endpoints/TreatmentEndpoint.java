@@ -22,10 +22,9 @@ public class TreatmentEndpoint {
 	}
 
 	@ApiMethod(name = "addTreatment", path="addTreatment", httpMethod=HttpMethod.POST)
-	public void addTreatment(@Named("name") String name, 
+	public Treatment addTreatment(@Named("name") String name, 
 							@Named("probability") Double probability) {
-		Treatment treatment = new Treatment(name, probability);
-		treatmentRepository.singleMakePersistent(treatment);
+		return treatmentRepository.insert(new Treatment(name, probability));
 	}
 
 }

@@ -1,13 +1,14 @@
 #!/bin/bash
 
-WEB_URL=$1 # without trailing /
-QUIZ_ID=$2
+API_URL=$1 # without trailing / e.g. http://localhost:8888/_ah/api/quizz/v1
+TASK_MODULE_URL=$2 # without trailing / e.g. http://localhost:50367
+QUIZ_ID=$3
 
 # create quiz
-curl "$WEB_URL/addQuiz" --data "quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored and removed in future"
+curl "$API_URL/quiz" --data "quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored and removed in future"
 
 # add question with multiple options
-curl "$WEB_URL/addQuestion" --data '{
+curl "$API_URL/question" --data '{
     "quizID": "'$QUIZ_ID'",
     "text": "Question text goes here",
     "weight": 1,
@@ -20,7 +21,7 @@ curl "$WEB_URL/addQuestion" --data '{
     }]}'
 
 # add question with free-text input
-curl "$WEB_URL/addQuestion" --data '{
+curl "$API_URL/question" --data '{
     "quizID": "'$QUIZ_ID'",
     "text": "Question with input text",
     "weight": 1,
@@ -32,15 +33,11 @@ curl "$WEB_URL/addQuestion" --data '{
 
 # add treatments
 for TREATMENT in 'Correct' 'CrowdAnswers' 'Difficulty' 'Message' 'PercentageCorrect' 'percentageRank' 'Score' 'TotalCorrect' 'TotalCorrectRank' ; do
-    curl "$WEB_URL/addTreatment" --data "name=$TREATMENT&probability=1."
+    curl "$API_URL/addTreatment" --data "name=$TREATMENT&probability=1."
 done;
 
-# update quiz questions count, two ways
-# update all quizzes:
-curl "$WEB_URL/api/updateCountStatistics"
-
-# update only given one:
-curl "$WEB_URL/api/getQuizCounts?quizID=$QUIZ_ID&cache=no"
+# update quiz questions count
+curl "$TASK_MODULE_URL/api/getQuizCounts?quizID=$QUIZ_ID&cache=no"
 
 # get survival probability:
-curl "$WEB_URL/_ah/api/quizz/v1/getSurvivalProbability?a_from=5&b_from=2&a_to=6&b_to=2"
+curl "$API_URL/getSurvivalProbability?a_from=5&b_from=2&a_to=6&b_to=2"
