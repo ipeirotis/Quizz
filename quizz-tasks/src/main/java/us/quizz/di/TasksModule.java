@@ -11,7 +11,6 @@ import us.quizz.servlets.UpdateBrowsersStatistics;
 import us.quizz.servlets.UpdateCountStatistics;
 import us.quizz.servlets.UpdateQuestionStatistics;
 import us.quizz.servlets.UpdateUserQuizStatistics;
-import us.quizz.servlets.Utils;
 
 import com.google.inject.servlet.ServletModule;
 
