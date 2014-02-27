@@ -79,7 +79,7 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 		List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID);
 		if(userAnswers == null) return;
 			
-		Map<String, Double> avgUserBitsMap = getAvgBitsPerUserId(quizID);
+		Map<String, Double> userBitsPerAnswer = getAvgBitsPerUserId(quizID);
 		
 		Map<Long, Map<Integer, List<String>>> questionsMap = getQuestionAnswerMap(userAnswers);
 		// if(questionsMap.size() == 0) return;	
@@ -97,13 +97,17 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 					Answer answer = question.getAnswers().get(entry.getKey());
 					
 					if(answer == null) {
+						// TODO: This can happen only for user-submitted free text answers
+						// We should create a new Answer object and store it in the datastore
+						// and we should also add the answer object in the list of answers for the 
+						// parent Question object.
 						continue;
 					}
 					
 					double bits = 0.0d;
 					for(String userId : entry.getValue()){
-						if(avgUserBitsMap.containsKey(userId + "_" + quizID))
-							bits += avgUserBitsMap.get(userId + "_" + quizID);
+						if(userBitsPerAnswer.containsKey(userId + "_" + quizID))
+							bits += userBitsPerAnswer.get(userId + "_" + quizID);
 					}
 					answer.setBits(bits);
 					answer.setNumberOfPicks(Long.valueOf(entry.getValue().size()));
