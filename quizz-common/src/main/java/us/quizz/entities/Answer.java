@@ -27,11 +27,11 @@ public class Answer implements Serializable{
 
 	@Persistent
 	private String text;
-	// contains html to put on the website?
+	// contains the text/html to display
 
 	@Persistent
 	private Double score;
-	// represents value that is asociated with selecting this answer
+	// represents value that is associated with selecting this answer
 
 	@Persistent
 	private String kind;
@@ -60,6 +60,9 @@ public class Answer implements Serializable{
 	
 	@Persistent
 	private Double bits;
+	
+	@Persistent
+	private Double probCorrect;
 
 	public Answer(Long questionID, String quizID, String text,
 			Integer internalID) {

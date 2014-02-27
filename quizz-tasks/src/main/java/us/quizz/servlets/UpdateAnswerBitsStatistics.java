@@ -74,58 +74,75 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 	}
 	
 	private void updateStatistics(String quizID){
-		if(quizID != null && !quizID.isEmpty()){
-			List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID);
-			if(userAnswers != null){
-				Map<Long, Map<Integer, List<String>>> questionsMap = new HashMap<Long, Map<Integer,List<String>>>();
-				for(UserAnswer ua : userAnswers){
-					Map<Integer, List<String>> answersMap;
-					if(questionsMap.containsKey(ua.getQuestionID())){
-						answersMap = questionsMap.get(ua.getQuestionID());
-						if(answersMap.containsKey(ua.getAnswerID())){
-							answersMap.get(ua.getAnswerID()).add(ua.getUserid());
-						}else
-							answersMap.put(ua.getAnswerID(), new ArrayList<String>(Arrays.asList(ua.getUserid())));
-					}else{
-						answersMap = new HashMap<Integer, List<String>>();
-						answersMap.put(ua.getAnswerID(), new ArrayList<String>(Arrays.asList(ua.getUserid())));
-						
-						questionsMap.put(ua.getQuestionID(), answersMap);
+		if(quizID == null || quizID.isEmpty()) return;
+		
+		List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID);
+		if(userAnswers == null) return;
+			
+		Map<String, Double> avgUserBitsMap = getAvgBitsPerUserId(quizID);
+		
+		Map<Long, Map<Integer, List<String>>> questionsMap = getQuestionAnswerMap(userAnswers);
+		// if(questionsMap.size() == 0) return;	
+		
+		List<Key> keys = new ArrayList<Key>();
+		for(Long questionId : questionsMap.keySet()) {
+			keys.add(KeyFactory.createKey(Question.class.getSimpleName(), questionId));
+		}
+		
+		List<Question> questions = quizQuestionRepository.getQuizQuestionsByKeys(keys);
+		for(Question question : questions){
+			Map<Integer, List<String>> answersMap = questionsMap.get(question.getID());
+			for(Map.Entry<Integer, List<String>> entry : answersMap.entrySet()){
+				if(question.getAnswers() != null && entry.getKey()>=0 && question.getAnswers().size()>entry.getKey()){
+					Answer answer = question.getAnswers().get(entry.getKey());
+					
+					if(answer == null) {
+						continue;
 					}
-				}
-				
-				List<Key> keys = new ArrayList<Key>();
-				for(Long questionId : questionsMap.keySet())
-					keys.add(KeyFactory.createKey(Question.class.getSimpleName(), questionId));
-				
-				List<QuizPerformance> quizPerfomances = quizPerformanceRepository.getQuizPerformances(quizID);
-				Map<String, Double> quizPerfomancesMap = new HashMap<String, Double>();
-				for(QuizPerformance qp : quizPerfomances){
-					quizPerfomancesMap.put(qp.getUserid() + "_" + qp.getQuiz(), 
-							qp.getTotalanswers()==0 ? 0:qp.getScore()/qp.getTotalanswers());
-				}
-				
-				if(keys.size() != 0){
-					List<Question> questions = quizQuestionRepository.getQuizQuestionsByKeys(keys);
-					for(Question question : questions){
-						Map<Integer, List<String>> answersMap = questionsMap.get(question.getID());
-						for(Map.Entry<Integer, List<String>> entry : answersMap.entrySet()){
-							if(question.getAnswers() != null && entry.getKey()>=0 && question.getAnswers().size()>entry.getKey()){
-								Answer answer = question.getAnswers().get(entry.getKey());
-								if(answer != null){
-									double bits = 0.0d;
-									for(String userId : entry.getValue()){
-										if(quizPerfomancesMap.containsKey(userId + "_" + quizID))
-											bits += quizPerfomancesMap.get(userId + "_" + quizID);
-									}
-									answer.setBits(bits);
-									answer.setNumberOfPicks(Long.valueOf(entry.getValue().size()));
-								}
-							}
-						}
+					
+					double bits = 0.0d;
+					for(String userId : entry.getValue()){
+						if(avgUserBitsMap.containsKey(userId + "_" + quizID))
+							bits += avgUserBitsMap.get(userId + "_" + quizID);
 					}
+					answer.setBits(bits);
+					answer.setNumberOfPicks(Long.valueOf(entry.getValue().size()));
+				
 				}
 			}
-		}
+		}			
 	}
+
+	private Map<String, Double> getAvgBitsPerUserId(String quizID) {
+		Map<String, Double> avgUserBitsMap = new HashMap<String, Double>();
+		List<QuizPerformance> quizPerfomances = quizPerformanceRepository.getQuizPerformances(quizID);
+		for(QuizPerformance qp : quizPerfomances) {
+			double bits = qp.getTotalanswers()==0 ? 0:qp.getScore()/qp.getTotalanswers();
+			avgUserBitsMap.put(qp.getUserid() + "_" + qp.getQuiz(), bits);
+		}
+		return avgUserBitsMap;
+	}
+
+	private Map<Long, Map<Integer, List<String>>> getQuestionAnswerMap(
+			List<UserAnswer> userAnswers) {
+		Map<Long, Map<Integer, List<String>>> questionsMap = new HashMap<Long, Map<Integer,List<String>>>();
+		
+		for(UserAnswer ua : userAnswers) {
+			Map<Integer, List<String>> answersMap;
+			if(questionsMap.containsKey(ua.getQuestionID())){
+				answersMap = questionsMap.get(ua.getQuestionID());
+				if(answersMap.containsKey(ua.getAnswerID())){
+					answersMap.get(ua.getAnswerID()).add(ua.getUserid());
+				}else
+					answersMap.put(ua.getAnswerID(), new ArrayList<String>(Arrays.asList(ua.getUserid())));
+			}else{
+				answersMap = new HashMap<Integer, List<String>>();
+				answersMap.put(ua.getAnswerID(), new ArrayList<String>(Arrays.asList(ua.getUserid())));
+				
+				questionsMap.put(ua.getQuestionID(), answersMap);
+			}
+		}
+		return questionsMap;
+	}
+	
 }
