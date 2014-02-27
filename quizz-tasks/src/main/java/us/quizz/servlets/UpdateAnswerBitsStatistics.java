@@ -101,7 +101,8 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 				List<QuizPerformance> quizPerfomances = quizPerformanceRepository.getQuizPerformances(quizID);
 				Map<String, Double> quizPerfomancesMap = new HashMap<String, Double>();
 				for(QuizPerformance qp : quizPerfomances){
-					quizPerfomancesMap.put(qp.getUserid() + "_" + qp.getQuiz(), qp.getScore()/qp.getTotalanswers());
+					quizPerfomancesMap.put(qp.getUserid() + "_" + qp.getQuiz(), 
+							qp.getTotalanswers()==0 ? 0:qp.getScore()/qp.getTotalanswers());
 				}
 				
 				if(keys.size() != 0){
@@ -118,12 +119,12 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 											bits += quizPerfomancesMap.get(userId + "_" + quizID);
 									}
 									answer.setBits(bits);
+									answer.setNumberOfPicks(Long.valueOf(entry.getValue().size()));
 								}
 							}
 						}
 					}
 				}
-
 			}
 		}
 	}
