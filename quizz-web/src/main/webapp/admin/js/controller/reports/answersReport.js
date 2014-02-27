@@ -31,10 +31,27 @@ angular.module('quizz-admin').controller('AnswersReportController',
 	$scope.load = function(quizID){
 		reportService.loadAnswersReport($scope.quizID,
 			function(response) {
+				$scope.answersKind = $scope.getAnswersKind(response.items);
 				$scope.reportData = response.items;
 			},
 			function(error) {
 		});
+	};
+	
+	$scope.getAnswersKind = function(items){
+		var result = '';
+       	angular.forEach(items, function(item){	
+			if(item.answers && item.answers.length > 0){
+				var kind = item.answers[0].kind;
+				if(kind == 'selectable_not_gold' || kind == 'selectable_gold'){
+					result = 'SELECTABLE';
+				}else{
+					result = 'INPUT';
+				}
+				return;
+			}
+		});
+       	return result;
 	};
 	
 }]);

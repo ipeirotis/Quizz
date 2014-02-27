@@ -21,8 +21,8 @@
 <link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
 
 <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css?v=20140225213455">
-<link rel="stylesheet" type="text/css" href="css/style.css?v=20140225213455">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css?v=20140227170005">
+<link rel="stylesheet" type="text/css" href="css/style.css?v=20140227170005">
 
 <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -34,7 +34,7 @@
 <script src="/lib/angular-route.js" type="text/javascript"></script>
 <script src="/lib/angular-sanitize.js" type="text/javascript"></script>
 <script src="/lib/bootstrap.js" type="text/javascript"></script>
-<script src="js/all.js?v=20140225213455" type="text/javascript"></script>
+<script src="js/all.js?v=20140227170005" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
 
 </head>

@@ -6,12 +6,33 @@
 		   	<option ng-repeat="quiz in quizes" value="{{quiz.quizID}}">{{quiz.name}}</option>
 		</select>
 	</div>
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr answersheader></tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="question in reportData" answers></tr>
-		</tbody>
-	</table>
+	<ng-switch on="answersKind">
+		<table class="table table-bordered table-hover" ng-switch-when="SELECTABLE">
+			<thead>
+				<tr answersheader></tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="question in reportData" answers></tr>
+			</tbody>
+		</table>
+		
+		<table class="table table-bordered table-hover" ng-switch-when="INPUT">
+			<thead>
+				<tr>
+					<th>Question</th>
+					<th>Answer</th>
+					<th>Picks</th>
+					<th>Bits</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat='question in reportData'>
+				<tr ng-repeat='answer in question.answers'>
+					<td rowspan="{{question.answers.length}}" ng-show="$first" ng-bind-html="question.text"></td>
+					<td>{{answer.text}}</td>
+					<td>{{!answer.numberOfPicks? 0:answer.numberOfPicks}}</td>
+					<td>{{!answer.bits? 0:answer.bits.toFixed(2)}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</ng-switch>
 </div>
