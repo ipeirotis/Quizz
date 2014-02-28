@@ -21,8 +21,9 @@
 				<tr>
 					<th>Question</th>
 					<th>Answer</th>
-					<th>Picks</th>
-					<th>Bits</th>
+					<th>#Selected</th>
+					<th>Total IG</th>
+					<th>Prob. Correct</th>
 				</tr>
 			</thead>
 			<tbody ng-repeat='question in reportData'>
@@ -31,6 +32,7 @@
 					<td>{{answer.text}}</td>
 					<td>{{!answer.numberOfPicks? 0:answer.numberOfPicks}}</td>
 					<td>{{!answer.bits? 0:answer.bits.toFixed(2)}}</td>
+					<td>{{!answer.probCorrect? 0:answer.probCorrect.toFixed(2)}}</td>
 				</tr>
 			</tbody>
 		</table>

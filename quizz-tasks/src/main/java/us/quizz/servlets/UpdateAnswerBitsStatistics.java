@@ -128,6 +128,9 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 				answer.setBits(bits);
 				answer.setNumberOfPicks(Long.valueOf(userIds.size()));
 				
+				// NOTE: The computation of correctness below is applicable ONLY
+				// for multiple choice questions. For free-text answers, we need
+				// to use the Chinese Table process described by Dan Weld.
 				int n = answerUsers.keySet().size();
 				double priorlogit = Gamma.digamma(1) - Gamma.digamma(n-1);
 				double logit = priorlogit;
