@@ -42,8 +42,13 @@ public class ReportsEndpoint {
 		this.domainStatsRepository = domainStatsRepository;
 	}
 
-	@ApiMethod(name = "reports.answers", path="reports/answers")
-	public ArrayList<Question> getAnswerReport(@Named("quizID")String quizID) {
+	@ApiMethod(name = "reports.multiChoiceAnswers", path="reports/multiChoiceAnswers")
+	public ArrayList<Question> getMultiChoiceAnswersReport(@Named("quizID")String quizID) {
+		return quizQuestionRepository.getQuizQuestions(quizID);
+	}
+	
+	@ApiMethod(name = "reports.freeTextAnswers", path="reports/freeTextAnswers")
+	public ArrayList<Question> getFreeTextAnswersReport(@Named("quizID")String quizID) {
 		return quizQuestionRepository.getQuizQuestions(quizID);
 	}
 	

@@ -6,7 +6,7 @@ angular.module('quizz-admin').factory('reportService',
 	
     return {
     	loadAnswersReport: function(quizId, success, error) {
-    		var url = Config.api + '/reports/answers?quizID=' + quizId;
+    		var url = Config.api + '/reports/multiChoiceAnswers?quizID=' + quizId;
         	$http.get(url).success(success).error(error);
         },
     	loadScoreByBrowserReport: function(success, error) {

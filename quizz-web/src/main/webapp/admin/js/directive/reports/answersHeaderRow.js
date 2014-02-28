@@ -13,7 +13,7 @@ angular.module('quizz-admin').directive('answersheader', [function () {
 							count = scope.reportData[i].answers.length;
 					}
 					for(var j=0;j<count;j++){
-						tpl += '<th>Answer</th><th>Picks</th><th>Bits</th>';
+						tpl += '<th>Answer</th><th>Picks</th><th>Bits</th><th>probCorrect</th>';
 					}
 						element.html(tpl);
 				}

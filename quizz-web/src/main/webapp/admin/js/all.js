@@ -2,7 +2,7 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {	
 	$routeProvider
 	.when('/quizzes', {templateUrl: templates.quizzes, controller: 'QuizzesController'})
-	.when('/reports/answers', {templateUrl: templates.answersReport, controller: 'AnswersReportController', reloadOnSearch:false})
+	.when('/reports/multiChoiceAnswers', {templateUrl: templates.multiChoiceAnswersReport, controller: 'MultiChoiceAnswersReportController', reloadOnSearch:false})
 	.when('/reports/scoreByBrowser', {templateUrl: templates.scoreByBrowserReport, controller: 'ScoreByBrowserReportController', reloadOnSearch:false})
 	.when('/reports/scoreByDomain', {templateUrl: templates.scoreByDomainReport, controller: 'ScoreByDomainReportController', reloadOnSearch:false})
 	.when('/reports/contributionQuality', {templateUrl: templates.contributionQualityReport, controller: 'ContributionQualityReportController', reloadOnSearch:false})
@@ -25,7 +25,26 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 }]);angular.module('quizz-admin').controller('QuizzesController', 
 	['$scope', function ($scope) {
 	
-}]);angular.module('quizz-admin').controller('AnswersReportController', 
+}]);angular.module('quizz-admin').controller('ContributionQualityReportController', 
+	['$scope', 'reportService', function ($scope, reportService) {
+	
+	$scope.load = function(){
+		reportService.loadContributionQualityReport(
+			function(response) {
+				$scope.reportData = response.items;
+				$scope.readyToShow = true;
+			},
+			function(error) {
+		});
+	};
+	
+	$scope.load();
+	
+	$scope.toPercentage = function(value) {
+		return (100. * value).toFixed(0) + "%";
+	};
+	
+}]);angular.module('quizz-admin').controller('MultiChoiceAnswersReportController', 
 	['$scope', '$rootScope', '$routeParams', '$location', 'reportService',
 	 function ($scope, $rootScope, $routeParams, $location, reportService) {
 		
@@ -79,25 +98,6 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 			}
 		});
        	return result;
-	};
-	
-}]);angular.module('quizz-admin').controller('ContributionQualityReportController', 
-	['$scope', 'reportService', function ($scope, reportService) {
-	
-	$scope.load = function(){
-		reportService.loadContributionQualityReport(
-			function(response) {
-				$scope.reportData = response.items;
-				$scope.readyToShow = true;
-			},
-			function(error) {
-		});
-	};
-	
-	$scope.load();
-	
-	$scope.toPercentage = function(value) {
-		return (100. * value).toFixed(0) + "%";
 	};
 	
 }]);angular.module('quizz-admin').controller('ScoreByBrowserReportController', 
@@ -179,7 +179,7 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 							count = scope.reportData[i].answers.length;
 					}
 					for(var j=0;j<count;j++){
-						tpl += '<th>Answer</th><th>Picks</th><th>Bits</th>';
+						tpl += '<th>Answer</th><th>Picks</th><th>Bits</th><th>probCorrect</th>';
 					}
 						element.html(tpl);
 				}
@@ -195,7 +195,8 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 			angular.forEach(scope.question.answers, function(answer){
 			    tpl += '<td>' + answer.text + '</td><td>' 
 			    	+ (!answer.numberOfPicks? 0:answer.numberOfPicks) + '</td><td>'
-			    	+ (!answer.bits? 0:answer.bits.toFixed(2)) + '</td>';
+			    	+ (!answer.bits? 0:answer.bits.toFixed(2)) + '</td><td>'
+			    	+ (!answer.probCorrect? 0:answer.probCorrect.toFixed(2)) + '</td>';
 			});
 			element.html(tpl);
 		}
@@ -255,7 +256,7 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
 	
     return {
     	loadAnswersReport: function(quizId, success, error) {
-    		var url = Config.api + '/reports/answers?quizID=' + quizId;
+    		var url = Config.api + '/reports/multiChoiceAnswers?quizID=' + quizId;
         	$http.get(url).success(success).error(error);
         },
     	loadScoreByBrowserReport: function(success, error) {
@@ -295,7 +296,7 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
     };
 }]);angular.module('quizz-admin').constant('templates', {
 	quizzes: 'views/quizzes.html?v=1',
-	answersReport: 'views/reports/answersReport.html?v=1',
+	multiChoiceAnswersReport: 'views/reports/answersReport.html?v=1',
 	scoreByBrowserReport: 'views/reports/scoreByBrowserReport.html?v=1',
 	scoreByDomainReport: 'views/reports/scoreByDomainReport.html?v=1',
 	contributionQualityReport: 'views/reports/contributionQualityReport.html?v=1'

@@ -1,4 +1,4 @@
-angular.module('quizz-admin').controller('AnswersReportController', 
+angular.module('quizz-admin').controller('MultiChoiceAnswersReportController', 
 	['$scope', '$rootScope', '$routeParams', '$location', 'reportService',
 	 function ($scope, $rootScope, $routeParams, $location, reportService) {
 		

@@ -21,8 +21,8 @@
 <link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
 
 <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css?v=20140227170005">
-<link rel="stylesheet" type="text/css" href="css/style.css?v=20140227170005">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css?v=20140228193218">
+<link rel="stylesheet" type="text/css" href="css/style.css?v=20140228193218">
 
 <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -34,7 +34,7 @@
 <script src="/lib/angular-route.js" type="text/javascript"></script>
 <script src="/lib/angular-sanitize.js" type="text/javascript"></script>
 <script src="/lib/bootstrap.js" type="text/javascript"></script>
-<script src="js/all.js?v=20140227170005" type="text/javascript"></script>
+<script src="js/all.js?v=20140228193218" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
 
 </head>
@@ -78,7 +78,8 @@
 				<li data-match-route="/reports/([A-Za-z0-9]+)" class="dropdown">
 					<a href="" class="dropdown-toggle"	data-toggle="dropdown">Reports <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#/reports/answers">Answers</a></li>
+						<li><a href="#/reports/multiChoiceAnswers">Multi choice answers</a></li>
+						<li><a href="#/reports/freeTextAnswers">Free text answers</a></li>
 						<li><a href="#/reports/scoreByBrowser">Browsers</a></li>
 						<li><a href="#/reports/scoreByDomain">Domains</a></li>
 						<li><a href="#/reports/contributionQuality">Contribution quality</a></li>
