@@ -140,8 +140,9 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 						Double incorrect = userStatistics.get(userId + "_" + quizID)[1];
 						
 						// Adding pseudocounts for Bayesian prior
-						correct += 1;
-						incorrect += n-1;
+						// All users start with a uniform prior
+						correct++;
+						incorrect++;
 						
 						double bayesianLogit = Gamma.digamma(correct) - Gamma.digamma(incorrect);
 					
