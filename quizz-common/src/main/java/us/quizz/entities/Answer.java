@@ -61,6 +61,14 @@ public class Answer implements Serializable{
 	@Persistent
 	private Double bits;
 	
+	public Double getProbCorrect() {
+		return probCorrect;
+	}
+
+	public void setProbCorrect(Double probCorrect) {
+		this.probCorrect = probCorrect;
+	}
+
 	@Persistent
 	private Double probCorrect;
 
