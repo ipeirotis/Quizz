@@ -108,7 +108,7 @@ public class UpdateAnswerBitsStatistics extends HttpServlet {
 			List<String> allUsersForQuestion = questionsUsers.get(questionId);
 			Map<Integer, List<String>> answerUsers = questionsMap.get(questionId);
 			for (Integer answerId : answerUsers.keySet()) {
-				Answer answer = question.getAnswers().get(answerId);
+				Answer answer = answerId>0?question.getAnswers().get(answerId):null;
 				if(answer == null) {
 					// TODO: This can happen only for user-submitted free text answers
 					// We should create a new Answer object and store it in the datastore
