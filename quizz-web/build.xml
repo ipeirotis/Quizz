@@ -21,7 +21,7 @@
 			<regexp pattern="\?v=([0-9]+)&quot;"/>
 			<substitution expression="\?v=${tdate}&quot;"/>
 			<fileset dir="src/main/webapp/">
-				<include name="index.jsp"/>
+				<include name="index1.jsp"/>
 			</fileset>
 			<fileset dir="src/main/webapp/admin">
 				<include name="index.jsp"/>

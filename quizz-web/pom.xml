@@ -140,6 +140,25 @@
 		<outputDirectory>target/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
 			<plugins>
 				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+					<executions>
+						<execution>
+							<phase>generate-sources</phase>
+							<configuration>
+								<tasks>
+									<ant antfile="build.xml" target="concatenate"/>
+									<ant antfile="build.xml" target="concatenate-admin"/>
+									<ant antfile="build.xml" target="update-version"/>
+								</tasks>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
