@@ -33,8 +33,7 @@
 
 <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="/css/bootstrap-custom.css">
-<link rel="stylesheet" type="text/css"
-	href="/css/style.css?v=20140205142104">
+<link rel="stylesheet" type="text/css" href="/css/style.css">
 
 <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -47,7 +46,7 @@
 <script src="/lib/angular-route.js" type="text/javascript"></script>
 <script src="/lib/angular-sanitize.js" type="text/javascript"></script>
 <script src="/lib/bootstrap.js" type="text/javascript"></script>
-<script src="/js/all.js?v=20140205142104" type="text/javascript"></script>
+<script src="/js/all.js" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
 
 <!-- g+ sharing. -->
