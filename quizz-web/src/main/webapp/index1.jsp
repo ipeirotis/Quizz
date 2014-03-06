@@ -31,7 +31,7 @@
 	content="A set of quizzes that will assess your knowledge in various areas, and allow you to compare against others." />
 <meta property="og:site_name" content="Quizz.us" />
 
-<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="/css/bootstrap-custom.css">
 <link rel="stylesheet" type="text/css" href="/css/style.css">
 
@@ -39,13 +39,13 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 
-<script src="/lib/jquery.min.js" type="text/javascript"></script>
-<script src="/lib/jquery.cookie.js" type="text/javascript"></script>
-<script src="/lib/angular.js" type="text/javascript"></script>
-<script src="/lib/angular-resource.js" type="text/javascript"></script>
-<script src="/lib/angular-route.js" type="text/javascript"></script>
-<script src="/lib/angular-sanitize.js" type="text/javascript"></script>
-<script src="/lib/bootstrap.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-resource.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js" type="text/javascript"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
 <script src="/js/all.js" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
 

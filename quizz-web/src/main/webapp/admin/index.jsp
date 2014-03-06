@@ -20,7 +20,7 @@
 	href="/assets/72x72.png">
 <link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
 
-<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css?v=20140304175722">
 <link rel="stylesheet" type="text/css" href="css/style.css?v=20140304175722">
 
@@ -28,12 +28,12 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 
-<script src="/lib/jquery.min.js" type="text/javascript"></script>
-<script src="/lib/angular.js" type="text/javascript"></script>
-<script src="/lib/angular-resource.js" type="text/javascript"></script>
-<script src="/lib/angular-route.js" type="text/javascript"></script>
-<script src="/lib/angular-sanitize.js" type="text/javascript"></script>
-<script src="/lib/bootstrap.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-resource.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js" type="text/javascript"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
 <script src="js/all.js?v=20140304175722" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
 
