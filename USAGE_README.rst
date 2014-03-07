@@ -21,7 +21,7 @@ b. A free-text entry question
 
 Here is an example of creating a multiple choice entry::
 
-	$ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/question --data '{
+	$ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/question --header 'Content-Type: application/json; charset=utf-8' --data '{
 		"quizID": "'$QUIZ_ID'",
 		"text": "Question text goes here",
 		"weight": 1,
@@ -30,14 +30,13 @@ Here is an example of creating a multiple choice entry::
 			"kind": "selectable_not_gold"
 			}, {
 			"text": "Answer 2 - it is gold one but do not tell anyone",
-		"kind": "selectable_gold"
+			"kind": "selectable_gold"
 		}]}'
 
 Here is an example of creating a free-text entry. You will notice that we can put arbitrary HTML code in the question, and that we also upload a (set of) answers that are correct.::
 
-	$ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/question --header 'Content-Type: application/x-www-form-urlencoded; charset=utf-8'
-		--data '{ 
-			"quizID": $QUIZ_ID, 
+	$ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/question --header 'Content-Type: application/json; charset=utf-8' --data '{ 
+			"quizID": "'$QUIZ_ID'", 
 			"text": "How would you say <a target=\"_blank\" href=\"http://freebase.com/m/07ylj‎\">Venezuela</a> in Greek?", 
 			"weight": 1, 
 			"answers": [{ 
@@ -48,7 +47,7 @@ Here is an example of creating a free-text entry. You will notice that we can pu
 				"text": "Μπολιβαριανή Δημοκρατία της Βενεζουέλας", 
 				"kind": "input_text", 
 				"isGold": true 
-			}, 
+			} 
 		]}'
 	      	
 After uploading all the data, we also need to update the internal counters for 
