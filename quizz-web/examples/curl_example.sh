@@ -1,11 +1,11 @@
 #!/bin/bash
 
-API_URL=$1 # without trailing / e.g. http://localhost:8888/_ah/api/quizz/v1
+API_URL=$1 # without trailing / e.g. https://crowd-power.appspot.com/_ah/api/quizz/v1
 TASK_MODULE_URL=$2 # without trailing / e.g. http://localhost:50367
 QUIZ_ID=$3
 
 # create quiz
-curl "$API_URL/quiz" --data "quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored and removed in future"
+curl "$API_URL/addQuiz" --data "quizID=$QUIZ_ID&name=Some Quiz name for id $QUIZ_ID&text=This will be ignored and removed in future"
 
 # add question with multiple options
 curl "$API_URL/question" --header 'Content-Type: application/json; charset=utf-8' --data '{

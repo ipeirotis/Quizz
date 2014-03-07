@@ -11,7 +11,7 @@ import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.inject.Inject;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com", ownerName = "crowd-power.appspot.com", packagePath = "crowdquiz.endpoints"))
 public class TreatmentEndpoint {
 	
 	private TreatmentRepository treatmentRepository;
