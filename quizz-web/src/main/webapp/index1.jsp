@@ -48,12 +48,6 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
 <script src="/js/all.js" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
-
-<!-- g+ sharing. -->
-<script type="text/javascript"
-	src="https://apis.google.com/js/plusone.js">
-  {parsetags: 'explicit'}
-</script>
 </head>
 <%
 	boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
@@ -121,7 +115,6 @@
 
   ga('create', 'UA-42553914-1', 'quizz.us');
   ga('send', 'pageview');
-
 </script>
 
 </body>
