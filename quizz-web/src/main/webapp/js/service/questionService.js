@@ -27,7 +27,7 @@ angular.module('quizz').factory('questionService', ['$http', function($http){
         	});
         },
         challengeAnswer: function(params, success, error){
-        	$http.post(Config.api + '/addAnswerChallenge', $.param(params), options)
+        	$http.post(Config.api + '/addAnswerFeedback', $.param(params), options)
         		.success(success).error(error);
         }
     };
