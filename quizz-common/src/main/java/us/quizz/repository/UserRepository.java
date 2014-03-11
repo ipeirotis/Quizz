@@ -73,14 +73,14 @@ public class UserRepository extends BaseRepository<User>{
 	}
 
 	public User getOrCreate(String userid) {
-		User user = PMF.singleGetObjectById(User.class,
+		User user = singleGetObjectById(User.class,
 				User.generateKeyFromID(userid));
 		if (user == null) {
 			user = new User(userid);
 			Experiment exp = new Experiment();
 			exp.assignTreatments();
 			user.setExperiment(exp);
-			PMF.singleMakePersistent(user);
+			singleMakePersistent(user);
 		}
 		return user;
 	}

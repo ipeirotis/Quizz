@@ -30,7 +30,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 	public QuizPerformance getQuizPerformance(String quizid,
 			String userid) {
 		String key = "qp_" + quizid + "_" + userid;
-		return PMF.singleGetObjectByIdWithCaching(key, QuizPerformance.class,
+		return singleGetObjectByIdWithCaching(key, QuizPerformance.class,
 				QuizPerformance.generateKeyFromID(quizid, userid));
 	}
 
@@ -147,7 +147,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance>{
 
 	public void storeQuizPerformance(QuizPerformance qp) {
 		cacheQuizPerformance(qp);
-		PMF.singleMakePersistent(qp);
+		singleMakePersistent(qp);
 	}
 
 	public void cacheQuizPerformance(QuizPerformance qp) {

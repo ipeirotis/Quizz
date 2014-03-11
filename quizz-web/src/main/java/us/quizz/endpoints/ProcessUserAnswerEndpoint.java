@@ -34,12 +34,12 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
 public class ProcessUserAnswerEndpoint {
 	
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
 	
 	private UserRepository userRepository;
@@ -86,11 +86,11 @@ public class ProcessUserAnswerEndpoint {
 
 		List<Answer> answers = null;
 		Boolean isCorrect = false;
-		if (answerID != -1) {
+		if (!answerID.equals(-1)) {
 			action = "Submit";
 			Answer answer = answersRepository.getAnswer(questionID,
 					answerID);
-			if (answer.getKind().equals("input_text")) { // check in all
+			if ("input_text".equals(answer.getKind())) { // check in all
 															// possible answers
 				Question question = quizQuestionRepository
 						.getQuizQuestion(questionID);
@@ -134,8 +134,6 @@ public class ProcessUserAnswerEndpoint {
 		}
 
 		totalanswers += 1;
-		//String numCorrectAnswers = Integer.toString(correctanswers);
-		//String numTotalAnswers = Integer.toString(totalanswers);
 
 		List<Badge> newBadges = badgeRepository.checkForNewBadges(user, quizID,
 				correctanswers, totalanswers);
@@ -154,7 +152,7 @@ public class ProcessUserAnswerEndpoint {
 		UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
 				userInput, ipAddress, browser, referer, timestamp, isCorrect);
 		updateQuizPerformance(user, questionID);
-		
+
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("userAnswer", ua);
 		result.put("userAnswerFeedback", uaf);

@@ -7,11 +7,12 @@ import com.google.inject.Inject;
 
 public class AnswersRepository extends BaseRepository<Answer>{
 	
-	@Inject
 	QuizQuestionRepository quizQuestionRepository;
 	
-	public AnswersRepository() {
+	@Inject
+	public AnswersRepository(QuizQuestionRepository quizQuestionRepository) {
 		super(Answer.class);
+		this.quizQuestionRepository = quizQuestionRepository;
 	}
 	
 	@Override

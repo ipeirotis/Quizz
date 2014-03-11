@@ -79,7 +79,7 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer>{
 	public UserAnswer getUserAnswer(String questionID, String userID) {
 
 		String key = "useranswer_" + questionID + userID;
-		return PMF.singleGetObjectByIdWithCaching(key, UserAnswer.class,
+		return singleGetObjectByIdWithCaching(key, UserAnswer.class,
 				UserAnswer.generateKeyFromID(questionID, userID));
 	}
 
@@ -87,7 +87,7 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer>{
 			String userID) {
 
 		String key = "useranswerfeedback_" + questionID + userID;
-		return PMF.singleGetObjectByIdWithCaching(key,
+		return singleGetObjectByIdWithCaching(key,
 				UserAnswerFeedback.class,
 				UserAnswerFeedback.generateKeyFromID(questionID, userID));
 	}
@@ -113,6 +113,6 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer>{
 		String key = "useranswerfeedback_" + uaf.getQuestionID()
 				+ uaf.getUserid();
 		CachePMF.put(key, uaf);
-		PMF.singleMakePersistent(uaf);
+		singleMakePersistent(uaf);
 	}
 }

@@ -18,16 +18,16 @@ import com.google.appengine.api.datastore.Key;
 import com.google.inject.Inject;
 
 public class QuizRepository extends BaseRepository<Quiz>{
-	
-	@Inject
-	private QuizQuestionRepository quizQuestionRepository;
-	@Inject
+
 	private UserReferralRepository userReferralRepository;
-	@Inject
 	private QuizPerformanceRepository quizPerformanceRepository;
 
-	public QuizRepository() {
+	@Inject
+	public QuizRepository(UserReferralRepository userReferralRepository,
+			QuizPerformanceRepository quizPerformanceRepository) {
 		super(Quiz.class);
+		this.quizPerformanceRepository = quizPerformanceRepository;
+		this.userReferralRepository = userReferralRepository;
 	}
 	
 	@Override
@@ -102,11 +102,12 @@ public class QuizRepository extends BaseRepository<Quiz>{
 
 		PersistenceManager pm = PMF.getPM();
 		try {
-			Query q = quizQuestionRepository.getQuizGoldQuestionsQuery(pm,
-					quizID);
-			q.setResult("quizID");
-			List<?> results = (List<?>) q.executeWithMap(quizQuestionRepository
-					.getQuizGoldQuestionsParameters(quizID));
+			Query query = pm.newQuery(Question.class);
+			query.setFilter("quizID == quizParam && hasGoldAnswer==hasGoldParam");
+			query.declareParameters("String quizParam, Boolean hasGoldParam");
+			query.getFetchPlan().setFetchSize(1000);
+
+			List<?> results = (List<?>) query.execute(quizID, Boolean.TRUE);
 			Integer result = results.size();
 			CachePMF.put(key, result);
 			return result;

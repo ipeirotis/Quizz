@@ -2,6 +2,7 @@ package us.quizz.repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
@@ -9,6 +10,7 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import us.quizz.utils.CachePMF;
 import us.quizz.utils.PMF;
 
 import com.google.api.server.spi.response.CollectionResponse;
@@ -18,6 +20,8 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.base.Strings;
 
 public abstract class BaseRepository<T> {
+	
+	private static final Logger logger = Logger.getLogger(BaseRepository.class.getName());
 
 	private Class<T> cls;
 
@@ -97,7 +101,7 @@ public abstract class BaseRepository<T> {
 		if(getKey(item) == null)
 			return false;
 		else
-			return PMF.singleGetObjectById(cls, getKey(item)) != null;
+			return singleGetObjectById(cls, getKey(item)) != null;
 	}
 
 	public T insert(T item) {
@@ -157,15 +161,6 @@ public abstract class BaseRepository<T> {
 		return item;
 	}
 	
-	public T singleMakePersistent(T item) {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			return mgr.makePersistent(item);
-		} finally {
-			mgr.close();
-		}
-	}
-	
 	public T singleGetObjectByIdThrowing(Object key) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -195,5 +190,64 @@ public abstract class BaseRepository<T> {
 
 	public PersistenceManager getPersistenceManager() {
 		return PMF.getPM();
+	}
+
+	public void singleMakePersistent(Object... items) {
+		PersistenceManager pm = getPersistenceManager();
+		try {
+			pm.makePersistentAll(items);
+		} finally {
+			pm.close();
+		}
+	}
+
+	public T singleMakePersistent(T item) {
+		PersistenceManager pm = getPersistenceManager();
+		try {
+			return pm.makePersistent(item);
+		} finally {
+			pm.close();
+		}
+	}
+
+	public void makePersistentIterative(Object... items) {
+		PersistenceManager pm = getPersistenceManager();
+		try {
+			for (Object item : items) {
+				pm.makePersistent(item);
+			}
+		} finally {
+			pm.close();
+		}
+	}
+
+	public <T> T singleGetObjectById(Class<T> cls, Object key) {
+		try {
+			return singleGetObjectByIdThrowing(cls, key);
+		} catch (JDOObjectNotFoundException ex) {
+			logger.warning("PM: Didn't found object: " + cls.getCanonicalName()
+					+ " , key: " + key.toString());
+			return null;
+		}
+	}
+
+	public <T> T singleGetObjectByIdThrowing(Class<T> cls, Object key) {
+		PersistenceManager pm = getPersistenceManager();
+		try {
+			return pm.getObjectById(cls, key);
+		} finally {
+			pm.close();
+		}
+	}
+
+	public <T> T singleGetObjectByIdWithCaching(String cacheKey,
+			Class<T> cls, Object key) {
+		T item = CachePMF.get(cacheKey, cls);
+		if (item != null)
+			return item;
+		item = singleGetObjectById(cls, key);
+		if (item != null)
+			CachePMF.put(cacheKey, item);
+		return item;
 	}
 }

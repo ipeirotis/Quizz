@@ -6,7 +6,6 @@ import java.util.List;
 import us.quizz.entities.Badge;
 import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.User;
-import us.quizz.utils.PMF;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -28,7 +27,7 @@ public class BadgeRepository extends BaseRepository<Badge>{
 		for (Badge b : badges) {
 			BadgeAssignment ba = new BadgeAssignment(user.getUserid(),
 					b.getBadgename());
-			PMF.singleMakePersistent(ba);
+			singleMakePersistent(ba);
 		}
 		return badges;
 	}
@@ -63,18 +62,18 @@ public class BadgeRepository extends BaseRepository<Badge>{
 	}
 
 	public Badge getBadge(String name, String sname) {
-		Badge badge = PMF.singleGetObjectById(Badge.class,
+		Badge badge = singleGetObjectById(Badge.class,
 				Badge.generateKeyFromID(name));
 		if (badge == null) {
 			Badge newbadge = new Badge(name, sname);
-			PMF.singleMakePersistent(newbadge);
+			singleMakePersistent(newbadge);
 			badge = newbadge;
 		}
 		return badge;
 	}
 
 	public Boolean userHasBadge(User u, Badge b) {
-		BadgeAssignment ba = PMF.singleGetObjectById(
+		BadgeAssignment ba = singleGetObjectById(
 				BadgeAssignment.class,
 				BadgeAssignment.generateKeyFromUserBadge(u.getUserid(),
 						b.getBadgename()));

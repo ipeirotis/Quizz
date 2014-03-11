@@ -71,17 +71,17 @@ public class UserReferralRepository extends BaseRepository<UserReferal>{
 		ur.setReferer(referer);
 		ur.setDomain(UrlUtils.extractDomain(referer));
 
-		PMF.singleMakePersistent(ur);
+		singleMakePersistent(ur);
 		
 		if(ur.getDomain() != null){
 			DomainStats domainStats = 
-					PMF.singleGetObjectById(DomainStats.class, ur.getDomain());
+					singleGetObjectById(DomainStats.class, ur.getDomain());
 			
 			if(domainStats == null)
 				domainStats = new DomainStats(ur.getDomain(), 0, 0);
 			
 			domainStats.incUserCount();
-			PMF.singleMakePersistent(domainStats);
+			singleMakePersistent(domainStats);
 		}
 	}
 	

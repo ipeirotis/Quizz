@@ -21,11 +21,12 @@ import com.google.inject.Inject;
 
 public class QuizQuestionRepository extends BaseRepository<Question>{
 	
-	@Inject
 	QuizRepository quizRepository;
 	
-	public QuizQuestionRepository() {
+	@Inject
+	public QuizQuestionRepository(QuizRepository quizRepository) {
 		super(Question.class);
+		this.quizRepository = quizRepository;
 	}
 	
 	@Override
@@ -221,7 +222,7 @@ public class QuizQuestionRepository extends BaseRepository<Question>{
 	}
 
 	public void storeQuizQuestion(Question q) {
-		PMF.singleMakePersistent(q);
+		singleMakePersistent(q);
 	}
 
 	public void removeWithoutUpdates(Long questionID) {

@@ -1,16 +1,12 @@
 package us.quizz.servlets;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import us.quizz.entities.QuizPerformance;
-import us.quizz.entities.UserAnswer;
-import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.UserAnswerRepository;
+import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.utils.ServletUtils;
 
 import com.google.inject.Inject;
@@ -29,15 +25,12 @@ import com.google.inject.Singleton;
 @SuppressWarnings("serial")
 @Singleton
 public class UpdateUserQuizStatistics extends HttpServlet {
-	
-	private UserAnswerRepository userAnswerRepository;
-	private QuizPerformanceRepository quizPerformanceRepository;
+
+	private UserQuizStatisticsService userQuizStatisticsService;
 	
 	@Inject
-	public UpdateUserQuizStatistics(UserAnswerRepository userAnswerRepository,
-			QuizPerformanceRepository quizPerformanceRepository){
-		this.userAnswerRepository = userAnswerRepository;
-		this.quizPerformanceRepository = quizPerformanceRepository;
+	public UpdateUserQuizStatistics(UserQuizStatisticsService userQuizStatisticsService){
+		this.userQuizStatisticsService = userQuizStatisticsService;
 	}
 
 	@Override
@@ -47,24 +40,7 @@ public class UpdateUserQuizStatistics extends HttpServlet {
 		String quiz = req.getParameter("quizID");
 		String userid = req.getParameter("userid");
 
-		// QuizPerformance qp =
-		// QuizPerformanceRepository.getQuizPerformance(quiz, userid);
-		// if (qp==null) {
-		QuizPerformance qp = new QuizPerformance(quiz, userid);
-		// }
-		
-		List<UserAnswer> userAnswerList = userAnswerRepository.getUserAnswers(quiz, userid);
-		qp.computeCorrect(userAnswerList);
-
-		/*
-		 * if (qp.getTotalanswers()==0) {
-		 * QuizPerformanceRepository.deleteQuizPerformance(quiz, userid);
-		 * return; }
-		 */
-		List<QuizPerformance> quizPerformanceList = quizPerformanceRepository
-				.getQuizPerformancesByQuiz(quiz);
-		qp.computeRank(quizPerformanceList);
-		quizPerformanceRepository.storeQuizPerformance(qp);
+		userQuizStatisticsService.updateStatistics(quiz, userid);
 	}
 	
 }
