@@ -4,7 +4,7 @@ import sys
 from client import QuizzAPIClient
 
 API_URL = 'https://crowd-power.appspot.com/'
-WEB_URL = 'http://www.quizz.us/'
+WEB_URL = 'https://crowd-power.appspot.com/'
 
 if len(sys.argv) < 3:
   print 'Usage: python extract_questions_answers.py [quizz_id] [num_questions]'

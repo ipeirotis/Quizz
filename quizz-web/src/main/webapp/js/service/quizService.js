@@ -13,7 +13,7 @@ angular.module('quizz').factory('quizService',
     		var quizRequest;
     			
     		if(keys.length == 0) {
-    			quizRequest = $http.get(Config.api + '/quiz');
+    			quizRequest = $http.get(Config.api + '/listQuiz');
     		} else {
     			quizRequest = $q.when(this.getQuizesFromCache());
     		}

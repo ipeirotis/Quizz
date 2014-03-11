@@ -41,7 +41,7 @@ angular.module('quizz-admin').factory('reportService',
         	$http.get(url).success(success).error(error);
         },
     	listQuizes: function(success, error) {
-        	$http.get(Config.api + '/quiz').success(success).error(error);
+        	$http.get(Config.api + '/listQuiz').success(success).error(error);
         }
     };
 }]);

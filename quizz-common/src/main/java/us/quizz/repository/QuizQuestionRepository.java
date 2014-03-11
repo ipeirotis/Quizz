@@ -1,5 +1,15 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
+
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.entities.UserAnswer;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.Helper;
+import us.quizz.utils.PMF;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,18 +19,8 @@ import java.util.Set;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.entities.UserAnswer;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.Helper;
-import us.quizz.utils.PMF;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.inject.Inject;
-
 public class QuizQuestionRepository extends BaseRepository<Question>{
-	
+
 	QuizRepository quizRepository;
 	
 	@Inject
@@ -143,7 +143,7 @@ public class QuizQuestionRepository extends BaseRepository<Question>{
 	
 	protected Query getQuizSilverQuestionsQuery(PersistenceManager pm,
 			String quizID) {
-		String filter = "quizID == quizParam && hasSilverAnswer==hasSilverParam";
+		String filter = "quizID == quizParam && hasSilverAnswers==hasSilverParam";
 		String declaredParameters = "String quizParam, Boolean hasSilverParam";
 		return getQuestionQuery(pm, filter, declaredParameters);
 	}

@@ -63,7 +63,7 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "www.quizz.us", ownerName = "www.quizz.us", packagePath = "crowdquiz.endpoints"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com", ownerName = "crowd-power.appspot.com", packagePath = "crowdquiz.endpoints"))
 public class CampaignManagementEndpoint {
 	
 	@SuppressWarnings("unused")
