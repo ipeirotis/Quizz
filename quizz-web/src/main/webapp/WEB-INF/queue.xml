@@ -24,6 +24,7 @@
     <rate>50/s</rate>
     <bucket-size>50</bucket-size>
     <max-concurrent-requests>200</max-concurrent-requests>
+    <target>quizz-tasks</target>
   </queue>
 
   <queue>

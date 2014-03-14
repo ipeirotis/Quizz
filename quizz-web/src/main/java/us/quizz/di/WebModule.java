@@ -1,9 +1,8 @@
 package us.quizz.di;
 
-import com.google.inject.servlet.ServletModule;
-
 import us.quizz.servlets.DownloadUserAnswers;
-import us.quizz.servlets.api.UpdateUserQuizStatistics;
+
+import com.google.inject.servlet.ServletModule;
 
 public class WebModule extends ServletModule {
   @Override
@@ -11,6 +10,5 @@ public class WebModule extends ServletModule {
     super.configureServlets();
 
     serve("/admin/downloadUserAnswers").with(DownloadUserAnswers.class);
-    serve("/api/updateUserQuizStatistics").with(UpdateUserQuizStatistics.class);
   }
 }
