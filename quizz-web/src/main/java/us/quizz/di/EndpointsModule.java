@@ -13,6 +13,7 @@ import us.quizz.endpoints.QuizPerformanceEndpoint;
 import us.quizz.endpoints.ReportsEndpoint;
 import us.quizz.endpoints.SurvivalProbabilityEndpoint;
 import us.quizz.endpoints.TreatmentEndpoint;
+import us.quizz.endpoints.UpdateQuizCountsEndpoint;
 import us.quizz.endpoints.UserAnswerEndpoint;
 import us.quizz.endpoints.UserAnswerFeedbackEndpoint;
 import us.quizz.endpoints.UserEndpoint;
@@ -45,6 +46,7 @@ public class EndpointsModule extends GuiceSystemServiceServletModule {
 		serviceClasses.add(UserAnswerFeedbackEndpoint.class);
 		serviceClasses.add(UserEndpoint.class);
 		serviceClasses.add(UserReferalEndpoint.class);
+		serviceClasses.add(UpdateQuizCountsEndpoint.class);
 		serviceClasses.add(UtilEndpoint.class);
 		this.serveGuiceSystemServiceServlet("/_ah/spi/*", serviceClasses);
 	}

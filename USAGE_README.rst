@@ -72,7 +72,7 @@ Quizz (since we want to have a very responsive interface, we try to do a lot of
 computations 'offline') so that we can serve the quiz. Else, some of the
 endpoints won't work. So we call::
 
-  $ curl https://quizz-tasks.crowd-power.appspot.com/api/getQuizCounts?quizID=$QUIZ_ID&cache=no
+  $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/updateQuizCounts?quizID=$QUIZ_ID
 
 
 Creating Ad Campaign

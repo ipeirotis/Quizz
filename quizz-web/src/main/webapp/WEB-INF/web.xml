@@ -88,6 +88,7 @@
 		<init-param>
 			<param-name>services</param-name>
 			<param-value>
+				us.quizz.endpoints.UpdateQuizCountsEndpoint,
 				us.quizz.endpoints.ReportsEndpoint,
 				us.quizz.endpoints.ExplorationExploitationEndpoint,
 				us.quizz.endpoints.CampaignManagementEndpoint,
