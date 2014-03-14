@@ -1,5 +1,8 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -9,232 +12,232 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Question implements Serializable{
 
-	private static final long serialVersionUID = 1L;
-	
-	@Persistent
-	private String quizID;
+  private static final long serialVersionUID = 1L;
+  
+  @Persistent
+  private String quizID;
 
-	@Persistent
-	private Double weight;
+  @Persistent
+  private Double weight;
 
-	@Persistent
-	private String text;
+  @Persistent
+  private String text;
 
-	@Persistent
-	private Long adGroupId;
+  @Persistent
+  private Long adGroupId;
 
-	@Persistent
-	private Long adTextId;
+  @Persistent
+  private Long adTextId;
 
-	@Persistent
-	private Integer numberOfUserAnswers;
+  @Persistent
+  private Integer numberOfUserAnswers;
 
-	@Persistent
-	private Boolean hasUserAnswers;
+  @Persistent
+  private Boolean hasUserAnswers;
 
-	@Persistent
-	private Double totalUserScore;
+  @Persistent
+  private Double totalUserScore;
 
-	@Persistent
-	private Boolean hasGoldAnswer;
+  @Persistent
+  private Boolean hasGoldAnswer;
 
-	@Persistent
-	private Integer numberOfGoldAnswers;
+  @Persistent
+  private Integer numberOfGoldAnswers;
 
-	@Persistent
-	private Boolean hasSilverAnswers;
+  @Persistent
+  private Boolean hasSilverAnswers;
 
-	@Persistent
-	private Integer numberOfSilverAnswers;
+  @Persistent
+  private Integer numberOfSilverAnswers;
 
-	@Persistent
-	private Integer numberOfCorrentUserAnswers;
+  @Persistent
+  private Integer numberOfCorrentUserAnswers;
 
-	@Persistent(defaultFetchGroup = "true")
-	private ArrayList<Answer> answers;
+  @Persistent(defaultFetchGroup = "true")
+  private ArrayList<Answer> answers;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
-	
-	public Question(String quizID, String text, Double weight) {
-		this.quizID = quizID;
-		this.weight = weight;
-		this.text = text;
-		this.answers = new ArrayList<Answer>();
-	}
-	
-	public static Key generateKeyFromID(Long id) {
-		return KeyFactory.createKey(Question.class.getSimpleName(), id);
-	}
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
+  
+  public Question(String quizID, String text, Double weight) {
+    this.quizID = quizID;
+    this.weight = weight;
+    this.text = text;
+    this.answers = new ArrayList<Answer>();
+  }
+  
+  public static Key generateKeyFromID(Long id) {
+    return KeyFactory.createKey(Question.class.getSimpleName(), id);
+  }
 
-	public String getQuizID() {
-		return quizID;
-	}
+  public String getQuizID() {
+    return quizID;
+  }
 
-	public void setQuizID(String quizID) {
-		this.quizID = quizID;
-	}
+  public void setQuizID(String quizID) {
+    this.quizID = quizID;
+  }
 
-	public Integer getNumberOfGoldAnswers() {
-		return numberOfGoldAnswers;
-	}
+  public Integer getNumberOfGoldAnswers() {
+    return numberOfGoldAnswers;
+  }
 
-	public void setNumberOfGoldAnswers(Integer numberOfGoldAnswers) {
-		this.numberOfGoldAnswers = numberOfGoldAnswers;
-	}
+  public void setNumberOfGoldAnswers(Integer numberOfGoldAnswers) {
+    this.numberOfGoldAnswers = numberOfGoldAnswers;
+  }
 
-	public Integer getNumberOfSilverAnswers() {
-		return numberOfSilverAnswers;
-	}
+  public Integer getNumberOfSilverAnswers() {
+    return numberOfSilverAnswers;
+  }
 
-	public void setNumberOfSilverAnswers(Integer numberOfSilverAnswers) {
-		this.numberOfSilverAnswers = numberOfSilverAnswers;
-	}
+  public void setNumberOfSilverAnswers(Integer numberOfSilverAnswers) {
+    this.numberOfSilverAnswers = numberOfSilverAnswers;
+  }
 
-	public Boolean getHasGoldAnswer() {
-		return hasGoldAnswer;
-	}
+  public Boolean getHasGoldAnswer() {
+    return hasGoldAnswer;
+  }
 
-	public Boolean getHasSilverAnswers() {
-		return hasSilverAnswers;
-	}
+  public Boolean getHasSilverAnswers() {
+    return hasSilverAnswers;
+  }
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public Long getAdGroupId() {
-		return adGroupId;
-	}
+  public Long getAdGroupId() {
+    return adGroupId;
+  }
 
-	public Long getAdTextId() {
-		return adTextId;
-	}
+  public Long getAdTextId() {
+    return adTextId;
+  }
 
-	public Key getKey() {
-		return key;
-	}
+  public Key getKey() {
+    return key;
+  }
 
-	public Long getID() {
-		return key.getId();
-	}
+  public Long getID() {
+    return key.getId();
+  }
 
-	/**
-	 * @return the weight
-	 */
-	public Double getWeight() {
-		return weight;
-	}
+  /**
+   * @return the weight
+   */
+  public Double getWeight() {
+    return weight;
+  }
 
-	public void setAdGroupId(Long adGroupId) {
-		this.adGroupId = adGroupId;
-	}
+  public void setAdGroupId(Long adGroupId) {
+    this.adGroupId = adGroupId;
+  }
 
-	public void setAdTextId(Long adTextId) {
-		this.adTextId = adTextId;
-	}
+  public void setAdTextId(Long adTextId) {
+    this.adTextId = adTextId;
+  }
 
-	public String getText() {
-		return text;
-	}
+  public String getText() {
+    return text;
+  }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+  public void setText(String text) {
+    this.text = text;
+  }
 
-	public void setRelation(String quizID) {
-		this.quizID = quizID;
-	}
+  public void setRelation(String quizID) {
+    this.quizID = quizID;
+  }
 
-	public void setWeight(Double weight) {
-		this.weight = weight;
-	}
+  public void setWeight(Double weight) {
+    this.weight = weight;
+  }
 
-	public Boolean hasUserAnswers() {
-		return numberOfUserAnswers > 0;
-	}
+  public Boolean hasUserAnswers() {
+    return numberOfUserAnswers > 0;
+  }
 
-	public Integer getNumberOfUserAnswers() {
-		return numberOfUserAnswers;
-	}
+  public Integer getNumberOfUserAnswers() {
+    return numberOfUserAnswers;
+  }
 
-	public void setNumberOfUserAnswers(Integer numberOfUserAnswers) {
-		this.numberOfUserAnswers = numberOfUserAnswers;
-	}
+  public void setNumberOfUserAnswers(Integer numberOfUserAnswers) {
+    this.numberOfUserAnswers = numberOfUserAnswers;
+  }
 
-	public Integer getNumberOfCorrentUserAnswers() {
-		return numberOfCorrentUserAnswers;
-	}
+  public Integer getNumberOfCorrentUserAnswers() {
+    return numberOfCorrentUserAnswers;
+  }
 
-	public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
-		this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
-	}
+  public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
+    this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
+  }
 
-	public Double getTotalUserScore() {
-		return totalUserScore;
-	}
+  public Double getTotalUserScore() {
+    return totalUserScore;
+  }
 
-	public void setTotalUserScore(Double totalUserScore) {
-		this.totalUserScore = totalUserScore;
-	}
+  public void setTotalUserScore(Double totalUserScore) {
+    this.totalUserScore = totalUserScore;
+  }
 
-	public void setHasGoldAnswer(Boolean hasGoldAnswer) {
-		this.hasGoldAnswer = hasGoldAnswer;
-	}
+  public void setHasGoldAnswer(Boolean hasGoldAnswer) {
+    this.hasGoldAnswer = hasGoldAnswer;
+  }
 
-	public void setHasSilverAnswers(Boolean hasSilverAnswers) {
-		this.hasSilverAnswers = hasSilverAnswers;
-	}
+  public void setHasSilverAnswers(Boolean hasSilverAnswers) {
+    this.hasSilverAnswers = hasSilverAnswers;
+  }
 
-	public void setHasUserAnswers(Boolean hasUserAnswers) {
-		this.hasUserAnswers = hasUserAnswers;
-	}
+  public void setHasUserAnswers(Boolean hasUserAnswers) {
+    this.hasUserAnswers = hasUserAnswers;
+  }
 
-	public Boolean getHasUserAnswers() {
-		return hasUserAnswers;
-	}
+  public Boolean getHasUserAnswers() {
+    return hasUserAnswers;
+  }
 
-	public ArrayList<Answer> getAnswers() {
-		return answers;
-	}
+  public ArrayList<Answer> getAnswers() {
+    return answers;
+  }
 
-	public void setAnswers(ArrayList<Answer> answers) {
-		this.answers = answers;
-	}
+  public void setAnswers(ArrayList<Answer> answers) {
+    this.answers = answers;
+  }
 
-	public void addAnswer(Answer answer) {
-		answers.add(answer);
-	}
+  public void addAnswer(Answer answer) {
+    answers.add(answer);
+  }
 
-	public Answer getAnswer(Integer answerID) {
-		return answers.get(answerID);
-	}
+  public Answer getAnswer(Integer answerID) {
+    return answers.get(answerID);
+  }
 
-	public Answer goldAnswer() {
-		// check if there's any designate one of the golds as the feedback
-		// answer i.e. feedback_gold
-		for (Answer answer : answers) {
-			Boolean isGold = answer.getIsGold();
-			if (isGold != null && isGold
-					&& answer.getKind().equals("feedback_gold")) {
-				return answer;
-			}
-		}
-		// if no feedback gold is there return first gold answer
-		for (Answer answer : answers) {
-			Boolean isGold = answer.getIsGold();
-			if (isGold != null && isGold) {
-				return answer;
-			}
-		}
-		throw new IllegalArgumentException(
-				"This question doesn't have gold answer");
-	}
+  public Answer goldAnswer() {
+    // check if there's any designate one of the golds as the feedback
+    // answer i.e. feedback_gold
+    for (final Answer answer : answers) {
+      if (answer.isGold() && answer.getKind().equals("feedback_gold")) {
+        return answer;
+      }
+    }
+    // if no feedback gold is there return first gold answer
+    for (final Answer answer : answers) {
+      if (answer.isGold()) {
+        return answer;
+      }
+    }
+    // If no gold answer, return silver answer.
+    for (final Answer answer : answers) {
+      if (answer.getKind().equals("silver")) {
+        return answer;
+      }
+    }
+    throw new IllegalArgumentException(
+        "This question doesn't have gold answer");
+  }
 }

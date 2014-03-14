@@ -9,7 +9,7 @@
 	was <span class="label label-danger">incorrect</span>!
 </div>
 <div class="alert alert-success" ng-show="feedback.isCorrect == false">
-	The correct answer was <span class="label label-success">{{feedback.correctAnswerText}}</span>.
+	{{feedbackMessage}} <span class="label label-success">{{feedback.correctAnswerText}}</span>.
 	<button class="btn btn-default btn-xs" ng-click="challengeAnswer()">Challenge
 		the answer</button>
 </div>

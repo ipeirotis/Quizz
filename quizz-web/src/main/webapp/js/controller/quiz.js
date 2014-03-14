@@ -10,15 +10,22 @@ angular.module('quizz').controller('QuizController',
      });
 
      $scope.fetchQuestions = function() {
-       questionService.list($scope.numOfQuestions, $routeParams.quizId,
-         function(response) {
-           workflowService.setQuestions(response);
+       // If we don't have questions set in the workflowService, fetch them.
+       if (!workflowService.hasQuestions()) {
+         questionService.list($scope.numOfQuestions, $routeParams.quizId,
+           function(response) {
+             workflowService.setQuestions(response);
 
-           $scope.currentQuestion = workflowService.getCurrentQuestion();
-           $scope.readyToShow = true;
-         },
-         function(error) {
-       });
+             $scope.currentQuestion = workflowService.getNewCurrentQuestion();
+             $scope.readyToShow = true;
+           },
+           function(error) {
+         });
+       } else {
+         // Else, reuse the existing questions.
+         $scope.currentQuestion = workflowService.getNewCurrentQuestion();
+         $scope.readyToShow = true;
+       }
      };
 
      $scope.fetchQuestions();
@@ -65,7 +72,7 @@ angular.module('quizz').controller('QuizController',
      };
 
      $scope.getGaType = function(answerKind) {
-       if (answerKind == 'selectable_gold') {
+       if (answerKind == 'selectable_gold' || answerKind == 'silver') {
          return 'multiple-choice-correct';
        } else if (answerKind == 'selectable_not_gold') {
          return 'multiple-choice-incorrect';
@@ -76,7 +83,8 @@ angular.module('quizz').controller('QuizController',
 
      $scope.filterSelectable = function(answer) {
        return answer.kind == 'selectable_gold' ||
-              answer.kind == 'selectable_not_gold';
+              answer.kind == 'selectable_not_gold' ||
+              answer.kind == 'silver';
      };
 
      $scope.filterNotSelectable = function(answer) {

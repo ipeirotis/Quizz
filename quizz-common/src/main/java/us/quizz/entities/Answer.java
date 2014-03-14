@@ -1,5 +1,10 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import java.io.Serializable;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -8,237 +13,238 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Answer implements Serializable{
+  private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key id;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key id;
+  @Persistent
+  private Integer internalID;
 
-	@Persistent
-	private Integer internalID;
+  @Persistent
+  private String text;
+  // contains the text/html to display
 
-	@Persistent
-	private String text;
-	// contains the text/html to display
+  @Persistent
+  private Double score;
+  // represents value that is associated with selecting this answer
 
-	@Persistent
-	private Double score;
-	// represents value that is associated with selecting this answer
+  @Persistent
+  private String kind;
+  // used to identify what to expect in metadata and how to interpret score
 
-	@Persistent
-	private String kind;
-	// used to identify what to expect in metadata and how to interpret score
+  @Persistent
+  private String source;
 
-	@Persistent
-	private String source;
+  @Persistent
+  private JsonObject metadata;
 
-	@Persistent
-	private JsonObject metadata;
+  @Persistent
+  private Long questionID;
 
-	@Persistent
-	private Long questionID;
+  @Persistent
+  private String quizID;
 
-	@Persistent
-	private String quizID;
+  @Persistent
+  private Boolean isGold;
 
-	@Persistent
-	private Boolean isGold;
+  @Persistent
+  private Double probability;
+  
+  @Persistent
+  private Long numberOfPicks;
+  
+  @Persistent
+  private Double bits;
+  
+  public Double getProbCorrect() {
+    return probCorrect;
+  }
 
-	@Persistent
-	private Double probability;
-	
-	@Persistent
-	private Long numberOfPicks;
-	
-	@Persistent
-	private Double bits;
-	
-	public Double getProbCorrect() {
-		return probCorrect;
-	}
+  public void setProbCorrect(Double probCorrect) {
+    this.probCorrect = probCorrect;
+  }
 
-	public void setProbCorrect(Double probCorrect) {
-		this.probCorrect = probCorrect;
-	}
+  @Persistent
+  private Double probCorrect;
 
-	@Persistent
-	private Double probCorrect;
+  public Answer(Long questionID, String quizID, String text,
+      Integer internalID) {
+    this.questionID = questionID;
+    this.quizID = quizID;
+    this.text = text;
+    this.internalID = internalID;
+    this.id = generateKeyFromID(questionID, internalID);
+  }
+  
+  public static String generateKeyID(Long questionID, Integer internalID) {
+    return "id_" + questionID + "_" + internalID;
+  }
 
-	public Answer(Long questionID, String quizID, String text,
-			Integer internalID) {
-		this.questionID = questionID;
-		this.quizID = quizID;
-		this.text = text;
-		this.internalID = internalID;
-		this.id = generateKeyFromID(questionID, internalID);
-	}
-	
-	public static String generateKeyID(Long questionID, Integer internalID) {
-		return "id_" + questionID + "_" + internalID;
-	}
+  public static Key generateKeyFromID(Long questionID, Integer internalID) {
+    return generateKeyFromKeyID(generateKeyID(questionID, internalID));
+  }
 
-	public static Key generateKeyFromID(Long questionID, Integer internalID) {
-		return generateKeyFromKeyID(generateKeyID(questionID, internalID));
-	}
+  public static Key generateKeyFromKeyID(String keyID) {
+    return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
+  }
 
-	public static Key generateKeyFromKeyID(String keyID) {
-		return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
-	}
+  public Key getID() {
+    return id;
+  }
 
-	public Key getID() {
-		return id;
-	}
+  public Integer getInternalID() {
+    return internalID;
+  }
 
-	public Integer getInternalID() {
-		return internalID;
-	}
+  public void setInternalID(Integer internalID) {
+    this.internalID = internalID;
+  }
 
-	public void setInternalID(Integer internalID) {
-		this.internalID = internalID;
-	}
+  public String getText() {
+    return text;
+  }
 
-	public String getText() {
-		return text;
-	}
+  public void setText(String text) {
+    this.text = text;
+  }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+  public Double getScore() {
+    return score;
+  }
 
-	public Double getScore() {
-		return score;
-	}
+  public void setScore(Double score) {
+    this.score = score;
+  }
 
-	public void setScore(Double score) {
-		this.score = score;
-	}
+  public String getKind() {
+    return kind;
+  }
 
-	public String getKind() {
-		return kind;
-	}
+  public void setKind(String kind) {
+    this.kind = kind;
+  }
 
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
+  public void setMetadata(JsonObject metadata) {
+    this.metadata = metadata;
+  }
 
-	public void setMetadata(JsonObject metadata) {
-		this.metadata = metadata;
-	}
+  protected JsonPrimitive getPrimitiveMD(String key) {
+    return metadata.getAsJsonPrimitive(key);
+  }
 
-	protected JsonPrimitive getPrimitiveMD(String key) {
-		return metadata.getAsJsonPrimitive(key);
-	}
+  public String getStringMetadata(String key) {
+    return getPrimitiveMD(key).getAsString();
+  }
 
-	public String getStringMetadata(String key) {
-		return getPrimitiveMD(key).getAsString();
-	}
+  public int getIntegerMetadata(String key) {
+    return getPrimitiveMD(key).getAsInt();
+  }
 
-	public int getIntegerMetadata(String key) {
-		return getPrimitiveMD(key).getAsInt();
-	}
+  public boolean getBoolMetadata(String key) {
+    return getPrimitiveMD(key).getAsBoolean();
+  }
 
-	public boolean getBoolMetadata(String key) {
-		return getPrimitiveMD(key).getAsBoolean();
-	}
+  public long getLongMetadata(String key) {
+    return getPrimitiveMD(key).getAsLong();
+  }
 
-	public long getLongMetadata(String key) {
-		return getPrimitiveMD(key).getAsLong();
-	}
+  public boolean isSilver() {
+    return probability != null;
+  }
 
-	public boolean isSilver() {
-		return probability != null;
-	}
+  public Double getProbability() {
+    return probability;
+  }
 
-	public Double getProbability() {
-		return probability;
-	}
+  public void setProbability(Double probability) {
+    this.probability = probability;
+  }
 
-	public void setProbability(Double probability) {
-		this.probability = probability;
-	}
+  public void setSource(String source) {
+    this.source = source;
+  }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+  public void setQuizID(String quizID) {
+    this.quizID = quizID;
+  }
 
-	public void setQuizID(String quizID) {
-		this.quizID = quizID;
-	}
+  public void setQuestionID(Long questionID) {
+    this.questionID = questionID;
+  }
 
-	public void setQuestionID(Long questionID) {
-		this.questionID = questionID;
-	}
+  public Boolean getIsGold() {
+    return isGold;
+  }
 
-	public Boolean getIsGold() {
-		return isGold;
-	}
+  public void setIsGold(Boolean isGold) {
+    this.isGold = isGold;
+  }
 
-	public void setIsGold(Boolean isGold) {
-		this.isGold = isGold;
-	}
+  public boolean isGold() {
+    return isGold != null && isGold;
+  }
 
-	public String getSource() {
-		return source;
-	}
+  public String getSource() {
+    return source;
+  }
 
-	public JsonObject getMetadata() {
-		return metadata;
-	}
+  public JsonObject getMetadata() {
+    return metadata;
+  }
 
-	public Long getQuestionID() {
-		return questionID;
-	}
+  public Long getQuestionID() {
+    return questionID;
+  }
 
-	public String getQuizID() {
-		return quizID;
-	}
+  public String getQuizID() {
+    return quizID;
+  }
 
-	public void setId(Key id) {
-		this.id = id;
-	}
+  public void setId(Key id) {
+    this.id = id;
+  }
 
-	public boolean checkIfCorrect(String userInput) {
-		if (kind.equals("feedback_gold")) {
-			return true;
-		}
-		if (kind.startsWith("selectable_")) {
-			return kind.equals("selectable_gold");
-		}
-		if (kind.equals("input_text")) {
-			return text.equals(userInput);
-		}
-		throw new UnsupportedOperationException("Undefined correctness for: "
-				+ kind);
-	}
+  public boolean checkIfCorrect(String userInput) {
+    if (kind.equals("feedback_gold")) {
+      return true;
+    }
+    if (kind.startsWith("selectable_")) {
+      return kind.equals("selectable_gold");
+    }
+    if (kind.equals("input_text")) {
+      return text.equals(userInput);
+    }
+    if (kind.equals("silver")) {
+      return true;
+    }
+    throw new UnsupportedOperationException("Undefined correctness for: "
+        + kind);
+  }
 
-	public String userAnswerText(String userInput) {
-		if (kind.equals("input_text")) {
-			return userInput;
-		}
-		return text;
-	}
+  public String userAnswerText(String userInput) {
+    if (kind.equals("input_text")) {
+      return userInput;
+    }
+    return text;
+  }
 
-	public Long getNumberOfPicks() {
-		return numberOfPicks;
-	}
+  public Long getNumberOfPicks() {
+    return numberOfPicks;
+  }
 
-	public void setNumberOfPicks(Long numberOfPicks) {
-		this.numberOfPicks = numberOfPicks;
-	}
+  public void setNumberOfPicks(Long numberOfPicks) {
+    this.numberOfPicks = numberOfPicks;
+  }
 
-	public Double getBits() {
-		return bits;
-	}
+  public Double getBits() {
+    return bits;
+  }
 
-	public void setBits(Double bits) {
-		this.bits = bits;
-	}
+  public void setBits(Double bits) {
+    this.bits = bits;
+  }
 }
