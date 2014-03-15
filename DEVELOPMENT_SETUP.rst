@@ -39,12 +39,18 @@ If you are getting *Out of memory* then you should change option *instances* to 
 Deploy
 ~~~~~~
 
-In order to deploy version that is in current dir just type::
+To deploy the version onto the AppEngine as a dev version, use deploy_dev.sh:
 
-  $ cd quizz-ear/
-  $ mvn appengine:update
+  $ ./deploy_dev.sh $VERSION_ID
 
-It will open new tab in your browser with page containing generated code.
+where $VERSION_ID is a new version id (not existing in the AppEngine yet) to be
+used to identify the development version.
+
+It might open new tab in your browser with page containing generated code.
 You have to paste this code into console in order to proceed with deploy.
 
+Once you have tested that the dev version works as expected, you can switch
+the default version to be the dev version on AppEngine admin interface.
 
+To test & switch to default version, use the admin interface at:
+  Main -> version.
