@@ -1,5 +1,8 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import java.io.Serializable;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -8,69 +11,64 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class DomainStats implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+public class DomainStats implements Serializable {
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  private static final long serialVersionUID = 1L;
 
-	@Persistent
-	private String domain;
-	
-	@Persistent
-	private long userCount = 0;
-	
-	@Persistent
-	private double userScores = 0;
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	public DomainStats(String domain, long userCount, double userScores) {
-		this.key = KeyFactory.createKey(DomainStats.class.getSimpleName(), domain);
-		this.domain = domain;
-		this.userCount = userCount;
-		this.userScores = userScores;
-	}
+  @Persistent
+  private String domain;
 
-	public Key getKey() {
-		return key;
-	}
+  @Persistent
+  private long userCount = 0;
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+  @Persistent
+  private double userScores = 0;
 
-	public long getUserCount() {
-		return userCount;
-	}
+  public DomainStats(String domain, long userCount, double userScores) {
+    this.key = KeyFactory.createKey(DomainStats.class.getSimpleName(), domain);
+    this.domain = domain;
+    this.userCount = userCount;
+    this.userScores = userScores;
+  }
 
-	public void setUserCount(long userCount) {
-		this.userCount = userCount;
-	}
+  public Key getKey() {
+    return key;
+  }
 
-	public double getUserScores() {
-		return userScores;
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public void setUserScores(double userScores) {
-		this.userScores = userScores;
-	}
+  public long getUserCount() {
+    return userCount;
+  }
 
-	public String getDomain() {
-		return domain;
-	}
+  public void setUserCount(long userCount) {
+    this.userCount = userCount;
+  }
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-	
-	public void incUserCount() {
-		this.userCount++;
-	}
-	
+  public double getUserScores() {
+    return userScores;
+  }
 
+  public void setUserScores(double userScores) {
+    this.userScores = userScores;
+  }
+
+  public String getDomain() {
+    return domain;
+  }
+
+  public void setDomain(String domain) {
+    this.domain = domain;
+  }
+
+  public void incUserCount() {
+    this.userCount++;
+  }
 }

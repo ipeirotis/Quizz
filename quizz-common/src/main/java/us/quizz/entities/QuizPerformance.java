@@ -1,5 +1,10 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
+import us.quizz.utils.Helper;
+
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.List;
@@ -10,11 +15,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import us.quizz.utils.Helper;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 /**
  * Keeps track of the performance of a user within a Quiz. This is a "caching"
  * object that aggregates the results from the underlying UserAnswer objects. In
@@ -22,7 +22,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * given user submitted for the quiz, the "score" of the user (the Bayesian
  * Information Gain compared to random choice) and the relative rank of the user
  * compared to other users.
- * 
+ *
  * The two key functions are the compute and computeRank. The first one is a
  * relatively lightweight function that goes through all the "UserAnswer"
  * objects for the user-quiz combination, and examine the number of correct and
@@ -30,304 +30,270 @@ import com.google.appengine.api.datastore.KeyFactory;
  * a comparison of the user scores against the scores of all the other users
  * that participated in the quiz, and computes the relative rank of the user
  * within the group.
- * 
- * @author ipeirotis
- * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class QuizPerformance implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
+  public static Key generateKeyFromID(String quiz, String userid) {
+    return KeyFactory.createKey(QuizPerformance.class.getSimpleName(),
+        "id_" + userid + "_" + quiz);
+  }
 
-	public static Key generateKeyFromID(String quiz, String userid) {
-		return KeyFactory.createKey(QuizPerformance.class.getSimpleName(),
-				"id_" + userid + "_" + quiz);
-	}
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  // The userid of the user
+  @Persistent
+  String userid;
 
-	// The userid of the user
-	@Persistent
-	String userid;
+  // The id of the quiz
+  @Persistent
+  String quiz;
 
-	// The id of the quiz
-	@Persistent
-	String quiz;
+  // The number of answers given by the user
+  @Persistent
+  Integer totalanswers;
 
-	// The number of answers given by the user
-	@Persistent
-	Integer totalanswers;
+  // The number of correct answers given by the user
+  @Persistent
+  Integer correctanswers;
 
-	// The number of correct answers given by the user
-	@Persistent
-	Integer correctanswers;
-	
-	// The number of incorrect answers given by the user
-	@Persistent
-	Integer incorrectanswers;
+  // The number of incorrect answers given by the user
+  @Persistent
+  Integer incorrectanswers;
 
-	// The total information gain by this user. This is the total number of
-	// answers given (excluding the "I do not know" answers)
-	// multiplied with the Bayesian Information Gain.
-	@Persistent
-	Double percentageCorrect;
+  // The total information gain by this user. This is the total number of
+  // answers given (excluding the "I do not know" answers)
+  // multiplied with the Bayesian Information Gain.
+  @Persistent
+  Double percentageCorrect;
 
-	// The total information gain by this user. This is the total number of
-	// answers given (excluding the "I do not know" answers)
-	// multiplied with the Bayesian Information Gain.
-	@Persistent
-	Double score;
+  // The total information gain by this user. This is the total number of
+  // answers given (excluding the "I do not know" answers)
+  // multiplied with the Bayesian Information Gain.
+  @Persistent
+  Double score;
 
-	// The total information gain by this user. This is the total number of
-	// answers given (excluding the "I do not know" answers)
-	// multiplied with the Bayesian Information Gain.
-	@Persistent
-	Double bayes_infogain;
+  // The total information gain by this user. This is the total number of
+  // answers given (excluding the "I do not know" answers)
+  // multiplied with the Bayesian Information Gain.
+  @Persistent
+  Double bayes_infogain;
 
-	// The (frequentist) total information gain by this user. This is the total
-	// number of
-	// answers given (excluding the "I do not know" answers)
-	// multiplied with the Information Gain, computed in a frequentist way.
-	@Persistent
-	Double freq_infogain;
+  // The (frequentist) total information gain by this user. This is the total
+  // number of answers given (excluding the "I do not know" answers)
+  // multiplied with the Information Gain, computed in a frequentist way.
+  @Persistent
+  Double freq_infogain;
 
-	// The Bayesian information gain by this user, computed in an LCB fashion.
-	// This is the total number of
-	// answers given (excluding the "I do not know" answers)
-	// multiplied with the Bayesian Information Gain minus one standard
-	// deviation.
-	@Persistent
-	Double lcb_infogain;
+  // The Bayesian information gain by this user, computed in an LCB fashion.
+  // This is the total number of answers given (excluding the "I do not know" answers)
+  // multiplied with the Bayesian Information Gain minus one standard deviation.
+  @Persistent
+  Double lcb_infogain;
 
-	// The rank across the IG score
-	@Persistent
-	Integer rankScore;
+  // The rank across the IG score
+  @Persistent
+  Integer rankScore;
 
-	// The number of other users that participated in the same quiz
-	@Persistent
-	Integer totalUsers;
+  // The number of other users that participated in the same quiz
+  @Persistent
+  Integer totalUsers;
 
-	public QuizPerformance(String quiz, String userid) {
-		this.key = QuizPerformance.generateKeyFromID(quiz, userid);
-		this.userid = userid;
-		this.quiz = quiz;
-		this.totalanswers = 0;
-		this.correctanswers = 0;
-		this.incorrectanswers = 0;
-		this.score = 0.0;
-	}
+  public QuizPerformance(String quiz, String userid) {
+    this.key = QuizPerformance.generateKeyFromID(quiz, userid);
+    this.userid = userid;
+    this.quiz = quiz;
+    this.totalanswers = 0;
+    this.correctanswers = 0;
+    this.incorrectanswers = 0;
+    this.score = 0.0;
+  }
 
-	public void computeCorrect(List<UserAnswer> results) {
-		
-		int c = 0;
-		int t = 0;
-		for (UserAnswer ua : results) {
-			Boolean correct = ua.getIsCorrect();
+  public void computeCorrect(List<UserAnswer> results) {
+    int c = 0;
+    int t = 0;
+    for (UserAnswer ua : results) {
+      Boolean correct = ua.getIsCorrect();
+      if (ua.getAction().equals("Submit")) {
+        t++;
+      }
 
-			/*
-			 * if (ua.getAnswerID() == -1) { // free text input if
-			 * (ua.getUserInput() == null || ua.getUserInput().length()<=1) {
-			 * ua.setAction("I don't know");
-			 * UserAnswerRepository.storeUserAnswer(ua); } } else {
-			 * ua.setAction("Submit"); UserAnswerRepository.storeUserAnswer(ua);
-			 * }
-			 * 
-			 * 
-			 * if (correct == null) { Answer answer =
-			 * PMF.singleGetObjectById(Answer.class, ua.getAnswerID()); correct
-			 * = answer.getIsGold(); ua.setIsCorrect(correct);
-			 * UserAnswerRepository.storeUserAnswer(ua); }
-			 */
+      if (correct) {
+        c++;
+      }
+    }
+    this.correctanswers = c;
+    this.totalanswers = t;
+    this.incorrectanswers = t - c;
 
-			if (ua.getAction().equals("Submit")) {
-				t++;
-			}
+    int numberOfMultipleChoiceOptions = 4;
 
-			if (correct) {
-				c++;
-			}
-		}
-		this.correctanswers = c;
-		this.totalanswers = t;
-		this.incorrectanswers = t - c;
+    double meanInfoGainFrequentist = 0;
+    double meanInfoGainBayes = 0;
+    double varInfoGainBayes = 0;
+    try {
+      meanInfoGainFrequentist = Helper.getInformationGain(
+          getPercentageCorrect(), numberOfMultipleChoiceOptions);
+      meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
+          this.correctanswers,
+          this.totalanswers - this.correctanswers,
+          numberOfMultipleChoiceOptions);
+      varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
+          this.correctanswers,
+          this.totalanswers - this.correctanswers,
+          numberOfMultipleChoiceOptions);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-		int numberOfMultipleChoiceOptions = 4;
+    this.freq_infogain = this.totalanswers * meanInfoGainFrequentist;
+    this.bayes_infogain = this.totalanswers * meanInfoGainBayes;
+    this.lcb_infogain = this.totalanswers
+        * (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
+    if (Double.isNaN(this.lcb_infogain) || this.lcb_infogain < 0) {
+      this.lcb_infogain = 0.0;
+    }
+  }
 
-		double meanInfoGainFrequentist = 0;
-		double meanInfoGainBayes = 0;
-		double varInfoGainBayes = 0;
-		try {
-			meanInfoGainFrequentist = Helper.getInformationGain(
-					getPercentageCorrect(), numberOfMultipleChoiceOptions);
-			meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
-					this.correctanswers, this.totalanswers
-							- this.correctanswers,
-					numberOfMultipleChoiceOptions);
-			varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
-					this.correctanswers, this.totalanswers
-							- this.correctanswers,
-					numberOfMultipleChoiceOptions);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+  public void computeRank(List<QuizPerformance> results) {
+    this.totalUsers = results.size();
+    int higherScore = 0;
+    for (QuizPerformance qp : results) {
+      if (qp.userid.equals(this.userid)) {
+        continue;
+      }
+      if (qp.getScore() > this.getScore()) {
+        higherScore++;
+      }
+    }
+    this.rankScore = higherScore + 1;
+  }
 
-		this.freq_infogain = this.totalanswers * meanInfoGainFrequentist;
-		this.bayes_infogain = this.totalanswers * meanInfoGainBayes;
-		this.lcb_infogain = this.totalanswers
-				* (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
-		if (Double.isNaN(this.lcb_infogain) || this.lcb_infogain < 0) {
-			this.lcb_infogain = 0.0;
-		}
+  public String displayPercentageCorrect() {
+    NumberFormat percentFormat = NumberFormat.getPercentInstance();
+    percentFormat.setMaximumFractionDigits(0);
+    return percentFormat.format(this.getPercentageCorrect());
+  }
 
-	}
+  public String displayRankScore() {
+    if (this.getRankScore() == null ||
+        this.getTotalUsers() == null ||
+        this.getTotalUsers() == 0) {
+      return "--";
+    }
 
-	public void computeRank(List<QuizPerformance> results) {
-		this.totalUsers = results.size();
+    NumberFormat percentFormat = NumberFormat.getPercentInstance();
+    percentFormat.setMaximumFractionDigits(0);
+    return percentFormat.format(1.0 * this.getRankScore() / this.getTotalUsers());
+  }
 
-		int higherScore = 0;
+  public String displayScore() {
+    NumberFormat format = NumberFormat.getInstance();
+    format.setMinimumFractionDigits(0);
+    format.setMaximumFractionDigits(0);
+    return format.format(100 * this.getScore());
+  }
 
-		for (QuizPerformance qp : results) {
-			if (qp.userid.equals(this.userid))
-				continue;
+  public Integer getCorrectanswers() {
+    return correctanswers;
+  }
 
-			if (qp.getScore() > this.getScore()) {
-				higherScore++;
-			} else if (qp.getScore() < this.getScore()) {
-				// lowerScore++;
-			} else {
-				// equalScore++; // Just in case we want to be more conservative
-				// in reporting rank, taking ties into account
-			}
+  public Integer getIncorrectanswers() {
+    return incorrectanswers;
+  }
 
-		}
+  public Key getKey() {
+    return key;
+  }
 
-		this.rankScore = higherScore + 1;
+  public Double getPercentageCorrect() {
+    if (this.totalanswers != null &&
+        this.correctanswers != null &&
+        this.totalanswers > 0) {
+      this.percentageCorrect =
+          Math.round(100.0 * this.correctanswers / this.totalanswers) / 100.0;
+    }
+    else {
+      this.percentageCorrect = 0.0;
+    }
+    return this.percentageCorrect;
+  }
 
-	}
+  public String getQuiz() {
+    return quiz;
+  }
 
-	public String displayPercentageCorrect() {
-		NumberFormat percentFormat = NumberFormat.getPercentInstance();
-		percentFormat.setMaximumFractionDigits(0);
-		return percentFormat.format(this.getPercentageCorrect());
+  public Integer getRankScore() {
+    return rankScore;
+  }
 
-	}
+  public Double getScore() {
+    this.score = this.freq_infogain;
+    if (this.score == null) {
+      return 0.0;
+    }
+    return score;
+  }
 
-	public String displayRankScore() {
-		if (this.getRankScore() == null || this.getTotalUsers() == null
-				|| this.getTotalUsers() == 0) {
-			return "--";
-		}
+  public Integer getTotalanswers() {
+    return totalanswers;
+  }
 
-		NumberFormat percentFormat = NumberFormat.getPercentInstance();
-		percentFormat.setMaximumFractionDigits(0);
-		return percentFormat.format(1.0 * this.getRankScore()
-				/ this.getTotalUsers());
-	}
+  public Integer getTotalUsers() {
+    return totalUsers;
+  }
 
-	public String displayScore() {
-		NumberFormat format = NumberFormat.getInstance();
-		format.setMinimumFractionDigits(0);
-		format.setMaximumFractionDigits(0);
-		return format.format(100 * this.getScore());
-	}
+  public String getUserid() {
+    return userid;
+  }
 
-	public Integer getCorrectanswers() {
-		return correctanswers;
-	}
-	
-	public Integer getIncorrectanswers() {
-		return incorrectanswers;
-	}
+  public void increaseCorrect() {
+    this.correctanswers++;
+  }
 
-	public Key getKey() {
-		return key;
-	}
+  public void increaseIncorrect() {
+    if (this.incorrectanswers == null) {
+      this.incorrectanswers = 0;
+    }
+    this.incorrectanswers++;
+  }
 
-	public Double getPercentageCorrect() {
-		if (this.totalanswers != null && this.correctanswers != null
-				&& this.totalanswers > 0)
-			this.percentageCorrect = Math.round(100.0 * this.correctanswers
-					/ this.totalanswers) / 100.0;
-		else
-			this.percentageCorrect = 0.0;
+  public void increaseTotal() {
+    this.totalanswers++;
+  }
 
-		return this.percentageCorrect;
-	}
+  public void setCorrectanswers(Integer correctanswers) {
+    this.correctanswers = correctanswers;
+  }
 
-	public String getQuiz() {
-		return quiz;
-	}
+  public void setIncorrectanswers(Integer incorrectanswers) {
+    this.incorrectanswers = incorrectanswers;
+  }
 
-	public Integer getRankScore() {
-		return rankScore;
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public Double getScore() {
-		this.score = this.freq_infogain;
+  public void setQuiz(String quiz) {
+    this.quiz = quiz;
+  }
 
-		if (this.score == null)
-			return 0.0;
-		return score;
-	}
+  public void setRankScore(Integer rankScore) {
+    this.rankScore = rankScore;
+  }
 
-	public Integer getTotalanswers() {
-		return totalanswers;
-	}
+  public void setTotalanswers(Integer totalanswers) {
+    this.totalanswers = totalanswers;
+  }
 
-	public Integer getTotalUsers() {
-		return totalUsers;
-	}
+  public void setTotalUsers(Integer totalUsers) {
+    this.totalUsers = totalUsers;
+  }
 
-	public String getUserid() {
-		return userid;
-	}
-
-	public void increaseCorrect() {
-		this.correctanswers++;
-	}
-	
-	public void increaseIncorrect() {
-		if(this.incorrectanswers == null)
-			this.incorrectanswers = 0;
-		this.incorrectanswers++;
-	}
-
-	public void increaseTotal() {
-		this.totalanswers++;
-	}
-
-	public void setCorrectanswers(Integer correctanswers) {
-		this.correctanswers = correctanswers;
-	}
-	
-	public void setIncorrectanswers(Integer incorrectanswers) {
-		this.incorrectanswers = incorrectanswers;
-	}
-
-	public void setKey(Key key) {
-		this.key = key;
-	}
-
-	public void setQuiz(String quiz) {
-		this.quiz = quiz;
-	}
-
-	public void setRankScore(Integer rankScore) {
-		this.rankScore = rankScore;
-	}
-
-	public void setTotalanswers(Integer totalanswers) {
-		this.totalanswers = totalanswers;
-	}
-
-	public void setTotalUsers(Integer totalUsers) {
-		this.totalUsers = totalUsers;
-	}
-
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
-
+  public void setUserid(String userid) {
+    this.userid = userid;
+  }
 }

@@ -1,5 +1,12 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Key;
+
+import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.PMF;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,111 +15,93 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import us.quizz.entities.UserAnswer;
-import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.PMF;
+public class UserAnswerRepository extends BaseRepository<UserAnswer> {
+  public UserAnswerRepository() {
+    super(UserAnswer.class);
+  }
 
-import com.google.appengine.api.datastore.Key;
+  @Override
+  protected Key getKey(UserAnswer item) {
+    return item.getKey();
+  }
 
-public class UserAnswerRepository extends BaseRepository<UserAnswer>{
-	
-	public UserAnswerRepository() {
-		super(UserAnswer.class);
-	}
-	
-	@Override
-	protected Key getKey(UserAnswer item) {
-		return item.getKey();
-	}
+  public List<UserAnswer> getUserAnswers(String quiz) {
+    PersistenceManager pm = PMF.getPM();
 
-	public List<UserAnswer> getUserAnswers(String quiz) {
+    Query q = pm.newQuery(UserAnswer.class);
+    q.setFilter("quizID == quizParam");
+    q.declareParameters("String quizParam");
 
-		PersistenceManager pm = PMF.getPM();
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("quizParam", quiz);
 
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("quizID == quizParam");
-		q.declareParameters("String quizParam");
+    List<UserAnswer> answers = new ArrayList<UserAnswer>();
+    int limit = 1000;
+    int i = 0;
+    while (true) {
+      q.setRange(i, i + limit);
+      @SuppressWarnings("unchecked")
+      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+      if (results.size() == 0) {
+        break;
+      }
+      answers.addAll(results);
+      i += limit;
+    }
 
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quiz);
+    pm.close();
+    return answers;
+  }
 
-		List<UserAnswer> answers = new ArrayList<UserAnswer>();
-		int limit = 1000;
-		int i = 0;
-		while (true) {
-			q.setRange(i, i + limit);
-			@SuppressWarnings("unchecked")
-			List<UserAnswer> results = (List<UserAnswer>) q
-					.executeWithMap(params);
-			if (results.size() == 0)
-				break;
-			answers.addAll(results);
-			i += limit;
-		}
+  public List<UserAnswer> getUserAnswers(String quiz, String userid) {
+    PersistenceManager pm = PMF.getPM();
 
-		pm.close();
-		return answers;
-	}
+    Query q = pm.newQuery(UserAnswer.class);
+    q.setFilter("quizID == quizParam && userid == useridParam");
+    q.declareParameters("String quizParam, String useridParam");
 
-	/**
-	 * @return
-	 */
-	public List<UserAnswer> getUserAnswers(String quiz, String userid) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("quizParam", quiz);
+    params.put("useridParam", userid);
 
-		PersistenceManager pm = PMF.getPM();
+    @SuppressWarnings("unchecked")
+    List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+    pm.close();
+    return results;
+  }
 
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("quizID == quizParam && userid == useridParam");
-		q.declareParameters("String quizParam, String useridParam");
+  public UserAnswer getUserAnswer(String questionID, String userID) {
+    String key = "useranswer_" + questionID + userID;
+    return singleGetObjectByIdWithCaching(key, UserAnswer.class,
+        UserAnswer.generateKeyFromID(questionID, userID));
+  }
 
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quiz);
-		params.put("useridParam", userid);
+  public UserAnswerFeedback getUserAnswerFeedback(Long questionID, String userID) {
+    String key = "useranswerfeedback_" + questionID + userID;
+    return singleGetObjectByIdWithCaching(key,
+        UserAnswerFeedback.class,
+        UserAnswerFeedback.generateKeyFromID(questionID, userID));
+  }
 
-		@SuppressWarnings("unchecked")
-		List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-		pm.close();
-		return results;
-	}
+  @SuppressWarnings("unchecked")
+  public List<UserAnswer> getUserAnswersWithChallenge(String quiz, String userid) {
+    PersistenceManager pm = PMF.getPM();
+    Query q = pm.newQuery(UserAnswer.class);
+    q.setFilter("quizID == quizParam && userid == useridParam");
+    q.declareParameters("String quizParam, String useridParam");
 
-	public UserAnswer getUserAnswer(String questionID, String userID) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("quizParam", quiz);
+    params.put("useridParam", userid);
 
-		String key = "useranswer_" + questionID + userID;
-		return singleGetObjectByIdWithCaching(key, UserAnswer.class,
-				UserAnswer.generateKeyFromID(questionID, userID));
-	}
+    List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
+    pm.close();
+    return result;
+  }
 
-	public UserAnswerFeedback getUserAnswerFeedback(Long questionID,
-			String userID) {
-
-		String key = "useranswerfeedback_" + questionID + userID;
-		return singleGetObjectByIdWithCaching(key,
-				UserAnswerFeedback.class,
-				UserAnswerFeedback.generateKeyFromID(questionID, userID));
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<UserAnswer> getUserAnswersWithChallenge(String quiz, String userid) {
-		PersistenceManager pm = PMF.getPM();
-		Query q = pm.newQuery(UserAnswer.class);
-		q.setFilter("quizID == quizParam && userid == useridParam");
-		q.declareParameters("String quizParam, String useridParam");
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("quizParam", quiz);
-		params.put("useridParam", userid);
-		
-		List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
-		pm.close();
-		
-		return result;
-	}
-
-	public void storeUserAnswerFeedback(UserAnswerFeedback uaf) {
-		String key = "useranswerfeedback_" + uaf.getQuestionID()
-				+ uaf.getUserid();
-		CachePMF.put(key, uaf);
-		singleMakePersistent(uaf);
-	}
+  public void storeUserAnswerFeedback(UserAnswerFeedback uaf) {
+    String key = "useranswerfeedback_" + uaf.getQuestionID() + uaf.getUserid();
+    CachePMF.put(key, uaf);
+    singleMakePersistent(uaf);
+  }
 }

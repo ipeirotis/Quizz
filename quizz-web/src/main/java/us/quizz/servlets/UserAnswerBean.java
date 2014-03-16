@@ -1,177 +1,148 @@
 package us.quizz.servlets;
 
 public class UserAnswerBean {
+  private String quizID;
+  private String userid;
+  private String questionID;
+  private String action;
+  private Long useranswerID;
+  private Boolean iscorrect;
+  private Long timestamp;
+  private String ipaddress;
+  private String browser;
+  private String referer;
 
-	private String quizID;
-	private String userid;
-	private String questionID;
-	private String action;
-	private Long useranswerID;
-	private Boolean iscorrect;
-	private Long timestamp;
-	private String ipaddress;
-	private String browser;
-	private String referer;
+  public Boolean getIscorrect() {
+    return iscorrect;
+  }
 
-	public Boolean getIscorrect() {
-		return iscorrect;
-	}
+  public void setIscorrect(Boolean iscorrect) {
+    this.iscorrect = iscorrect;
+  }
 
-	public void setIscorrect(Boolean iscorrect) {
-		this.iscorrect = iscorrect;
-	}
+  /**
+   * @return the referer
+   */
+  public String getReferer() {
+    return referer;
+  }
 
-	/**
-	 * @return the referer
-	 */
-	public String getReferer() {
+  /**
+   * @param referer the referer to set
+   */
+  public void setReferer(String referer) {
+    this.referer = referer.replace('\t', ' ');
+  }
 
-		return referer;
-	}
+  /**
+   * @return the quizID
+   */
+  public String getQuizID() {
+    return quizID;
+  }
 
-	/**
-	 * @param referer
-	 *            the referer to set
-	 */
-	public void setReferer(String referer) {
+  /**
+   * @param quizID the quizID to set
+   */
+  public void setQuizID(String quizID) {
+    this.quizID = quizID.replace('\t', ' ');
+  }
 
-		this.referer = referer.replace('\t', ' ');
-	}
+  /**
+   * @return the userid
+   */
+  public String getUserid() {
+    return userid;
+  }
 
-	/**
-	 * @return the quizID
-	 */
-	public String getQuizID() {
+  /**
+   * @param userid the userid to set
+   */
+  public void setUserid(String userid) {
+    this.userid = userid.replace('\t', ' ');
+  }
 
-		return quizID;
-	}
+  /**
+   * @return the mid
+   */
+  public String getQuestionID() {
+    return questionID;
+  }
 
-	/**
-	 * @param quizID
-	 *            the quizID to set
-	 */
-	public void setQuizID(String quizID) {
+  /**
+   * @param mid the mid to set
+   */
+  public void setQuestionID(String questionID) {
+    this.questionID = questionID;
+  }
 
-		this.quizID = quizID.replace('\t', ' ');
-	}
+  /**
+   * @return the action
+   */
+  public String getAction() {
+    return action;
+  }
 
-	/**
-	 * @return the userid
-	 */
-	public String getUserid() {
+  /**
+   * @param action the action to set
+   */
+  public void setAction(String action) {
+    this.action = action.replace('\t', ' ');
+  }
 
-		return userid;
-	}
+  /**
+   * @return the answer
+   */
+  public Long getUseranswerID() {
+    return useranswerID;
+  }
 
-	/**
-	 * @param userid
-	 *            the userid to set
-	 */
-	public void setUserid(String userid) {
+  /**
+   * @param answer the answer to set
+   */
+  public void setUseranswerID(Long answerID) {
+    this.useranswerID = answerID;
+  }
 
-		this.userid = userid.replace('\t', ' ');
-	}
+  /**
+   * @return the timestamp
+   */
+  public Long getTimestamp() {
+    return timestamp;
+  }
 
-	/**
-	 * @return the mid
-	 */
-	public String getQuestionID() {
+  /**
+   * @param timestamp the timestamp to set
+   */
+  public void setTimestamp(Long timestamp) {
+    this.timestamp = timestamp;
+  }
 
-		return questionID;
-	}
+  /**
+   * @return the ipaddress
+   */
+  public String getIpaddress() {
+    return ipaddress;
+  }
 
-	/**
-	 * @param mid
-	 *            the mid to set
-	 */
-	public void setQuestionID(String questionID) {
+  /**
+   * @param ipaddress the ipaddress to set
+   */
+  public void setIpaddress(String ipaddress) {
+    this.ipaddress = ipaddress.replace('\t', ' ');
+  }
 
-		this.questionID = questionID;
-	}
+  /**
+   * @return the browser
+   */
+  public String getBrowser() {
+    return browser;
+  }
 
-	/**
-	 * @return the action
-	 */
-	public String getAction() {
-
-		return action;
-	}
-
-	/**
-	 * @param action
-	 *            the action to set
-	 */
-	public void setAction(String action) {
-
-		this.action = action.replace('\t', ' ');
-	}
-
-	/**
-	 * @return the answer
-	 */
-	public Long getUseranswerID() {
-
-		return useranswerID;
-	}
-
-	/**
-	 * @param answer
-	 *            the answer to set
-	 */
-	public void setUseranswerID(Long answerID) {
-
-		this.useranswerID = answerID;
-	}
-
-	/**
-	 * @return the timestamp
-	 */
-	public Long getTimestamp() {
-
-		return timestamp;
-	}
-
-	/**
-	 * @param timestamp
-	 *            the timestamp to set
-	 */
-	public void setTimestamp(Long timestamp) {
-
-		this.timestamp = timestamp;
-	}
-
-	/**
-	 * @return the ipaddress
-	 */
-	public String getIpaddress() {
-
-		return ipaddress;
-	}
-
-	/**
-	 * @param ipaddress
-	 *            the ipaddress to set
-	 */
-	public void setIpaddress(String ipaddress) {
-
-		this.ipaddress = ipaddress.replace('\t', ' ');
-	}
-
-	/**
-	 * @return the browser
-	 */
-	public String getBrowser() {
-
-		return browser;
-	}
-
-	/**
-	 * @param browser
-	 *            the browser to set
-	 */
-	public void setBrowser(String browser) {
-
-		this.browser = browser.replace('\t', ' ');
-	}
-
+  /**
+   * @param browser the browser to set
+   */
+  public void setBrowser(String browser) {
+    this.browser = browser.replace('\t', ' ');
+  }
 }

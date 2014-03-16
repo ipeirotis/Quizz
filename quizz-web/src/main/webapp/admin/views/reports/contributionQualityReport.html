@@ -1,38 +1,38 @@
 <div class="container" ng-show="readyToShow == true">
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr>
-				<th>Quiz</th>
-				<th>Total Users</th>
-				<th>Contributing Users</th>
-				<th>Conversion Rate</th>
-				<th>#All Answers</th>
-				<th>#NonIDK Answers</th>
-				<th>#Correct Answers</th>
-				<th>Avg. User Quality</th>
-				<th>Avg. Answer Quality</th>
-				<th>Bits/User</th>
-				<th>Capacity @ 99%</th>
-				<th>Capacity @ 95%</th>
-				<th>Capacity @ 90%</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="row in reportData">
-				<td>{{row.quiz.name}}</td>
-				<td>{{row.quiz.totalUsers}}</td>
-				<td>{{row.quiz.contributingUsers}}</td>
-				<td>{{toPercentage(row.quiz.conversionRate)}}</td>
-				<td>{{row.quiz.submitted}}</td>
-				<td>{{row.quiz.totalAnswers}}</td>
-				<td>{{row.quiz.correctAnswers}}</td>
-				<td>{{toPercentage(row.quiz.avgUserCorrectness)}}</td>
-				<td>{{toPercentage(row.quiz.avgAnswerCorrectness)}}</td>
-				<td>{{row.quiz.capacity.toFixed(2)}}</td>
-				<td>{{row.capacity99.toFixed(2)}}</td>
-				<td>{{row.capacity95.toFixed(2)}}</td>
-				<td>{{row.capacity90.toFixed(2)}}</td>
-			</tr>
-		</tbody>
-	</table>
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Quiz</th>
+        <th>Total Users</th>
+        <th>Contributing Users</th>
+        <th>Conversion Rate</th>
+        <th>#All Answers</th>
+        <th>#NonIDK Answers</th>
+        <th>#Correct Answers</th>
+        <th>Avg. User Quality</th>
+        <th>Avg. Answer Quality</th>
+        <th>Bits/User</th>
+        <th>Capacity @ 99%</th>
+        <th>Capacity @ 95%</th>
+        <th>Capacity @ 90%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="row in reportData">
+        <td>{{row.quiz.name}}</td>
+        <td>{{row.quiz.totalUsers}}</td>
+        <td>{{row.quiz.contributingUsers}}</td>
+        <td>{{toPercentage(row.quiz.conversionRate)}}</td>
+        <td>{{row.quiz.submitted}}</td>
+        <td>{{row.quiz.totalAnswers}}</td>
+        <td>{{row.quiz.correctAnswers}}</td>
+        <td>{{toPercentage(row.quiz.avgUserCorrectness)}}</td>
+        <td>{{toPercentage(row.quiz.avgAnswerCorrectness)}}</td>
+        <td>{{row.quiz.capacity.toFixed(2)}}</td>
+        <td>{{row.capacity99.toFixed(2)}}</td>
+        <td>{{row.capacity95.toFixed(2)}}</td>
+        <td>{{row.capacity90.toFixed(2)}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

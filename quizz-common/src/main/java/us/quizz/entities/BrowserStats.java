@@ -1,5 +1,10 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
+import eu.bitwalker.useragentutils.Browser;
+
 import java.io.Serializable;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -8,78 +13,71 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
-import eu.bitwalker.useragentutils.Browser;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class BrowserStats implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+public class BrowserStats implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	@Persistent
-	private Browser browser;
-	
-	@Persistent
-	private String browserName;
-	
-	@Persistent
-	private long userCount = 0;
-	
-	@Persistent
-	private double userScores = 0;
+  @Persistent
+  private Browser browser;
 
-	public BrowserStats(Browser browser, long userCount, double userScores) {
-		this.key = KeyFactory.createKey(BrowserStats.class.getSimpleName(), browser.toString());
-		this.browser = browser;
-		this.browserName = browser.getName();
-		this.userCount = userCount;
-		this.userScores = userScores;
-	}
+  @Persistent
+  private String browserName;
 
-	public Key getKey() {
-		return key;
-	}
+  @Persistent
+  private long userCount = 0;
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+  @Persistent
+  private double userScores = 0;
 
-	public Browser getBrowser() {
-		return browser;
-	}
+  public BrowserStats(Browser browser, long userCount, double userScores) {
+    this.key = KeyFactory.createKey(BrowserStats.class.getSimpleName(), browser.toString());
+    this.browser = browser;
+    this.browserName = browser.getName();
+    this.userCount = userCount;
+    this.userScores = userScores;
+  }
 
-	public void setBrowser(Browser browser) {
-		this.browser = browser;
-	}
+  public Key getKey() {
+    return key;
+  }
 
-	public long getUserCount() {
-		return userCount;
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public void setUserCount(long userCount) {
-		this.userCount = userCount;
-	}
+  public Browser getBrowser() {
+    return browser;
+  }
 
-	public double getUserScores() {
-		return userScores;
-	}
+  public void setBrowser(Browser browser) {
+    this.browser = browser;
+  }
 
-	public void setUserScores(double userScores) {
-		this.userScores = userScores;
-	}
+  public long getUserCount() {
+    return userCount;
+  }
 
-	public String getBrowserName() {
-		return browserName;
-	}
+  public void setUserCount(long userCount) {
+    this.userCount = userCount;
+  }
 
-	public void setBrowserName(String browserName) {
-		this.browserName = browserName;
-	}
+  public double getUserScores() {
+    return userScores;
+  }
 
+  public void setUserScores(double userScores) {
+    this.userScores = userScores;
+  }
+
+  public String getBrowserName() {
+    return browserName;
+  }
+
+  public void setBrowserName(String browserName) {
+    this.browserName = browserName;
+  }
 }

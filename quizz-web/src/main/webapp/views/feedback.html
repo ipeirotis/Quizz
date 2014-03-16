@@ -1,29 +1,38 @@
 <div class="alert alert-success" ng-show="feedback.isCorrect == true">
-	The answer <span class="label label-success">{{feedback.userAnswerText}}</span>
-	was <span class="label label-success">correct</span>!
+  The answer
+  <span class="label label-success">{{feedback.userAnswerText}}</span>
+  was
+  <span class="label label-success">correct</span>!
 </div>
-<!--<div class="alert alert-success" ng-show="feedback.isCorrect == true">The answer <span class="label label-success">{{feedback.userAnswerText}}</span>.</div>
-  -->
 <div class="alert alert-danger" ng-show="feedback.isCorrect == false">
-	The answer <span class="label label-danger">{{feedback.userAnswerText}}</span>
-	was <span class="label label-danger">incorrect</span>!
+  The answer
+  <span class="label label-danger">{{feedback.userAnswerText}}</span>
+  was
+  <span class="label label-danger">incorrect</span>!
 </div>
 <div class="alert alert-success" ng-show="feedback.isCorrect == false">
-	{{feedbackMessage}} <span class="label label-success">{{feedback.correctAnswerText}}</span>.
-	<button class="btn btn-default btn-xs" ng-click="challengeAnswer()">Challenge
-		the answer</button>
+  {{feedbackMessage}}
+  <span class="label label-success">{{feedback.correctAnswerText}}</span>.
+  <button class="btn btn-default btn-xs" ng-click="challengeAnswer()">
+    Challenge the answer
+  </button>
 </div>
 
 <div class="alert alert-info">
-	Crowd performance: <span class="label label-info">{{feedback.numCorrectAnswers}}
-		out of the {{feedback.numTotalAnswers}} users {{feedback.difficulty}}
-		answered correctly.</span>
+  Crowd performance:
+  <span class="label label-info">
+    {{feedback.numCorrectAnswers}} out of the
+    {{feedback.numTotalAnswers}} users
+    {{feedback.difficulty}} answered correctly.
+  </span>
 </div>
 
 <div class="text-center">
-	<button type="button" class="btn btn-default" ng-click="nextQuestion()">Next
-		question</button>
+  <button type="button" class="btn btn-default" ng-click="nextQuestion()">
+    Next question
+  </button>
 </div>
 
-<div class="q-progress text-center">Question
-	{{currentQuestionIndex}} out of {{numOfQuestions}}</div>
+<div class="q-progress text-center">
+  Question {{currentQuestionIndex}} out of {{numOfQuestions}}
+</div>

@@ -13,8 +13,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Question implements Serializable{
-
+public class Question implements Serializable {
   private static final long serialVersionUID = 1L;
   
   @Persistent

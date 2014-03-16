@@ -1,5 +1,11 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
+
+import us.quizz.enums.AnswerChallengeStatus;
+
 import java.io.Serializable;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -8,211 +14,203 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import us.quizz.enums.AnswerChallengeStatus;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Text;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UserAnswer implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+public class UserAnswer implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	public static Key generateKeyFromID(String questionID, String userID) {
-		return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_"
-				+ questionID + "_" + userID);
-	}
+  public static Key generateKeyFromID(String questionID, String userID) {
+    return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_"
+        + questionID + "_" + userID);
+  }
 
-	@Persistent
-	private String userid;
+  @Persistent
+  private String userid;
 
-	@Persistent
-	private Long timestamp;
+  @Persistent
+  private Long timestamp;
 
-	@Persistent
-	private String ipaddress;
+  @Persistent
+  private String ipaddress;
 
-	@Persistent
-	private Integer answerID;
+  @Persistent
+  private Integer answerID;
 
-	@Persistent
-	private String userInput;
+  @Persistent
+  private String userInput;
 
-	@Persistent
-	private Double score;
+  @Persistent
+  private Double score;
 
-	@Persistent
-	private String referer;
+  @Persistent
+  private String referer;
 
-	@Persistent
-	private Long questionID;
+  @Persistent
+  private Long questionID;
 
-	@Persistent
-	private String quizID;
+  @Persistent
+  private String quizID;
 
-	@Persistent
-	private String browser;
+  @Persistent
+  private String browser;
 
-	@Persistent
-	private String action;
+  @Persistent
+  private String action;
 
-	@Persistent
-	private Boolean isCorrect;
+  @Persistent
+  private Boolean isCorrect;
 
-	@Persistent
-	private Text answerChallengeText;
-	
-	@Persistent
-	private AnswerChallengeStatus answerChallengeStatus;
-	
-	@Persistent
-	private Double answerChallengeWeight = 0.0d;
+  @Persistent
+  private Text answerChallengeText;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  @Persistent
+  private AnswerChallengeStatus answerChallengeStatus;
 
-	public UserAnswer(String userid, Long questionID, Integer useranswerID) {
-		this.questionID = questionID;
-		this.answerID = useranswerID;
-		this.userid = userid;
-	}
+  @Persistent
+  private Double answerChallengeWeight = 0.0d;
 
-	public UserAnswer(String userid, String questionID, String answerID) {
-		this(userid, Long.parseLong(questionID), Integer.parseInt(answerID));
-	}
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	public String getAction() {
-		return action;
-	}
+  public UserAnswer(String userid, Long questionID, Integer useranswerID) {
+    this.questionID = questionID;
+    this.answerID = useranswerID;
+    this.userid = userid;
+  }
 
-	public Integer getAnswerID() {
-		return answerID;
-	}
+  public UserAnswer(String userid, String questionID, String answerID) {
+    this(userid, Long.parseLong(questionID), Integer.parseInt(answerID));
+  }
 
-	public String getBrowser() {
-		return browser;
-	}
+  public String getAction() {
+    return action;
+  }
 
-	public Boolean getCorrect() {
-		return isCorrect;
-	}
+  public Integer getAnswerID() {
+    return answerID;
+  }
 
-	public String getIpaddress() {
-		return ipaddress;
-	}
+  public String getBrowser() {
+    return browser;
+  }
 
-	public Boolean getIsCorrect() {
-		return isCorrect;
-	}
+  public Boolean getCorrect() {
+    return isCorrect;
+  }
 
-	public Key getKey() {
-		return key;
-	}
+  public String getIpaddress() {
+    return ipaddress;
+  }
 
-	public Long getQuestionID() {
-		return questionID;
-	}
+  public Boolean getIsCorrect() {
+    return isCorrect;
+  }
 
-	public String getQuizID() {
-		return quizID;
-	}
+  public Key getKey() {
+    return key;
+  }
 
-	public String getReferer() {
-		return referer;
-	}
+  public Long getQuestionID() {
+    return questionID;
+  }
 
-	public Double getScore() {
-		return score;
-	}
+  public String getQuizID() {
+    return quizID;
+  }
 
-	public Long getTimestamp() {
-		return timestamp;
-	}
+  public String getReferer() {
+    return referer;
+  }
 
-	public String getUserid() {
-		return userid;
-	}
+  public Double getScore() {
+    return score;
+  }
 
-	public String getUserInput() {
-		return userInput;
-	}
+  public Long getTimestamp() {
+    return timestamp;
+  }
 
-	public void setAction(String action) {
-		this.action = action.replace('\t', ' ');
-	}
+  public String getUserid() {
+    return userid;
+  }
 
-	public void setAnswerID(Integer answerID) {
-		this.answerID = answerID;
-	}
+  public String getUserInput() {
+    return userInput;
+  }
 
-	public void setBrowser(String browser) {
-		this.browser = browser.replace('\t', ' ');
-	}
+  public void setAction(String action) {
+    this.action = action.replace('\t', ' ');
+  }
 
-	public void setCorrect(Boolean correct) {
-		isCorrect = correct;
-	}
+  public void setAnswerID(Integer answerID) {
+    this.answerID = answerID;
+  }
 
-	public void setIpaddress(String ipaddress) {
-		this.ipaddress = ipaddress.replace('\t', ' ');
-	}
+  public void setBrowser(String browser) {
+    this.browser = browser.replace('\t', ' ');
+  }
 
-	public void setIsCorrect(Boolean isCorrect) {
-		this.isCorrect = isCorrect;
-	}
+  public void setCorrect(Boolean correct) {
+    isCorrect = correct;
+  }
 
-	public void setQuestionID(Long questionID) {
-		this.questionID = questionID;
-	}
+  public void setIpaddress(String ipaddress) {
+    this.ipaddress = ipaddress.replace('\t', ' ');
+  }
 
-	public void setQuizID(String quizID) {
-		this.quizID = quizID;
-	}
+  public void setIsCorrect(Boolean isCorrect) {
+    this.isCorrect = isCorrect;
+  }
 
-	public void setReferer(String referer) {
-		this.referer = referer.replace('\t', ' ');
-	}
+  public void setQuestionID(Long questionID) {
+    this.questionID = questionID;
+  }
 
-	public void setScore(Double score) {
-		this.score = score;
-	}
+  public void setQuizID(String quizID) {
+    this.quizID = quizID;
+  }
 
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
-	}
+  public void setReferer(String referer) {
+    this.referer = referer.replace('\t', ' ');
+  }
 
-	public void setUserid(String userid) {
-		this.userid = userid.replace('\t', ' ');
-	}
+  public void setScore(Double score) {
+    this.score = score;
+  }
 
-	public void setUserInput(String userInput) {
-		this.userInput = userInput;
-	}
+  public void setTimestamp(Long timestamp) {
+    this.timestamp = timestamp;
+  }
 
-	public Double getAnswerChallengeWeight() {
-		return answerChallengeWeight;
-	}
+  public void setUserid(String userid) {
+    this.userid = userid.replace('\t', ' ');
+  }
 
-	public void setAnswerChallengeWeight(Double answerChallengeWeight) {
-		this.answerChallengeWeight = answerChallengeWeight;
-	}
+  public void setUserInput(String userInput) {
+    this.userInput = userInput;
+  }
 
-	public AnswerChallengeStatus getAnswerChallengeStatus() {
-		return answerChallengeStatus;
-	}
+  public Double getAnswerChallengeWeight() {
+    return answerChallengeWeight;
+  }
 
-	public void setAnswerChallengeStatus(AnswerChallengeStatus answerChallengeStatus) {
-		this.answerChallengeStatus = answerChallengeStatus;
-	}
+  public void setAnswerChallengeWeight(Double answerChallengeWeight) {
+    this.answerChallengeWeight = answerChallengeWeight;
+  }
 
-	public Text getAnswerChallengeText() {
-		return answerChallengeText;
-	}
+  public AnswerChallengeStatus getAnswerChallengeStatus() {
+    return answerChallengeStatus;
+  }
 
-	public void setAnswerChallengeText(Text answerChallengeText) {
-		this.answerChallengeText = answerChallengeText;
-	}
+  public void setAnswerChallengeStatus(AnswerChallengeStatus answerChallengeStatus) {
+    this.answerChallengeStatus = answerChallengeStatus;
+  }
 
+  public Text getAnswerChallengeText() {
+    return answerChallengeText;
+  }
+
+  public void setAnswerChallengeText(Text answerChallengeText) {
+    this.answerChallengeText = answerChallengeText;
+  }
 }

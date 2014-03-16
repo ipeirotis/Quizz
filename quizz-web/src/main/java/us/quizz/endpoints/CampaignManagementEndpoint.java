@@ -1,17 +1,5 @@
 package us.quizz.endpoints;
 
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
-import us.quizz.entities.Quiz;
-import us.quizz.repository.QuizRepository;
-import us.quizz.utils.ServletUtils;
-
 import com.google.api.ads.adwords.jaxws.factory.AdWordsServices;
 import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroup;
 import com.google.api.ads.adwords.jaxws.v201309.cm.AdGroupAd;
@@ -63,430 +51,397 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1", namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com", ownerName = "crowd-power.appspot.com", packagePath = "crowdquiz.endpoints"))
+import us.quizz.entities.Quiz;
+import us.quizz.repository.QuizRepository;
+import us.quizz.utils.ServletUtils;
+
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
+     namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
+                               ownerName = "crowd-power.appspot.com",
+                               packagePath = "crowdquiz.endpoints"))
 public class CampaignManagementEndpoint {
-	
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CampaignManagementEndpoint.class.getName());
+  @SuppressWarnings("unused")
+  private static final Logger logger = Logger.getLogger(CampaignManagementEndpoint.class.getName());
 
-	private AdWordsServices	adWordsServices;
-	private AdWordsSession session;
-	
-	@Inject
-	private QuizRepository quizRepository;
+  private AdWordsServices  adWordsServices;
+  private AdWordsSession session;
 
-	@ApiMethod(name = "adwords", path="adwords")
-	public void adwords(HttpServletRequest req) throws Exception {
-		Credential credential = new OfflineCredentials.Builder()
-		.forApi(com.google.api.ads.common.lib.auth.OfflineCredentials.Api.ADWORDS)
-		.fromFile()
-		.build()
-		.generateCredential(); 
+  @Inject
+  private QuizRepository quizRepository;
 
-		session = new AdWordsSession.Builder()
-	        .fromFile()
-	        .withOAuth2Credential(credential)
-	        .build();
-	
-		adWordsServices = new AdWordsServices();
-		
-		ServletUtils.ensureParameters(req, "quizID", "budget", "cpcbid", "keywords", "adheadline",
-				"adline1", "adline2");
-		addCampaign(req);
-		addAdGroup(req);
-	}
-	
-	@SuppressWarnings("unused")
-	private String test() throws Exception {
-		// Get the CampaignService.
-		CampaignServiceInterface campaignService =
-				adWordsServices.get(session, CampaignServiceInterface.class);
+  @ApiMethod(name = "adwords", path="adwords")
+  public void adwords(HttpServletRequest req) throws Exception {
+    Credential credential =
+        new OfflineCredentials.Builder()
+            .forApi(com.google.api.ads.common.lib.auth.OfflineCredentials.Api.ADWORDS)
+            .fromFile()
+            .build()
+            .generateCredential(); 
 
-		// Create selector
-		Selector selector = new Selector();
-		selector.getFields().addAll(Lists.newArrayList("Id", "Name"));
+    session =
+        new AdWordsSession.Builder()
+            .fromFile()
+            .withOAuth2Credential(credential)
+            .build();
 
-		// Get all campaigns
-		CampaignPage page = campaignService.get(selector);
+    adWordsServices = new AdWordsServices();
 
-		StringBuilder sb = new StringBuilder();
+    ServletUtils.ensureParameters(
+        req, "quizID", "budget", "cpcbid", "keywords", "adheadline", "adline1", "adline2");
+    addCampaign(req);
+    addAdGroup(req);
+  }
 
-		// Display campaigns
-		if (page.getEntries() != null) {
-			for (Campaign campaign : page.getEntries()) {
-				sb.append("<h4>Campaign with name \"" + campaign.getName() + "\" and id \""
-						+ campaign.getId() + "\" was found.</h4>");
-			}
-		} else {
-			sb.append("No campaigns were found.");
-		}
-		return sb.toString();
-	}
-	
-	private void addCampaign(HttpServletRequest req) throws Exception{
-		String quizID = req.getParameter("quizID").trim();
-		Integer dailyBudget = Integer.parseInt(req.getParameter("budget"));
+  @SuppressWarnings("unused")
+  private String test() throws Exception {
+    // Get the CampaignService.
+    CampaignServiceInterface campaignService =
+        adWordsServices.get(session, CampaignServiceInterface.class);
 
-		String campaignName = quizID;
-		Campaign campaign = createCampaign(campaignName, dailyBudget);
-		Long campaignId = publishCampaign(campaign);
-		
-		Quiz q = quizRepository.get(quizID);
-		q.setCampaignid(campaignId);
-		quizRepository.save(q);
-	}
-	
-	private void addAdGroup(HttpServletRequest req) throws Exception{		
-		String quizID = req.getParameter("quizID").trim();
-		String cpcbid = req.getParameter("cpcbid").trim();
-		String keywords = req.getParameter("keywords").trim();
-		String adheadline = req.getParameter("adheadline").trim();
-		String adline1 = req.getParameter("adline1").trim();
-		String adline2 = req.getParameter("adline2").trim();
+    // Create selector
+    Selector selector = new Selector();
+    selector.getFields().addAll(Lists.newArrayList("Id", "Name"));
 
-		Quiz q = quizRepository.get(quizID);
-		Long campaignId = q.getCampaignid();
-		
-		
-		if (campaignId == null) {
-			// All quizzes (should) have a corresponding ad campaign.
-			// If we get a null, we just put the task back in the queue
-			// and run the call again.
-			// This happens either when the Quiz object has not yet 
-			// persisted in the datastore the campaignId
-			Queue queueAdgroup = QueueFactory.getQueue("adgroup");
-			long delay = 10; // in seconds
-			long etaMillis = System.currentTimeMillis() + delay * 1000L;
-			TaskOptions taskOptions = Builder.withUrl("/campaignManagament")
-					.param("quizID", quizID)
-					.param("cpcbid", cpcbid)
-					.param("keywords", keywords)
-					.param("adheadline", adheadline)
-					.param("adline1", adline1)
-					.param("adline2", adline2)
-					.method(TaskOptions.Method.POST)
-					.etaMillis(etaMillis);
-			//if (questionID != null) {
-			//	taskOptions.param("questionID", questionID);
-			//}
-			queueAdgroup.add(taskOptions);
-			return;
-		}
+    // Get all campaigns
+    CampaignPage page = campaignService.get(selector);
 
-		// TODO: REFQQ - midName ... used freebase name
-		String midName = "default";
-		String adGroupName = midName;
+    StringBuilder sb = new StringBuilder();
 
-		AdGroup adgroup = createAdgroup(adGroupName, campaignId, Double.parseDouble(cpcbid));
-		Long adgroupId = publishAdgroup(adgroup);
+    // Display campaigns
+    if (page.getEntries() != null) {
+      for (Campaign campaign : page.getEntries()) {
+        sb.append("<h4>Campaign with name \"" + campaign.getName() + "\" and id \""
+            + campaign.getId() + "\" was found.</h4>");
+      }
+    } else {
+      sb.append("No campaigns were found.");
+    }
+    return sb.toString();
+  }
 
-		String[] keyword = keywords.split(",");
-		for (String k : keyword) {
-			String bidKeyword = " " + k.trim().toLowerCase();
-			addKeyword(bidKeyword.replaceAll("[^A-Za-z0-9 ]", " "), adgroupId);
-		}
+  private void addCampaign(HttpServletRequest req) throws Exception {
+    String quizID = req.getParameter("quizID").trim();
+    Integer dailyBudget = Integer.parseInt(req.getParameter("budget"));
 
-		String displayURL = "http://www.quizz.us";
-		String targetURL = "http://www.quizz.us/startQuiz?quizID=" + URLEncoder.encode(quizID, "UTF-8");
-		AdGroupAd ad = createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
-		Long textAdId = publishTextAd(ad);
+    String campaignName = quizID;
+    Campaign campaign = createCampaign(campaignName, dailyBudget);
+    Long campaignId = publishCampaign(campaign);
 
-		//if (questionID != null) { 
-		//	Question eq = QuizQuestionRepository.getQuizQuestion(questionID);	
-		//	eq.setAdTextId(textAdId);
-		//	eq.setAdGroupId(adgroupId);
-		//	QuizQuestionRepository.storeQuizQuestion(eq);
-		//}
-	}
- 
+    Quiz q = quizRepository.get(quizID);
+    q.setCampaignid(campaignId);
+    quizRepository.save(q);
+  }
 
-	private Campaign createCampaign(String campaignName, Integer dailyBudget)
-			throws Exception {
+  private void addAdGroup(HttpServletRequest req) throws Exception {
+    String quizID = req.getParameter("quizID").trim();
+    String cpcbid = req.getParameter("cpcbid").trim();
+    String keywords = req.getParameter("keywords").trim();
+    String adheadline = req.getParameter("adheadline").trim();
+    String adline1 = req.getParameter("adline1").trim();
+    String adline2 = req.getParameter("adline2").trim();
 
-		// Create campaign.
-		Campaign campaign = new Campaign();
-		campaign.setName(campaignName + "#" + System.currentTimeMillis());
-		campaign.setStatus(CampaignStatus.ACTIVE);
+    Quiz q = quizRepository.get(quizID);
+    Long campaignId = q.getCampaignid();
 
-		BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
-		biddingStrategyConfiguration
-				.setBiddingStrategyType(BiddingStrategyType.MANUAL_CPC);
-		campaign.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
+    if (campaignId == null) {
+      // All quizzes (should) have a corresponding ad campaign.
+      // If we get a null, we just put the task back in the queue
+      // and run the call again.
+      // This happens either when the Quiz object has not yet
+      // persisted in the datastore the campaignId
+      Queue queueAdgroup = QueueFactory.getQueue("adgroup");
+      long delay = 10; // in seconds
+      long etaMillis = System.currentTimeMillis() + delay * 1000L;
+      TaskOptions taskOptions = Builder.withUrl("/campaignManagament")
+          .param("quizID", quizID)
+          .param("cpcbid", cpcbid)
+          .param("keywords", keywords)
+          .param("adheadline", adheadline)
+          .param("adline1", adline1)
+          .param("adline2", adline2)
+          .method(TaskOptions.Method.POST)
+          .etaMillis(etaMillis);
+      //if (questionID != null) {
+      //  taskOptions.param("questionID", questionID);
+      //}
+      queueAdgroup.add(taskOptions);
+      return;
+    }
 
-		// Create a budget, which can be shared by multiple campaigns.
-		Budget budget = new Budget();
-		budget.setName("#" + System.currentTimeMillis());
-		Money budgetAmount = new Money();
-		Long dailyAmount = dailyBudget * 1000000L;
-		budgetAmount.setMicroAmount(dailyAmount);
-		budget.setAmount(budgetAmount);
-		budget.setDeliveryMethod(BudgetBudgetDeliveryMethod.STANDARD);
-		budget.setPeriod(BudgetBudgetPeriod.DAILY);
-		campaign.setBudget(budget);
+    // TODO: REFQQ - midName ... used freebase name
+    String midName = "default";
+    String adGroupName = midName;
 
-		// Set required keyword match to TRUE to allow for "the broadening of
-		// exact and phrase
-		// keyword matches for this campaign to include small variations such as
-		// plurals,
-		// common misspellings, diacriticals and acronyms"
-		KeywordMatchSetting keywordMatch = new KeywordMatchSetting();
-		keywordMatch.setOptIn(Boolean.TRUE);
-		campaign.getSettings().add(keywordMatch);
+    AdGroup adgroup = createAdgroup(adGroupName, campaignId, Double.parseDouble(cpcbid));
+    Long adgroupId = publishAdgroup(adgroup);
 
-		// Set the campaign network options to Search only
-		NetworkSetting networkSetting = new NetworkSetting();
-		networkSetting.setTargetGoogleSearch(true);
-		networkSetting.setTargetSearchNetwork(true);
-		networkSetting.setTargetContentNetwork(true);
-		networkSetting.setTargetPartnerSearchNetwork(false);
-		campaign.setNetworkSetting(networkSetting);
+    String[] keyword = keywords.split(",");
+    for (String k : keyword) {
+      String bidKeyword = " " + k.trim().toLowerCase();
+      addKeyword(bidKeyword.replaceAll("[^A-Za-z0-9 ]", " "), adgroupId);
+    }
 
-		// Add the campaign
-		return campaign;
+    String displayURL = "https://crowd-power.appspot.com";
+    String targetURL =
+        "https://crowd-power.appspot.com/startQuiz?quizID=" + URLEncoder.encode(quizID, "UTF-8");
+    AdGroupAd ad = createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
+    Long textAdId = publishTextAd(ad);
 
-	}
+    //if (questionID != null) { 
+    //  Question eq = QuizQuestionRepository.getQuizQuestion(questionID);  
+    //  eq.setAdTextId(textAdId);
+    //  eq.setAdGroupId(adgroupId);
+    //  QuizQuestionRepository.storeQuizQuestion(eq);
+    //}
+  }
 
-	/**
-	 * @param campaign
-	 * @throws RemoteException
-	 * @throws ApiException_Exception
-	 * @throws ApiException
-	 */
-	private Long publishCampaign(Campaign campaign) throws RemoteException,
-			ApiException_Exception {
+  private Campaign createCampaign(String campaignName, Integer dailyBudget)
+      throws Exception {
+    // Create campaign.
+    Campaign campaign = new Campaign();
+    campaign.setName(campaignName + "#" + System.currentTimeMillis());
+    campaign.setStatus(CampaignStatus.ACTIVE);
 
-		// Get the CampaignService.
-		CampaignServiceInterface campaignService = adWordsServices.get(session,
-				CampaignServiceInterface.class);
+    BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
+    biddingStrategyConfiguration
+        .setBiddingStrategyType(BiddingStrategyType.MANUAL_CPC);
+    campaign.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
 
-		CampaignOperation operation = new CampaignOperation();
-		operation.setOperand(campaign);
-		operation.setOperator(Operator.ADD);
-		List<CampaignOperation> operations = new ArrayList<CampaignOperation>();
-		operations.add(operation);
+    // Create a budget, which can be shared by multiple campaigns.
+    Budget budget = new Budget();
+    budget.setName("#" + System.currentTimeMillis());
+    Money budgetAmount = new Money();
+    Long dailyAmount = dailyBudget * 1000000L;
+    budgetAmount.setMicroAmount(dailyAmount);
+    budget.setAmount(budgetAmount);
+    budget.setDeliveryMethod(BudgetBudgetDeliveryMethod.STANDARD);
+    budget.setPeriod(BudgetBudgetPeriod.DAILY);
+    campaign.setBudget(budget);
 
-		CampaignReturnValue result = campaignService.mutate(operations);
-		if (result != null && result.getValue() != null) {
-			for (Campaign campaignResult : result.getValue()) {
-				System.out.println("Campaign with name \""
-						+ campaignResult.getName() + "\" and id \""
-						+ campaignResult.getId() + "\" was added.");
-				return campaignResult.getId();
-			}
-		} else {
-			System.out.println("No campaigns were added.");
+    // Set required keyword match to TRUE to allow for "the broadening of exact and phrase
+    // keyword matches for this campaign to include small variations such as plurals,
+    // common misspellings, diacriticals and acronyms"
+    KeywordMatchSetting keywordMatch = new KeywordMatchSetting();
+    keywordMatch.setOptIn(Boolean.TRUE);
+    campaign.getSettings().add(keywordMatch);
 
-		}
-		return null;
-	}
+    // Set the campaign network options to Search only
+    NetworkSetting networkSetting = new NetworkSetting();
+    networkSetting.setTargetGoogleSearch(true);
+    networkSetting.setTargetSearchNetwork(true);
+    networkSetting.setTargetContentNetwork(true);
+    networkSetting.setTargetPartnerSearchNetwork(false);
+    campaign.setNetworkSetting(networkSetting);
 
-	/**
-	 * @param dailyAmount
-	 * @return
-	 * @throws RemoteException
-	 * @throws ApiException_Exception
-	 * @throws ApiException
-	 */
-	/*
-	 * private Budget getBudget(int dailyBudget) throws RemoteException,
-	 * ApiException_Exception {
-	 * 
-	 * 
-	 * 
-	 * // Get the BudgetService. BudgetServiceInterface budgetService =
-	 * adWordsServices.get(session, BudgetServiceInterface.class);
-	 * 
-	 * // Create a budget, which can be shared by multiple campaigns. Budget
-	 * budget = new Budget(); budget.setName("#" + System.currentTimeMillis());
-	 * Money budgetAmount = new Money();
-	 * budgetAmount.setMicroAmount(dailyAmount); budget.setAmount(budgetAmount);
-	 * budget.setDeliveryMethod(BudgetBudgetDeliveryMethod.STANDARD);
-	 * budget.setPeriod(BudgetBudgetPeriod.DAILY);
-	 * 
-	 * BudgetOperation budgetOperation = new BudgetOperation();
-	 * budgetOperation.setOperand(budget);
-	 * budgetOperation.setOperator(Operator.ADD); List<BudgetOperation>
-	 * budgetoperations = new ArrayList<BudgetOperation>();
-	 * budgetoperations.add(budgetOperation);
-	 * 
-	 * // Only the budgetId should be sent, all other fields will be ignored by
-	 * CampaignService. //Long budgetId =
-	 * budgetService.mutate(budgetoperations).getValue(0).getBudgetId(); Long
-	 * budgetId =
-	 * budgetService.mutate(budgetoperations).getValue().get(0).getBudgetId();
-	 * budget.setBudgetId(budgetId); return budget; }
-	 */
+    // Add the campaign
+    return campaign;
+  }
 
-	private AdGroup createAdgroup(String adGroupName, Long campaignId,
-			Double bidAmount) {
+  /**
+   * @param campaign
+   * @throws RemoteException
+   * @throws ApiException_Exception
+   * @throws ApiException
+   */
+  private Long publishCampaign(Campaign campaign) throws RemoteException,
+      ApiException_Exception {
+    // Get the CampaignService.
+    CampaignServiceInterface campaignService = adWordsServices.get(session,
+        CampaignServiceInterface.class);
 
-		// Create ad group.
-		AdGroup adGroup = new AdGroup();
-		adGroup.setName(adGroupName + "#" + System.currentTimeMillis());
-		adGroup.setStatus(AdGroupStatus.ENABLED);
-		adGroup.setCampaignId(campaignId);
+    CampaignOperation operation = new CampaignOperation();
+    operation.setOperand(campaign);
+    operation.setOperator(Operator.ADD);
+    List<CampaignOperation> operations = new ArrayList<CampaignOperation>();
+    operations.add(operation);
 
-		// Create ad group bid.
-		BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
-		CpcBid bid = new CpcBid();
-		Money m = new Money();
-		m.setMicroAmount(Math.round(bidAmount * 1000000L));
-		bid.setBid(m);
+    CampaignReturnValue result = campaignService.mutate(operations);
+    if (result != null && result.getValue() != null) {
+      for (Campaign campaignResult : result.getValue()) {
+        System.out.println("Campaign with name \""
+            + campaignResult.getName() + "\" and id \""
+            + campaignResult.getId() + "\" was added.");
+        return campaignResult.getId();
+      }
+    } else {
+      System.out.println("No campaigns were added.");
+    }
+    return null;
+  }
 
-		biddingStrategyConfiguration.getBids().add(bid);
-		adGroup.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
+  /**
+   * @param dailyAmount
+   * @return
+   * @throws RemoteException
+   * @throws ApiException_Exception
+   * @throws ApiException
+   */
+  private AdGroup createAdgroup(String adGroupName, Long campaignId, Double bidAmount) {
+    // Create ad group.
+    AdGroup adGroup = new AdGroup();
+    adGroup.setName(adGroupName + "#" + System.currentTimeMillis());
+    adGroup.setStatus(AdGroupStatus.ENABLED);
+    adGroup.setCampaignId(campaignId);
 
-		return adGroup;
-	}
+    // Create ad group bid.
+    BiddingStrategyConfiguration biddingStrategyConfiguration = new BiddingStrategyConfiguration();
+    CpcBid bid = new CpcBid();
+    Money m = new Money();
+    m.setMicroAmount(Math.round(bidAmount * 1000000L));
+    bid.setBid(m);
 
-	private Long publishAdgroup(AdGroup adGroup) throws Exception {
+    biddingStrategyConfiguration.getBids().add(bid);
+    adGroup.setBiddingStrategyConfiguration(biddingStrategyConfiguration);
 
-		// Create operations.
-		AdGroupOperation operation = new AdGroupOperation();
-		operation.setOperand(adGroup);
-		operation.setOperator(Operator.ADD);
+    return adGroup;
+  }
 
-		List<AdGroupOperation> operations = new ArrayList<AdGroupOperation>();
-		operations.add(operation);
+  private Long publishAdgroup(AdGroup adGroup) throws Exception {
+    // Create operations.
+    AdGroupOperation operation = new AdGroupOperation();
+    operation.setOperand(adGroup);
+    operation.setOperator(Operator.ADD);
 
-		// Add ad groups.
-		AdGroupServiceInterface adGroupService = adWordsServices.get(session,
-				AdGroupServiceInterface.class);
+    List<AdGroupOperation> operations = new ArrayList<AdGroupOperation>();
+    operations.add(operation);
 
-		AdGroupReturnValue result = adGroupService.mutate(operations);
+    // Add ad groups.
+    AdGroupServiceInterface adGroupService = adWordsServices.get(session,
+        AdGroupServiceInterface.class);
 
-		// Display new ad groups.
-		for (AdGroup adGroupResult : result.getValue()) {
-			System.out.println("Ad group with name \""
-					+ adGroupResult.getName() + "\" and id \""
-					+ adGroupResult.getId() + "\" was added.");
-			return adGroupResult.getId();
-		}
-		return null;
-	}
+    AdGroupReturnValue result = adGroupService.mutate(operations);
 
-	private AdGroupAd createTextAd(String adHeadline, String adDescr1,
-			String adDescr2, String displayURL, String targetURL, Long adGroupId) {
+    // Display new ad groups.
+    for (AdGroup adGroupResult : result.getValue()) {
+      System.out.println("Ad group with name \""
+          + adGroupResult.getName() + "\" and id \""
+          + adGroupResult.getId() + "\" was added.");
+      return adGroupResult.getId();
+    }
+    return null;
+  }
 
-		// Create text ad.
-		TextAd textAd = new TextAd();
-		textAd.setHeadline(adHeadline);
-		textAd.setDescription1(adDescr1);
-		textAd.setDescription2(adDescr2);
-		textAd.setDisplayUrl(displayURL);
-		textAd.setUrl(targetURL);
+  private AdGroupAd createTextAd(String adHeadline, String adDescr1,
+      String adDescr2, String displayURL, String targetURL, Long adGroupId) {
+    // Create text ad.
+    TextAd textAd = new TextAd();
+    textAd.setHeadline(adHeadline);
+    textAd.setDescription1(adDescr1);
+    textAd.setDescription2(adDescr2);
+    textAd.setDisplayUrl(displayURL);
+    textAd.setUrl(targetURL);
 
-		// Create ad group ad.
-		AdGroupAd textAdGroupAd = new AdGroupAd();
-		textAdGroupAd.setAdGroupId(adGroupId);
-		textAdGroupAd.setAd(textAd);
+    // Create ad group ad.
+    AdGroupAd textAdGroupAd = new AdGroupAd();
+    textAdGroupAd.setAdGroupId(adGroupId);
+    textAdGroupAd.setAd(textAd);
 
-		// You can optionally provide these field(s).
-		textAdGroupAd.setStatus(AdGroupAdStatus.ENABLED);
+    // You can optionally provide these field(s).
+    textAdGroupAd.setStatus(AdGroupAdStatus.ENABLED);
 
-		return textAdGroupAd;
-	}
+    return textAdGroupAd;
+  }
 
-	private Long publishTextAd(AdGroupAd ad) throws Exception {
+  private Long publishTextAd(AdGroupAd ad) throws Exception {
+    // Get the AdGroupAdService.
+    AdGroupAdServiceInterface adGroupAdService = adWordsServices.get(
+        session, AdGroupAdServiceInterface.class);
 
-		// Get the AdGroupAdService.
-		AdGroupAdServiceInterface adGroupAdService = adWordsServices.get(
-				session, AdGroupAdServiceInterface.class);
+    // Create operations.
+    AdGroupAdOperation textAdGroupAdOperation = new AdGroupAdOperation();
+    textAdGroupAdOperation.setOperand(ad);
+    textAdGroupAdOperation.setOperator(Operator.ADD);
 
-		// Create operations.
-		AdGroupAdOperation textAdGroupAdOperation = new AdGroupAdOperation();
-		textAdGroupAdOperation.setOperand(ad);
-		textAdGroupAdOperation.setOperator(Operator.ADD);
+    List<AdGroupAdOperation> operations = new ArrayList<AdGroupAdOperation>();
+    operations.add(textAdGroupAdOperation);
 
-		List<AdGroupAdOperation> operations = new ArrayList<AdGroupAdOperation>();
-		operations.add(textAdGroupAdOperation);
+    // Add ads.
+    AdGroupAdReturnValue result = adGroupAdService.mutate(operations);
 
-		// Add ads.
-		AdGroupAdReturnValue result = adGroupAdService.mutate(operations);
+    // Display ads.
+    for (AdGroupAd adGroupAdResult : result.getValue()) {
+      System.out.println("Ad with id  \""
+          + adGroupAdResult.getAd().getId() + "\"" + " and type \""
+          + adGroupAdResult.getAd().getAdType() + "\" was added.");
+      return adGroupAdResult.getAd().getId();
+    }
+    return null;
+  }
 
-		// Display ads.
-		for (AdGroupAd adGroupAdResult : result.getValue()) {
-			System.out.println("Ad with id  \""
-					+ adGroupAdResult.getAd().getId() + "\"" + " and type \""
-					+ adGroupAdResult.getAd().getAdType() + "\" was added.");
-			return adGroupAdResult.getAd().getId();
-		}
-		return null;
-	}
+  private void addKeyword(String word, Long adGroupId) throws Exception {
+    // Create keywords.
+    Keyword keyword = new Keyword();
+    keyword.setText(word);
+    keyword.setMatchType(KeywordMatchType.EXACT);
 
-	private void addKeyword(String word, Long adGroupId) throws Exception {
+    // Create biddable ad group criterion.
+    BiddableAdGroupCriterion keywordBiddableAdGroupCriterion = new BiddableAdGroupCriterion();
+    keywordBiddableAdGroupCriterion.setAdGroupId(adGroupId);
+    keywordBiddableAdGroupCriterion.setCriterion(keyword);
 
-		// Create keywords.
-		Keyword keyword = new Keyword();
-		keyword.setText(word);
-		keyword.setMatchType(KeywordMatchType.EXACT);
+    AdGroupCriterionOperation keywordAdGroupCriterionOperation = new AdGroupCriterionOperation();
+    keywordAdGroupCriterionOperation.setOperand(keywordBiddableAdGroupCriterion);
+    keywordAdGroupCriterionOperation.setOperator(Operator.ADD);
 
-		// Create biddable ad group criterion.
-		BiddableAdGroupCriterion keywordBiddableAdGroupCriterion = new BiddableAdGroupCriterion();
-		keywordBiddableAdGroupCriterion.setAdGroupId(adGroupId);
-		keywordBiddableAdGroupCriterion.setCriterion(keyword);
+    List<AdGroupCriterionOperation> operations = new ArrayList<AdGroupCriterionOperation>();
+    operations.add(keywordAdGroupCriterionOperation);
 
-		AdGroupCriterionOperation keywordAdGroupCriterionOperation = new AdGroupCriterionOperation();
-		keywordAdGroupCriterionOperation
-				.setOperand(keywordBiddableAdGroupCriterion);
-		keywordAdGroupCriterionOperation.setOperator(Operator.ADD);
+    AdGroupCriterionServiceInterface adGroupCriterionService = adWordsServices
+        .get(session, AdGroupCriterionServiceInterface.class);
+    // Add keywords.
+    AdGroupCriterionReturnValue result = adGroupCriterionService.mutate(operations);
 
-		List<AdGroupCriterionOperation> operations = new ArrayList<AdGroupCriterionOperation>();
-		operations.add(keywordAdGroupCriterionOperation);
+    // Display results.
+    for (AdGroupCriterion adGroupCriterionResult : result.getValue()) {
+      System.out.println("Keyword ad group criterion with ad group id \""
+          + adGroupCriterionResult.getAdGroupId()
+          + "\", criterion id \""
+          + adGroupCriterionResult.getCriterion().getId()
+          + "\", text \""
+          + ((Keyword) adGroupCriterionResult.getCriterion())
+              .getText()
+          + "\" and match type \""
+          + ((Keyword) adGroupCriterionResult.getCriterion())
+              .getMatchType() + "\" was added.");
+    }
+  }
 
-		AdGroupCriterionServiceInterface adGroupCriterionService = adWordsServices
-				.get(session, AdGroupCriterionServiceInterface.class);
-		// Add keywords.
-		AdGroupCriterionReturnValue result = adGroupCriterionService
-				.mutate(operations);
+  private void runTest() {
+    try {
+      String campaignName = "Test";
+      Integer dailyBudget = 10;
+      Campaign campaign = createCampaign(campaignName, dailyBudget);
+      Long campaignId = publishCampaign(campaign);
 
-		// Display results.
-		for (AdGroupCriterion adGroupCriterionResult : result.getValue()) {
-			System.out.println("Keyword ad group criterion with ad group id \""
-					+ adGroupCriterionResult.getAdGroupId()
-					+ "\", criterion id \""
-					+ adGroupCriterionResult.getCriterion().getId()
-					+ "\", text \""
-					+ ((Keyword) adGroupCriterionResult.getCriterion())
-							.getText()
-					+ "\" and match type \""
-					+ ((Keyword) adGroupCriterionResult.getCriterion())
-							.getMatchType() + "\" was added.");
-		}
-	}
+      String adGroupName = "Test-Adgroup";
+      Double cpcbid = 0.05;
+      AdGroup adgroup = createAdgroup(adGroupName, campaignId, cpcbid);
+      Long adgroupId = publishAdgroup(adgroup);
+      for (int i = 1; i <= 5; i++) {
+        String bidKeyword = "Ipeirotis " + i;
+        addKeyword(bidKeyword, adgroupId);
+      }
 
-	private void runTest() {
-
-		try {
-			String campaignName = "Test";
-			Integer dailyBudget = 10;
-			Campaign campaign = createCampaign(campaignName,
-					dailyBudget);
-			Long campaignId = publishCampaign(campaign);
-
-			String adGroupName = "Test-Adgroup";
-			Double cpcbid = 0.05;
-			AdGroup adgroup = createAdgroup(adGroupName, campaignId,
-					cpcbid);
-			Long adgroupId = publishAdgroup(adgroup);
-			for (int i = 1; i <= 5; i++) {
-				String bidKeyword = "Ipeirotis " + i;
-				addKeyword(bidKeyword, adgroupId);
-			}
-
-			String adHeadline = "This is a headline";
-			String adDescr1 = "This is the first line";
-			String adDescr2 = "This is the second line";
-			String displayURL = "http://crowd-power.appspot.com";
-			String targetURL = "http://crowd-power.appspot.com";
-			AdGroupAd ad = createTextAd(adHeadline, adDescr1, adDescr2,
-					displayURL, targetURL, adgroupId);
-			// Long textAdId = service.publishTextAd(ad);
-			publishTextAd(ad);
-		} catch (Exception e) {
-			// logger.log(Level.SEVERE, "Exception in Testing.", e);
-			e.printStackTrace();
-		}
-	}
-
+      String adHeadline = "This is a headline";
+      String adDescr1 = "This is the first line";
+      String adDescr2 = "This is the second line";
+      String displayURL = "http://crowd-power.appspot.com";
+      String targetURL = "http://crowd-power.appspot.com";
+      AdGroupAd ad = createTextAd(adHeadline, adDescr1, adDescr2,
+          displayURL, targetURL, adgroupId);
+      // Long textAdId = service.publishTextAd(ad);
+      publishTextAd(ad);
+    } catch (Exception e) {
+      // logger.log(Level.SEVERE, "Exception in Testing.", e);
+      e.printStackTrace();
+    }
+  }
 }

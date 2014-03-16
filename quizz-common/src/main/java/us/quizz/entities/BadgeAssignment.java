@@ -1,5 +1,8 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import java.io.Serializable;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -8,56 +11,53 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class BadgeAssignment implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+public class BadgeAssignment implements Serializable {
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  private static final long serialVersionUID = 1L;
 
-	@Persistent
-	private String userid;
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	@Persistent
-	private String badgename;
+  @Persistent
+  private String userid;
 
-	public BadgeAssignment(String userid, String badgename) {
-		this.userid = userid;
-		this.badgename = badgename;
-		this.key = generateKeyFromUserBadge(userid, badgename);
-	}
+  @Persistent
+  private String badgename;
 
-	public static Key generateKeyFromUserBadge(String userid, String badgeid) {
-		return KeyFactory.createKey(BadgeAssignment.class.getSimpleName(),
-				"id_" + userid + "_" + badgeid);
-	}
+  public BadgeAssignment(String userid, String badgename) {
+    this.userid = userid;
+    this.badgename = badgename;
+    this.key = generateKeyFromUserBadge(userid, badgename);
+  }
 
-	public Key getKey() {
-		return key;
-	}
+  public static Key generateKeyFromUserBadge(String userid, String badgeid) {
+    return KeyFactory.createKey(BadgeAssignment.class.getSimpleName(),
+        "id_" + userid + "_" + badgeid);
+  }
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+  public Key getKey() {
+    return key;
+  }
 
-	public String getUserid() {
-		return userid;
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
+  public String getUserid() {
+    return userid;
+  }
 
-	public String getBadgename() {
-		return badgename;
-	}
+  public void setUserid(String userid) {
+    this.userid = userid;
+  }
 
-	public void setBadgename(String badgename) {
-		this.badgename = badgename;
-	}
+  public String getBadgename() {
+    return badgename;
+  }
+
+  public void setBadgename(String badgename) {
+    this.badgename = badgename;
+  }
 }

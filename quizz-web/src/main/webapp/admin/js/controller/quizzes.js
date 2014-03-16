@@ -1,4 +1,2 @@
-angular.module('quizz-admin').controller('QuizzesController', 
-	['$scope', function ($scope) {
-	
-}]);
+angular.module('quizz-admin').controller('QuizzesController',
+    ['$scope', function ($scope) {}]);

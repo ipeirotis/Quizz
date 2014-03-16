@@ -1,5 +1,8 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -9,110 +12,106 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class User implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static final Integer INITIAL_CHALLENGE_BUDGET = 3;
+public class User implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  private static final Integer INITIAL_CHALLENGE_BUDGET = 3;
 
-	// The id for the user.
-	@Persistent
-	private String userid;
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	// The id for the user's session.
-	@Persistent
-	private String sessionid;
+  // The id for the user.
+  @Persistent
+  private String userid;
 
-	// The id for the user's fb or google account.
-	@Persistent
-	private String socialid;
+  // The id for the user's session.
+  @Persistent
+  private String sessionid;
 
-	// The set of treatments assigned to the user
-	@Persistent(defaultFetchGroup = "true")
-	private Experiment experiment;
-	
-	@Persistent
-	private Integer challengeBudget;
+  // The id for the user's fb or google account.
+  @Persistent
+  private String socialid;
 
-	public User(String userid) {
-		this.userid = userid;
-		this.key = generateKeyFromID(userid);
-		this.challengeBudget = INITIAL_CHALLENGE_BUDGET;
-	}
+  // The set of treatments assigned to the user
+  @Persistent(defaultFetchGroup = "true")
+  private Experiment experiment;
 
-	public static Key generateKeyFromID(String userid) {
-		return KeyFactory.createKey(User.class.getSimpleName(), "id_" + userid);
-	}
+  @Persistent
+  private Integer challengeBudget;
 
-	public Key getKey() {
-		return key;
-	}
+  public User(String userid) {
+    this.userid = userid;
+    this.key = generateKeyFromID(userid);
+    this.challengeBudget = INITIAL_CHALLENGE_BUDGET;
+  }
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+  public static Key generateKeyFromID(String userid) {
+    return KeyFactory.createKey(User.class.getSimpleName(), "id_" + userid);
+  }
 
-	public Experiment getExperiment() {
-		return experiment;
-	}
+  public Key getKey() {
+    return key;
+  }
 
-	public void setExperiment(Experiment experiment) {
-		this.experiment = experiment;
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public String getUserid() {
-		return userid;
-	}
+  public Experiment getExperiment() {
+    return experiment;
+  }
 
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
+  public void setExperiment(Experiment experiment) {
+    this.experiment = experiment;
+  }
 
-	public String getSocialid() {
-		return socialid;
-	}
+  public String getUserid() {
+    return userid;
+  }
 
-	public void setSocialid(String sid) {
-		this.socialid = sid;
-	}
+  public void setUserid(String userid) {
+    this.userid = userid;
+  }
 
-	public String getSessionid() {
-		return sessionid;
-	}
+  public String getSocialid() {
+    return socialid;
+  }
 
-	public void setSessionid(String sessionid) {
-		this.sessionid = sessionid;
-	}
+  public void setSocialid(String sid) {
+    this.socialid = sid;
+  }
 
-	public boolean getsTreatment(String treatmentName) {
-		return this.experiment.getsTreatment(treatmentName);
-	}
+  public String getSessionid() {
+    return sessionid;
+  }
 
-	public Map<String, Boolean> getTreatments() {
-		return this.experiment.treatments;
-	}
+  public void setSessionid(String sessionid) {
+    this.sessionid = sessionid;
+  }
 
-	public Integer getChallengeBudget() {
-		return challengeBudget;
-	}
+  public boolean getsTreatment(String treatmentName) {
+    return this.experiment.getsTreatment(treatmentName);
+  }
 
-	public void setChallengeBudget(Integer challengeBudget) {
-		this.challengeBudget = challengeBudget;
-	}
-	
-	public void incChallengeBudget() {
-		this.challengeBudget++;
-	}
+  public Map<String, Boolean> getTreatments() {
+    return this.experiment.treatments;
+  }
 
-	public void decChallengeBudget() {
-		this.challengeBudget--;
-	}
+  public Integer getChallengeBudget() {
+    return challengeBudget;
+  }
+
+  public void setChallengeBudget(Integer challengeBudget) {
+    this.challengeBudget = challengeBudget;
+  }
+
+  public void incChallengeBudget() {
+    this.challengeBudget++;
+  }
+
+  public void decChallengeBudget() {
+    this.challengeBudget--;
+  }
 }

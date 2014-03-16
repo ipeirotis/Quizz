@@ -1,17 +1,19 @@
 <table class="table table-hover" ng-show="readyToShow == true">
-	<thead>
-		<tr>
-			<th>Quiz</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr ng-repeat="quiz in quizes | orderBy:'name'">
-			<td>
-				<a href="#/quiz?quizId={{quiz.quizID}}">{{quiz.name}}</a>
-				<div>
-					<small>(Your progress: {{quiz.totalanswers || 0}}/{{quiz.questions}})</small>
-				</div>
-			</td>
-		</tr>
-	</tbody>
+  <thead>
+    <tr>
+      <th>Quiz</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="quiz in quizes | orderBy:'name'">
+      <td>
+        <a href="#/quiz?quizId={{quiz.quizID}}">{{quiz.name}}</a>
+        <div>
+          <small>
+            (Your progress: {{quiz.totalanswers || 0}}/{{quiz.questions}})
+          </small>
+        </div>
+      </td>
+    </tr>
+  </tbody>
 </table>

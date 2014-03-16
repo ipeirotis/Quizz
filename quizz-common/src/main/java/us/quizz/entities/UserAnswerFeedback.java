@@ -1,5 +1,8 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.List;
@@ -10,175 +13,166 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 /**
  * The Quiz is the basic unit of the application. Each quiz contains a set of
  * QuizQuestions.
- * 
- * @author ipeirotis
- * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UserAnswerFeedback implements Serializable{
+public class UserAnswerFeedback implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
+  public static Key generateKeyFromID(Long questionID, String userid) {
+    return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(),
+        "id_" + questionID + "_" + userid);
+  }
 
-	public static Key generateKeyFromID(Long questionID, String userid) {
-		return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(),
-				"id_" + questionID + "_" + userid);
-	}
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  @Persistent
+  private Long questionID;
 
-	@Persistent
-	private Long questionID;
+  @Persistent
+  private String userid;
 
-	@Persistent
-	private String userid;
+  @Persistent
+  private Integer userAnswerID;
 
-	@Persistent
-	private Integer userAnswerID;
+  @Persistent
+  private String userAnswerText;
 
-	@Persistent
-	private String userAnswerText;
+  @Persistent
+  private String userNewBadges;
 
-	@Persistent
-	private String userNewBadges;
+  @Persistent
+  private Boolean isCorrect;
 
-	@Persistent
-	private Boolean isCorrect;
+  @Persistent
+  private String correctAnswerText;
 
-	@Persistent
-	private String correctAnswerText;
+  @Persistent
+  private Integer numCorrectAnswers;
 
-	@Persistent
-	private Integer numCorrectAnswers;
+  @Persistent
+  private Integer numTotalAnswers;
 
-	@Persistent
-	private Integer numTotalAnswers;
+  @Persistent
+  private String difficulty;
 
-	@Persistent
-	private String difficulty;
+  public UserAnswerFeedback(Long questionID, String userid,
+      Integer userAnswerID, Boolean isCorrect) {
+    this.questionID = questionID;
+    this.userid = userid;
+    this.userAnswerID = userAnswerID;
+    this.isCorrect = isCorrect;
 
-	public UserAnswerFeedback(Long questionID, String userid,
-			Integer userAnswerID, Boolean isCorrect) {
+    this.key = generateKeyFromID(questionID, userid);
+  }
 
-		this.questionID = questionID;
-		this.userid = userid;
-		this.userAnswerID = userAnswerID;
-		this.isCorrect = isCorrect;
+  public Key getKey() {
+    return key;
+  }
 
-		this.key = generateKeyFromID(questionID, userid);
-	}
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-	public Key getKey() {
-		return key;
-	}
+  public Long getQuestionID() {
+    return questionID;
+  }
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+  public void setQuestionID(Long questionID) {
+    this.questionID = questionID;
+  }
 
-	public Long getQuestionID() {
-		return questionID;
-	}
+  public String getUserid() {
+    return userid;
+  }
 
-	public void setQuestionID(Long questionID) {
-		this.questionID = questionID;
-	}
+  public void setUserid(String userid) {
+    this.userid = userid;
+  }
 
-	public String getUserid() {
-		return userid;
-	}
+  public Integer getUserAnswerID() {
+    return userAnswerID;
+  }
 
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
+  public String getUserAnswerText() {
+    return userAnswerText;
+  }
 
-	public Integer getUserAnswerID() {
-		return userAnswerID;
-	}
+  public void setUserAnswerText(String userAnswerText) {
+    this.userAnswerText = userAnswerText;
+  }
 
-	public String getUserAnswerText() {
-		return userAnswerText;
-	}
+  public String getUserNewBadges() {
+    return userNewBadges;
+  }
 
-	public void setUserAnswerText(String userAnswerText) {
-		this.userAnswerText = userAnswerText;
-	}
+  public void setUserNewBadges(List<Badge> newBadges) {
+    String userNewBadges = "";
+    for (Badge b : newBadges) {
+      userNewBadges += b.getBadgename() + "...";
+    }
+    this.userNewBadges = userNewBadges;
+  }
 
-	public String getUserNewBadges() {
-		return userNewBadges;
-	}
+  public void setDifficulty(String difficulty) {
+    this.difficulty = difficulty;
+  }
 
-	public void setUserNewBadges(List<Badge> newBadges) {
-		String userNewBadges = "";
-		for (Badge b : newBadges) {
-			userNewBadges += b.getBadgename() + "...";
-		}
-		this.userNewBadges = userNewBadges;
-	}
+  public void setUserAnswerID(Integer userAnswerID) {
+    this.userAnswerID = userAnswerID;
+  }
 
-	public void setDifficulty(String difficulty) {
-		this.difficulty = difficulty;
-	}
+  public Boolean getIsCorrect() {
+    return isCorrect;
+  }
 
-	public void setUserAnswerID(Integer userAnswerID) {
-		this.userAnswerID = userAnswerID;
-	}
+  public void setIsCorrect(Boolean isCorrect) {
+    this.isCorrect = isCorrect;
+  }
 
-	public Boolean getIsCorrect() {
-		return isCorrect;
-	}
+  public String getCorrectAnswerText() {
+    return correctAnswerText;
+  }
 
-	public void setIsCorrect(Boolean isCorrect) {
-		this.isCorrect = isCorrect;
-	}
+  public void setCorrectAnswerText(String correctAnswerText) {
+    this.correctAnswerText = correctAnswerText;
+  }
 
-	public String getCorrectAnswerText() {
-		return correctAnswerText;
-	}
+  public Integer getNumCorrectAnswers() {
+    return numCorrectAnswers;
+  }
 
-	public void setCorrectAnswerText(String correctAnswerText) {
-		this.correctAnswerText = correctAnswerText;
-	}
+  public void setNumCorrectAnswers(Integer numCorrectAnswers) {
+    this.numCorrectAnswers = numCorrectAnswers;
+  }
 
-	public Integer getNumCorrectAnswers() {
-		return numCorrectAnswers;
-	}
+  public Integer getNumTotalAnswers() {
+    return numTotalAnswers;
+  }
 
-	public void setNumCorrectAnswers(Integer numCorrectAnswers) {
-		this.numCorrectAnswers = numCorrectAnswers;
-	}
+  public void setNumTotalAnswers(Integer numTotalAnswers) {
+    this.numTotalAnswers = numTotalAnswers;
+  }
 
-	public Integer getNumTotalAnswers() {
-		return numTotalAnswers;
-	}
+  public String getDifficulty() {
+    return difficulty;
+  }
 
-	public void setNumTotalAnswers(Integer numTotalAnswers) {
-		this.numTotalAnswers = numTotalAnswers;
-	}
+  public void computeDifficulty() {
+    if (numTotalAnswers == null ||
+        numCorrectAnswers == null ||
+        numTotalAnswers == 0) {
+      this.difficulty = "--";
+      return;
+    }
 
-	public String getDifficulty() {
-		return difficulty;
-	}
-
-	public void computeDifficulty() {
-		if (numTotalAnswers == null || numCorrectAnswers == null
-				|| numTotalAnswers == 0) {
-			this.difficulty = "--";
-			return;
-		}
-
-		double d = 1.0 * this.numCorrectAnswers / this.numTotalAnswers;
-		NumberFormat percentFormat = NumberFormat.getPercentInstance();
-		percentFormat.setMaximumFractionDigits(0);
-		this.difficulty = percentFormat.format(d);
-
-	}
-
+    double d = 1.0 * this.numCorrectAnswers / this.numTotalAnswers;
+    NumberFormat percentFormat = NumberFormat.getPercentInstance();
+    percentFormat.setMaximumFractionDigits(0);
+    this.difficulty = percentFormat.format(d);
+  }
 }

@@ -6,6 +6,6 @@
 <title></title>
 </head>
 <body>
-	<h1>Quizz tasks module</h1>
+  <h1>Quizz tasks module</h1>
 </body>
 </html>

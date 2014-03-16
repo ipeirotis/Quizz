@@ -1,5 +1,10 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
+
+import eu.bitwalker.useragentutils.Browser;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,158 +14,137 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Text;
-
-import eu.bitwalker.useragentutils.Browser;
-
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UserReferal implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+public class UserReferal implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
 
-	// The id for the user.
-	@Persistent
-	private String userid;
+  // The id for the user.
+  @Persistent
+  private String userid;
 
-	// The id for the user.
-	@Persistent
-	private String quiz;
+  // The id for the user.
+  @Persistent
+  private String quiz;
 
-	@Persistent
-	private Long timestamp;
+  @Persistent
+  private Long timestamp;
 
-	@Persistent
-	private String ipaddress;
+  @Persistent
+  private String ipaddress;
 
-	@Persistent
-	private Text referer;
-	
-	@Persistent
-	private String domain;
+  @Persistent
+  private Text referer;
 
-	@Persistent
-	private Browser browser;
+  @Persistent
+  private String domain;
 
-	public UserReferal(String userid) {
-		this.userid = userid;
-		this.timestamp = (new Date()).getTime();
-	}
+  @Persistent
+  private Browser browser;
 
-	/**
-	 * @return the key
-	 */
-	public Key getKey() {
+  public UserReferal(String userid) {
+    this.userid = userid;
+    this.timestamp = (new Date()).getTime();
+  }
 
-		return key;
-	}
+  /**
+   * @return the key
+   */
+  public Key getKey() {
+    return key;
+  }
 
-	/**
-	 * @param key
-	 *            the key to set
-	 */
-	public void setKey(Key key) {
+  /**
+   * @param key The key to set
+   */
+  public void setKey(Key key) {
+    this.key = key;
+  }
 
-		this.key = key;
-	}
+  /**
+   * @return the quiz
+   */
+  public String getQuiz() {
+    return quiz;
+  }
 
-	/**
-	 * @return the quiz
-	 */
-	public String getQuiz() {
+  /**
+   * @param quiz the quiz to set
+   */
+  public void setQuiz(String quiz) {
+    this.quiz = quiz;
+  }
 
-		return quiz;
-	}
+  /**
+   * @return the ipaddress
+   */
+  public String getIpaddress() {
+    return ipaddress;
+  }
 
-	/**
-	 * @param quiz
-	 *            the quiz to set
-	 */
-	public void setQuiz(String quiz) {
+  /**
+   * @param ipaddress the ipaddress to set
+   */
+  public void setIpaddress(String ipaddress) {
+    // anonymizing the last 4 digits
+    ipaddress = ipaddress.substring(0, ipaddress.length() - 4);
+    this.ipaddress = ipaddress + "XXXX";
+  }
 
-		this.quiz = quiz;
-	}
+  /**
+   * @return the referer
+   */
+  public Text getReferer() {
+    return referer;
+  }
 
-	/**
-	 * @return the ipaddress
-	 */
-	public String getIpaddress() {
+  /**
+   * @param referer the referer to set
+   */
+  public void setReferer(String referer) {
+    if (referer != null) {
+      this.referer = new Text(referer);
+    } else {
+      this.referer = null;
+    }
+  }
 
-		return ipaddress;
-	}
+  /**
+   * @return the userid
+   */
+  public String getUserid() {
+    return userid;
+  }
 
-	/**
-	 * @param ipaddress
-	 *            the ipaddress to set
-	 */
-	public void setIpaddress(String ipaddress) {
+  /**
+   * @return the timestamp
+   */
+  public Long getTimestamp() {
+    return timestamp;
+  }
 
-		// anonymizing the last 4 digits
-		ipaddress = ipaddress.substring(0, ipaddress.length()-4); 
-		this.ipaddress = ipaddress + "XXXX";
-	}
+  public String getDomain() {
+    return domain;
+  }
 
-	/**
-	 * @return the referer
-	 */
-	public Text getReferer() {
+  public void setDomain(String domain) {
+    this.domain = domain;
+  }
 
-		return referer;
-	}
+  /**
+   * @return the browser
+   */
+  public Browser getBrowser() {
+    return browser;
+  }
 
-	/**
-	 * @param referer
-	 *            the referer to set
-	 */
-	public void setReferer(String referer) {
-		if (referer != null)
-			this.referer = new Text(referer);
-		else
-			this.referer = null;
-	}
-
-	/**
-	 * @return the userid
-	 */
-	public String getUserid() {
-
-		return userid;
-	}
-
-	/**
-	 * @return the timestamp
-	 */
-	public Long getTimestamp() {
-
-		return timestamp;
-	}
-
-	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	/**
-	 * @return the browser
-	 */
-	public Browser getBrowser() {
-
-		return browser;
-	}
-
-	/**
-	 * @param browser
-	 *            the browser to set
-	 */
-	public void setBrowser(Browser browser) {
-
-		this.browser = browser;
-	}
+  /**
+   * @param browser the browser to set
+   */
+  public void setBrowser(Browser browser) {
+    this.browser = browser;
+  }
 }

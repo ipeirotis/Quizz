@@ -1,8 +1,8 @@
 package us.quizz.di;
 
-import us.quizz.servlets.DownloadUserAnswers;
-
 import com.google.inject.servlet.ServletModule;
+
+import us.quizz.servlets.DownloadUserAnswers;
 
 public class WebModule extends ServletModule {
   @Override

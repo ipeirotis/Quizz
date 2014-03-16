@@ -1,5 +1,8 @@
 package us.quizz.di;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
@@ -16,29 +19,24 @@ import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Singleton;
-
 public class CommonModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    bind(AnswerChallengeCounterRepository.class).in(Singleton.class);
+    bind(AnswersRepository.class).in(Singleton.class);
+    bind(BadgeRepository.class).in(Singleton.class);
+    bind(BrowserStatsRepository.class).in(Singleton.class);
+    bind(DomainStatsRepository.class).in(Singleton.class);
+    bind(QuizPerformanceRepository.class).in(Singleton.class);
+    bind(QuizQuestionRepository.class).in(Singleton.class);
+    bind(QuizRepository.class).in(Singleton.class);
+    bind(UserAnswerFeedbackRepository.class).in(Singleton.class);
+    bind(UserAnswerRepository.class).in(Singleton.class);
+    bind(UserReferralRepository.class).in(Singleton.class);
+    bind(UserRepository.class).in(Singleton.class);
 
-	@Override
-	protected void configure() {
-		bind(AnswerChallengeCounterRepository.class).in(Singleton.class);
-		bind(AnswersRepository.class).in(Singleton.class);
-		bind(BadgeRepository.class).in(Singleton.class);
-		bind(BrowserStatsRepository.class).in(Singleton.class);
-		bind(DomainStatsRepository.class).in(Singleton.class);
-		bind(QuizPerformanceRepository.class).in(Singleton.class);
-		bind(QuizQuestionRepository.class).in(Singleton.class);
-		bind(QuizRepository.class).in(Singleton.class);
-		bind(UserAnswerRepository.class).in(Singleton.class);
-		bind(UserAnswerFeedbackRepository.class).in(Singleton.class);
-		bind(UserReferralRepository.class).in(Singleton.class);
-		bind(UserRepository.class).in(Singleton.class);
-		
-		bind(ExplorationExploitationService.class).in(Singleton.class);
-		bind(UserQuizStatisticsService.class).in(Singleton.class);
-		bind(SurvivalProbabilityService.class).in(Singleton.class);
-	}
-
+    bind(ExplorationExploitationService.class).in(Singleton.class);
+    bind(UserQuizStatisticsService.class).in(Singleton.class);
+    bind(SurvivalProbabilityService.class).in(Singleton.class);
+  }
 }

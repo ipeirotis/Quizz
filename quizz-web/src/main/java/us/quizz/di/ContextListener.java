@@ -5,10 +5,8 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 public class ContextListener extends GuiceServletContextListener {
-
-	@Override
-	protected Injector getInjector() {
-		return Guice.createInjector(new EndpointsModule(), new WebModule(), new CommonModule());
-	}
-
+  @Override
+  protected Injector getInjector() {
+    return Guice.createInjector(new EndpointsModule(), new WebModule(), new CommonModule());
+  }
 }

@@ -32,7 +32,7 @@ public class UserAnswerEndpoint {
 
   @Inject
   public UserAnswerEndpoint(
-      UserAnswerRepository userAnswerRepository, 
+      UserAnswerRepository userAnswerRepository,
       UserRepository userRepository,
       AnswerChallengeCounterRepository answerChallengeCounterRepository,
       QuizQuestionRepository quizQuestionRepository) {
@@ -54,7 +54,6 @@ public class UserAnswerEndpoint {
       @Named("timestamp") Long timestamp,
       @Named("action") String action,
       @Named("isCorrect") Boolean isCorrect) {
-
     UserAnswer ue = new UserAnswer(userid, questionID, useranswerID);
     ue.setReferer(referer);
     ue.setBrowser(browser);

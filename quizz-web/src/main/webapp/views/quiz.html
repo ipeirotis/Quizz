@@ -1,30 +1,37 @@
 <div ng-show="readyToShow == true">
-	<div class="alert alert-info text-center" ng-show="showPerformance">
-		<span class="label label-primary">Score: {{performance.score.toFixed(3)}} points</span>
-		<span class="label label-primary">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
-		<span class="label label-primary">Correct (%): {{utils.toSafePercentage(performance.percentageCorrect)}}</span>
-		<span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
-	</div>
-	
-	<div class="lead text-center" ng-bind-html="currentQuestion.text"></div>
-	
-	<div class="answers">
-		<button type="button" class="btn btn-primary btn-lg btn-block" 
-			ng-click="answerQuestion(answer.internalID, getGaType(answer.kind))"
-			ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">{{answer.text}}</button>
-		
-		<div ng-repeat="answer in currentQuestion.answers |filter:filterNotSelectable">
-			<h4>Your answer:</h4> 
-			<input type="text" class="form-control" ng-model="userInput">
-			<button type="button" class="btn btn-primary btn-lg btn-block send" ng-disabled="!userInput || userInput==''"
-				ng-click="answerQuestion(-1, 'input_text')">Send</button>
-		</div>
-			
-		<button type="button" class="btn btn-danger btn-lg btn-block" 
-			ng-click="answerQuestion(-1, 'multiple-choice-idk')">Don't know</button>
-	</div>
-	
-	<div class="q-progress text-center">
-		Question {{currentQuestionIndex}} out of {{numOfQuestions}}
-	</div>
+  <div class="alert alert-info text-center" ng-show="showPerformance">
+    <span class="label label-primary">Score: {{performance.score.toFixed(3)}} points</span>
+    <span class="label label-primary">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
+    <span class="label label-primary">Correct (%): {{utils.toSafePercentage(performance.percentageCorrect)}}</span>
+    <span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
+  </div>
+
+  <div class="lead text-center" ng-bind-html="currentQuestion.text"></div>
+
+  <div class="answers">
+    <button type="button" class="btn btn-primary btn-lg btn-block"
+            ng-click="answerQuestion(answer.internalID, getGaType(answer.kind))"
+            ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
+      {{answer.text}}
+    </button>
+
+    <div ng-repeat="answer in currentQuestion.answers |filter:filterNotSelectable">
+      <h4>Your answer:</h4>
+      <input type="text" class="form-control" ng-model="userInput">
+      <button type="button" class="btn btn-primary btn-lg btn-block send"
+              ng-disabled="!userInput || userInput==''"
+              ng-click="answerQuestion(-1, 'input_text')">
+        Send
+      </button>
+    </div>
+
+    <button type="button" class="btn btn-danger btn-lg btn-block"
+            ng-click="answerQuestion(-1, 'multiple-choice-idk')">
+      Don't know
+    </button>
+  </div>
+
+  <div class="q-progress text-center">
+    Question {{currentQuestionIndex}} out of {{numOfQuestions}}
+  </div>
 </div>
