@@ -36,6 +36,7 @@ import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.Treatment;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.enums.QuestionKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
@@ -50,7 +51,6 @@ import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
-import us.quizz.utils.PMF;
 
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -216,6 +216,11 @@ public class QuizzTest {
 
     // listQuestions
     listQuestions(NUMBER_OF_QUESTIONS);
+    
+    //add FREE_TEXT question to MULTIPLE_CHOICE quiz.
+    //should throw an exception BadRequestException
+    createFreeTextQuestionInMultichoiceQuiz(
+        new Question(QUIZ_ID, "Question", QuestionKind.FREE_TEXT, 1.0));
 
     // create treatments
     for (String treatment : treatments) {
@@ -223,7 +228,7 @@ public class QuizzTest {
     }
 
     // update quiz questions count
-    updateQuizCounts(quiz);
+    updateQuizCounts(quiz, 10);
 
     // get user
     User user = getUser();
@@ -235,12 +240,13 @@ public class QuizzTest {
     Set<Question> quizQuestions = startQuiz(quiz.getQuizID());
 
     // process user answers
+    int index = 1;
     for (Question question :quizQuestions) {
-      processUserAnswer(user, quiz, question);
+      processUserAnswer(user, quiz, question, index++);
     }
 
     // get quiz performance
-    getQuizPerformance(quiz.getQuizID(), user.getUserid());
+    getQuizPerformance(quiz.getQuizID(), user.getUserid(), 20.0);
   }
 
   private void logResponse(String title, Object resp) {
@@ -256,8 +262,10 @@ public class QuizzTest {
     return newQuiz;
   }
 
-  private void updateQuizCounts(Quiz quiz) {
-    quizRepository.updateQuizCounts(quiz.getQuizID());
+  private void updateQuizCounts(Quiz quiz, Integer expectedGoldCount) {
+    Quiz updatedQuiz = quizRepository.updateQuizCounts(quiz.getQuizID());
+    Assert.assertEquals(updatedQuiz.getGold(), expectedGoldCount);
+    logResponse("update quiz counts", updatedQuiz);
   }
 
   private void listQuizes(int expectedListSize) {
@@ -270,6 +278,15 @@ public class QuizzTest {
     Question newQuestion =  questionEndpoint.insertQuestion(question);
     Assert.assertNotNull(newQuestion.getID());
     return newQuestion;
+  }
+  
+  private void createFreeTextQuestionInMultichoiceQuiz(Question question) {
+    try {
+      questionEndpoint.insertQuestion(question);
+      Assert.fail("this method should throw an exception BadRequestException");
+    } catch (BadRequestException e) {
+      //success
+    }
   }
 
   private void listQuestions(int expectedQuestionsCount) {
@@ -288,7 +305,8 @@ public class QuizzTest {
     return questionMap.get("gold");
   }
 
-  private void processUserAnswer(User user, Quiz quiz, Question question) throws Exception {
+  private void processUserAnswer(User user, Quiz quiz, Question question, 
+      Integer expectedNumOfCorrectAnswers) throws Exception {
     HttpServletRequest req = mock(HttpServletRequest.class);
 
     when(req.getRemoteAddr()).thenReturn(IP_ADDRESS);
@@ -300,6 +318,9 @@ public class QuizzTest {
         numberOfCorrectAnswers, NUMBER_OF_QUESTIONS, null,
         numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0);
 
+    UserAnswerFeedback userAnswerFeedback = (UserAnswerFeedback) resp.get("userAnswerFeedback");
+    Assert.assertEquals(userAnswerFeedback.getNumCorrectAnswers(), expectedNumOfCorrectAnswers);
+    
     UserAnswer ua = (UserAnswer) resp.get("userAnswer");
 
     if (ua.getIsCorrect()) {
@@ -323,9 +344,9 @@ public class QuizzTest {
     return user;
   }
 
-  private void getQuizPerformance(String quizId, String userId) {
+  private void getQuizPerformance(String quizId, String userId, Double expectedScore) {
     QuizPerformance qp = quizPerformanceEndpoint.getQuizPerformance(quizId, userId);
-    Assert.assertEquals(qp.getScore(), Double.valueOf(20.0));
+    Assert.assertEquals(qp.getScore(), expectedScore);
     logResponse("get quiz performance", qp);
   }
 }

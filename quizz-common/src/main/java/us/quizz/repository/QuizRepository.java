@@ -140,7 +140,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
     return quizlist;
   }
 
-  public void updateQuizCounts(String quiz) {
+  public Quiz updateQuizCounts(String quiz) {
     Quiz q = singleGetObjectById(Quiz.generateKeyFromID(quiz));
 
     Integer count = getNumberOfQuizQuestions(quiz, false);
@@ -182,6 +182,6 @@ public class QuizRepository extends BaseRepository<Quiz>{
     q.setAvgUserCorrectness(avgCorrectness / q.getContributingUsers());
     q.setAvgAnswerCorrectness(1.0 * q.getCorrectAnswers() / q.getTotalAnswers());
 
-    singleMakePersistent(q);
+    return singleMakePersistent(q);
   }
 }
