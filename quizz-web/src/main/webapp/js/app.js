@@ -21,6 +21,10 @@ angular.module('quizz', ['ngRoute', 'ngSanitize'])
       .otherwise({redirectTo: '/list'});
 }])
 
+.config(['$httpProvider', function($httpProvider) {
+	$httpProvider.interceptors.push('interceptor'); 
+}])
+
 .run(['$rootScope', 'utils',
     function($rootScope, utils) {
       $rootScope.utils = utils;
