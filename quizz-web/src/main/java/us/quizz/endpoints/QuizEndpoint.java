@@ -123,7 +123,7 @@ public class QuizEndpoint {
 
   @ApiMethod(name = "addQuiz", path = "addQuiz", httpMethod = HttpMethod.POST)
   public void addQuiz(@Named("name") String name, @Named("quizID") String quizID,
-                      @Named("quizID") QuestionKind kind) {
+                      @Named("kind") QuestionKind kind) {
     Quiz q = new Quiz(name, quizID, kind);
     quizRepository.save(q);
   }
