@@ -1,12 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
-import us.quizz.entities.Experiment;
-import us.quizz.entities.User;
-import us.quizz.entities.UserAnswer;
-import us.quizz.utils.PMF;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +12,12 @@ import javax.jdo.Query;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import us.quizz.entities.Experiment;
+import us.quizz.entities.User;
+import us.quizz.entities.UserAnswer;
+
+import com.google.appengine.api.datastore.Key;
 
 public class UserRepository extends BaseRepository<User> {
   public UserRepository() {
@@ -41,7 +40,7 @@ public class UserRepository extends BaseRepository<User> {
   }
 
   public Set<String> getUserIDs(String quiz) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
 
     Query q = pm.newQuery(UserAnswer.class);
     q.setFilter("quizID == quizParam");
@@ -115,7 +114,7 @@ public class UserRepository extends BaseRepository<User> {
   }
 
   public User getUseridFromSocialid(String fbid) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     User user;
     try {
       Query query = pm.newQuery(User.class);

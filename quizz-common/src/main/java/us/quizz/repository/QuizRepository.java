@@ -1,7 +1,10 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -9,13 +12,9 @@ import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 import us.quizz.utils.CachePMF;
-import us.quizz.utils.PMF;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 public class QuizRepository extends BaseRepository<Quiz>{
 
@@ -49,7 +48,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
   }
 
   public void deleteQuiz(String quizID) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Quiz quiz = pm.getObjectById(Quiz.class, Quiz.generateKeyFromID(quizID));
       pm.deletePersistent(quiz);
@@ -74,7 +73,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
         return result;
     }
 
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(queryClass);
       q.setFilter("quizID == quizParam");
@@ -100,7 +99,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
         return result;
     }
 
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query query = pm.newQuery(Question.class);
       query.setFilter("quizID == quizParam && hasGoldAnswer==hasGoldParam");
@@ -132,7 +131,7 @@ public class QuizRepository extends BaseRepository<Quiz>{
     if (quizlist != null)
       return quizlist;
 
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     Query query = pm.newQuery(Quiz.class);
     quizlist = (List<Quiz>) query.execute();
     pm.close();

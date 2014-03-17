@@ -9,14 +9,17 @@ import javax.inject.Named;
 import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
 
 import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -27,13 +30,16 @@ import com.google.inject.Inject;
                                ownerName = "crowd-power.appspot.com",
                                packagePath = "crowdquiz.endpoints"))
 public class QuestionEndpoint {
+  private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
 
   @Inject
   public QuestionEndpoint(
+      QuizRepository quizRepository,
       QuizQuestionRepository quizQuestionRepository,
       AnswerChallengeCounterRepository answerChallengeCounterRepository) {
+    this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.answerChallengeCounterRepository = answerChallengeCounterRepository;
   }
@@ -77,9 +83,16 @@ public class QuestionEndpoint {
   }
 
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
-  public Question insertQuestion(final Question question) {
+  public Question insertQuestion(final Question question) throws BadRequestException {
+    Quiz quiz = quizRepository.get(question.getQuizID());
+    
+    if(!question.getKind().equals(quiz.getKind())) {
+      throw new BadRequestException("Can't add " + question.getKind() + 
+          " question to " + quiz.getKind() + " quiz");
+    }
+    
     Question newQuestion = new Question(
-        question.getQuizID(), question.getText(), question.getWeight());
+        question.getQuizID(), question.getText(), question.getKind(), question.getWeight());
     // Needed to get the questionID assigned by datastore.
     newQuestion = quizQuestionRepository.insert(newQuestion);
 

@@ -1,8 +1,5 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -11,6 +8,11 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import us.quizz.enums.QuestionKind;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Question implements Serializable {
@@ -24,6 +26,9 @@ public class Question implements Serializable {
 
   @Persistent
   private String text;
+  
+  @Persistent
+  private QuestionKind kind;
 
   @Persistent
   private Long adGroupId;
@@ -62,10 +67,11 @@ public class Question implements Serializable {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
   
-  public Question(String quizID, String text, Double weight) {
+  public Question(String quizID, String text, QuestionKind kind, Double weight) {
     this.quizID = quizID;
     this.weight = weight;
     this.text = text;
+    this.kind = kind;
     this.answers = new ArrayList<Answer>();
   }
   
@@ -146,6 +152,14 @@ public class Question implements Serializable {
 
   public void setText(String text) {
     this.text = text;
+  }
+  
+  public QuestionKind getKind() {
+    return kind;
+  }
+
+  public void setKind(QuestionKind kind) {
+    this.kind = kind;
   }
 
   public void setRelation(String quizID) {
@@ -239,4 +253,5 @@ public class Question implements Serializable {
     throw new IllegalArgumentException(
         "This question doesn't have gold answer");
   }
+
 }

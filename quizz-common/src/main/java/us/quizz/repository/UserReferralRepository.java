@@ -1,18 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-
-import eu.bitwalker.useragentutils.Browser;
-
-import us.quizz.entities.DomainStats;
-import us.quizz.entities.QuizPerformance;
-import us.quizz.entities.UserReferal;
-import us.quizz.utils.PMF;
-import us.quizz.utils.UrlUtils;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +9,18 @@ import java.util.TreeSet;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
+
+import us.quizz.entities.DomainStats;
+import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.UserReferal;
+import us.quizz.utils.UrlUtils;
+
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+
+import eu.bitwalker.useragentutils.Browser;
 
 public class UserReferralRepository extends BaseRepository<UserReferal> {
   public UserReferralRepository() {
@@ -34,7 +33,7 @@ public class UserReferralRepository extends BaseRepository<UserReferal> {
   }
 
   public Set<String> getUserIDsByQuiz(String quizid) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     Query query = pm.newQuery(UserReferal.class);
     query.setFilter("quiz == quizParam");
     query.declareParameters("String quizParam");
@@ -90,7 +89,7 @@ public class UserReferralRepository extends BaseRepository<UserReferal> {
     List<UserReferal> list = null;
 
     try {
-      mgr = PMF.getPM();
+      mgr = getPersistenceManager();
       while (true) {
         Query q = mgr.newQuery(UserReferal.class);
         q.setFilter("browser == browserParam");

@@ -1,15 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.inject.Inject;
-
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.entities.UserAnswer;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.Helper;
-import us.quizz.utils.PMF;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +8,15 @@ import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.entities.UserAnswer;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.Helper;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 public class QuizQuestionRepository extends BaseRepository<Question> {
   QuizRepository quizRepository;
@@ -78,7 +77,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public ArrayList<Question> getQuizQuestions() {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query query = getQuestionBaseQuery(pm);
       @SuppressWarnings("unchecked")
@@ -91,7 +90,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   protected ArrayList<Question> getQuestions(String filter,
       String declaredParameters, Map<String, Object> params) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query query = getQuestionQuery(pm, filter, declaredParameters);
 
@@ -153,7 +152,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   @SuppressWarnings("unchecked")
   public ArrayList<Question> getSomeQuizQuestionsWithGold(String quizID, int amount) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
 
     try {
       Quiz quiz = quizRepository.singleGetObjectById(Quiz.generateKeyFromID(quizID));
@@ -171,7 +170,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   @SuppressWarnings("unchecked")
   public ArrayList<Question> getSomeQuizQuestionsWithSilver(String quizID, int amount) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
 
     try {
       Quiz quiz = quizRepository.get(quizID);
@@ -204,7 +203,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   @SuppressWarnings("unchecked")
   public List<Question> getQuizQuestionsByKeys(List<Key> keys) {
-    Query q = PMF.getPM().newQuery(
+    Query q = getPersistenceManager().newQuery(
         "select from " + Question.class.getName() + " where key == :keys");
       return (List<Question>) q.execute(keys);
   }
@@ -214,7 +213,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public void removeWithoutUpdates(Long questionID) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Question qq = pm.getObjectById(Question.class, questionID);
       pm.deletePersistent(qq);
@@ -224,7 +223,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public List<UserAnswer> getUserAnswers(Question question) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(UserAnswer.class);
       q.setFilter("questionID == questionParam");
@@ -242,7 +241,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public int getNumberOfUserAnswersExcludingIDK(String questionID) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(UserAnswer.class);
       q.setFilter("questionID == questionIDParam && action == submitParam");
@@ -261,7 +260,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public int getNumberOfCorrectUserAnswers(String questionID) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(UserAnswer.class);
       q.setFilter("questionID == questionIDParam && action == submitParam && " +

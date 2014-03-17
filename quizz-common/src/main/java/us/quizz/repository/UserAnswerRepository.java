@@ -1,12 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
-import us.quizz.entities.UserAnswer;
-import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.PMF;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +7,12 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.utils.CachePMF;
+
+import com.google.appengine.api.datastore.Key;
 
 public class UserAnswerRepository extends BaseRepository<UserAnswer> {
   public UserAnswerRepository() {
@@ -26,7 +25,7 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
   }
 
   public List<UserAnswer> getUserAnswers(String quiz) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
 
     Query q = pm.newQuery(UserAnswer.class);
     q.setFilter("quizID == quizParam");
@@ -54,7 +53,7 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
   }
 
   public List<UserAnswer> getUserAnswers(String quiz, String userid) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
 
     Query q = pm.newQuery(UserAnswer.class);
     q.setFilter("quizID == quizParam && userid == useridParam");
@@ -85,7 +84,7 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
 
   @SuppressWarnings("unchecked")
   public List<UserAnswer> getUserAnswersWithChallenge(String quiz, String userid) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     Query q = pm.newQuery(UserAnswer.class);
     q.setFilter("quizID == quizParam && userid == useridParam");
     q.declareParameters("String quizParam, String useridParam");

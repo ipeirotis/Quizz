@@ -1,24 +1,27 @@
 package us.quizz;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
@@ -33,6 +36,7 @@ import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.Treatment;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.QuestionKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
@@ -48,21 +52,15 @@ import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.utils.PMF;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.servlet.http.HttpServletRequest;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(PMF.class)
 @SuppressWarnings("unused")
 public class QuizzTest {
   private static final Logger logger = Logger.getLogger(QuizzTest.class.getName());
@@ -85,6 +83,9 @@ public class QuizzTest {
       .setEnvEmail("test@example.com")
       .setEnvIsAdmin(true)
       .setEnvIsLoggedIn(true);
+  
+  private PersistenceManager persistenceManager;
+  private PersistenceManager actualPersistenceManager;
 
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
@@ -116,28 +117,40 @@ public class QuizzTest {
 
   @Before
   public void setUp() {
-    PowerMockito.mockStatic(PMF.class);
-    PowerMockito.when(PMF.getPM()).thenReturn(getPersistenceManager());
 
     helper.setUp();
+    initPersistenceManager();
     gson = new GsonBuilder().setPrettyPrinting().create();
-    answerChallengeCounterRepository = new AnswerChallengeCounterRepository();
-    userAnswerRepository = new UserAnswerRepository();
-    quizPerformanceRepository = new QuizPerformanceRepository();
-    badgeRepository = new BadgeRepository();
-    userRepository = new UserRepository();
-    treatmentRepository = new TreatmentRepository();
-    userReferralRepository = new UserReferralRepository();
-    quizRepository = new QuizRepository(userReferralRepository, quizPerformanceRepository);
-    quizQuestionRepository = new QuizQuestionRepository(quizRepository);
-    answersRepository = new AnswersRepository(quizQuestionRepository);
+    
+    answerChallengeCounterRepository = spy(new AnswerChallengeCounterRepository());
+    userAnswerRepository = spy(new UserAnswerRepository());
+    quizPerformanceRepository = spy(new QuizPerformanceRepository());
+    badgeRepository = spy(new BadgeRepository());
+    userRepository = spy(new UserRepository());
+    treatmentRepository = spy(new TreatmentRepository());
+    userReferralRepository = spy(new UserReferralRepository());
+    quizRepository = spy(new QuizRepository(userReferralRepository, quizPerformanceRepository));
+    quizQuestionRepository = spy(new QuizQuestionRepository(quizRepository));
+    answersRepository = spy(new AnswersRepository(quizQuestionRepository));
+    
+    when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(userAnswerRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(treatmentRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(userReferralRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(quizRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    
     survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService);
     userQuizStatisticsService = new UserQuizStatisticsService(
         userAnswerRepository, quizPerformanceRepository);
 
     quizEndpoint = new QuizEndpoint(quizRepository, quizQuestionRepository);
-    questionEndpoint = new QuestionEndpoint(quizQuestionRepository,
+    questionEndpoint = new QuestionEndpoint(quizRepository, quizQuestionRepository,
         answerChallengeCounterRepository);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(userRepository,
         answersRepository, quizQuestionRepository, badgeRepository,
@@ -149,7 +162,7 @@ public class QuizzTest {
     questionsToCreate = new HashMap<String, Question>();
 
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-      Question question = new Question(QUIZ_ID, "Question_" + i, 1.0);
+      Question question = new Question(QUIZ_ID, "Question_" + i, QuestionKind.MULTIPLE_CHOICE, 1.0);
       for (int j = 1; j <= 4; j++) {
         Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, j);
         answer.setKind(j==1?"selectable_gold":"selectable_not_gold");
@@ -168,12 +181,11 @@ public class QuizzTest {
     helper.tearDown();
   }
 
-  private PersistenceManager getPersistenceManager() {
-    System.out.println("get pm .......");
+  private void initPersistenceManager() {
     Properties newProperties = new Properties();
     newProperties
-        .put("javax.jdo.PersistenceManagerFactoryClass",
-             "org.datanucleus.api.jdo.JDOPersistenceManagerFactory");
+    .put("javax.jdo.PersistenceManagerFactoryClass",
+        "org.datanucleus.api.jdo.JDOPersistenceManagerFactory");
     newProperties.put("javax.jdo.option.ConnectionURL", "appengine");
     newProperties.put("javax.jdo.option.NontransactionalRead", "true");
     newProperties.put("javax.jdo.option.NontransactionalWrite", "true");
@@ -181,13 +193,21 @@ public class QuizzTest {
     newProperties.put("datanucleus.appengine.autoCreateDatastoreTxns", "true");
     newProperties.put("datanucleus.appengine.allowMultipleRelationsOfSameType", "true");
 
-    return JDOHelper.getPersistenceManagerFactory(newProperties).getPersistenceManager();
+    PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
+
+    actualPersistenceManager = pmf.getPersistenceManager();
+    persistenceManager = spy(actualPersistenceManager);
+    doNothing().when(persistenceManager).close();
   }
 
-  //@Test
+  private PersistenceManager getPersistenceManager(){
+    return persistenceManager;
+  } 
+
+  @Test
   public void run() throws Exception {
     // create new quiz
-    Quiz quiz = createQuiz(new Quiz("testName", "testQuizId"));
+    Quiz quiz = createQuiz(new Quiz("testName", "testQuizId", QuestionKind.MULTIPLE_CHOICE));
 
     // create questions with answers
     for (Question question : questionsToCreate.values()) {
@@ -246,8 +266,8 @@ public class QuizzTest {
     logResponse("list quizes", resp.getItems());
   }
 
-  private Question createQuestion(Question question) {
-    Question newQuestion = questionEndpoint.insertQuestion(question);
+  private Question createQuestion(Question question) throws BadRequestException {
+    Question newQuestion =  questionEndpoint.insertQuestion(question);
     Assert.assertNotNull(newQuestion.getID());
     return newQuestion;
   }

@@ -3,6 +3,7 @@ package us.quizz.entities;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
+import us.quizz.enums.QuestionKind;
 import us.quizz.utils.Helper;
 
 import java.io.Serializable;
@@ -41,6 +42,9 @@ public class Quiz implements Serializable {
   // and serves as a defacto primary key for the quiz.
   @Persistent
   private String quizID;
+  
+  @Persistent
+  private QuestionKind kind;
 
   // CURRENTLY UNUSED
   // The type of entry for the answer that we expect
@@ -105,9 +109,10 @@ public class Quiz implements Serializable {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
 
-  public Quiz(String name, String quizID) {
+  public Quiz(String name, String quizID, QuestionKind kind) {
     this.name = name;
     this.quizID = quizID;
+    this.kind = kind;
     this.freebaseType = null;
     this.key = generateKeyFromID(quizID);
   }
@@ -255,5 +260,13 @@ public class Quiz implements Serializable {
 
   public void setTotalUsers(Integer totalUsers) {
     this.totalUsers = totalUsers;
+  }
+
+  public QuestionKind getKind() {
+    return kind;
+  }
+
+  public void setKind(QuestionKind kind) {
+    this.kind = kind;
   }
 }

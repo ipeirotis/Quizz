@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
+import us.quizz.enums.QuestionKind;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 
@@ -121,8 +122,9 @@ public class QuizEndpoint {
   }
 
   @ApiMethod(name = "addQuiz", path = "addQuiz", httpMethod = HttpMethod.POST)
-  public void addQuiz(@Named("name") String name, @Named("quizID") String quizID) {
-    Quiz q = new Quiz(name, quizID);
+  public void addQuiz(@Named("name") String name, @Named("quizID") String quizID,
+                      @Named("quizID") QuestionKind kind) {
+    Quiz q = new Quiz(name, quizID, kind);
     quizRepository.save(q);
   }
 }

@@ -1,18 +1,17 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.google.common.base.Strings;
-
-import us.quizz.entities.AnswerChallengeCounter;
-import us.quizz.utils.PMF;
-
 import java.util.HashMap;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.AnswerChallengeCounter;
+
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.google.common.base.Strings;
 
 public class AnswerChallengeCounterRepository extends BaseRepository<AnswerChallengeCounter> {
   public AnswerChallengeCounterRepository() {
@@ -34,7 +33,7 @@ public class AnswerChallengeCounterRepository extends BaseRepository<AnswerChall
     Cursor cursor = null;
     List<AnswerChallengeCounter> result = null;
     try {
-      mgr = PMF.getPM();
+      mgr = getPersistenceManager();
       Query query = mgr.newQuery(AnswerChallengeCounter.class);
       query.setOrdering("count desc");
       if (!Strings.isNullOrEmpty(cursorString)) {

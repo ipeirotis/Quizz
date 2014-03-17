@@ -209,16 +209,16 @@ public class Answer implements Serializable{
   }
 
   public boolean checkIfCorrect(String userInput) {
-    if (kind.equals("feedback_gold")) {
+    if ("feedback_gold".equals(this.kind)) {
       return true;
     }
     if (kind.startsWith("selectable_")) {
       return kind.equals("selectable_gold");
     }
-    if (kind.equals("input_text")) {
+    if ("input_text".equals(this.kind)) {
       return text.equals(userInput);
     }
-    if (kind.equals("silver")) {
+    if ("silver".equals(this.kind)) {
       return true;
     }
     throw new UnsupportedOperationException("Undefined correctness for: "

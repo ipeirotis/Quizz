@@ -1,11 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
-import us.quizz.entities.QuizPerformance;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.PMF;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,6 +9,11 @@ import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.QuizPerformance;
+import us.quizz.utils.CachePMF;
+
+import com.google.appengine.api.datastore.Key;
 
 public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   public QuizPerformanceRepository() {
@@ -35,7 +34,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   protected List<QuizPerformance> getQuizPerformanceFilterOnField(
       String field, String value) {
 
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     Query q = pm.newQuery(QuizPerformance.class);
 
     String valueName = field + "Param";
@@ -54,7 +53,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
 
   @SuppressWarnings("unchecked")
   public long getNumberOfAnswers(String quizID, int a, int b) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     Map<String, Object> params = new HashMap<String, Object>();
     Query q = pm.newQuery(QuizPerformance.class);
 
@@ -101,7 +100,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public List<QuizPerformance> getQuizPerformances() {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     Query query = pm.newQuery(QuizPerformance.class);
     // query.getFetchPlan().setFetchSize(500);
     @SuppressWarnings("unchecked")
@@ -112,7 +111,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public List<QuizPerformance> getQuizPerformances(String quiz) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
 
     Query q = pm.newQuery(QuizPerformance.class);
     q.setFilter("quiz == quizParam");
@@ -151,7 +150,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public void deleteQuizPerformance(String quizid, String userid) {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       QuizPerformance qp = pm.getObjectById(QuizPerformance.class,
           QuizPerformance.generateKeyFromID(quizid, userid));
@@ -170,13 +169,13 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
 
     PersistenceManager mgr = null;
     double result = 0d;
-    Query q = PMF.getPM().newQuery(
+    Query q = getPersistenceManager().newQuery(
         "select from " + QuizPerformance.class.getName() + " where key == :keys");
 
     List<Key> list = new ArrayList<Key>(ids);
 
     try {
-      mgr = PMF.getPM();
+      mgr = getPersistenceManager();
       for (int i = 0; i < list.size(); i += 1000) {
         List<Key> sublist = list.subList(i, Math.min(i + 1000, list.size()));
         List<QuizPerformance> results = (List<QuizPerformance>) q.execute(sublist);

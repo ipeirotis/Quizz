@@ -78,7 +78,7 @@ public abstract class BaseRepository<T> {
 
   @SuppressWarnings("unchecked")
   public List<T> list() {
-    PersistenceManager pm = PMF.getPM();
+    PersistenceManager pm = getPersistenceManager();
     try {
       Query query = pm.newQuery(cls);
       return (List<T>)query.execute();

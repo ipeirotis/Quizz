@@ -11,7 +11,7 @@ uploading data, we have deprecated it.)
 
 This is an example of how to create a quiz::
 
-  $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/addQuiz --data 'quizID=$QUIZ_ID&name=$QUIZ_NAME'
+  $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/addQuiz --data 'quizID=$QUIZ_ID&name=$QUIZ_NAME&kind=MULTIPLE_CHOICE'
 
 Each quiz contains questions. Each question can be of two types:
 
@@ -24,6 +24,7 @@ Here is an example of creating a multiple choice entry gold question::
   $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json' --data '{
         "quizID": "'$QUIZ_ID'",
         "text": "Question text goes here",
+        "kind": "MULTIPLE_CHOICE",
         "weight": 1,
         "answers": [{
             "text": "Answer 1",
@@ -38,6 +39,7 @@ Here is an example of creating a multiple choice entry silver question::
   $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json' --data '{
         "quizID": "'$QUIZ_ID'",
         "text": "Question text goes here",
+        "kind": "MULTIPLE_CHOICE",
         "weight": 1,
         "answers": [{
             "text": "Answer 1",
@@ -55,6 +57,7 @@ correct)::
   $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json; charset=utf-8' --data '{
         "quizID": "'$QUIZ_ID'",
         "text": "How would you say <a target=\"_blank\" href=\"http://freebase.com/m/07ylj‎\">Venezuela</a> in Greek?",
+        "kind": "FREE_TEXT",
         "weight": 1,
         "answers": [{
             "text": "Βενεζουέλα",
