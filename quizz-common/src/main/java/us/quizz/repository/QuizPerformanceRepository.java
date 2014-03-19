@@ -13,7 +13,9 @@ import javax.jdo.Query;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.utils.CachePMF;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   public QuizPerformanceRepository() {
@@ -50,12 +52,22 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
 
     return results;
   }
+  
+  //< a < b, count > >
+  public Map<Integer, Map<Integer, Integer>> getAnswersForSurvivalProbability() {
+    Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
+    for (int a = 0; a <= 20; a++) {//20x20
+      result.put(a, countAnswers(null, a, 20));
+    }
+    return result;
+  }
 
   @SuppressWarnings("unchecked")
-  public long getNumberOfAnswers(String quizID, int a, int b) {
+  private Map<Integer, Integer> countAnswers(String quizID, int a, int max_b) {
     PersistenceManager pm = getPersistenceManager();
     Map<String, Object> params = new HashMap<String, Object>();
     Query q = pm.newQuery(QuizPerformance.class);
+    Cursor cursor = null;
 
     if(quizID != null) {
       q.setFilter("quiz == quizIDparam && correctanswers >= aParam");
@@ -68,23 +80,34 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
       params.put("aParam", a);
     }
 
-    int i = 0;
-    int limit = 1000;
-    long result = 0;
+    Map<Integer,Integer> result = new HashMap<Integer,Integer>();
+    for(int b=0; b<=20; b++) {
+      result.put(b, 0);
+    }
 
     while (true) {
-      q.setRange(i, i + limit);
+      if (cursor != null) {
+        HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+        q.setExtensions(extensionMap);
+      }
+
+      q.setRange(0, 1000);
       List<QuizPerformance> list = (List<QuizPerformance>) q.executeWithMap(params);
+      cursor = JDOCursorHelper.getCursor(list);
+
       if (list.size() == 0) {
         break;
       }
+
       for(QuizPerformance quizPerformance : list) {
-        if(quizPerformance.getIncorrectanswers() == null ||
-           quizPerformance.getIncorrectanswers() >= b) {
-          result++;
+        for(int b=0; b <= max_b; b++) {
+          if(quizPerformance.getIncorrectanswers() == null ||
+              quizPerformance.getIncorrectanswers() >= b) {
+            result.put(b, result.get(b) + 1);
+          }
         }
       }
-      i += limit;
     }
     pm.close();
 

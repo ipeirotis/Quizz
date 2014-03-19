@@ -21,7 +21,8 @@ public class CacheSurvivalProbability extends HttpServlet {
   private SurvivalProbabilityService survivalProbabilityService;
 
   @Inject
-  public CacheSurvivalProbability(SurvivalProbabilityService survivalProbabilityService) {
+  public CacheSurvivalProbability(
+      SurvivalProbabilityService survivalProbabilityService) {
     this.survivalProbabilityService = survivalProbabilityService;
   }
 
@@ -30,26 +31,14 @@ public class CacheSurvivalProbability extends HttpServlet {
       throws IOException {
     if ("true".equals(req.getParameter("sched"))) {
       sched();
-    }
-    else {
-      String a = req.getParameter("a");
-      String b = req.getParameter("b");
-      if (a != null && b != null) {
-        survivalProbabilityService.cacheValue(Integer.parseInt(a), Integer.parseInt(b));
-      }
+    } else {
+      survivalProbabilityService.cache();
     }
   }
 
   private void sched() {
     Queue queue = QueueFactory.getDefaultQueue();
-    for (int a=0;a<=20;a++) {
-      for (int b=0;b<=20;b++) {
-        queue.add(Builder
-          .withUrl("/api/cacheSurvivalProbability")
-          .param("a", String.valueOf(a))
-          .param("b", String.valueOf(b))
-          .method(TaskOptions.Method.GET));
-      }
-    }
+    queue.add(Builder.withUrl("/api/cacheSurvivalProbability").method(
+        TaskOptions.Method.GET));
   }
 }
