@@ -70,7 +70,7 @@ public class ProcessUserAnswerEndpoint {
     this.explorationExploitationService = explorationExploitationService;
   }
 
-  @ApiMethod(name = "processUserAnswer", path="processUserAnswer", httpMethod=HttpMethod.POST)
+  @ApiMethod(name = "processUserAnswer", path = "processUserAnswer", httpMethod = HttpMethod.POST)
   public Map<String, Object> processUserAnswer(
       HttpServletRequest req,
       @Named("quizID") String quizID, 
@@ -133,9 +133,6 @@ public class ProcessUserAnswerEndpoint {
 
     totalanswers += 1;
 
-    List<Badge> newBadges = badgeRepository.checkForNewBadges(user, quizID,
-        correctanswers, totalanswers);
-
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
     String referer = req.getHeader("Referer");
@@ -145,7 +142,7 @@ public class ProcessUserAnswerEndpoint {
     Long timestamp = (new Date()).getTime();
 
     UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
-        answerID, userInput, isCorrect, correctanswers, totalanswers, newBadges);
+        answerID, userInput, isCorrect, correctanswers, totalanswers);
     quickUpdateQuizPerformance(user, quizID, isCorrect, action);
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, referer, timestamp, isCorrect);
@@ -154,7 +151,8 @@ public class ProcessUserAnswerEndpoint {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userAnswer", ua);
     result.put("userAnswerFeedback", uaf);
-    result.put("exploit", isExploit(a, b, c));
+    // TODO(chunhowt): Call the actual exploration-exploitation service.
+    result.put("exploit", false);
 
     return result;
   }
@@ -168,13 +166,12 @@ public class ProcessUserAnswerEndpoint {
   protected UserAnswerFeedback createUserAnswerFeedback(User user,
       Long questionID, Integer useranswerID, String userInput,
       Boolean isCorrect, Integer correctanswers,
-      Integer totalanswers, List<Badge> newBadges) {
+      Integer totalanswers) {
     UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
         user.getUserid(), useranswerID, isCorrect);
     uaf.setNumCorrectAnswers(correctanswers);
     uaf.setNumTotalAnswers(totalanswers);
     Question question = quizQuestionRepository.getQuizQuestion(questionID);
-    uaf.setUserNewBadges(newBadges);
     uaf.setUserAnswerText((useranswerID == -1) ? "" : question.getAnswer(
         useranswerID).userAnswerText(userInput));
     uaf.setCorrectAnswerText(question.goldAnswer().getText());

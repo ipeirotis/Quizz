@@ -9,6 +9,12 @@ angular.module('quizz').controller('QuizController',
        $scope.performance = data;
      });
 
+     // Gets or creates a new user id if user directly arrives at the question
+     // page.
+     userService.getUser(
+       function(response) {},
+       function(error) {});
+
      $scope.fetchQuestions = function() {
        // If we don't have questions set in the workflowService, fetch them.
        if (!workflowService.hasQuestions()) {

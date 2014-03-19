@@ -1,5 +1,15 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
+
+import us.quizz.entities.Answer;
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.entities.UserAnswer;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.Helper;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,15 +18,6 @@ import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.entities.UserAnswer;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.Helper;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.inject.Inject;
 
 public class QuizQuestionRepository extends BaseRepository<Question> {
   QuizRepository quizRepository;
@@ -162,7 +163,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       ArrayList<Question> result = new ArrayList<Question>(
           (List<Question>) query
               .executeWithMap(getQuizGoldQuestionsParameters(quizID)));
-      return result;
+      return removeInvalidQuestions(result);
     } finally {
       pm.close();
     }
@@ -181,10 +182,32 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
           (List<Question>) query
               .executeWithMap(getQuizSilverQuestionsParameters(quizID)));
 
-      return result;
+      return removeInvalidQuestions(result);
     } finally {
       pm.close();
     }
+  }
+
+  // Removes invalid questions that have answers' kind = null in the given questions list
+  // and returns the remaining questions.
+  // TODO(chunhowt): This is temporary fix to resolve "corruption" in datastore where the
+  // answers have null values in all the field, and it is yet unclear whether it is due
+  // to errors during datastore insertion or during updates.
+  private ArrayList<Question> removeInvalidQuestions(final ArrayList<Question> questions) {
+    ArrayList<Question> newQuestions = new ArrayList<Question>();
+    for (final Question question : questions) {
+      boolean isValidQuestion = true;
+      for (final Answer answer : question.getAnswers()) {
+        if (answer.getKind() == null) {
+          isValidQuestion = false;
+          break;
+        }
+      }
+      if (isValidQuestion) {
+        newQuestions.add(question);
+      }
+    }
+    return newQuestions;
   }
 
   public void setRandomRange(Query query, int size, int amount) {

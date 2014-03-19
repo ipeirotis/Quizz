@@ -209,6 +209,9 @@ public class Answer implements Serializable{
   }
 
   public boolean checkIfCorrect(String userInput) {
+    if (this.kind == null) {
+      return false;
+    }
     if ("feedback_gold".equals(this.kind)) {
       return true;
     }
@@ -226,7 +229,7 @@ public class Answer implements Serializable{
   }
 
   public String userAnswerText(String userInput) {
-    if (kind.equals("input_text")) {
+    if (kind != null && kind.equals("input_text")) {
       return userInput;
     }
     return text;
