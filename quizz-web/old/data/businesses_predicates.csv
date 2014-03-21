@@ -1,0 +1,7 @@
+kp_pred, kv_pred
+kc:/organization/organization:founder, /organization/organization/founders
+kc:/organization/organization:headquarters, /organization/organization/headquarters
+kc:/organization/organization:date founded, /organization/organization/date_founded
+kc:/organization/organization:leadership, /organization/organization/leadership
+kc:/organization/organization:place founded, /organization/organization/place_founded
+kc:/business/business_operation:industry, /business/business_operation/industry

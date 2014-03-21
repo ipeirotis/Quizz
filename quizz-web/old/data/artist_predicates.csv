@@ -1,0 +1,5 @@
+kp_pred, kv_pred
+kc:/music/artist:albums, /music/artist/album
+kc:/music/artist:songs, /music/artist/track
+kc:/people/person:movies, /film/actor/film./film/performance/film
+kc:/award/award_winner:awards, /award/award_winner/awards_won./award/award_honor/award

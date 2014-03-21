@@ -27,13 +27,7 @@ Running local dev server::
 
 Now you have your server running at `localhost:8888`.
 It will use (create if needed) local data storage located in main folder and named `local_db.bin`.
-It won't be versioned by git and delted after restart.
-
-If you would like to make JS on website work correctly with your local instance you have to modify file `src/main/webapp/js/quizz.js`.
-Change URL returned by methods `getBaseURL()` and `getWebURL()` to `http://localhost:8888/`.
-
-
-If you are getting *Out of memory* then you should change option *instances* to much smaller value (5 should be fine) in `src/main/webapp/WEB-INF/backends.xml`.
+It won't be versioned by git and deleted after restart.
 
 
 Deploy
@@ -41,7 +35,7 @@ Deploy
 
 To deploy the version onto the AppEngine as a dev version, use deploy_dev.sh:
 
-  $ ./deploy_dev.sh $VERSION_ID
+  $ ./src/main/scripts/deploy_dev.sh $VERSION_ID
 
 where $VERSION_ID is a new version id (not existing in the AppEngine yet) to be
 used to identify the development version.
