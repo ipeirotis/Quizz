@@ -9,7 +9,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import us.quizz.enums.QuestionKind;
+import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuizKind;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -28,7 +29,7 @@ public class Question implements Serializable {
   private String text;
   
   @Persistent
-  private QuestionKind kind;
+  private QuizKind kind;
 
   @Persistent
   private Long adGroupId;
@@ -67,7 +68,7 @@ public class Question implements Serializable {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
   
-  public Question(String quizID, String text, QuestionKind kind, Double weight) {
+  public Question(String quizID, String text, QuizKind kind, Double weight) {
     this.quizID = quizID;
     this.weight = weight;
     this.text = text;
@@ -154,11 +155,11 @@ public class Question implements Serializable {
     this.text = text;
   }
   
-  public QuestionKind getKind() {
+  public QuizKind getKind() {
     return kind;
   }
 
-  public void setKind(QuestionKind kind) {
+  public void setKind(QuizKind kind) {
     this.kind = kind;
   }
 
@@ -234,24 +235,24 @@ public class Question implements Serializable {
     // check if there's any designate one of the golds as the feedback
     // answer i.e. feedback_gold
     for (final Answer answer : answers) {
-      if (answer.isGold() && answer.getKind().equals("feedback_gold")) {
+      if (answer.getKind() == AnswerKind.FEEDBACK_GOLD) {
         return answer;
       }
     }
     // if no feedback gold is there return first gold answer
     for (final Answer answer : answers) {
-      if (answer.isGold()) {
+      if (answer.getKind()  == AnswerKind.GOLD) {
         return answer;
       }
     }
     // If no gold answer, return silver answer.
     for (final Answer answer : answers) {
-      if (answer.getKind().equals("silver")) {
+      if (answer.getKind() == AnswerKind.SILVER) {
         return answer;
       }
     }
     throw new IllegalArgumentException(
-        "This question doesn't have gold answer");
+        "This question doesn't have any gold or silver answer");
   }
 
 }

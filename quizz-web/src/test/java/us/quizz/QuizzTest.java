@@ -37,7 +37,8 @@ import us.quizz.entities.Treatment;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.enums.QuestionKind;
+import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
@@ -162,10 +163,10 @@ public class QuizzTest {
     questionsToCreate = new HashMap<String, Question>();
 
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-      Question question = new Question(QUIZ_ID, "Question_" + i, QuestionKind.MULTIPLE_CHOICE, 1.0);
+      Question question = new Question(QUIZ_ID, "Question_" + i, QuizKind.MULTIPLE_CHOICE, 1.0);
       for (int j = 1; j <= 4; j++) {
-        Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, j);
-        answer.setKind(j==1?"selectable_gold":"selectable_not_gold");
+    	  AnswerKind ak = (j==1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
+        Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, ak, j);
         answer.setQuestionID(1L);
         question.addAnswer(answer);
       }
@@ -207,7 +208,7 @@ public class QuizzTest {
   @Test
   public void run() throws Exception {
     // create new quiz
-    Quiz quiz = createQuiz(new Quiz("testName", "testQuizId", QuestionKind.MULTIPLE_CHOICE));
+    Quiz quiz = createQuiz(new Quiz("testName", "testQuizId", QuizKind.MULTIPLE_CHOICE));
 
     // create questions with answers
     for (Question question : questionsToCreate.values()) {
@@ -220,7 +221,7 @@ public class QuizzTest {
     //add FREE_TEXT question to MULTIPLE_CHOICE quiz.
     //should throw an exception BadRequestException
     createFreeTextQuestionInMultichoiceQuiz(
-        new Question(QUIZ_ID, "Question", QuestionKind.FREE_TEXT, 1.0));
+        new Question(QUIZ_ID, "Question", QuizKind.FREE_TEXT, 1.0));
 
     // create treatments
     for (String treatment : treatments) {

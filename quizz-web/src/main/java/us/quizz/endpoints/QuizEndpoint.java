@@ -1,19 +1,5 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.inject.Inject;
-
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.enums.QuestionKind;
-import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +7,20 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
+
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.enums.QuizKind;
+import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
@@ -123,7 +123,7 @@ public class QuizEndpoint {
 
   @ApiMethod(name = "addQuiz", path = "addQuiz", httpMethod = HttpMethod.POST)
   public void addQuiz(@Named("name") String name, @Named("quizID") String quizID,
-                      @Named("kind") QuestionKind kind) {
+                      @Named("kind") QuizKind kind) {
     Quiz q = new Quiz(name, quizID, kind);
     quizRepository.save(q);
   }

@@ -101,19 +101,18 @@ public class QuestionEndpoint {
       for (final Answer answer : question.getAnswers()) {
         // Create a new Answer to generate a new answer ID.
         Answer newAnswer = new Answer(
-            newQuestion.getID(), newQuestion.getQuizID(), answer.getText(), internalID);
+            newQuestion.getID(), newQuestion.getQuizID(), answer.getText(), answer.getKind(), internalID);
 
         Preconditions.checkNotNull(answer.getKind(), "Answer kind can't be empty");
         newAnswer.setKind(answer.getKind());
         switch (newAnswer.getKind()) {
-          case "silver": {
+          case SILVER: {
             newQuestion.setHasSilverAnswers(true);
             break;
           }
-          case "selectable_gold":
-          case "input_text": {
+          case GOLD: {
             newQuestion.setHasGoldAnswer(true);
-            newAnswer.setIsGold(true);
+            //newAnswer.setIsGold(true);
             break;
           }
           default:

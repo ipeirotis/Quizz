@@ -13,6 +13,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import us.quizz.enums.AnswerKind;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Answer implements Serializable{
   private static final long serialVersionUID = 1L;
@@ -24,18 +26,20 @@ public class Answer implements Serializable{
   @Persistent
   private Integer internalID;
 
+  // contains the text/html to display
   @Persistent
   private String text;
-  // contains the text/html to display
+ 
+  // UNUSED
+  // represents the importance associated with selecting this answer
+  //@Persistent
+  //private Double score;
 
+  // Used to identify what to expect in metadata and how to interpret the score
   @Persistent
-  private Double score;
-  // represents value that is associated with selecting this answer
-
-  @Persistent
-  private String kind;
-  // used to identify what to expect in metadata and how to interpret score
-
+  private AnswerKind kind;
+  
+  // The source of the answer. Mainly used for SILVER answers and refers to KV
   @Persistent
   private String source;
 
@@ -48,15 +52,21 @@ public class Answer implements Serializable{
   @Persistent
   private String quizID;
 
-  @Persistent
-  private Boolean isGold;
+  
+  //@Persistent
+  //private Boolean isGold;
 
+  // If this is a SILVER answer, the probability that it is correct
   @Persistent
   private Double probability;
   
+  // The number of times that users have selected this answer
   @Persistent
   private Long numberOfPicks;
   
+  // The total number of bits assigned to this answer
+  // Calculated as the sum of the average information gain for all users
+  // that picked this answer.
   @Persistent
   private Double bits;
   
@@ -71,11 +81,12 @@ public class Answer implements Serializable{
   @Persistent
   private Double probCorrect;
 
-  public Answer(Long questionID, String quizID, String text,
+  public Answer(Long questionID, String quizID, String text, AnswerKind kind,
       Integer internalID) {
     this.questionID = questionID;
     this.quizID = quizID;
     this.text = text;
+    this.kind = kind;
     this.internalID = internalID;
     this.id = generateKeyFromID(questionID, internalID);
   }
@@ -112,6 +123,7 @@ public class Answer implements Serializable{
     this.text = text;
   }
 
+  /*
   public Double getScore() {
     return score;
   }
@@ -119,12 +131,13 @@ public class Answer implements Serializable{
   public void setScore(Double score) {
     this.score = score;
   }
+  */
 
-  public String getKind() {
+  public AnswerKind getKind() {
     return kind;
   }
 
-  public void setKind(String kind) {
+  public void setKind(AnswerKind kind) {
     this.kind = kind;
   }
 
@@ -152,9 +165,11 @@ public class Answer implements Serializable{
     return getPrimitiveMD(key).getAsLong();
   }
 
+  /*
   public boolean isSilver() {
     return probability != null;
   }
+  */
 
   public Double getProbability() {
     return probability;
@@ -176,6 +191,7 @@ public class Answer implements Serializable{
     this.questionID = questionID;
   }
 
+  /*
   public Boolean getIsGold() {
     return isGold;
   }
@@ -187,6 +203,7 @@ public class Answer implements Serializable{
   public boolean isGold() {
     return isGold != null && isGold;
   }
+  */
 
   public String getSource() {
     return source;
@@ -208,10 +225,27 @@ public class Answer implements Serializable{
     this.id = id;
   }
 
+  /*
   public boolean checkIfCorrect(String userInput) {
     if (this.kind == null) {
       return false;
     }
+    
+    // The userInput is populated for free-text answers
+    if (userInput.equals(this.text)) {
+    	return true;
+    }
+    
+    if (this.kind == AnswerKind.GOLD) {
+    	return true;
+    }
+    if (this.kind == AnswerKind.INCORRECT) {
+    	return false;
+    }
+    if (this.kind == AnswerKind.SILVER) {
+    	return false;
+    }
+    
     if ("feedback_gold".equals(this.kind)) {
       return true;
     }
@@ -219,7 +253,7 @@ public class Answer implements Serializable{
       return kind.equals("selectable_gold");
     }
     if ("input_text".equals(this.kind)) {
-      return text.equals(userInput);
+     return text.equals(userInput);
     }
     if ("silver".equals(this.kind)) {
       return true;
@@ -227,9 +261,10 @@ public class Answer implements Serializable{
     throw new UnsupportedOperationException("Undefined correctness for: "
         + kind);
   }
+*/
 
   public String userAnswerText(String userInput) {
-    if (kind != null && kind.equals("input_text")) {
+    if (kind != null && kind == AnswerKind.USER_SUBMITTED) {
       return userInput;
     }
     return text;

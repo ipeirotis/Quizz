@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import us.quizz.entities.Quiz;
-import us.quizz.enums.QuestionKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.repository.QuizRepository;
 import us.quizz.utils.ServletUtils;
 
@@ -80,7 +80,7 @@ public class AddQuizAdCampaign extends HttpServlet {
         resp.getWriter().println("adText: " + adline2);
       }
 
-      Quiz q = new Quiz(name, quizID, QuestionKind.MULTIPLE_CHOICE);
+      Quiz q = new Quiz(name, quizID, QuizKind.MULTIPLE_CHOICE);
       quizRepository.singleMakePersistent(q);
 
       Queue queueAdCampaign = QueueFactory.getQueue("adcampaign");

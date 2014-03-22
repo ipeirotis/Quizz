@@ -3,7 +3,7 @@ package us.quizz.entities;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import us.quizz.enums.QuestionKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.utils.Helper;
 
 import java.io.Serializable;
@@ -43,8 +43,18 @@ public class Quiz implements Serializable {
   @Persistent
   private String quizID;
   
+  
+  
+  // This defines the type of questions that can be entered into the quiz
+  // e.g., can be either free-text or multiple choice. See the corresponding
+  // enum for the currently supported set.
   @Persistent
-  private QuestionKind kind;
+  private QuizKind kind;
+  
+  // This is only used for multiple choice tests and indicates the number of
+  // answers that each multiple choice question should have
+  @Persistent
+  private Integer numChoices;
 
   // CURRENTLY UNUSED
   // The type of entry for the answer that we expect
@@ -109,7 +119,7 @@ public class Quiz implements Serializable {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
 
-  public Quiz(String name, String quizID, QuestionKind kind) {
+  public Quiz(String name, String quizID, QuizKind kind) {
     this.name = name;
     this.quizID = quizID;
     this.kind = kind;
@@ -262,11 +272,11 @@ public class Quiz implements Serializable {
     this.totalUsers = totalUsers;
   }
 
-  public QuestionKind getKind() {
+  public QuizKind getKind() {
     return kind;
   }
 
-  public void setKind(QuestionKind kind) {
+  public void setKind(QuizKind kind) {
     this.kind = kind;
   }
 }

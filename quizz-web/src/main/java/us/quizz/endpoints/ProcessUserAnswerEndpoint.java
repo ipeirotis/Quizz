@@ -17,6 +17,8 @@ import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
@@ -86,52 +88,23 @@ public class ProcessUserAnswerEndpoint {
     User user = userRepository.get(userID);
     String action;
 
-    List<Answer> answers = null;
+    
     Boolean isCorrect = false;
-    if (!answerID.equals(-1)) {
-      action = "Submit";
-      Answer answer = answersRepository.getAnswer(questionID, answerID);
-      if ("input_text".equals(answer.getKind())) { // check in all possible answers
-        Question question = quizQuestionRepository.getQuizQuestion(questionID);
-        answers = question.getAnswers();
-
-        // first check for correct answers
-        for (Answer ans : answers) {
-          isCorrect = ans.checkIfCorrect(userInput);
-          if (isCorrect) {
-            userInput = userInput + " is Correct!";
-            break;
-          }
-        }
-
-        // if no correct answer then calculate edit distance
-        if (!isCorrect) {
-          for (Answer ans : answers) {
-            // Checking Edit_Distance for input_text
-            int editDistance = LevenshteinAlgorithm
-                .getLevenshteinDistance(userInput, ans.getText());
-            if (editDistance == 1) {
-              isCorrect = true;
-              userInput = userInput + " is Almost Correct!";
-              break;
-            }
-          }
-        }
-      } else {
-        isCorrect = answer.checkIfCorrect(userInput);
-        if (isCorrect) {
-          userInput = userInput + " is Correct!";
-        }
-      }
-    } else {
+    String message = "";
+    if (answerID == -1) {
       action = "I don't know";
-    }
+   	}  else {
+      action = "Submit";
+      totalanswers++;
+      
+      isCorrect = isUserAnswerCorrect(questionID, answerID, userInput);
+      if (isCorrect) {
+          correctanswers++;
+       }
+      
+    } 
 
-    if (isCorrect) {
-      correctanswers += 1;
-    }
-
-    totalanswers += 1;
+    
 
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
@@ -144,6 +117,7 @@ public class ProcessUserAnswerEndpoint {
     UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
         answerID, userInput, isCorrect, correctanswers, totalanswers);
     quickUpdateQuizPerformance(user, quizID, isCorrect, action);
+    
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, referer, timestamp, isCorrect);
     updateQuizPerformance(user, questionID);
@@ -157,6 +131,49 @@ public class ProcessUserAnswerEndpoint {
     return result;
   }
 
+private Boolean isUserAnswerCorrect(Long questionID, Integer answerID,
+		String userInput) {
+	
+	Boolean isCorrect = false;
+	Question question = quizQuestionRepository.getQuizQuestion(questionID);
+      
+      if (question.getKind() == QuizKind.MULTIPLE_CHOICE) {
+    	  // We already have the answerID and we can retrieve the answer
+    	  Answer answer = answersRepository.getAnswer(questionID, answerID);
+    	  AnswerKind ak = answer.getKind();
+    	  if (ak == AnswerKind.GOLD || ak == AnswerKind.FEEDBACK_GOLD) {
+    		  isCorrect = true;
+    	  } else if (ak == AnswerKind.SILVER) {
+    		  double prob = answer.getProbability();
+    		  isCorrect = (prob>=0.5);
+    	  } else if (ak == AnswerKind.INCORRECT) {
+    		  isCorrect = false;
+    	  }
+      }
+      if (question.getKind() == QuizKind.FREE_TEXT) {
+    	  // since we do not have an id, to immediately retrieve
+    	  // the answer, we need to scan and see if the submitted answer 
+    	  // matches
+    	  List<Answer> answers = question.getAnswers();
+          for (Answer ans : answers) {
+        	  AnswerKind ak = ans.getKind();
+        	  if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
+        		  if (ans.getText().equalsIgnoreCase(userInput)) {
+	            	  isCorrect = true;
+	            	  break;
+        		  } 
+                  int editDistance = LevenshteinAlgorithm
+                          .getLevenshteinDistance(userInput, ans.getText());
+                  if (editDistance<=1) {
+	            	  isCorrect = true;
+	            	  break;
+                  }
+              }
+          }
+      }
+	return isCorrect;
+}
+
   private boolean isExploit(int a, int b, int c) throws Exception {
     explorationExploitationService.setN(10);
     Result r = explorationExploitationService.getUtility(a, b, c, 0.01);
@@ -167,6 +184,7 @@ public class ProcessUserAnswerEndpoint {
       Long questionID, Integer useranswerID, String userInput,
       Boolean isCorrect, Integer correctanswers,
       Integer totalanswers) {
+	  
     UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
         user.getUserid(), useranswerID, isCorrect);
     uaf.setNumCorrectAnswers(correctanswers);

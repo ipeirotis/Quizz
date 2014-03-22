@@ -13,10 +13,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-/**
- * The Quiz is the basic unit of the application. Each quiz contains a set of
- * QuizQuestions.
- */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UserAnswerFeedback implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -48,8 +44,19 @@ public class UserAnswerFeedback implements Serializable {
   @Persistent
   private Boolean isCorrect;
 
-  @Persistent
+  public String getMessage() {
+	return message;
+}
+
+public void setMessage(String message) {
+	this.message = message;
+}
+
+@Persistent
   private String correctAnswerText;
+  
+  @Persistent
+  private String message;
 
   @Persistent
   private Integer numCorrectAnswers;
