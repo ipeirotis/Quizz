@@ -5,7 +5,7 @@ QUIZ_ID="testQuizId"
 QUIZ_NAME="testQuizName"
 
 echo "Creating the quiz"
-curl $API_URL/addQuiz --data “quizID=$QUIZ_ID&name=testQuizName&kind=MULTIPLE_CHOICE”
+curl $API_URL/addQuiz --data "quizID=$QUIZ_ID&name=$QUIZ_NAME&kind=MULTIPLE_CHOICE"
 
 #TODO: Check that the quiz was properly created
 

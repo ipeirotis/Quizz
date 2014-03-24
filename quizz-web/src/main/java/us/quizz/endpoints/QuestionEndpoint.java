@@ -77,7 +77,7 @@ public class QuestionEndpoint {
         .setNextPageToken(cursor).build();
   }
 
-  @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.POST)
+  @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.GET)
   public Question getQuestion(@Named("questionID") Long questionID) {
     return quizQuestionRepository.singleGetObjectById(questionID);
   }
