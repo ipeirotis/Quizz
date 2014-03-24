@@ -48,3 +48,4 @@ the default version to be the dev version on AppEngine admin interface.
 
 To test & switch to default version, use the admin interface at:
   Main -> version.
+Make sure you switch both the "default" version and the "quizz-tasks" version.
