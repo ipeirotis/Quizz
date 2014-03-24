@@ -1,28 +1,28 @@
 #!/bin/bash
 
-WEB_URL="http://crowd-power.appspot.com" # without trailing /
+API_URL="https://crowd-power.appspot.com/_ah/api/quizz/v1" # without trailing /
 QUIZ_ID="testQuizId"
 QUIZ_NAME="testQuizName"
 
 echo "Creating the quiz"
-curl https://crowd-power.appspot.com/_ah/api/quizz/v1/addQuiz --data “quizID=testQuizId&name=testQuizName&kind=MULTIPLE_CHOICE”
+curl $API_URL/addQuiz --data “quizID=$QUIZ_ID&name=testQuizName&kind=MULTIPLE_CHOICE”
 
 #TODO: Check that the quiz was properly created
 
 for i in {1..10}
 do
    echo "Adding calibration question #$i"
-   curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json' --data  '{ "quizID": "testQuizId", "text": "testQuestion$i", "kind": "MULTIPLE_CHOICE", "weight": 1, "answers": [{ "text": "Answer 1 - gold", "kind": "selectable_gold" }, { "text": "Answer 2", "kind": "selectable_not_gold" }, { "text": "Answer 3", "kind": "selectable_not_gold" }, { "text": "Answer 4", "kind": "selectable_not_gold" }] }' 
+   curl $API_URL/insertQuestion --header 'Content-Type: application/json' --data  '{ "quizID": "$QUIZ_ID", "text": "Calibration Question $i", "kind": "MULTIPLE_CHOICE", "weight": 1, "answers": [{ "text": "Answer 1 - gold", "kind": "GOLD" }, { "text": "Answer 2", "kind": "INCORRECT" }, { "text": "Answer 3", "kind": "INCORRECT" }, { "text": "Answer 4", "kind": "INCORRECT" }] }' 
 done
 
 for i in {1..10}
 do
    echo "Adding collection question #$i"
-   curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json' --data  '{ "quizID": "testQuizId", "text": "testQuestion$i", "kind": "MULTIPLE_CHOICE", "weight": 1, "answers": [{ "text": "Answer 1", "kind": "selectable_gold" }, { "text": "Answer 2", "kind": "selectable_not_gold" }, { "text": "Answer 3", "kind": "selectable_not_gold" }, { "text": "Answer 4", "kind": "selectable_not_gold" }] }' 
+   curl $API_URL/insertQuestion --header 'Content-Type: application/json' --data  '{ "quizID": "$QUIZ_ID", "text": "Collection Question $i", "kind": "MULTIPLE_CHOICE", "weight": 1, "answers": [{ "text": "Answer 1 - silver", "kind": "SILVER" }, { "text": "Answer 2", "kind": "INCORRECT" }, { "text": "Answer 3", "kind": "INCORRECT" }, { "text": "Answer 4", "kind": "INCORRECT" }] }' 
 done
 
 #TODO: The updateQuizCounts should be a POST call, not a GET
 echo "Updating the statistics for the Quiz"
-curl https://crowd-power.appspot.com/_ah/api/quizz/v1/updateQuizCounts?quizID=testQuizId
+curl $API_URL/updateQuizCounts?quizID=testQuizId
 
 #TODO: Check that the updated numbers are ok
