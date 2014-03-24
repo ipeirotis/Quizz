@@ -7,8 +7,8 @@ angular.module('quizz').factory('workflowService', [function() {
   var currentGoldQuestionIndex = 0;
   var currentSilverQuestionIndex = 0;
   var numOfQuestions = 10;
-  var numOfGoldQuestions = 0;
-  var numOfSilverQuestions = 0;
+  var numOfCalibrationQuestions = 0;
+  var numOfCollectionQuestions = 0;
   var numOfCorrectAnswers = 0;
   var isNextQuestionGold = true;
   var channelToken = '';
@@ -21,23 +21,23 @@ angular.module('quizz').factory('workflowService', [function() {
       userFeedbacks = [];
       currentQuestionIndex = 0;
       numOfCorrectAnswers = 0;
-      numOfGoldQuestions = 0;
-      numOfSilverQuestions = 0;
+      numOfCalibrationQuestions = 0;
+      numOfCollectionQuestions = 0;
     },
     setQuestions: function(q) {
       questions = q;
-      if(q.gold){
-        numOfGoldQuestions = q.gold.length;
+      if(q.calibration){
+    	  numOfCalibrationQuestions = q.calibration.length;
       }
-      if(q.silver){
-        numOfSilverQuestions = q.silver.length;
+      if(q.collection){
+        numOfCollectionQuestions = q.collection.length;
       }
     },
     getQuestions: function() {
       return questions;
     },
     hasQuestions: function() {
-      return questions.gold || questions.silver;
+      return questions.calibration || questions.collection;
     },
     getIsCurrentQuestionGold: function() {
       return isCurrentQuestionGold;
@@ -46,21 +46,20 @@ angular.module('quizz').factory('workflowService', [function() {
       // For now, randomly pick whether it is a gold or a silver question until
       // the exploration-exploitation is fixed.
       // TODO(chunhowt): This assumes at least one of gold/silver is non-empty.
-      var rnd = Math.random();
-      if (numOfGoldQuestions == 0) {
+      if (numOfCalibrationQuestions == 0) {
         useGold = false;
-      } else if (numOfSilverQuestions == 0) {
+      } else if (numOfCollectionQuestions == 0) {
         useGold = true;
       } else {
         useGold = Math.random() < 0.5;
       }
       if (!useGold) {
         currentQuestion =
-            questions.silver[currentQuestionIndex % numOfSilverQuestions];
+            questions.collection[currentQuestionIndex % numOfCollectionQuestions];
         isCurrentQuestionGold = false;
       } else {
         currentQuestion =
-            questions.gold[currentQuestionIndex % numOfGoldQuestions];
+            questions.calibration[currentQuestionIndex % numOfCalibrationQuestions];
         isCurrentQuestionGold = true;
       }
       return currentQuestion;

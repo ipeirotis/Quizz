@@ -45,9 +45,9 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
     int N = n * 5;
     ArrayList<Question> goldQuestions = getSomeQuizQuestionsWithGold(quiz, N);
-    result.put("gold", Helper.trySelectingRandomElements(goldQuestions, n));
+    result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
     ArrayList<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quiz, N);
-    result.put("silver", Helper.trySelectingRandomElements(silverQuestions, n));
+    result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
 
     int cached_lifetime = 5 * 60; // 10 minutes
     CachePMF.put(key, result, cached_lifetime);

@@ -121,12 +121,5 @@ public class QuizEndpoint {
     quizRepository.remove(Quiz.generateKeyFromID(id));
   }
   
-  /*
-  @ApiMethod(name = "addQuiz", path = "addQuiz", httpMethod = HttpMethod.POST)
-  public void addQuiz(@Named("name") String name, @Named("quizID") String quizID,
-                      @Named("kind") QuizKind kind) {
-    Quiz q = new Quiz(name, quizID, kind);
-    quizRepository.save(q);
-  }
-  */
+
 }

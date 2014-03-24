@@ -80,7 +80,7 @@ angular.module('quizz').controller('QuizController',
      $scope.getGaType = function(answerKind) {
        if (answerKind == 'GOLD' || answerKind == 'SILVER') {
          return 'multiple-choice-correct';
-       } else if (answerKind == 'INVALID') {
+       } else if (answerKind == 'INCORRECT') {
          return 'multiple-choice-incorrect';
        } else if (answerKind == 'USER_SUBMITTED') {
          return 'input-text-correct';
@@ -89,7 +89,7 @@ angular.module('quizz').controller('QuizController',
 
      $scope.filterSelectable = function(answer) {
        return answer.kind == 'GOLD' ||
-              answer.kind == 'INVALID' ||
+              answer.kind == 'INCORRECT' ||
               answer.kind == 'SILVER';
      };
 
