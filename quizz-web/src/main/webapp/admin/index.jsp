@@ -44,9 +44,8 @@
 
   if (isDev)
     apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
-  else {
+  else
     apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
-  }
 %>
 
 <script>

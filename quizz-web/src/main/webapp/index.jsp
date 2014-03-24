@@ -55,9 +55,8 @@
 
   if (isDev)
     apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
-  else {
+  else
     apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
-  }
 %>
 
 <script>
@@ -93,7 +92,7 @@
             href="https://www.google.com/intl/en/policies/terms/">Terms
               of Service </a> - <a
             href="https://www.google.com/intl/en/policies/privacy/">Privacy
-              Policy </a> - <a href="about.html">About</a>
+              Policy </a> - <a href="about.jsp">About</a>
           </small>
         </div>
       </div>
