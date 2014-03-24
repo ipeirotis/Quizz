@@ -78,23 +78,23 @@ angular.module('quizz').controller('QuizController',
      };
 
      $scope.getGaType = function(answerKind) {
-       if (answerKind == 'selectable_gold' || answerKind == 'silver') {
+       if (answerKind == 'GOLD' || answerKind == 'SILVER') {
          return 'multiple-choice-correct';
-       } else if (answerKind == 'selectable_not_gold') {
+       } else if (answerKind == 'INVALID') {
          return 'multiple-choice-incorrect';
-       } else if (answerKind == 'input_text') {
+       } else if (answerKind == 'USER_SUBMITTED') {
          return 'input-text-correct';
        }
      };
 
      $scope.filterSelectable = function(answer) {
-       return answer.kind == 'selectable_gold' ||
-              answer.kind == 'selectable_not_gold' ||
-              answer.kind == 'silver';
+       return answer.kind == 'GOLD' ||
+              answer.kind == 'INVALID' ||
+              answer.kind == 'SILVER';
      };
 
      $scope.filterNotSelectable = function(answer) {
-       return answer.kind == 'input-text-correct' || answer.kind == 'input_text';
+       return answer.kind == 'input-text-correct' || answer.kind == 'USER_SUBMITTED';
      };
 
      $scope.ranksFormating = function(userValue, totalValue) {

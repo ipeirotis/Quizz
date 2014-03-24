@@ -27,12 +27,6 @@ public class Quiz implements Serializable {
     return KeyFactory.createKey(Quiz.class.getSimpleName(), "id_" + quizID);
   }
 
-  // CURRENTLY UNUSED
-  // The category of the quiz. This allows the quizzes to be grouped by
-  // category in the first page, instead of being a big list of quizzes.
-  @Persistent
-  private String category;
-
   // The user-friendly name of the quiz that we are targeting
   @Persistent
   private String name;
@@ -43,8 +37,7 @@ public class Quiz implements Serializable {
   @Persistent
   private String quizID;
   
-  
-  
+ 
   // This defines the type of questions that can be entered into the quiz
   // e.g., can be either free-text or multiple choice. See the corresponding
   // enum for the currently supported set.
@@ -55,14 +48,6 @@ public class Quiz implements Serializable {
   // answers that each multiple choice question should have
   @Persistent
   private Integer numChoices;
-
-  // CURRENTLY UNUSED
-  // The type of entry for the answer that we expect
-  // We do not use this for multiple choice questions
-  // but we may use it in the future for the fill-in questions, to enable
-  // autocompletion using the Freebase auto-suggest widget
-  @Persistent
-  private String freebaseType;
 
   // The id of the AdWords ad campaign that brings visitors to the quiz
   @Persistent
@@ -91,7 +76,9 @@ public class Quiz implements Serializable {
   @Persistent
   private Integer totalAnswers;
 
-  // The total number of all answers submitted
+
+
+// The total number of all answers submitted
   @Persistent
   private Integer submitted;
 
@@ -123,7 +110,6 @@ public class Quiz implements Serializable {
     this.name = name;
     this.quizID = quizID;
     this.kind = kind;
-    this.freebaseType = null;
     this.key = generateKeyFromID(quizID);
   }
 
@@ -152,10 +138,6 @@ public class Quiz implements Serializable {
     }
   }
 
-  public String getCategory() {
-    return category;
-  }
-
   public Integer getContributingUsers() {
     return contributingUsers;
   }
@@ -166,10 +148,6 @@ public class Quiz implements Serializable {
 
   public Integer getCorrectAnswers() {
     return correctAnswers;
-  }
-
-  public String getFreebaseType() {
-    return freebaseType;
   }
 
   public Integer getGold() {
@@ -220,10 +198,6 @@ public class Quiz implements Serializable {
     this.capacity = capacity;
   }
 
-  public void setCategory(String category) {
-    this.category = category;
-  }
-
   public void setContributingUsers(Integer contributingUsers) {
     this.contributingUsers = contributingUsers;
   }
@@ -236,9 +210,6 @@ public class Quiz implements Serializable {
     this.correctAnswers = correctAnswers;
   }
 
-  public void setFreebaseType(String freebaseType) {
-    this.freebaseType = freebaseType;
-  }
 
   public void setGold(Integer gold) {
     this.gold = gold;
@@ -279,4 +250,12 @@ public class Quiz implements Serializable {
   public void setKind(QuizKind kind) {
     this.kind = kind;
   }
+  
+  public Integer getNumChoices() {
+	return numChoices;
+}
+
+public void setNumChoices(Integer numChoices) {
+	this.numChoices = numChoices;
+}
 }

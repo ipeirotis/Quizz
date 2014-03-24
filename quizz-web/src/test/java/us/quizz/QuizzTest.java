@@ -163,7 +163,7 @@ public class QuizzTest {
     questionsToCreate = new HashMap<String, Question>();
 
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-      Question question = new Question(QUIZ_ID, "Question_" + i, QuizKind.MULTIPLE_CHOICE, 1.0);
+      Question question = new Question(QUIZ_ID, "Question_" + i, QuizKind.MULTIPLE_CHOICE);
       for (int j = 1; j <= 4; j++) {
     	  AnswerKind ak = (j==1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
         Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, ak, j);
@@ -221,7 +221,7 @@ public class QuizzTest {
     //add FREE_TEXT question to MULTIPLE_CHOICE quiz.
     //should throw an exception BadRequestException
     createFreeTextQuestionInMultichoiceQuiz(
-        new Question(QUIZ_ID, "Question", QuizKind.FREE_TEXT, 1.0));
+        new Question(QUIZ_ID, "Question", QuizKind.FREE_TEXT));
 
     // create treatments
     for (String treatment : treatments) {

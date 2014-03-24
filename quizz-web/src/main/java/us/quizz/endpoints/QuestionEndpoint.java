@@ -28,7 +28,7 @@ import com.google.inject.Inject;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
                                ownerName = "crowd-power.appspot.com",
-                               packagePath = "crowdquiz.endpoints"))
+                               packagePath = "us.quizz.endpoints"))
 public class QuestionEndpoint {
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
@@ -91,9 +91,8 @@ public class QuestionEndpoint {
           " question to " + quiz.getKind() + " quiz");
     }
     
-    Question newQuestion = new Question(
-        question.getQuizID(), question.getText(), question.getKind(), question.getWeight());
-    // Needed to get the questionID assigned by datastore.
+    Question newQuestion = new Question(question.getQuizID(), question.getText(), question.getKind());
+    // We save the object, because we need to get the questionID assigned by datastore.
     newQuestion = quizQuestionRepository.insert(newQuestion);
 
     if (question.getAnswers() != null) {
@@ -112,7 +111,6 @@ public class QuestionEndpoint {
           }
           case GOLD: {
             newQuestion.setHasGoldAnswer(true);
-            //newAnswer.setIsGold(true);
             break;
           }
           default:

@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
                                ownerName = "crowd-power.appspot.com",
-                               packagePath = "crowdquiz.endpoints"))
+                               packagePath = "us.quizz.endpoints"))
 public class QuizEndpoint {
   protected static int QUESTION_PACKAGE_SIZE = 10;
 
@@ -120,11 +120,13 @@ public class QuizEndpoint {
   public void removeQuiz(@Named("id") String id) {
     quizRepository.remove(Quiz.generateKeyFromID(id));
   }
-
+  
+  /*
   @ApiMethod(name = "addQuiz", path = "addQuiz", httpMethod = HttpMethod.POST)
   public void addQuiz(@Named("name") String name, @Named("quizID") String quizID,
                       @Named("kind") QuizKind kind) {
     Quiz q = new Quiz(name, quizID, kind);
     quizRepository.save(q);
   }
+  */
 }

@@ -12,23 +12,16 @@
 
 <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144"
-  href="/assets/144x144.png">
-<link rel="apple-touch-icon-precomposed" sizes="114x114"
-  href="/assets/114x114.png">
-<link rel="apple-touch-icon-precomposed" sizes="72x72"
-  href="/assets/72x72.png">
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/144x144.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/114x114.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/72x72.png">
 <link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
 
-
-<meta property="og:title"
-  content="Quizz.us: Test yourself, Compare yourself, Learn new things" />
+<meta property="og:title" content="Quizz.us: Test yourself, Compare yourself, Learn new things" />
 <meta property="og:type" content="Quizzes" />
 <meta property="og:url" content="http://www.quizz.us" />
-<meta property="og:image"
-  content="http://www.quizz.us/assets/144x144.png" />
-<meta property="og:description"
-  content="A set of quizzes that will assess your knowledge in various areas, and allow you to compare against others." />
+<meta property="og:image" content="http://www.quizz.us/assets/144x144.png" />
+<meta property="og:description" content="A set of quizzes that will assess your knowledge in various areas, and allow you to compare against others." />
 <meta property="og:site_name" content="Quizz.us" />
 
 <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
@@ -105,7 +98,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', '<%=System.getProperty("GOOGLE_ANALITYCS_ID") %>', 'quizz.us');
+  ga('create', '<%=System.getProperty("GOOGLE_ANALYTICS_ID") %>', 'quizz.us');
   ga('send', 'pageview');
 </script>
 

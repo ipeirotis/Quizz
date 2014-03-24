@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
                                ownerName = "crowd-power.appspot.com",
-                               packagePath = "crowdquiz.endpoints"))
+                               packagePath = "us.quizz.endpoints"))
 public class ProcessUserAnswerEndpoint {
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());

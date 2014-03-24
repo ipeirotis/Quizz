@@ -19,47 +19,48 @@ import com.google.appengine.api.datastore.KeyFactory;
 public class Question implements Serializable {
   private static final long serialVersionUID = 1L;
   
+  // The quizID of the parent quiz
   @Persistent
   private String quizID;
 
-  @Persistent
-  private Double weight;
-
+  // The text of the question. Can be any HTML-compliant code
   @Persistent
   private String text;
   
+  // The type of the question. Should match the type of the quiz that is added to
   @Persistent
   private QuizKind kind;
 
-  @Persistent
-  private Long adGroupId;
-
-  @Persistent
-  private Long adTextId;
-
+  // Computed statistic about the number of users that answered this question
   @Persistent
   private Integer numberOfUserAnswers;
 
+  // Computed statistic on whether the question has any user answers
   @Persistent
   private Boolean hasUserAnswers;
+  
+  // Computed statistic on  how many users answered this question correctly.
+  // Applicable only for questions with GOLD 
+  @Persistent
+  private Integer numberOfCorrentUserAnswers;
 
+  // Computed statistic showing the the total number of user bits assigned
+  // to this question by the users that answered this question
+  // Can be used (although not used currently) to prioritize exposure of
+  // questions to users, favoring questions with low score
   @Persistent
   private Double totalUserScore;
 
+  // Whether any of the answers of the question is GOLD. Should be updated
+  // after adding the answers
   @Persistent
   private Boolean hasGoldAnswer;
 
-  @Persistent
-  private Integer numberOfGoldAnswers;
-
+  // Whether any of the answers of the question is SILVER. Should be updated
+  // after adding the answers
   @Persistent
   private Boolean hasSilverAnswers;
 
-  @Persistent
-  private Integer numberOfSilverAnswers;
-
-  @Persistent
-  private Integer numberOfCorrentUserAnswers;
 
   @Persistent(defaultFetchGroup = "true")
   private ArrayList<Answer> answers;
@@ -68,11 +69,17 @@ public class Question implements Serializable {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
   
-  public Question(String quizID, String text, QuizKind kind, Double weight) {
+  public Question(String quizID, String text, QuizKind kind) {
     this.quizID = quizID;
-    this.weight = weight;
     this.text = text;
     this.kind = kind;
+    this.hasSilverAnswers=false;
+    this.hasGoldAnswer=false;
+    this.numberOfUserAnswers=0;
+    this.hasUserAnswers=false;
+    this.totalUserScore=0.0;
+    this.numberOfCorrentUserAnswers=0;
+    
     this.answers = new ArrayList<Answer>();
   }
   
@@ -88,22 +95,6 @@ public class Question implements Serializable {
     this.quizID = quizID;
   }
 
-  public Integer getNumberOfGoldAnswers() {
-    return numberOfGoldAnswers;
-  }
-
-  public void setNumberOfGoldAnswers(Integer numberOfGoldAnswers) {
-    this.numberOfGoldAnswers = numberOfGoldAnswers;
-  }
-
-  public Integer getNumberOfSilverAnswers() {
-    return numberOfSilverAnswers;
-  }
-
-  public void setNumberOfSilverAnswers(Integer numberOfSilverAnswers) {
-    this.numberOfSilverAnswers = numberOfSilverAnswers;
-  }
-
   public Boolean getHasGoldAnswer() {
     return hasGoldAnswer;
   }
@@ -116,35 +107,12 @@ public class Question implements Serializable {
     this.key = key;
   }
 
-  public Long getAdGroupId() {
-    return adGroupId;
-  }
-
-  public Long getAdTextId() {
-    return adTextId;
-  }
-
   public Key getKey() {
     return key;
   }
 
   public Long getID() {
     return key.getId();
-  }
-
-  /**
-   * @return the weight
-   */
-  public Double getWeight() {
-    return weight;
-  }
-
-  public void setAdGroupId(Long adGroupId) {
-    this.adGroupId = adGroupId;
-  }
-
-  public void setAdTextId(Long adTextId) {
-    this.adTextId = adTextId;
   }
 
   public String getText() {
@@ -165,10 +133,6 @@ public class Question implements Serializable {
 
   public void setRelation(String quizID) {
     this.quizID = quizID;
-  }
-
-  public void setWeight(Double weight) {
-    this.weight = weight;
   }
 
   public Boolean hasUserAnswers() {

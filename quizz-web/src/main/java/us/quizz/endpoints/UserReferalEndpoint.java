@@ -19,7 +19,7 @@ import javax.inject.Named;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
                                ownerName = "crowd-power.appspot.com",
-                               packagePath = "crowdquiz.endpoints"))
+                               packagePath = "us.quizz.endpoints"))
 public class UserReferalEndpoint {
   private UserReferralRepository userReferalRepository;
   private DomainStatsRepository domainStatsRepository;
