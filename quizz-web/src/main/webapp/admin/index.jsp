@@ -41,17 +41,11 @@
 <%
   boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
   String apiUrl;
-  String serverName = request.getServerName();
-  if (isDev)
-    apiUrl = "http://" + serverName + ":" + request.getServerPort();
-  else {
 
-    if (serverName.startsWith("crowd-power.appspot.com")
-        || serverName.startsWith("quizz.us"))
-      apiUrl = "https://crowd-power.appspot.com";
-    else
-      apiUrl = "https://" + serverName;
-  }
+  if (isDev)
+    apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+  else
+    apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
 %>
 
 <script>

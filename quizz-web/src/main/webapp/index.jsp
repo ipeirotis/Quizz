@@ -52,17 +52,11 @@
 <%
   boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
   String apiUrl;
-  String serverName = request.getServerName();
-  if (isDev)
-    apiUrl = "http://" + serverName + ":" + request.getServerPort();
-  else {
 
-    if (serverName.startsWith("crowd-power.appspot.com")
-        || serverName.startsWith("quizz.us"))
-      apiUrl = "https://crowd-power.appspot.com";
-    else
-      apiUrl = "https://" + serverName;
-  }
+  if (isDev)
+    apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+  else
+    apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
 %>
 
 <script>
@@ -98,7 +92,7 @@
             href="https://www.google.com/intl/en/policies/terms/">Terms
               of Service </a> - <a
             href="https://www.google.com/intl/en/policies/privacy/">Privacy
-              Policy </a> - <a href="about.html">About</a>
+              Policy </a> - <a href="about.jsp">About</a>
           </small>
         </div>
       </div>
@@ -111,7 +105,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-48680440-1', 'quizz.us');
+  ga('create', '<%=System.getProperty("GOOGLE_ANALITYCS_ID") %>', 'quizz.us');
   ga('send', 'pageview');
 </script>
 

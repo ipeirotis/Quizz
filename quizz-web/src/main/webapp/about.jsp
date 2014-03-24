@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+  pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,7 +67,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-48680440-1', 'quizz.us');
+  ga('create', '<%=System.getProperty("GOOGLE_ANALITYCS_ID") %>', 'quizz.us');
   ga('send', 'pageview');
 </script>
 
