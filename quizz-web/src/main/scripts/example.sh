@@ -8,6 +8,12 @@ echo "Creating the quiz"
 curl $API_URL/insertQuiz --header 'Content-Type: application/json' --data  '{ "quizID": "'$QUIZ_ID'", "name": "'$QUIZ_NAME'", "kind": "MULTIPLE_CHOICE", "numChoices": "4"}'
 
 #TODO: Check that the quiz was properly created
+# That is is in the list of returned quizzes
+# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/listQuiz
+# and that we can get bac 
+# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/getQuiz?id=testQuizId
+
+
 
 for i in {1..10}
 do
@@ -26,6 +32,10 @@ echo "Updating the statistics for the Quiz"
 curl $API_URL/updateQuizCounts?quizID=testQuizId
 
 #TODO: Check that the updated numbers are ok
+# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/getQuiz?id=testQuizId
+
+# Check that we get back calibration and collection questions
+# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestions/testQuizId
 
 # echo "Removing the test quiz"
 curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuiz?id=testQuizId
