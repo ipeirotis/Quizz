@@ -46,9 +46,9 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
     int N = n * QUESTION_FETCHING_MULTIPLIER;
     ArrayList<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N);
-    result.put("gold", Helper.trySelectingRandomElements(goldQuestions, n));
+    result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
     ArrayList<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N);
-    result.put("silver", Helper.trySelectingRandomElements(silverQuestions, n));
+    result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
 
     String key = MemcacheKey.getQuizQuestionsByQuiz(quizID, n);
     int cached_lifetime = QUESTIONS_CACHED_TIME_SECONDS;

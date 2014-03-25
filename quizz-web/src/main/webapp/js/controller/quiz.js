@@ -64,6 +64,9 @@ angular.module('quizz').controller('QuizController',
            workflowService.addUserAnswer(response.userAnswer);
            workflowService.addUserFeedback(response.userAnswerFeedback);
            workflowService.setNextQuestionGold(response.exploit);
+           if(response.userAnswerFeedback.isCorrect == true) {
+             workflowService.incNumOfCorrectAnswers();
+           }
            $scope.showFeedback();
          },
          function(error) {

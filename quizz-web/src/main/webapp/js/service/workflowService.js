@@ -96,6 +96,9 @@ angular.module('quizz').factory('workflowService', [function() {
       currentGoldQuestionIndex++;
       currentSilverQuestionIndex++;
     },
+    incNumOfCorrectAnswers: function() {
+      numOfCorrectAnswers++;
+    },
     setChannelToken: function(t) {
       channelToken = t;
     },

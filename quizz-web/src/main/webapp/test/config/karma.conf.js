@@ -3,7 +3,9 @@ module.exports = function(config){
     basePath : '../../',
 
     files : [
+      'lib/channel.js',
       'lib/jquery.min.js',
+      'lib/jquery.cookie.js',
       'lib/angular.js',
       'lib/angular-*.js',
       'test/lib/angular-mocks.js',
@@ -36,20 +38,3 @@ module.exports = function(config){
     }
 
 })}
-/*Maven usage
-<plugin>
-<groupId>com.kelveden</groupId>
-<artifactId>maven-karma-plugin</artifactId>
-<version>1.1</version>
-<executions>
-    <execution>
-        <goals>
-            <goal>start</goal>
-        </goals>
-    </execution>
-</executions>
-<configuration>
-<configFile>full/path/to/the/file/my.custom.karma.conf.js</configFile>
-</configuration>
-</plugin>
-*/

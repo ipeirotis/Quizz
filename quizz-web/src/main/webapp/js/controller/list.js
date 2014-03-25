@@ -17,8 +17,10 @@ angular.module('quizz').controller('ListController',
   $scope.fetchUser = function() {
     userService.getUser(
       function(response) {
-        workflowService.setChannelToken(response.token);
-        $scope.setupChannel(response.token);
+        if(response.token){
+          workflowService.setChannelToken(response.token);
+          $scope.setupChannel(response.token);
+        }
       },
       function(error) {
       });

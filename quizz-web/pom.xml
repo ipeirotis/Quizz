@@ -234,6 +234,21 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.kelveden</groupId>
+        <artifactId>maven-karma-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <configFile>${basedir}/src/main/webapp/test/config/karma.conf.js</configFile>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
