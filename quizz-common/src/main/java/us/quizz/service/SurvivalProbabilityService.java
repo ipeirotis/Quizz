@@ -1,21 +1,21 @@
 package us.quizz.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.utils.CachePMF;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 
+import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 public class SurvivalProbabilityService {
-  @SuppressWarnings("unused")
-  private static final Logger logger = Logger.getLogger(SurvivalProbabilityService.class.getName());
-  private static final String CACHE_KEY = "survivalProbability";
+  // Number of seconds to cache survival probability in Memcache.
+  private static final int SURVIVAL_PROBABILITIES_CACHED_TIME_SECONDS = 25 * 60 * 60;  // 25 hours.
+
   private QuizPerformanceRepository quizPerformanceRepository;
   private Cache<String, Map<Integer, Map<Integer, Integer>>> inMemoryCache;
 
@@ -48,21 +48,22 @@ public class SurvivalProbabilityService {
   }
 
   private Map<Integer, Map<Integer, Integer>> getCachedValues() {
-    Map<Integer, Map<Integer, Integer>> result = inMemoryCache
-        .getIfPresent(CACHE_KEY);
+    String key = MemcacheKey.getSurvivalProbabilities();
+    Map<Integer, Map<Integer, Integer>> result = inMemoryCache.getIfPresent(key);
 
     if (result == null) {
-      result = CachePMF.get(CACHE_KEY, HashMap.class);
+      result = CachePMF.get(key, HashMap.class);
       if (result != null) {
-        inMemoryCache.put(CACHE_KEY, result);
+        inMemoryCache.put(key, result);
       }
     }
     return result;
   }
 
   public void cache() {
-    CachePMF.put(CACHE_KEY, quizPerformanceRepository.getAnswersForSurvivalProbability(), 
-        60 * 60 * 25);
+    CachePMF.put(MemcacheKey.getSurvivalProbabilities(),
+        quizPerformanceRepository.getAnswersForSurvivalProbability(),
+        SURVIVAL_PROBABILITIES_CACHED_TIME_SECONDS);
   }
 
   public class Result {

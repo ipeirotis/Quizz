@@ -1,5 +1,13 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+
+import us.quizz.entities.QuizPerformance;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,13 +17,6 @@ import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
-import us.quizz.entities.QuizPerformance;
-import us.quizz.utils.CachePMF;
-
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   public QuizPerformanceRepository() {
@@ -28,7 +29,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public QuizPerformance getQuizPerformance(String quizid, String userid) {
-    String key = "qp_" + quizid + "_" + userid;
+    String key = MemcacheKey.getQuizPerformanceByUser(quizid, userid);
     return singleGetObjectByIdWithCaching(key, QuizPerformance.class,
        QuizPerformance.generateKeyFromID(quizid, userid));
   }
@@ -53,10 +54,10 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
     return results;
   }
   
-  //< a < b, count > >
+  // < a < b, count > >
   public Map<Integer, Map<Integer, Integer>> getAnswersForSurvivalProbability() {
     Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
-    for (int a = 0; a <= 20; a++) {//20x20
+    for (int a = 0; a <= 20; a++) {  //20x20
       result.put(a, countAnswers(null, a, 20));
     }
     return result;
@@ -80,8 +81,8 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
       params.put("aParam", a);
     }
 
-    Map<Integer,Integer> result = new HashMap<Integer,Integer>();
-    for(int b=0; b<=20; b++) {
+    Map<Integer,Integer> result = new HashMap<Integer, Integer>();
+    for (int b = 0; b <= 20; b++) {
       result.put(b, 0);
     }
 
@@ -101,7 +102,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
       }
 
       for(QuizPerformance quizPerformance : list) {
-        for(int b=0; b <= max_b; b++) {
+        for (int b = 0; b <= max_b; b++) {
           if(quizPerformance.getIncorrectanswers() == null ||
               quizPerformance.getIncorrectanswers() >= b) {
             result.put(b, result.get(b) + 1);
@@ -168,7 +169,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public void cacheQuizPerformance(QuizPerformance qp) {
-    String key = "qp_" + qp.getQuiz() + "_" + qp.getUserid();
+    String key = MemcacheKey.getQuizPerformanceByUser(qp.getQuiz(), qp.getUserid());
     CachePMF.put(key, qp);
   }
 

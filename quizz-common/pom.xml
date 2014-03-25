@@ -89,11 +89,6 @@
       <version>2.2.4</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.jsr107cache</groupId>
-      <artifactId>jsr107cache</artifactId>
-      <version>1.1</version>
-    </dependency>
-    <dependency>
       <groupId>bitwalker</groupId>
       <artifactId>UserAgentUtils</artifactId>
       <version>1.12</version>

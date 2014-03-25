@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class CacheQuizQuestions extends HttpServlet {
+  // Number of questions to cache in Memcache for each quiz.
+  private static final int NUM_CACHED_QUESTIONS = 10;
+
   private QuizQuestionRepository quizQuestionRepository;
   private QuizRepository quizRepository;
 
@@ -28,13 +31,12 @@ public class CacheQuizQuestions extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     List<Quiz> list = quizRepository.getQuizzes();
-
     for (Quiz quiz : list) {
       resp.getWriter().println("Updating quiz: " + quiz.getName());
-      quizQuestionRepository.getNextQuizQuestions(quiz.getQuizID(), 10);
+      quizQuestionRepository.getNextQuizQuestionsWithoutCaching(
+          quiz.getQuizID(), NUM_CACHED_QUESTIONS);
     }
   }
 }

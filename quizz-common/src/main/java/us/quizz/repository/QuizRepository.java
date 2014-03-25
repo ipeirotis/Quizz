@@ -1,10 +1,7 @@
 package us.quizz.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -12,9 +9,13 @@ import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 public class QuizRepository extends BaseRepository<Quiz>{
 
@@ -63,10 +64,8 @@ public class QuizRepository extends BaseRepository<Quiz>{
     }
   }
 
-  protected <T> Integer getNumberOf(String keyPrefix,
-      boolean useCache, String quiz, Class<T> queryClass) {
-    String key = keyPrefix + "_" + quiz;
-
+  protected <T> Integer getNumberOf(
+      String key, boolean useCache, String quiz, Class<T> queryClass) {
     if (useCache) {
       Integer result = CachePMF.get(key, Integer.class);
       if (result != null)
@@ -89,9 +88,8 @@ public class QuizRepository extends BaseRepository<Quiz>{
     }
   }
 
-  public Integer getNumberOfGoldQuestions(String quizID,
-      boolean useCache) {
-    String key = "goldQuestions_" + quizID;
+  public Integer getNumberOfGoldQuestions(String quizID, boolean useCache) {
+    String key = MemcacheKey.getNumGoldQuestions(quizID);
 
     if (useCache) {
       Integer result = CachePMF.get(key, Integer.class);
@@ -116,17 +114,16 @@ public class QuizRepository extends BaseRepository<Quiz>{
   }
 
   public Integer getNumberOfQuizQuestions(String quiz, boolean usecache) {
-    return getNumberOf("numquizquestions", usecache, quiz, Question.class);
+    return getNumberOf(MemcacheKey.getNumQuizQuestions(quiz), usecache, quiz, Question.class);
   }
 
   public Integer getNumberOfUserAnswers(String quiz, boolean usecache) {
-    return getNumberOf("quizuseranswers", usecache, quiz, UserAnswer.class);
+    return getNumberOf(MemcacheKey.getNumUserAnswers(quiz), usecache, quiz, UserAnswer.class);
   }
 
   @SuppressWarnings("unchecked")
   public List<Quiz> getQuizzes() {
-
-    String key = "list_quizzes";
+    String key = MemcacheKey.getQuizzesList();
     List<Quiz> quizlist = CachePMF.get(key, List.class);
     if (quizlist != null)
       return quizlist;

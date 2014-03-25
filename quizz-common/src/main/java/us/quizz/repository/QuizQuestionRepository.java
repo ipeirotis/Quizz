@@ -9,6 +9,7 @@ import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.Helper;
+import us.quizz.utils.MemcacheKey;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,13 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 public class QuizQuestionRepository extends BaseRepository<Question> {
+  // Multiplier used to fetch more questions than being asked when choosing the next questions
+  // to allow us to randomly choose a subset of the candidate questions.
+  private static final int QUESTION_FETCHING_MULTIPLIER = 5;
+
+  // Number of seconds to cache the quiz questions.
+  private static final int QUESTIONS_CACHED_TIME_SECONDS = 5 * 60;  // 5 minutes.
+
   QuizRepository quizRepository;
 
   @Inject
@@ -33,26 +41,30 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return item.getKey();
   }
 
-  public Map<String, Set<Question>> getNextQuizQuestions(String quiz, int n) {
-    String key = "getquizquestion_" + quiz + n;
+  public Map<String, Set<Question>> getNextQuizQuestionsWithoutCaching(String quizID, int n) {
+    Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
+
+    int N = n * QUESTION_FETCHING_MULTIPLIER;
+    ArrayList<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N);
+    result.put("gold", Helper.trySelectingRandomElements(goldQuestions, n));
+    ArrayList<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N);
+    result.put("silver", Helper.trySelectingRandomElements(silverQuestions, n));
+
+    String key = MemcacheKey.getQuizQuestionsByQuiz(quizID, n);
+    int cached_lifetime = QUESTIONS_CACHED_TIME_SECONDS;
+    CachePMF.put(key, result, cached_lifetime);
+    return result;
+  }
+
+  public Map<String, Set<Question>> getNextQuizQuestions(String quizID, int n) {
+    String key = MemcacheKey.getQuizQuestionsByQuiz(quizID, n);
     @SuppressWarnings("unchecked")
     Map<String, Set<Question>> result = CachePMF.get(key, Map.class);
     if (result != null) {
       return result;
     } else {
-      result = new HashMap<String, Set<Question>>();
+      return getNextQuizQuestionsWithoutCaching(quizID, n);
     }
-
-    int N = n * 5;
-    ArrayList<Question> goldQuestions = getSomeQuizQuestionsWithGold(quiz, N);
-    result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
-    ArrayList<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quiz, N);
-    result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
-
-    int cached_lifetime = 5 * 60; // 10 minutes
-    CachePMF.put(key, result, cached_lifetime);
-
-    return result;
   }
 
   public Question getQuizQuestion(String questionID) {
@@ -117,7 +129,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public ArrayList<Question> getQuizQuestions(String quizid) {
-    String key = "quizquestions_all_" + quizid;
+    String key = MemcacheKey.getAllQuizQuestionsByQuiz(quizid);
     String filter = "quizID == quizParam";
     String declaredParameters = "String quizParam";
     Map<String, Object> params = new HashMap<String, Object>();
@@ -217,7 +229,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public ArrayList<Question> getQuizQuestionsWithGold(String quizID) {
-    String key = "quizquestions_gold_" + quizID;
+    String key = MemcacheKey.getGoldQuizQuestionsByQuiz(quizID);
     String filter = "quizID == quizParam && hasGoldAnswer == hasGoldParam";
     String declaredParameters = "String quizParam, Boolean hasGoldParam";
     return getQuestionsWithCaching(key, filter, declaredParameters,

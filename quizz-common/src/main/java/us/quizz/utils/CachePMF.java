@@ -1,11 +1,9 @@
 package us.quizz.utils;
 
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
-
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheException;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
+import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceException;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -20,15 +18,10 @@ public class CachePMF {
   }
 
   public static <T> void put(String key, T obj, int seconds) {
-    Map<Integer, Integer> props = new HashMap<Integer, Integer>();
-    props.put(GCacheFactory.EXPIRATION_DELTA, seconds);
-
     try {
-      CacheFactory cacheFactory = CacheManager.getInstance()
-          .getCacheFactory();
-      Cache cache = cacheFactory.createCache(props);
-      cache.put(key, obj);
-    } catch (CacheException e) {
+      MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
+      memcacheService.put(key, obj, Expiration.byDeltaSeconds(seconds));
+    } catch (MemcacheServiceException e) {
       PrintStream printStream = new PrintStream(System.err, true);
       e.printStackTrace(printStream);
     }
@@ -38,12 +31,11 @@ public class CachePMF {
   public static <T> T get(String key, Class<T> type) {
     T result = null;
     try {
-      CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-      Cache cache = cacheFactory.createCache(Collections.emptyMap());
-      if (cache != null && cache.containsKey(key)) {
-        result = (T) cache.get(key);
+      MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
+      if (memcacheService.contains(key)) {
+        result = (T) memcacheService.get(key);
       }
-    } catch (CacheException e) {
+    } catch (MemcacheServiceException e) {
       PrintStream printStream = new PrintStream(System.err, true);
       e.printStackTrace(printStream);
     }
