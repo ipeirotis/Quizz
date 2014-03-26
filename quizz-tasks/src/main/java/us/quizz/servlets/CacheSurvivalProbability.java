@@ -32,7 +32,7 @@ public class CacheSurvivalProbability extends HttpServlet {
     if ("true".equals(req.getParameter("sched"))) {
       sched();
     } else {
-      survivalProbabilityService.cache();
+      survivalProbabilityService.getCachedValues(null);
     }
   }
 

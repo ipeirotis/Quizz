@@ -54,66 +54,47 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
     return results;
   }
   
-  // < a < b, count > >
-  public Map<Integer, Map<Integer, Integer>> getAnswersForSurvivalProbability() {
-    Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
-    for (int a = 0; a <= 20; a++) {  //20x20
-      result.put(a, countAnswers(null, a, 20));
-    }
-    return result;
-  }
-
+  /** 
+   * We are calculating the number of users that have at least "a" correct answers
+   * and "b" incorrect answers for a given quiz (stats across quizzes if quizID==null)
+   */
   @SuppressWarnings("unchecked")
-  private Map<Integer, Integer> countAnswers(String quizID, int a, int max_b) {
-    PersistenceManager pm = getPersistenceManager();
-    Map<String, Object> params = new HashMap<String, Object>();
-    Query q = pm.newQuery(QuizPerformance.class);
-    Cursor cursor = null;
+  public Map<Integer, Map<Integer, Integer>> getCountsForSurvivalProbability(String quizID) {
+    
+	  
+    List<QuizPerformance> list = getQuizPerformances(quizID);
 
-    if(quizID != null) {
-      q.setFilter("quiz == quizIDparam && correctanswers >= aParam");
-      q.declareParameters("String quizIDparam, Integer aParam");
-      params.put("quizIDparam", quizID);
-      params.put("aParam", a);
-    } else {
-      q.setFilter("correctanswers >= aParam");
-      q.declareParameters("Integer aParam");
-      params.put("aParam", a);
+    Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
+    
+    for(QuizPerformance quizPerformance : list) {
+    	Integer correct = quizPerformance.getCorrectanswers();
+    	Integer incorrect = quizPerformance.getIncorrectanswers();
+    	if (correct == null || incorrect ==null) continue;
+    	increaseCounts(result, correct, incorrect);
     }
-
-    Map<Integer,Integer> result = new HashMap<Integer, Integer>();
-    for (int b = 0; b <= 20; b++) {
-      result.put(b, 0);
-    }
-
-    while (true) {
-      if (cursor != null) {
-        HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-        q.setExtensions(extensionMap);
-      }
-
-      q.setRange(0, 1000);
-      List<QuizPerformance> list = (List<QuizPerformance>) q.executeWithMap(params);
-      cursor = JDOCursorHelper.getCursor(list);
-
-      if (list.size() == 0) {
-        break;
-      }
-
-      for(QuizPerformance quizPerformance : list) {
-        for (int b = 0; b <= max_b; b++) {
-          if(quizPerformance.getIncorrectanswers() == null ||
-              quizPerformance.getIncorrectanswers() >= b) {
-            result.put(b, result.get(b) + 1);
-          }
-        }
-      }
-    }
-    pm.close();
-
+    
     return result;
   }
+
+private void increaseCounts(Map<Integer, Map<Integer, Integer>> result,
+		Integer correct, Integer incorrect) {
+	for (int a=0; a<=correct; a++)  {
+		Map<Integer, Integer> cntA = result.get(a);
+		if (cntA==null) {
+			cntA = new HashMap<Integer, Integer>();
+			result.put(a, cntA);
+		}
+		
+		for (int b=0; b<=incorrect; b++)  {
+			Integer cntAB = cntA.get(b);
+	  		if (cntAB==null) {
+	  			cntAB=0;
+	  		}
+	  		cntA.put(a, cntAB + 1);
+		}
+		result.put(a, cntA);
+	}
+}
 
   public List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
     return getQuizPerformanceFilterOnField("quiz", quizid);
@@ -124,22 +105,18 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public List<QuizPerformance> getQuizPerformances() {
-    PersistenceManager pm = getPersistenceManager();
-    Query query = pm.newQuery(QuizPerformance.class);
-    // query.getFetchPlan().setFetchSize(500);
-    @SuppressWarnings("unchecked")
-    List<QuizPerformance> list = (List<QuizPerformance>) query.execute();
-    list = new LinkedList<QuizPerformance>(list);
-    pm.close();
-    return list;
+    return getQuizPerformances(null);
   }
 
   public List<QuizPerformance> getQuizPerformances(String quiz) {
     PersistenceManager pm = getPersistenceManager();
 
     Query q = pm.newQuery(QuizPerformance.class);
-    q.setFilter("quiz == quizParam");
-    q.declareParameters("String quizParam");
+    
+    if (quiz !=null) {
+    	q.setFilter("quiz == quizParam");
+    	q.declareParameters("String quizParam");
+    }
 
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizParam", quiz);
