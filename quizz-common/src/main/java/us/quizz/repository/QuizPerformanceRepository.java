@@ -86,7 +86,7 @@ private void increaseCounts(Map<Integer, Map<Integer, Integer>> result,
 	  		if (cntAB==null) {
 	  			cntAB=0;
 	  		}
-	  		cntA.put(a, cntAB + 1);
+	  		cntA.put(b, cntAB + 1);
 		}
 		result.put(a, cntA);
 	}

@@ -18,6 +18,8 @@ public class SurvivalProbabilityService {
   // Time to cache survival probability in Memcache.
   private static final int SURVIVAL_PROBABILITIES_CACHED_TIME = 24 * 60;  // 24 hours.
 
+  
+  
   private QuizPerformanceRepository quizPerformanceRepository;
   private Cache<String, Map<Integer, Map<Integer, Integer>>> inMemoryCache;
 
@@ -35,20 +37,23 @@ public class SurvivalProbabilityService {
       Integer a_to, Integer b_from, Integer b_to) {
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
 
+ // We assume a default survival probability of 0.75
+    Result defaultResult = new Result(a_from, b_from, a_to, b_to, 100L, 75L, 0.75d, true);
+    
     if (values == null) {//empty cache
-      return new Result(a_from, b_from, a_to, b_to, 100L, 75L, 0.75d); // We assume a default survival probability of 0.5
+      return defaultResult; 
     }
     
     Integer users_from = values.containsKey(a_from) ? values.get(a_from).get(b_from) : null;
     Integer users_to = values.containsKey(a_to) ? values.get(a_to).get(b_to) : null;
     
     if (users_from == null || users_to == null || users_from == 0) { 
-      return new Result(a_from, b_from, a_to, b_to, 100L, 75L, 0.75d); // We assume a default survival probability of 0.5
+      return defaultResult;
     }
     
     double psurvival = 1.0 * users_to / users_from;
 
-    return new Result(a_from, b_from, a_to, b_to, users_from, users_to, psurvival);
+    return new Result(a_from, b_from, a_to, b_to, users_from, users_to, psurvival, false);
   }
 
   public List<Result> getSurvivalProbabilities(String quizID) {
@@ -71,9 +76,9 @@ public class SurvivalProbabilityService {
 		    for (int b=0; b<bMax; b++) {
 
 		    	Result r1 = getSurvivalProbability(quizID,a,a+1,b,b);
-		    	result.add(r1);
+		    	if (!r1.isDefault()) result.add(r1);
 		    	Result r2 = getSurvivalProbability(quizID,a,a,b,b+1);
-		    	result.add(r2);
+		    	if (!r2.isDefault()) result.add(r2);
 		    }
 	    }
 
@@ -104,6 +109,9 @@ public class SurvivalProbabilityService {
   }
 
   public class Result {
+	  
+	  boolean isDefault;
+	  
 	  private int correct_from;
 	  private int incorrect_from;
 	  private int correct_to;
@@ -161,7 +169,7 @@ public class SurvivalProbabilityService {
     private long users_to;
     private double psurvival;
 
-    public Result(int a_from, int b_from, int a_to, int b_to, long u_from, long u_to, double psurvival) {
+    public Result(int a_from, int b_from, int a_to, int b_to, long u_from, long u_to, double psurvival, boolean isDefault) {
   	 this.correct_from=a_from;
   	this.incorrect_from=b_from;
   	this.correct_to=a_to;
@@ -171,9 +179,18 @@ public class SurvivalProbabilityService {
       this.users_from = u_from;
       this.users_to = u_to;
       this.psurvival = psurvival;
+      this.isDefault = isDefault;
     }
 
-    public long getU_from() {
+    public boolean isDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
+	public long getU_from() {
       return users_from;
     }
 

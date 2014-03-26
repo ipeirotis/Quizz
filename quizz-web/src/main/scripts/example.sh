@@ -41,5 +41,6 @@ curl $API_URL/updateQuizCounts?quizID=testQuizId
 # echo "Removing the test quiz"
 curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuiz?id=testQuizId
 
-# Caching the survival probabilities
-curl $WEB_URL/api/cacheSurvivalProbability?now=true
+# Caching the survival probabilities to make the values available 
+curl quizz-tasks.$WEB_URL/api/cacheSurvivalProbability?now=true
+
