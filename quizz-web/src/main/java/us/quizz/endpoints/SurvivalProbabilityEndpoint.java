@@ -38,6 +38,7 @@ public class SurvivalProbabilityEndpoint {
   @ApiMethod(name = "getSurvivalProbabilities", path = "getSurvivalProbabilities")
   public List<SurvivalProbabilityService.Result> getSurvivalProbabilities(
                     @Nullable @Named("quizID") String quizID) {
-    return survivalProbabilityService.getSurvivalProbability(quizID);
+    return survivalProbabilityService.getSurvivalProbabilities(quizID);
   }
+  
 }

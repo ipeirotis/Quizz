@@ -1,5 +1,6 @@
 #!/bin/bash
 
+WEB_URL="https://crowd-power.appspot.com/" # without trailing /
 API_URL="https://crowd-power.appspot.com/_ah/api/quizz/v1" # without trailing /
 QUIZ_ID="testQuizId"
 QUIZ_NAME="testQuizName"
@@ -40,3 +41,5 @@ curl $API_URL/updateQuizCounts?quizID=testQuizId
 # echo "Removing the test quiz"
 curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuiz?id=testQuizId
 
+# Caching the survival probabilities
+curl $WEB_URL/api/cacheSurvivalProbability?now=true

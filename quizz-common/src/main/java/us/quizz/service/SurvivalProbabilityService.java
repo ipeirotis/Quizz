@@ -51,10 +51,11 @@ public class SurvivalProbabilityService {
     return new Result(a_from, b_from, a_to, b_to, users_from, users_to, psurvival);
   }
 
-  public List<Result> getSurvivalProbability(String quizID) {
+  public List<Result> getSurvivalProbabilities(String quizID) {
 	  	List<Result> result = new ArrayList<Result>();
 	  
 	    Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
+	    if (values == null) return result;
 
 	    int aMax = 0;
 	    int bMax = 0;
@@ -81,7 +82,7 @@ public class SurvivalProbabilityService {
 	  }
   
   @SuppressWarnings("unchecked")
-  public Map<Integer, Map<Integer, Integer>> getCachedValues(String quizId) {
+  private Map<Integer, Map<Integer, Integer>> getCachedValues(String quizId) {
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
     Map<Integer, Map<Integer, Integer>> result = inMemoryCache.getIfPresent(key);
 
@@ -95,8 +96,10 @@ public class SurvivalProbabilityService {
   }
   
   public void cacheValuesInMemcache(String quizId) {
+    
+    Map<Integer, Map<Integer, Integer>> values  = quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
+    
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
-    Map<Integer, Map<Integer, Integer>> values  = quizPerformanceRepository.getCountsForSurvivalProbability(quizId); 
     CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME * 60);
   }
 
