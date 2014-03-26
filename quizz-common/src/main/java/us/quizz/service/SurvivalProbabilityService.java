@@ -89,12 +89,15 @@ public class SurvivalProbabilityService {
       result = CachePMF.get(key, HashMap.class);
     	if (result != null) {
     		inMemoryCache.put(key, result);
-    	} else {
-        result = quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
-        CachePMF.put(key, result, SURVIVAL_PROBABILITIES_CACHED_TIME * 60);
     	}
     }
     return result;
+  }
+  
+  public void cacheValuesInMemcache(String quizId) {
+    String key = MemcacheKey.getSurvivalProbabilities(quizId);
+    Map<Integer, Map<Integer, Integer>> values  = quizPerformanceRepository.getCountsForSurvivalProbability(quizId); 
+    CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME * 60);
   }
 
   public class Result {

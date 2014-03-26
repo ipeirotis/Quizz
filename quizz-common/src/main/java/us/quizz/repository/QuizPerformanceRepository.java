@@ -1,22 +1,21 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-
-import us.quizz.entities.QuizPerformance;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.MemcacheKey;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.QuizPerformance;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   public QuizPerformanceRepository() {
@@ -58,10 +57,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
    * We are calculating the number of users that have at least "a" correct answers
    * and "b" incorrect answers for a given quiz (stats across quizzes if quizID==null)
    */
-  @SuppressWarnings("unchecked")
-  public Map<Integer, Map<Integer, Integer>> getCountsForSurvivalProbability(String quizID) {
-    
-	  
+  public Map<Integer, Map<Integer, Integer>> getCountsForSurvivalProbability(String quizID) {	  
     List<QuizPerformance> list = getQuizPerformances(quizID);
 
     Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
