@@ -1,18 +1,18 @@
 package us.quizz.service;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.inject.Inject;
-
-import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.MemcacheKey;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.inject.Inject;
 
 public class SurvivalProbabilityService {
   // Time to cache survival probability in Memcache.
@@ -80,14 +80,18 @@ public class SurvivalProbabilityService {
 	    return result;
 	  }
   
+  @SuppressWarnings("unchecked")
   public Map<Integer, Map<Integer, Integer>> getCachedValues(String quizId) {
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
     Map<Integer, Map<Integer, Integer>> result = inMemoryCache.getIfPresent(key);
 
     if (result == null) {
-    	result = quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
+      result = CachePMF.get(key, HashMap.class);
     	if (result != null) {
     		inMemoryCache.put(key, result);
+    	} else {
+        result = quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
+        CachePMF.put(key, result, SURVIVAL_PROBABILITIES_CACHED_TIME * 60);
     	}
     }
     return result;
