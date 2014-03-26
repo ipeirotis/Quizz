@@ -36,19 +36,19 @@ public class SurvivalProbabilityService {
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
 
     if (values == null) {//empty cache
-      return new Result(100L, 75L, 0.75d); // We assume a default survival probability of 0.5
+      return new Result(a_from, b_from, a_to, b_to, 100L, 75L, 0.75d); // We assume a default survival probability of 0.5
     }
     
     Integer users_from = values.containsKey(a_from) ? values.get(a_from).get(b_from) : null;
     Integer users_to = values.containsKey(a_to) ? values.get(a_to).get(b_to) : null;
     
     if (users_from == null || users_to == null || users_from == 0) { 
-      return new Result(100L, 75L, 0.75d); // We assume a default survival probability of 0.5
+      return new Result(a_from, b_from, a_to, b_to, 100L, 75L, 0.75d); // We assume a default survival probability of 0.5
     }
     
     double psurvival = 1.0 * users_to / users_from;
 
-    return new Result(users_from, users_to, psurvival);
+    return new Result(a_from, b_from, a_to, b_to, users_from, users_to, psurvival);
   }
 
   public List<Result> getSurvivalProbability(String quizID) {
@@ -94,11 +94,70 @@ public class SurvivalProbabilityService {
   }
 
   public class Result {
-    private long users_from;
+	  private int correct_from;
+	  private int incorrect_from;
+	  private int correct_to;
+	  private int incorrect_to;
+	  
+    public int getCorrect_from() {
+		return correct_from;
+	}
+
+	public void setCorrect_from(int correct_from) {
+		this.correct_from = correct_from;
+	}
+
+	public int getIncorrect_from() {
+		return incorrect_from;
+	}
+
+	public void setIncorrect_from(int incorrect_from) {
+		this.incorrect_from = incorrect_from;
+	}
+
+	public int getCorrect_to() {
+		return correct_to;
+	}
+
+	public void setCorrect_to(int correct_to) {
+		this.correct_to = correct_to;
+	}
+
+	public int getIncorrect_to() {
+		return incorrect_to;
+	}
+
+	public void setIncorrect_to(int incorrect_to) {
+		this.incorrect_to = incorrect_to;
+	}
+
+	public long getUsers_from() {
+		return users_from;
+	}
+
+	public void setUsers_from(long users_from) {
+		this.users_from = users_from;
+	}
+
+	public long getUsers_to() {
+		return users_to;
+	}
+
+	public void setUsers_to(long users_to) {
+		this.users_to = users_to;
+	}
+
+	private long users_from;
     private long users_to;
     private double psurvival;
 
-    public Result(long u_from, long u_to, double psurvival) {
+    public Result(int a_from, int b_from, int a_to, int b_to, long u_from, long u_to, double psurvival) {
+  	 this.correct_from=a_from;
+  	this.incorrect_from=b_from;
+  	this.correct_to=a_to;
+  	this.incorrect_to=b_to;
+  	  
+    	
       this.users_from = u_from;
       this.users_to = u_to;
       this.psurvival = psurvival;

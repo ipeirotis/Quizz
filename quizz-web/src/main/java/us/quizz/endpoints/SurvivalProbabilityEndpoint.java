@@ -35,10 +35,9 @@ public class SurvivalProbabilityEndpoint {
         .getSurvivalProbability(quizID, a_from, a_to, b_from, b_to);
   }
   
-  @ApiMethod(name = "getSurvivalProbabilities", path = "getSurvivalProbability")
-  public List<SurvivalProbabilityService.Result> getSurvivalProbability(
+  @ApiMethod(name = "getSurvivalProbabilities", path = "getSurvivalProbabilities")
+  public List<SurvivalProbabilityService.Result> getSurvivalProbabilities(
                     @Nullable @Named("quizID") String quizID) {
-    return survivalProbabilityService
-        .getSurvivalProbability(quizID);
+    return survivalProbabilityService.getSurvivalProbability(quizID);
   }
 }
