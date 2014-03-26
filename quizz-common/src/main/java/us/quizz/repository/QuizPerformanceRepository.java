@@ -122,17 +122,23 @@ private void increaseCounts(Map<Integer, Map<Integer, Integer>> result,
     params.put("quizParam", quiz);
 
     List<QuizPerformance> quizPerfomances = new ArrayList<QuizPerformance>();
-    int limit = 1000;
-    int i = 0;
+    Cursor cursor = null;
+    
     while (true) {
-      q.setRange(i, i + limit);
+      if (cursor != null) {
+        HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+        q.setExtensions(extensionMap);
+      }
+
+      q.setRange(0, 1000);
       @SuppressWarnings("unchecked")
       List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
+      cursor = JDOCursorHelper.getCursor(results);
       if (results.size() == 0) {
         break;
       }
       quizPerfomances.addAll(results);
-      i += limit;
     }
 
     pm.close();
