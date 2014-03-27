@@ -19,6 +19,7 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
       url += '/user/' + username;
 
       $http.get(url).success(function(response) {
+        if (typeof(ga) != 'undefined') {
           ga('send', {
                  'hitType': 'event',
                  'hitCallback': function(){ },
@@ -27,6 +28,7 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
                  'eventLabel': quizId,
                  'eventValue': Math.round(100. * response.score / response.totalanswers),
              });
+        }
       });
     },
     challengeAnswer: function(params, success, error) {
