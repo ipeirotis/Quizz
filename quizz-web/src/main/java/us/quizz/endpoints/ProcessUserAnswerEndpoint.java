@@ -93,18 +93,15 @@ public class ProcessUserAnswerEndpoint {
     String message = "";
     if (answerID == -1) {
       action = "I don't know";
-   	}  else {
+    } else {
       action = "Submit";
       totalanswers++;
-      
+
       isCorrect = isUserAnswerCorrect(questionID, answerID, userInput);
       if (isCorrect) {
-          correctanswers++;
-       }
-      
-    } 
-
-    
+        correctanswers++;
+      }      
+    }
 
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
@@ -131,48 +128,46 @@ public class ProcessUserAnswerEndpoint {
     return result;
   }
 
-private Boolean isUserAnswerCorrect(Long questionID, Integer answerID,
-		String userInput) {
-	
-	Boolean isCorrect = false;
-	Question question = quizQuestionRepository.getQuizQuestion(questionID);
-      
-      if (question.getKind() == QuizKind.MULTIPLE_CHOICE) {
-    	  // We already have the answerID and we can retrieve the answer
-    	  Answer answer = answersRepository.getAnswer(questionID, answerID);
-    	  AnswerKind ak = answer.getKind();
-    	  if (ak == AnswerKind.GOLD || ak == AnswerKind.FEEDBACK_GOLD) {
-    		  isCorrect = true;
-    	  } else if (ak == AnswerKind.SILVER) {
-    		  double prob = answer.getProbability();
-    		  isCorrect = (prob>=0.5);
-    	  } else if (ak == AnswerKind.INCORRECT) {
-    		  isCorrect = false;
-    	  }
+  private Boolean isUserAnswerCorrect(Long questionID, Integer answerID, String userInput) {
+    Boolean isCorrect = false;
+    Question question = quizQuestionRepository.getQuizQuestion(questionID);
+
+    if (question.getKind() == QuizKind.MULTIPLE_CHOICE) {
+      // We already have the answerID and we can retrieve the answer
+      Answer answer = answersRepository.getAnswer(questionID, answerID);
+      AnswerKind ak = answer.getKind();
+      if (ak == AnswerKind.GOLD || ak == AnswerKind.FEEDBACK_GOLD) {
+        isCorrect = true;
+      } else if (ak == AnswerKind.SILVER) {
+        double prob = answer.getProbability();
+        isCorrect = (prob >= 0.5);
+      } else if (ak == AnswerKind.INCORRECT) {
+        isCorrect = false;
       }
-      if (question.getKind() == QuizKind.FREE_TEXT) {
-    	  // since we do not have an id, to immediately retrieve
-    	  // the answer, we need to scan and see if the submitted answer 
-    	  // matches
-    	  List<Answer> answers = question.getAnswers();
-          for (Answer ans : answers) {
-        	  AnswerKind ak = ans.getKind();
-        	  if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
-        		  if (ans.getText().equalsIgnoreCase(userInput)) {
-	            	  isCorrect = true;
-	            	  break;
-        		  } 
-                  int editDistance = LevenshteinAlgorithm
-                          .getLevenshteinDistance(userInput, ans.getText());
-                  if (editDistance<=1) {
-	            	  isCorrect = true;
-	            	  break;
-                  }
-              }
+    }
+    if (question.getKind() == QuizKind.FREE_TEXT) {
+      // since we do not have an id, to immediately retrieve
+      // the answer, we need to scan and see if the submitted answer 
+      // matches
+      List<Answer> answers = question.getAnswers();
+      for (Answer ans : answers) {
+        AnswerKind ak = ans.getKind();
+        if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
+          if (ans.getText().equalsIgnoreCase(userInput)) {
+            isCorrect = true;
+            break;
+          } 
+          int editDistance = LevenshteinAlgorithm
+              .getLevenshteinDistance(userInput, ans.getText());
+          if (editDistance <= 1) {
+            isCorrect = true;
+            break;
           }
+        }
       }
-	return isCorrect;
-}
+    }
+    return isCorrect;
+  }
 
   private boolean isExploit(int a, int b, int c) throws Exception {
     explorationExploitationService.setN(10);
@@ -184,7 +179,7 @@ private Boolean isUserAnswerCorrect(Long questionID, Integer answerID,
       Long questionID, Integer useranswerID, String userInput,
       Boolean isCorrect, Integer correctanswers,
       Integer totalanswers) {
-	  
+    
     UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
         user.getUserid(), useranswerID, isCorrect);
     uaf.setNumCorrectAnswers(correctanswers);

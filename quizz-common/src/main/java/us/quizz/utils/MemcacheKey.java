@@ -57,7 +57,7 @@ public final class MemcacheKey {
   // Returns a key to a Map<Integer, Map<Integer, Integer>> containing survival probabilities.
   // The Map is of the form of num_correct_answers -> (num_questions_left -> number_such_users).
   public static String getSurvivalProbabilities(String quiz) {
-    if (quiz==null) return "survivalprobability";
-    else return "survivalprobability_"+quiz;
+    if (quiz == null) return "survivalprobability";
+    else return "survivalprobability_" + quiz;
   }
 }

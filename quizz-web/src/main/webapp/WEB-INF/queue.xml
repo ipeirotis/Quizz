@@ -34,19 +34,17 @@
     <max-concurrent-requests>2</max-concurrent-requests>
   </queue>
 
-    <queue>
+  <queue>
     <name>adcampaign</name>
     <rate>1/s</rate>
     <bucket-size>1</bucket-size>
     <max-concurrent-requests>1</max-concurrent-requests>
   </queue>
 
-
-    <queue>
+  <queue>
     <name>survival</name>
     <rate>1/s</rate>
     <bucket-size>1</bucket-size>
     <max-concurrent-requests>1</max-concurrent-requests>
-    </queue>
-
+  </queue>
 </queue-entries>

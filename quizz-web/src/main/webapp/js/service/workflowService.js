@@ -26,10 +26,10 @@ angular.module('quizz').factory('workflowService', [function() {
     },
     setQuestions: function(q) {
       questions = q;
-      if(q.calibration){
-    	  numOfCalibrationQuestions = q.calibration.length;
+      if (q.calibration) {
+        numOfCalibrationQuestions = q.calibration.length;
       }
-      if(q.collection){
+      if (q.collection) {
         numOfCollectionQuestions = q.collection.length;
       }
     },

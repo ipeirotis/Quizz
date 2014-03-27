@@ -1,5 +1,11 @@
 package us.quizz.entities;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
+import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuizKind;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -8,12 +14,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import us.quizz.enums.AnswerKind;
-import us.quizz.enums.QuizKind;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Question implements Serializable {
@@ -73,12 +73,12 @@ public class Question implements Serializable {
     this.quizID = quizID;
     this.text = text;
     this.kind = kind;
-    this.hasSilverAnswers=false;
-    this.hasGoldAnswer=false;
-    this.numberOfUserAnswers=0;
-    this.hasUserAnswers=false;
-    this.totalUserScore=0.0;
-    this.numberOfCorrentUserAnswers=0;
+    this.hasSilverAnswers = false;
+    this.hasGoldAnswer = false;
+    this.numberOfUserAnswers = 0;
+    this.hasUserAnswers = false;
+    this.totalUserScore = 0.0;
+    this.numberOfCorrentUserAnswers = 0;
     
     this.answers = new ArrayList<Answer>();
   }

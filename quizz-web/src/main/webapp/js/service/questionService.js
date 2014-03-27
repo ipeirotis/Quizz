@@ -19,8 +19,7 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
       url += '/user/' + username;
 
       $http.get(url).success(function(response) {
-    	  if (typeof(_gaq) != 'undefined') {
-             ga('send', {
+          ga('send', {
                  'hitType': 'event',
                  'hitCallback': function(){ },
                  'eventCategory': 'quiz-submission',
@@ -28,9 +27,6 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
                  'eventLabel': quizId,
                  'eventValue': Math.round(100. * response.score / response.totalanswers),
              });
-    	  } else {
-    		 console.error("Google Analytics is not installed");  
-          }
       });
     },
     challengeAnswer: function(params, success, error) {

@@ -1,13 +1,13 @@
 package us.quizz.endpoints;
 
-import java.util.List;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.inject.Inject;
 
 import us.quizz.service.SurvivalProbabilityService;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -34,11 +34,10 @@ public class SurvivalProbabilityEndpoint {
     return survivalProbabilityService
         .getSurvivalProbability(quizID, a_from, a_to, b_from, b_to);
   }
-  
+
   @ApiMethod(name = "getSurvivalProbabilities", path = "getSurvivalProbabilities")
   public List<SurvivalProbabilityService.Result> getSurvivalProbabilities(
-                    @Nullable @Named("quizID") String quizID) {
+      @Nullable @Named("quizID") String quizID) {
     return survivalProbabilityService.getSurvivalProbabilities(quizID);
   }
-  
 }

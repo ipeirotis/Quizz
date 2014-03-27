@@ -45,16 +45,16 @@ public class UserAnswerFeedback implements Serializable {
   private Boolean isCorrect;
 
   public String getMessage() {
-	return message;
-}
+    return message;
+  }
 
-public void setMessage(String message) {
-	this.message = message;
-}
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-@Persistent
+  @Persistent
   private String correctAnswerText;
-  
+
   @Persistent
   private String message;
 

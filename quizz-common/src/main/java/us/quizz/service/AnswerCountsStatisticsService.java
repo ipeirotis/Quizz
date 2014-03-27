@@ -1,9 +1,8 @@
 package us.quizz.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -11,9 +10,10 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AnswerCountsStatisticsService {
   private QuizQuestionRepository quizQuestionRepository;
@@ -68,6 +68,7 @@ public class AnswerCountsStatisticsService {
               }
             }
           }
+          quizQuestionRepository.saveAll(questions, true  /* use transaction */);
         }
       }
     }

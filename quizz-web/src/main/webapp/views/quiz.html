@@ -10,7 +10,7 @@
 
   <div class="answers">
     <button type="button" class="btn btn-primary btn-lg btn-block"
-            ng-click="answerQuestion(answer.internalID, getGaType(answer.kind))"
+            ng-click="answerQuestion(answer.internalID, getGaType(answer))"
             ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
       {{answer.text}}
     </button>

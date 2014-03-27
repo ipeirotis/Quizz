@@ -1,10 +1,8 @@
 package us.quizz.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.inject.Inject;
 
 import org.apache.commons.math3.special.Gamma;
 
@@ -16,9 +14,11 @@ import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AnswerBitsStatisticsService {
   private QuizQuestionRepository quizQuestionRepository;
@@ -113,7 +113,8 @@ public class AnswerBitsStatisticsService {
         }
         answer.setProbCorrect(Math.exp(logit) / (Math.exp(logit)+1));
       }
-    }      
+    } 
+    quizQuestionRepository.saveAll(questions, true  /* use transaction */);
   }
 
   // Returns <UserID, {correct, incorrect, information gain}>

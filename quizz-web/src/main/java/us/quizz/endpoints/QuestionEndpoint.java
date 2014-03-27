@@ -1,19 +1,5 @@
 package us.quizz.endpoints;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-
-import us.quizz.entities.Answer;
-import us.quizz.entities.AnswerChallengeCounter;
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.repository.AnswerChallengeCounterRepository;
-import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
-
 import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -24,6 +10,20 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.inject.Inject;
+
+import us.quizz.entities.Answer;
+import us.quizz.entities.AnswerChallengeCounter;
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.repository.AnswerChallengeCounterRepository;
+import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
@@ -90,8 +90,9 @@ public class QuestionEndpoint {
       throw new BadRequestException("Can't add " + question.getKind() + 
           " question to " + quiz.getKind() + " quiz");
     }
-    
-    Question newQuestion = new Question(question.getQuizID(), question.getText(), question.getKind());
+
+    Question newQuestion = new Question(
+        question.getQuizID(), question.getText(), question.getKind());
     // We save the object, because we need to get the questionID assigned by datastore.
     newQuestion = quizQuestionRepository.insert(newQuestion);
 
@@ -100,7 +101,8 @@ public class QuestionEndpoint {
       for (final Answer answer : question.getAnswers()) {
         // Create a new Answer to generate a new answer ID.
         Answer newAnswer = new Answer(
-            newQuestion.getID(), newQuestion.getQuizID(), answer.getText(), answer.getKind(), internalID);
+            newQuestion.getID(), newQuestion.getQuizID(),
+            answer.getText(), answer.getKind(), internalID);
 
         Preconditions.checkNotNull(answer.getKind(), "Answer kind can't be empty");
         newAnswer.setKind(answer.getKind());
@@ -119,7 +121,7 @@ public class QuestionEndpoint {
         internalID++;
         newQuestion.addAnswer(newAnswer);
       }
-      return quizQuestionRepository.singleMakePersistent(newQuestion);
+      return quizQuestionRepository.singleMakePersistent(newQuestion, true  /* use transaction */);
     } else {
       return newQuestion;
     }

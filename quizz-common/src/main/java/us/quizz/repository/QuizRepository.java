@@ -129,9 +129,12 @@ public class QuizRepository extends BaseRepository<Quiz>{
       return quizlist;
 
     PersistenceManager pm = getPersistenceManager();
-    Query query = pm.newQuery(Quiz.class);
-    quizlist = (List<Quiz>) query.execute();
-    pm.close();
+    try {
+      Query query = pm.newQuery(Quiz.class);
+      quizlist = (List<Quiz>) query.execute();
+    } finally {
+      pm.close();
+    }
     List<Quiz> list = new ArrayList<Quiz>(quizlist);
     CachePMF.put(key, list);
     return quizlist;

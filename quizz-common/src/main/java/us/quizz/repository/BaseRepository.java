@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.jdo.Transaction;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
@@ -150,11 +151,25 @@ public abstract class BaseRepository<T> {
   }
 
   public T get(Long id) {
+    return get(id, false  /* use transaction */);
+  }
+
+  public T get(Long id, boolean useTransaction) {
     PersistenceManager mgr = getPersistenceManager();
+    Transaction tx = mgr.currentTransaction();
     T item = null;
     try {
-      item = mgr.getObjectById(cls, id);
+      if (useTransaction) {
+        tx.begin();
+        item = mgr.getObjectById(cls, id);
+        tx.commit();
+      } else {
+        item = mgr.getObjectById(cls, id);
+      }
     } finally {
+      if (tx.isActive()) {
+        tx.rollback();
+      }
       mgr.close();
     }
     return item;
@@ -178,10 +193,24 @@ public abstract class BaseRepository<T> {
   }
 
   public void saveAll(List<T> list) {
+    saveAll(list, false);
+  }
+
+  public void saveAll(List<T> list, boolean useTransaction) {
     PersistenceManager mgr = getPersistenceManager();
+    Transaction tx = mgr.currentTransaction();
     try {
-      mgr.makePersistentAll(list);
+      if (useTransaction) {
+        tx.begin();
+        mgr.makePersistentAll(list);
+        tx.commit();
+      } else {
+        mgr.makePersistentAll(list);
+      }
     } finally {
+      if (tx.isActive()) {
+        tx.rollback();
+      }
       mgr.close();
     }
   }
@@ -200,10 +229,25 @@ public abstract class BaseRepository<T> {
   }
 
   public T singleMakePersistent(T item) {
+    return singleMakePersistent(item, false  /* use transaction */);
+  }
+
+  public T singleMakePersistent(T item, boolean useTransaction) {
     PersistenceManager pm = getPersistenceManager();
+    Transaction tx = pm.currentTransaction();
     try {
-      return pm.makePersistent(item);
+      if (useTransaction) {
+        tx.begin();
+        T results = pm.makePersistent(item);
+        tx.commit();
+        return results;
+      } else {
+        return pm.makePersistent(item);
+      }
     } finally {
+      if (tx.isActive()) {
+        tx.rollback();
+      }
       pm.close();
     }
   }

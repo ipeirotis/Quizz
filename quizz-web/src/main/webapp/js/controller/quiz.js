@@ -64,7 +64,7 @@ angular.module('quizz').controller('QuizController',
            workflowService.addUserAnswer(response.userAnswer);
            workflowService.addUserFeedback(response.userAnswerFeedback);
            workflowService.setNextQuestionGold(response.exploit);
-           if(response.userAnswerFeedback.isCorrect == true) {
+           if (response.userAnswerFeedback.isCorrect == true) {
              workflowService.incNumOfCorrectAnswers();
            }
            $scope.showFeedback();
@@ -80,12 +80,18 @@ angular.module('quizz').controller('QuizController',
        $location.path('/feedback');
      };
 
-     $scope.getGaType = function(answerKind) {
-       if (answerKind == 'GOLD' || answerKind == 'SILVER') {
+     $scope.getGaType = function(answer) {
+       if (answer.kind == 'GOLD') {
          return 'multiple-choice-correct';
-       } else if (answerKind == 'INCORRECT') {
+       } else if (answer.kind == 'SILVER') {
+         if (answer.probability >= 0.5) {
+           return 'multiple-choice-correct';
+         } else {
+           return 'multiple-choice-incorrect';
+         }
+       } else if (answer.kind == 'INCORRECT') {
          return 'multiple-choice-incorrect';
-       } else if (answerKind == 'USER_SUBMITTED') {
+       } else if (answer.kind == 'USER_SUBMITTED') {
          return 'input-text-correct';
        }
      };
@@ -97,7 +103,7 @@ angular.module('quizz').controller('QuizController',
      };
 
      $scope.filterNotSelectable = function(answer) {
-       return answer.kind == 'input-text-correct' || answer.kind == 'USER_SUBMITTED';
+       return answer.kind == 'USER_SUBMITTED';
      };
 
      $scope.ranksFormating = function(userValue, totalValue) {

@@ -35,7 +35,7 @@ Deploy
 
 To deploy the version onto the AppEngine as a dev version, use deploy_dev.sh:
 
-  $ ./src/main/scripts/deploy_dev.sh $VERSION_ID
+  $ ./deploy_dev.sh $VERSION_ID
 
 where $VERSION_ID is a new version id (not existing in the AppEngine yet) to be
 used to identify the development version.

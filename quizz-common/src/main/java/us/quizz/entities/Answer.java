@@ -5,6 +5,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import us.quizz.enums.AnswerKind;
+
 import java.io.Serializable;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -12,8 +14,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import us.quizz.enums.AnswerKind;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Answer implements Serializable{
@@ -30,11 +30,6 @@ public class Answer implements Serializable{
   @Persistent
   private String text;
  
-  // UNUSED
-  // represents the importance associated with selecting this answer
-  //@Persistent
-  //private Double score;
-
   // Used to identify what to expect in metadata and how to interpret the score
   @Persistent
   private AnswerKind kind;
@@ -51,10 +46,6 @@ public class Answer implements Serializable{
 
   @Persistent
   private String quizID;
-
-  
-  //@Persistent
-  //private Boolean isGold;
 
   // If this is a SILVER answer, the probability that it is correct
   @Persistent
@@ -123,16 +114,6 @@ public class Answer implements Serializable{
     this.text = text;
   }
 
-  /*
-  public Double getScore() {
-    return score;
-  }
-
-  public void setScore(Double score) {
-    this.score = score;
-  }
-  */
-
   public AnswerKind getKind() {
     return kind;
   }
@@ -165,12 +146,6 @@ public class Answer implements Serializable{
     return getPrimitiveMD(key).getAsLong();
   }
 
-  /*
-  public boolean isSilver() {
-    return probability != null;
-  }
-  */
-
   public Double getProbability() {
     return probability;
   }
@@ -191,20 +166,6 @@ public class Answer implements Serializable{
     this.questionID = questionID;
   }
 
-  /*
-  public Boolean getIsGold() {
-    return isGold;
-  }
-
-  public void setIsGold(Boolean isGold) {
-    this.isGold = isGold;
-  }
-
-  public boolean isGold() {
-    return isGold != null && isGold;
-  }
-  */
-
   public String getSource() {
     return source;
   }
@@ -224,44 +185,6 @@ public class Answer implements Serializable{
   public void setId(Key id) {
     this.id = id;
   }
-
-  /*
-  public boolean checkIfCorrect(String userInput) {
-    if (this.kind == null) {
-      return false;
-    }
-    
-    // The userInput is populated for free-text answers
-    if (userInput.equals(this.text)) {
-    	return true;
-    }
-    
-    if (this.kind == AnswerKind.GOLD) {
-    	return true;
-    }
-    if (this.kind == AnswerKind.INCORRECT) {
-    	return false;
-    }
-    if (this.kind == AnswerKind.SILVER) {
-    	return false;
-    }
-    
-    if ("feedback_gold".equals(this.kind)) {
-      return true;
-    }
-    if (kind.startsWith("selectable_")) {
-      return kind.equals("selectable_gold");
-    }
-    if ("input_text".equals(this.kind)) {
-     return text.equals(userInput);
-    }
-    if ("silver".equals(this.kind)) {
-      return true;
-    }
-    throw new UnsupportedOperationException("Undefined correctness for: "
-        + kind);
-  }
-*/
 
   public String userAnswerText(String userInput) {
     if (kind != null && kind == AnswerKind.USER_SUBMITTED) {

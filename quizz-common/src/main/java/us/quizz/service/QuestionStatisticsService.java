@@ -1,9 +1,9 @@
 package us.quizz.service;
 
+import com.google.inject.Inject;
+
 import us.quizz.entities.Question;
 import us.quizz.repository.QuizQuestionRepository;
-
-import com.google.inject.Inject;
 
 public class QuestionStatisticsService {
   private QuizQuestionRepository quizQuestionRepository;
@@ -25,8 +25,8 @@ public class QuestionStatisticsService {
     int c = getNumberOfCorrectUserAnswers(questionID);
     question.setNumberOfCorrentUserAnswers(c);
 
-    quizQuestionRepository.storeQuizQuestion(question);
-    
+    quizQuestionRepository.singleMakePersistent(question, true  /* use transaction */);
+
     return question;
   }
 

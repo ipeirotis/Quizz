@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -27,6 +29,11 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   // Number of seconds to cache the quiz questions.
   private static final int QUESTIONS_CACHED_TIME_SECONDS = 5 * 60;  // 5 minutes.
+
+  // Default maximum questions to be fetched from the datastore.
+  private static final int DEFAULT_QUESTIONS_MAX_FETCH_SIZE = 1000;
+
+  private static final Logger logger = Logger.getLogger(QuizQuestionRepository.class.getName());
 
   QuizRepository quizRepository;
 
@@ -71,18 +78,43 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return getQuizQuestion(Long.parseLong(questionID));
   }
 
+  // Returns the Question with the given questionID as the key if found, else returns null if
+  // there is a datastore error when fetching the question.
   public Question getQuizQuestion(Long questionID) {
-    return get(questionID);
+    Question question = get(questionID, true  /* use transaction */);
+
+    // Sanity check on the datastore fetch results to make sure all embedded entities are fetched.
+    if (question == null) {
+      logger.log(Level.SEVERE, "getQuizQuestion: " + questionID + ": transaction fail. " +
+          "This is likely a transient error with datastore.");
+      return null;
+    }
+
+    if (question.getAnswers() == null) {
+      logger.log(Level.SEVERE, "getQuizQuestion: " + questionID + ": answers array is null. " +
+          "This is likely a transient error with datastore.");
+      return null;
+    }
+
+    for (final Answer answer : question.getAnswers()) {
+      if (answer.getKind() == null) {
+        logger.log(Level.SEVERE, "getQuizQuestion: " + questionID + ": one answer is null. " +
+            "This is likely a transient error with datastore.");
+        return null;
+      }
+    }
+
+    return question;
   }
 
   protected Query getQuestionBaseQuery(PersistenceManager pm) {
     Query query = pm.newQuery(Question.class);
-    query.getFetchPlan().setFetchSize(1000);
+    query.getFetchPlan().setFetchSize(DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
     return query;
   }
 
-  protected Query getQuestionQuery(PersistenceManager pm,
-      String filter, String declaredParameters) {
+  protected Query getQuestionQuery(
+      PersistenceManager pm, String filter, String declaredParameters) {
     Query query = getQuestionBaseQuery(pm);
     query.setFilter(filter);
     query.declareParameters(declaredParameters);
@@ -95,14 +127,14 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       Query query = getQuestionBaseQuery(pm);
       @SuppressWarnings("unchecked")
       List<Question> results = (List<Question>) query.execute();
-      return new ArrayList<Question>(results);
+      return removeInvalidQuestions(new ArrayList<Question>(results));
     } finally {
       pm.close();
     }
   }
 
-  protected ArrayList<Question> getQuestions(String filter,
-      String declaredParameters, Map<String, Object> params) {
+  protected ArrayList<Question> getQuestions(
+      String filter, String declaredParameters, Map<String, Object> params) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query query = getQuestionQuery(pm, filter, declaredParameters);
@@ -110,14 +142,14 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       @SuppressWarnings("unchecked")
       ArrayList<Question> questions = new ArrayList<Question>(
           (List<Question>) query.executeWithMap(params));
-      return questions;
+      return removeInvalidQuestions(questions);
     } finally {
       pm.close();
     }
   }
 
-  protected ArrayList<Question> getQuestionsWithCaching(String key,
-      String filter, String declaredParameters, Map<String, Object> params) {
+  protected ArrayList<Question> getQuestionsWithCaching(
+      String key, String filter, String declaredParameters, Map<String, Object> params) {
     @SuppressWarnings("unchecked")
     ArrayList<Question> questions = CachePMF.get(key, ArrayList.class);
     if (questions != null) {
@@ -173,8 +205,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       Query query = getQuizGoldQuestionsQuery(pm, quizID);
       setRandomRange(query, questionsWithGold, amount);
       ArrayList<Question> result = new ArrayList<Question>(
-          (List<Question>) query
-              .executeWithMap(getQuizGoldQuestionsParameters(quizID)));
+          (List<Question>) query.executeWithMap(getQuizGoldQuestionsParameters(quizID)));
       return removeInvalidQuestions(result);
     } finally {
       pm.close();
@@ -191,8 +222,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       Query query = getQuizSilverQuestionsQuery(pm, quizID);
       setRandomRange(query, questionsWithSilver, amount);
       ArrayList<Question> result = new ArrayList<Question>(
-          (List<Question>) query
-              .executeWithMap(getQuizSilverQuestionsParameters(quizID)));
+          (List<Question>) query.executeWithMap(getQuizSilverQuestionsParameters(quizID)));
 
       return removeInvalidQuestions(result);
     } finally {
@@ -202,9 +232,9 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   // Removes invalid questions that have answers' kind = null in the given questions list
   // and returns the remaining questions.
-  // TODO(chunhowt): This is temporary fix to resolve "corruption" in datastore where the
-  // answers have null values in all the field, and it is yet unclear whether it is due
-  // to errors during datastore insertion or during updates.
+  // TODO(chunhowt): Datastore sometimes has transient error and returns Questions with embedded
+  // Answers entities not fully fetched. We should try to figure out how to do robust datastore
+  // query and remove this.
   private ArrayList<Question> removeInvalidQuestions(final ArrayList<Question> questions) {
     ArrayList<Question> newQuestions = new ArrayList<Question>();
     for (final Question question : questions) {
@@ -217,6 +247,9 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       }
       if (isValidQuestion) {
         newQuestions.add(question);
+      } else {
+        logger.log(Level.WARNING, "removeInvalidQuestions: " + question.getKey().getId() +
+            ". This is likely transient error due to datastore fetching error.");
       }
     }
     return newQuestions;
@@ -238,9 +271,17 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   @SuppressWarnings("unchecked")
   public List<Question> getQuizQuestionsByKeys(List<Key> keys) {
-    Query q = getPersistenceManager().newQuery(
-        "select from " + Question.class.getName() + " where key == :keys");
-      return (List<Question>) q.execute(keys);
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(
+          "select from " + Question.class.getName() + " where key == :keys");
+      // TODO(chunhowt: Make everything to be using List instead of ArrayList.
+      List<Question> results = (List<Question>) q.execute(keys);
+      results = (List<Question>) removeInvalidQuestions(new ArrayList<Question>(results));
+      return results;
+    } finally {
+      pm.close();
+    }
   }
 
   public void storeQuizQuestion(Question q) {

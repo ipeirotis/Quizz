@@ -34,38 +34,36 @@ public class CacheSurvivalProbability extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-	  
-	  // If we ever need to cache synchronously
-	  // In general, this risks generating a DeadlineException error
-	  String executeNow = req.getParameter("now");
-	  
-	  // The quizId value can be:
-	  // null: compute statistics across all quizzes
-	  // quizid: compute statistics for a given quiz
-	  // all: compute statistics for all individual quizzes
-	  String quizId = req.getParameter("quizId");
-	  
+    // If we ever need to cache synchronously
+    // In general, this risks generating a DeadlineException error
+    String executeNow = req.getParameter("now");
+
+    // The quizId value can be:
+    // null: compute statistics across all quizzes
+    // quizid: compute statistics for a given quiz
+    // all: compute statistics for all individual quizzes
+    String quizId = req.getParameter("quizId");
+
     if ("true".equals(executeNow)) {
-    	survivalProbabilityService.cacheValuesInMemcache(quizId);
-    	return;
+      survivalProbabilityService.cacheValuesInMemcache(quizId);
+      return;
     }
 
-	if ("all".equals(quizId)) {
-		List<Quiz> quizzes = quizRepository.getQuizzes();
-		for (Quiz q : quizzes) {
-			executeInQueue(q.getQuizID());
-		}
-		executeInQueue(null); // to also cache the overall statistics
-	} else {
-		executeInQueue(quizId);
-	}
- 
+    if ("all".equals(quizId)) {
+      List<Quiz> quizzes = quizRepository.getQuizzes();
+      for (Quiz q : quizzes) {
+        executeInQueue(q.getQuizID());
+      }
+      executeInQueue(null); // to also cache the overall statistics
+    } else {
+      executeInQueue(quizId);
+    }
   }
 
   private void executeInQueue(String quizId) {
     Queue queue = QueueFactory.getQueue("survival");
     queue.add(Builder.withUrl("/api/cacheSurvivalProbability")
-    		.method(TaskOptions.Method.GET)
-    		.param("quizId", quizId));
+        .method(TaskOptions.Method.GET)
+        .param("quizId", quizId));
   }
 }

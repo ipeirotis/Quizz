@@ -76,9 +76,7 @@ public class Quiz implements Serializable {
   @Persistent
   private Integer totalAnswers;
 
-
-
-// The total number of all answers submitted
+  // The total number of all answers submitted
   @Persistent
   private Integer submitted;
 
@@ -252,10 +250,10 @@ public class Quiz implements Serializable {
   }
   
   public Integer getNumChoices() {
-	return numChoices;
-}
+    return numChoices;
+  }
 
-public void setNumChoices(Integer numChoices) {
-	this.numChoices = numChoices;
-}
+  public void setNumChoices(Integer numChoices) {
+    this.numChoices = numChoices;
+  }
 }

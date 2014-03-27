@@ -5,18 +5,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -53,14 +49,18 @@ import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
 
-import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("unused")
 public class QuizzTest {
@@ -165,7 +165,7 @@ public class QuizzTest {
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
       Question question = new Question(QUIZ_ID, "Question_" + i, QuizKind.MULTIPLE_CHOICE);
       for (int j = 1; j <= 4; j++) {
-    	  AnswerKind ak = (j==1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
+        AnswerKind ak = (j == 1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
         Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, ak, j);
         answer.setQuestionID(1L);
         question.addAnswer(answer);
@@ -242,7 +242,7 @@ public class QuizzTest {
 
     // process user answers
     int index = 1;
-    for (Question question :quizQuestions) {
+    for (Question question : quizQuestions) {
       processUserAnswer(user, quiz, question, index++);
     }
 

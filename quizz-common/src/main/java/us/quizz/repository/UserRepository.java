@@ -1,5 +1,11 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Key;
+
+import us.quizz.entities.Experiment;
+import us.quizz.entities.User;
+import us.quizz.entities.UserAnswer;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +18,6 @@ import javax.jdo.Query;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import us.quizz.entities.Experiment;
-import us.quizz.entities.User;
-import us.quizz.entities.UserAnswer;
-
-import com.google.appengine.api.datastore.Key;
 
 public class UserRepository extends BaseRepository<User> {
   public UserRepository() {
@@ -41,32 +41,33 @@ public class UserRepository extends BaseRepository<User> {
 
   public Set<String> getUserIDs(String quiz) {
     PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("quizID == quizParam");
+      q.declareParameters("String quizParam");
 
-    Query q = pm.newQuery(UserAnswer.class);
-    q.setFilter("quizID == quizParam");
-    q.declareParameters("String quizParam");
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quiz);
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizParam", quiz);
-
-    Set<String> answers = new TreeSet<String>();
-    int limit = 1000;
-    int i = 0;
-    while (true) {
-      q.setRange(i, i + limit);
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-      if (results.size() == 0) {
-        break;
+      Set<String> answers = new TreeSet<String>();
+      int limit = 1000;
+      int i = 0;
+      while (true) {
+        q.setRange(i, i + limit);
+        @SuppressWarnings("unchecked")
+        List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+        if (results.size() == 0) {
+          break;
+        }
+        for (UserAnswer ua : results) {
+          answers.add(ua.getUserid());
+        }
+        i += limit;
       }
-      for (UserAnswer ua : results) {
-        answers.add(ua.getUserid());
-      }
-      i += limit;
+      return answers;
+    } finally {
+      pm.close();
     }
-
-    pm.close();
-    return answers;
   }
 
   public User getOrCreate(String userid) {

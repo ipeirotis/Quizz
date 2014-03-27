@@ -22,7 +22,7 @@ angular.module('quizz', ['ngRoute', 'ngSanitize'])
 }])
 
 .config(['$httpProvider', function($httpProvider) {
-	$httpProvider.interceptors.push('interceptor'); 
+  $httpProvider.interceptors.push('interceptor');
 }])
 
 .run(['$rootScope', 'utils',

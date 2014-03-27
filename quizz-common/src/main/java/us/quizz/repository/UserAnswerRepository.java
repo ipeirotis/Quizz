@@ -27,47 +27,50 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
 
   public List<UserAnswer> getUserAnswers(String quiz) {
     PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("quizID == quizParam");
+      q.declareParameters("String quizParam");
 
-    Query q = pm.newQuery(UserAnswer.class);
-    q.setFilter("quizID == quizParam");
-    q.declareParameters("String quizParam");
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quiz);
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizParam", quiz);
-
-    List<UserAnswer> answers = new ArrayList<UserAnswer>();
-    int limit = 1000;
-    int i = 0;
-    while (true) {
-      q.setRange(i, i + limit);
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-      if (results.size() == 0) {
-        break;
+      List<UserAnswer> answers = new ArrayList<UserAnswer>();
+      int limit = 1000;
+      int i = 0;
+      while (true) {
+        q.setRange(i, i + limit);
+        @SuppressWarnings("unchecked")
+        List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+        if (results.size() == 0) {
+          break;
+        }
+        answers.addAll(results);
+        i += limit;
       }
-      answers.addAll(results);
-      i += limit;
+      return answers;
+    } finally {
+      pm.close();
     }
-
-    pm.close();
-    return answers;
   }
 
   public List<UserAnswer> getUserAnswers(String quiz, String userid) {
     PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("quizID == quizParam && userid == useridParam");
+      q.declareParameters("String quizParam, String useridParam");
 
-    Query q = pm.newQuery(UserAnswer.class);
-    q.setFilter("quizID == quizParam && userid == useridParam");
-    q.declareParameters("String quizParam, String useridParam");
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quiz);
+      params.put("useridParam", userid);
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizParam", quiz);
-    params.put("useridParam", userid);
-
-    @SuppressWarnings("unchecked")
-    List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-    pm.close();
-    return results;
+      @SuppressWarnings("unchecked")
+      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+      return results;
+    } finally {
+      pm.close();
+    }
   }
 
   public UserAnswer getUserAnswer(String questionID, String userID) {
@@ -86,17 +89,20 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
   @SuppressWarnings("unchecked")
   public List<UserAnswer> getUserAnswersWithChallenge(String quiz, String userid) {
     PersistenceManager pm = getPersistenceManager();
-    Query q = pm.newQuery(UserAnswer.class);
-    q.setFilter("quizID == quizParam && userid == useridParam");
-    q.declareParameters("String quizParam, String useridParam");
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("quizID == quizParam && userid == useridParam");
+      q.declareParameters("String quizParam, String useridParam");
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizParam", quiz);
-    params.put("useridParam", userid);
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quiz);
+      params.put("useridParam", userid);
 
-    List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
-    pm.close();
-    return result;
+      List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
+      return result;
+    } finally {
+      pm.close();
+    }
   }
 
   public void storeUserAnswerFeedback(UserAnswerFeedback uaf) {

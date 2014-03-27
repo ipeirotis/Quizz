@@ -44,7 +44,7 @@ angular.module('quizz-admin').controller('MultiChoiceAnswersReportController',
       if (item.answers && item.answers.length > 0) {
         var kind = item.answers[0].kind;
         if (kind == 'GOLD' ||
-            kind == 'INVALID' ||
+            kind == 'INCORRECT' ||
             kind == 'SILVER') {
           result = 'SELECTABLE';
         } else {

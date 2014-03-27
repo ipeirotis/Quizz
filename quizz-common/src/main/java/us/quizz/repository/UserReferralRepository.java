@@ -1,5 +1,17 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+
+import eu.bitwalker.useragentutils.Browser;
+
+import us.quizz.entities.DomainStats;
+import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.UserReferal;
+import us.quizz.utils.UrlUtils;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,18 +21,6 @@ import java.util.TreeSet;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
-
-import us.quizz.entities.DomainStats;
-import us.quizz.entities.QuizPerformance;
-import us.quizz.entities.UserReferal;
-import us.quizz.utils.UrlUtils;
-
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-
-import eu.bitwalker.useragentutils.Browser;
 
 public class UserReferralRepository extends BaseRepository<UserReferal> {
   public UserReferralRepository() {
@@ -34,28 +34,30 @@ public class UserReferralRepository extends BaseRepository<UserReferal> {
 
   public Set<String> getUserIDsByQuiz(String quizid) {
     PersistenceManager pm = getPersistenceManager();
-    Query query = pm.newQuery(UserReferal.class);
-    query.setFilter("quiz == quizParam");
-    query.declareParameters("String quizParam");
+    try {
+      Query query = pm.newQuery(UserReferal.class);
+      query.setFilter("quiz == quizParam");
+      query.declareParameters("String quizParam");
 
-    TreeSet<String> userids = new TreeSet<String>();
-    int limit = 1000;
-    int i = 0;
-    while (true) {
-      query.setRange(i, i + limit);
-      @SuppressWarnings("unchecked")
-      List<UserReferal> results = (List<UserReferal>) query.execute(quizid);
-      if (results.size() == 0) {
-        break;
+      TreeSet<String> userids = new TreeSet<String>();
+      int limit = 1000;
+      int i = 0;
+      while (true) {
+        query.setRange(i, i + limit);
+        @SuppressWarnings("unchecked")
+        List<UserReferal> results = (List<UserReferal>) query.execute(quizid);
+        if (results.size() == 0) {
+          break;
+        }
+        for (UserReferal ur : results) {
+          userids.add(ur.getUserid());
+        }
+        i += limit;
       }
-      for (UserReferal ur : results) {
-        userids.add(ur.getUserid());
-      }
-      i += limit;
+      return userids;
+    } finally {
+      pm.close();
     }
-    pm.close();
-
-    return userids;
   }
 
   public void createAndStoreUserReferal(HttpServletRequest req, String userid) {
