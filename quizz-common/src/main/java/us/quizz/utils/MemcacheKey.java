@@ -60,4 +60,9 @@ public final class MemcacheKey {
     if (quiz == null) return "survivalprobability";
     else return "survivalprobability_" + quiz;
   }
+  
+  // returns a key for saving the explore exploit action
+  public static String getExploreExploitAction(int a, int b, int c, int N) {
+	    return "exploreExploit_"+a+"_"+b+"_"+c+"_"+N;
+  }
 }

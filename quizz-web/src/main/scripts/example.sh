@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WEB_URL="https://crowd-power.appspot.com/" # without trailing /
+WEB_URL="crowd-power.appspot.com/" # without trailing /
 API_URL="https://crowd-power.appspot.com/_ah/api/quizz/v1" # without trailing /
 QUIZ_ID="testQuizId"
 QUIZ_NAME="testQuizName"
@@ -28,7 +28,6 @@ do
 #   curl $API_URL/insertQuestion --header 'Content-Type: application/json' --data  '{ "quizID": "'$QUIZ_ID'", "text": "Collection Question '$i'", "kind": "MULTIPLE_CHOICE", "weight": 1, "answers": [{ "text": "Answer 1 - silver", "kind": "SILVER" }, { "text": "Answer 2", "kind": "INCORRECT" }, { "text": "Answer 3", "kind": "INCORRECT" }, { "text": "Answer 4", "kind": "INCORRECT" }] }'
 done
 
-#TODO: The updateQuizCounts should be a POST call, not a GET
 echo "Updating the statistics for the Quiz"
 curl $API_URL/updateQuizCounts?quizID=testQuizId
 
@@ -42,5 +41,7 @@ curl $API_URL/updateQuizCounts?quizID=testQuizId
 curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuiz?id=testQuizId
 
 # Caching the survival probabilities to make the values available 
+# We use the background tasks module, just in case it needs more time
+# but this seems fast enough and often finishes within 20 secs or so.
 curl quizz-tasks.$WEB_URL/api/cacheSurvivalProbability?now=true
 
