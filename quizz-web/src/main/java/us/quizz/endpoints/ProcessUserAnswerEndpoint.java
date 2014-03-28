@@ -172,7 +172,7 @@ public class ProcessUserAnswerEndpoint {
   private boolean isExploit(int a, int b, int c) throws Exception {
     explorationExploitationService.setN(10);
     Result r = explorationExploitationService.getAction(a, b, c);
-    return r.getActionExploit();
+    return r.isActionExploit();
   }
 
   protected UserAnswerFeedback createUserAnswerFeedback(User user,

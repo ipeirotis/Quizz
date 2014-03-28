@@ -62,7 +62,7 @@ public final class MemcacheKey {
   }
   
   // returns a key for saving the explore exploit action
-  public static String getExploreExploitAction(int a, int b, int c, int N) {
-	    return "exploreExploit_"+a+"_"+b+"_"+c+"_"+N;
+  public static String getExploreExploitAction(int N) {
+	    return "exploreExploit_" + N;
   }
 }
