@@ -2,6 +2,7 @@ package us.quizz.di;
 
 import com.google.inject.servlet.ServletModule;
 
+import us.quizz.servlets.CacheExploreExploit;
 import us.quizz.servlets.CacheQuizQuestions;
 import us.quizz.servlets.CacheSurvivalProbability;
 import us.quizz.servlets.GetQuizCounts;
@@ -30,5 +31,6 @@ public class TasksModule extends ServletModule {
     serve("/api/cacheQuizQuestions").with(CacheQuizQuestions.class);
     serve("/api/updateCountStatistics").with(UpdateCountStatistics.class);
     serve("/api/getQuizCounts").with(GetQuizCounts.class);
+    serve("/api/cacheExploreExploit").with(CacheExploreExploit.class);
   }
 }
