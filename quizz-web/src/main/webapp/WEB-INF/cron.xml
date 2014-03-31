@@ -35,6 +35,13 @@
     <target>quizz-tasks</target>
   </cron>
   
+  <cron>
+    <url>/api/cacheExploreExploit?a=20&amp;b=20&amp;c=10&amp;N=4</url>
+    <description>Cache explore/exploit decisions</description>
+    <schedule>every day 00:10</schedule>
+    <target>quizz-tasks</target>
+  </cron>
+  
   <!-- 
   <cron>
     <url>/api/updateAnswerCountsStatistics?all=true</url>
