@@ -43,25 +43,19 @@ angular.module('quizz').factory('workflowService', [function() {
       return isCurrentQuestionGold;
     },
     getNewCurrentQuestion: function() {
-      // For now, randomly pick whether it is a gold or a silver question until
-      // the exploration-exploitation is fixed.
-      // TODO(chunhowt): This assumes at least one of gold/silver is non-empty.
-      if (numOfCalibrationQuestions == 0) {
-        useGold = false;
+
+    	if (numOfCalibrationQuestions == 0) {
+    	  isNextQuestionGold = false;
       } else if (numOfCollectionQuestions == 0) {
-        useGold = true;
-      } else {
-        useGold = Math.random() < 0.5;
-      }
-      if (!useGold) {
-        currentQuestion =
-            questions.collection[currentQuestionIndex % numOfCollectionQuestions];
+    	  isNextQuestionGold = true;
+      } 
+      if (isNextQuestionGold) {
+          currentQuestion = questions.calibration[currentQuestionIndex % numOfCalibrationQuestions];
+          isCurrentQuestionGold = true;
+        } else {
+        currentQuestion = questions.collection[currentQuestionIndex % numOfCollectionQuestions];
         isCurrentQuestionGold = false;
-      } else {
-        currentQuestion =
-            questions.calibration[currentQuestionIndex % numOfCalibrationQuestions];
-        isCurrentQuestionGold = true;
-      }
+      }  
       return currentQuestion;
     },
     getCurrentQuestion: function() {

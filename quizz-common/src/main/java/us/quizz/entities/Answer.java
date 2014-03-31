@@ -69,6 +69,8 @@ public class Answer implements Serializable{
     this.probCorrect = probCorrect;
   }
 
+  // The (estimated/computed) probability that the given answer is correct, 
+  // based on the answers from the users.
   @Persistent
   private Double probCorrect;
 

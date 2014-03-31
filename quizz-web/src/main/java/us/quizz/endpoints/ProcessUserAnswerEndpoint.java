@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
@@ -148,7 +149,11 @@ public class ProcessUserAnswerEndpoint {
       if (ak == AnswerKind.GOLD || ak == AnswerKind.FEEDBACK_GOLD) {
         isCorrect = true;
       } else if (ak == AnswerKind.SILVER) {
-        double prob = answer.getProbability();
+        Double prob = answer.getProbability();
+        if (prob==null) {
+          logger.log(Level.WARNING, "Silver answer "+answer.getID()+" for question " + question.getID() + " does not have a probability.");
+          prob=0.5;
+        }
         isCorrect = (prob >= 0.5);
       } else if (ak == AnswerKind.INCORRECT) {
         isCorrect = false;
