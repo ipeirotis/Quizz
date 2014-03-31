@@ -13,8 +13,7 @@ e2e tests:
 1.Install Protractor, https://github.com/angular/protractor
 
 2.Install Selenium
-//todo: command
+$ ./node_modules/protractor/bin/webdriver-manager update
 
-3.run $ protractor {project dir}/src/main/webapp/test/config/protractor.conf.js
-
-chromeOnly??? - check
+3.Run e2e tests
+$ protractor {project dir}/src/main/webapp/test/config/protractor.conf.js
