@@ -37,11 +37,22 @@ curl $API_URL/updateQuizCounts?quizID=testQuizId
 # Check that we get back calibration and collection questions
 # GET https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestions/testQuizId
 
-# echo "Removing the test quiz"
-curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuiz?id=testQuizId
-
 # Caching the survival probabilities to make the values available 
 # We use the background tasks module, just in case it needs more time
 # but this seems fast enough and often finishes within 20 secs or so.
 curl quizz-tasks.$WEB_URL/api/cacheSurvivalProbability?now=true
+
+# Caching the explore-exploit values for all combinations of values
+# from a=0..10, b=0..10, c=0..5 (a=correct, b=incorrect, c=exploit)
+# and for multiple choice quizzes with N=4 multiple choice options.
+# This call generates a large number of individual calls (a*b*c calls)
+# that are placed in an execution queue
+# The results are then being used by the ProcessAnswer endpoint
+# to return whether the next action is explore of exploit
+curl 'quizz-tasks.$WEB_URL/api/cacheExploreExploit?a=10&b=10&c=5&N=4'
+
+# echo "Removing the test quiz"
+curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuiz?id=testQuizId
+
+
 

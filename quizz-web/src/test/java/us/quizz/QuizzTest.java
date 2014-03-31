@@ -153,7 +153,7 @@ public class QuizzTest {
     quizEndpoint = new QuizEndpoint(quizRepository, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizRepository, quizQuestionRepository,
         answerChallengeCounterRepository);
-    processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(userRepository,
+    processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizRepository, userRepository,
         answersRepository, quizQuestionRepository, badgeRepository,
         quizPerformanceRepository, userAnswerRepository, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentRepository);

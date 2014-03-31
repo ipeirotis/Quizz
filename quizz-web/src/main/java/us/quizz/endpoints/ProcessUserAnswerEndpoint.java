@@ -1,17 +1,15 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.Answer;
-import us.quizz.entities.Badge;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.User;
@@ -23,20 +21,21 @@ import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
-import us.quizz.service.ExplorationExploitationService.Result;
 import us.quizz.utils.LevenshteinAlgorithm;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
@@ -46,6 +45,7 @@ public class ProcessUserAnswerEndpoint {
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
 
+  private QuizRepository quizRepository;
   private UserRepository userRepository;
   private AnswersRepository answersRepository;
   private QuizQuestionRepository quizQuestionRepository;
@@ -56,6 +56,7 @@ public class ProcessUserAnswerEndpoint {
 
   @Inject
   public ProcessUserAnswerEndpoint(
+      QuizRepository quizRepository,
       UserRepository userRepository,
       AnswersRepository answersRepository,
       QuizQuestionRepository quizQuestionRepository,
@@ -63,6 +64,7 @@ public class ProcessUserAnswerEndpoint {
       QuizPerformanceRepository quizPerformanceRepository,
       UserAnswerRepository userAnswerRepository,
       ExplorationExploitationService explorationExploitationService) {
+    this.quizRepository = quizRepository;
     this.userRepository = userRepository;
     this.answersRepository = answersRepository;
     this.quizQuestionRepository = quizQuestionRepository;
@@ -110,6 +112,8 @@ public class ProcessUserAnswerEndpoint {
       referer = "";
     }
     Long timestamp = (new Date()).getTime();
+    
+   
 
     UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
         answerID, userInput, isCorrect, correctanswers, totalanswers);
@@ -119,11 +123,16 @@ public class ProcessUserAnswerEndpoint {
         userInput, ipAddress, browser, referer, timestamp, isCorrect);
     updateQuizPerformance(user, questionID);
 
+    // Get the number of multiple choices for the quiz
+    Integer N = this.quizRepository.get(quizID).getNumChoices();
+    if (N==null) {
+      N = 4;
+    }
+    
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userAnswer", ua);
     result.put("userAnswerFeedback", uaf);
-    // TODO(chunhowt): Call the actual exploration-exploitation service.
-    result.put("exploit", false);
+    result.put("exploit", isExploit(a, b, c, N));
 
     return result;
   }
@@ -169,10 +178,10 @@ public class ProcessUserAnswerEndpoint {
     return isCorrect;
   }
 
-  private boolean isExploit(int a, int b, int c) throws Exception {
-    explorationExploitationService.setN(10);
-    Result r = explorationExploitationService.getAction(a, b, c);
-    return r.isActionExploit();
+  private boolean isExploit(int a, int b, int c, int N) throws Exception {
+    
+    explorationExploitationService.setN(N);
+    return explorationExploitationService.getAction(a, b, c).getActionExploit();
   }
 
   protected UserAnswerFeedback createUserAnswerFeedback(User user,

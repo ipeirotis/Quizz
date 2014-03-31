@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 
+import us.quizz.entities.SurvivalProbabilityResult;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.MemcacheKey;
@@ -29,12 +30,12 @@ public class SurvivalProbabilityService {
         .expireAfterWrite(SURVIVAL_PROBABILITIES_CACHED_TIME_MINS, TimeUnit.MINUTES).build();
   }
 
-  public Result getSurvivalProbability(String quizID, Integer a_from,
-      Integer a_to, Integer b_from, Integer b_to) {
+  public SurvivalProbabilityResult getSurvivalProbability(String quizID, Integer a_from,
+      Integer a_to, Integer b_from, Integer b_to, Integer c_from, Integer c_to) {
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
 
-    // We assume a default survival probability of 0.75
-    Result defaultResult = new Result(a_from, b_from, a_to, b_to, 100L, 75L, 0.75d, true);
+    // We assume a default survival probability
+    SurvivalProbabilityResult defaultResult = SurvivalProbabilityResult.getDefaultResult(a_from, b_from, c_from, a_to, b_to, c_to);
     
     if (values == null) {//empty cache
       return defaultResult; 
@@ -49,11 +50,11 @@ public class SurvivalProbabilityService {
     
     double psurvival = 1.0 * users_to / users_from;
 
-    return new Result(a_from, b_from, a_to, b_to, users_from, users_to, psurvival, false);
+    return new SurvivalProbabilityResult(a_from, b_from, c_from, a_to, b_to, c_to, users_from, users_to, psurvival, false);
   }
 
-  public List<Result> getSurvivalProbabilities(String quizID) {
-    List<Result> result = new ArrayList<Result>();
+  public List<SurvivalProbabilityResult> getSurvivalProbabilities(String quizID) {
+    List<SurvivalProbabilityResult> result = new ArrayList<SurvivalProbabilityResult>();
 
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
     if (values == null) return result;
@@ -68,12 +69,14 @@ public class SurvivalProbabilityService {
       }
     }
 
+    //TODO: incorporate c (number of exploits) in the loop
+    int c=0;
     for (int a = 0; a < aMax; a++) {
       for (int b = 0; b < bMax; b++) {
-        Result r1 = getSurvivalProbability(quizID, a, a + 1, b, b);
-        if (!r1.isDefault()) result.add(r1);
-        Result r2 = getSurvivalProbability(quizID, a, a, b, b + 1);
-        if (!r2.isDefault()) result.add(r2);
+        SurvivalProbabilityResult r1 = getSurvivalProbability(quizID, a, a + 1,  b, b, c, c);
+        if (!r1.getIsDefault()) result.add(r1);
+        SurvivalProbabilityResult r2 = getSurvivalProbability(quizID, a, a, b, b + 1, c, c);
+        if (!r2.getIsDefault()) result.add(r2);
       }
     }
 
@@ -101,109 +104,5 @@ public class SurvivalProbabilityService {
     CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
   }
 
-  public class Result {
-    boolean isDefault;
 
-    private int correct_from;
-    private int incorrect_from;
-    private int correct_to;
-    private int incorrect_to;
-
-    public int getCorrect_from() {
-      return correct_from;
-    }
-
-    public void setCorrect_from(int correct_from) {
-      this.correct_from = correct_from;
-    }
-
-    public int getIncorrect_from() {
-      return incorrect_from;
-    }
-
-    public void setIncorrect_from(int incorrect_from) {
-      this.incorrect_from = incorrect_from;
-    }
-
-    public int getCorrect_to() {
-      return correct_to;
-    }
-
-    public void setCorrect_to(int correct_to) {
-      this.correct_to = correct_to;
-    }
-
-    public int getIncorrect_to() {
-      return incorrect_to;
-    }
-
-    public void setIncorrect_to(int incorrect_to) {
-      this.incorrect_to = incorrect_to;
-    }
-
-    public long getUsers_from() {
-      return users_from;
-    }
-
-    public void setUsers_from(long users_from) {
-      this.users_from = users_from;
-    }
-
-    public long getUsers_to() {
-      return users_to;
-    }
-
-    public void setUsers_to(long users_to) {
-      this.users_to = users_to;
-    }
-
-    private long users_from;
-    private long users_to;
-    private double psurvival;
-
-    public Result(int a_from, int b_from, int a_to, int b_to, long u_from, long u_to,
-        double psurvival, boolean isDefault) {
-      this.correct_from=a_from;
-      this.incorrect_from=b_from;
-      this.correct_to=a_to;
-      this.incorrect_to=b_to;
-
-      this.users_from = u_from;
-      this.users_to = u_to;
-      this.psurvival = psurvival;
-      this.isDefault = isDefault;
-    }
-
-    public boolean isDefault() {
-      return isDefault;
-    }
-
-    public void setDefault(boolean isDefault) {
-      this.isDefault = isDefault;
-    }
-
-    public long getU_from() {
-      return users_from;
-    }
-
-    public void setU_from(long u_from) {
-      this.users_from = u_from;
-    }
-
-    public long getU_to() {
-      return users_to;
-    }
-
-    public void setU_to(long u_to) {
-      this.users_to = u_to;
-    }
-
-    public double getPsurvival() {
-      return psurvival;
-    }
-
-    public void setPsurvival(double psurvival) {
-      this.psurvival = psurvival;
-    }
-  }
 }

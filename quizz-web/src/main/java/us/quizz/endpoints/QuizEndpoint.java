@@ -49,8 +49,7 @@ public class QuizEndpoint {
   public CollectionResponse<Quiz> listQuiz(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-    PersistenceManager mgr = null;
-    Cursor cursor = null;
+
     List<Quiz> execute = quizRepository.getQuizzes();
     return CollectionResponse.<Quiz> builder().setItems(execute)
         .setNextPageToken(cursorString).build();
