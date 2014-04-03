@@ -15,5 +15,8 @@ e2e tests:
 2.Install Selenium
 $ ./node_modules/protractor/bin/webdriver-manager update
 
-3.Run e2e tests
+3.Run script /quizz-web/src/main/scripts/example.sh
+
+4.Run e2e tests
+$ mvn appengine:devserver
 $ protractor {project dir}/src/main/webapp/test/config/protractor.conf.js

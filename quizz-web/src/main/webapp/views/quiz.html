@@ -1,8 +1,8 @@
 <div ng-show="readyToShow == true">
   <div class="alert alert-info text-center" ng-show="showPerformance">
     <span class="label label-primary">Score: {{performance.score.toFixed(3)}} points</span>
-    <span class="label label-primary">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
-    <span class="label label-primary">Correct (%): {{utils.toSafePercentage(performance.percentageCorrect)}}</span>
+    <span class="label label-primary" id="correctAnswers">Correct Answers: {{performance.correctanswers}}/{{performance.totalanswers}}</span>
+    <span class="label label-primary" id="percentageCorrect">Correct (%): {{utils.toSafePercentage(performance.percentageCorrect)}}</span>
     <span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
   </div>
 
