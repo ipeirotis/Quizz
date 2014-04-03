@@ -21,12 +21,6 @@ describe('quizz e2e test', function() {
     openQuiz('testQuizName');
   });
   
-  for (var i = 0; i < 10; i++) {
-    it('should work for ' + i, function (done) {
-      setTimeout(done, 1);
-    });
-  }  
-  
   for(var idx=1; idx<=10; idx++){
     nextQuestion(idx);
   }
