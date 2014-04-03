@@ -1,15 +1,5 @@
 package us.quizz.servlets;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import us.quizz.service.BrowserStatisticsService;
-
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.RetryOptions;
@@ -19,6 +9,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import eu.bitwalker.useragentutils.Browser;
+
+import us.quizz.service.BrowserStatisticsService;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
 @Singleton

@@ -60,18 +60,10 @@ public class Answer implements Serializable{
   // that picked this answer.
   @Persistent
   private Double bits;
-  
-  public Double getProbCorrect() {
-    return probCorrect;
-  }
 
-  public void setProbCorrect(Double probCorrect) {
-    this.probCorrect = probCorrect;
-  }
-
+  @Persistent
   // The (estimated/computed) probability that the given answer is correct, 
   // based on the answers from the users.
-  @Persistent
   private Double probCorrect;
 
   public Answer(Long questionID, String quizID, String text, AnswerKind kind,
@@ -209,5 +201,13 @@ public class Answer implements Serializable{
 
   public void setBits(Double bits) {
     this.bits = bits;
+  }
+
+  public Double getProbCorrect() {
+    return probCorrect;
+  }
+
+  public void setProbCorrect(Double probCorrect) {
+    this.probCorrect = probCorrect;
   }
 }

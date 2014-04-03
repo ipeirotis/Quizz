@@ -1,6 +1,8 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
@@ -52,9 +54,9 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
 
     int N = n * QUESTION_FETCHING_MULTIPLIER;
-    ArrayList<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N);
+    List<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N);
     result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
-    ArrayList<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N);
+    List<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N);
     result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
 
     String key = MemcacheKey.getQuizQuestionsByQuiz(quizID, n);
@@ -107,51 +109,64 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return question;
   }
 
-  protected Query getQuestionBaseQuery(PersistenceManager pm) {
-    Query query = pm.newQuery(Question.class);
-    query.getFetchPlan().setFetchSize(DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
-    return query;
-  }
-
-  protected Query getQuestionQuery(
+  private Query getQuestionQuery(
       PersistenceManager pm, String filter, String declaredParameters) {
-    Query query = getQuestionBaseQuery(pm);
-    query.setFilter(filter);
-    query.declareParameters(declaredParameters);
+    Query query = pm.newQuery(Question.class);
+    if (!filter.isEmpty() && !declaredParameters.isEmpty()) {
+      query.setFilter(filter);
+      query.declareParameters(declaredParameters);
+    }
     return query;
   }
 
-  public ArrayList<Question> getQuizQuestions() {
+  private List<Question> getAllQuizQuestions(Query query, Map<String, Object> params) {
+    Cursor cursor = null;
+    List<Question> questions = new ArrayList<Question>();
+    while (true) {
+      if (cursor != null) {
+        Map<String, Object> extensionMap = new HashMap<String, Object>();
+        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+        query.setExtensions(extensionMap);
+      }
+      query.setRange(0, DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
+
+      @SuppressWarnings("unchecked")
+      List<Question> results = (List<Question>) query.executeWithMap(params);
+      if (results.size() == 0) {
+        break;
+      }
+      questions.addAll(results);
+      cursor = JDOCursorHelper.getCursor(results);
+    }
+
+    return removeInvalidQuestions(questions);
+  }
+
+  public List<Question> getQuizQuestions() {
     PersistenceManager pm = getPersistenceManager();
     try {
-      Query query = getQuestionBaseQuery(pm);
-      @SuppressWarnings("unchecked")
-      List<Question> results = (List<Question>) query.execute();
-      return removeInvalidQuestions(new ArrayList<Question>(results));
+      Query query = getQuestionQuery(pm, "", "");
+      return getAllQuizQuestions(query, new HashMap<String, Object>());
     } finally {
       pm.close();
     }
   }
 
-  protected ArrayList<Question> getQuestions(
+  private List<Question> getQuestions(
       String filter, String declaredParameters, Map<String, Object> params) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query query = getQuestionQuery(pm, filter, declaredParameters);
-
-      @SuppressWarnings("unchecked")
-      ArrayList<Question> questions = new ArrayList<Question>(
-          (List<Question>) query.executeWithMap(params));
-      return removeInvalidQuestions(questions);
+      return getAllQuizQuestions(query, params);
     } finally {
       pm.close();
     }
   }
 
-  protected ArrayList<Question> getQuestionsWithCaching(
+  private List<Question> getQuestionsWithCaching(
       String key, String filter, String declaredParameters, Map<String, Object> params) {
     @SuppressWarnings("unchecked")
-    ArrayList<Question> questions = CachePMF.get(key, ArrayList.class);
+    List<Question> questions = (List<Question>) CachePMF.get(key, ArrayList.class);
     if (questions != null) {
       return questions;
     }
@@ -160,7 +175,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return questions;
   }
 
-  public ArrayList<Question> getQuizQuestions(String quizid) {
+  public List<Question> getQuizQuestions(String quizid) {
     String key = MemcacheKey.getAllQuizQuestionsByQuiz(quizid);
     String filter = "quizID == quizParam";
     String declaredParameters = "String quizParam";
@@ -196,7 +211,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   @SuppressWarnings("unchecked")
-  public ArrayList<Question> getSomeQuizQuestionsWithGold(String quizID, int amount) {
+  public List<Question> getSomeQuizQuestionsWithGold(String quizID, int amount) {
     PersistenceManager pm = getPersistenceManager();
 
     try {
@@ -204,8 +219,8 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       int questionsWithGold = quiz.getGold();
       Query query = getQuizGoldQuestionsQuery(pm, quizID);
       setRandomRange(query, questionsWithGold, amount);
-      ArrayList<Question> result = new ArrayList<Question>(
-          (List<Question>) query.executeWithMap(getQuizGoldQuestionsParameters(quizID)));
+      List<Question> result =
+          (List<Question>) query.executeWithMap(getQuizGoldQuestionsParameters(quizID));
       return removeInvalidQuestions(result);
     } finally {
       pm.close();
@@ -213,7 +228,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   @SuppressWarnings("unchecked")
-  public ArrayList<Question> getSomeQuizQuestionsWithSilver(String quizID, int amount) {
+  public List<Question> getSomeQuizQuestionsWithSilver(String quizID, int amount) {
     PersistenceManager pm = getPersistenceManager();
 
     try {
@@ -221,8 +236,8 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       int questionsWithSilver = quiz.getQuestions() - quiz.getGold();
       Query query = getQuizSilverQuestionsQuery(pm, quizID);
       setRandomRange(query, questionsWithSilver, amount);
-      ArrayList<Question> result = new ArrayList<Question>(
-          (List<Question>) query.executeWithMap(getQuizSilverQuestionsParameters(quizID)));
+      List<Question> result =
+          (List<Question>) query.executeWithMap(getQuizSilverQuestionsParameters(quizID));
 
       return removeInvalidQuestions(result);
     } finally {
@@ -235,8 +250,8 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   // TODO(chunhowt): Datastore sometimes has transient error and returns Questions with embedded
   // Answers entities not fully fetched. We should try to figure out how to do robust datastore
   // query and remove this.
-  private ArrayList<Question> removeInvalidQuestions(final ArrayList<Question> questions) {
-    ArrayList<Question> newQuestions = new ArrayList<Question>();
+  private List<Question> removeInvalidQuestions(final List<Question> questions) {
+    List<Question> newQuestions = new ArrayList<Question>();
     for (final Question question : questions) {
       boolean isValidQuestion = true;
       for (final Answer answer : question.getAnswers()) {
@@ -261,7 +276,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     query.setRange(lower, upper); // upper is excluded index
   }
 
-  public ArrayList<Question> getQuizQuestionsWithGold(String quizID) {
+  public List<Question> getQuizQuestionsWithGold(String quizID) {
     String key = MemcacheKey.getGoldQuizQuestionsByQuiz(quizID);
     String filter = "quizID == quizParam && hasGoldAnswer == hasGoldParam";
     String declaredParameters = "String quizParam, Boolean hasGoldParam";
@@ -275,10 +290,8 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     try {
       Query q = pm.newQuery(
           "select from " + Question.class.getName() + " where key == :keys");
-      // TODO(chunhowt: Make everything to be using List instead of ArrayList.
       List<Question> results = (List<Question>) q.execute(keys);
-      results = (List<Question>) removeInvalidQuestions(new ArrayList<Question>(results));
-      return results;
+      return removeInvalidQuestions(results);
     } finally {
       pm.close();
     }

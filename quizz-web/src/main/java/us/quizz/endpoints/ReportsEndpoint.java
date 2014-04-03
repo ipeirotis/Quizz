@@ -46,12 +46,12 @@ public class ReportsEndpoint {
   }
 
   @ApiMethod(name = "reports.multiChoiceAnswers", path = "reports/multiChoiceAnswers")
-  public ArrayList<Question> getMultiChoiceAnswersReport(@Named("quizID")String quizID) {
+  public List<Question> getMultiChoiceAnswersReport(@Named("quizID")String quizID) {
     return quizQuestionRepository.getQuizQuestions(quizID);
   }
 
   @ApiMethod(name = "reports.freeTextAnswers", path = "reports/freeTextAnswers")
-  public ArrayList<Question> getFreeTextAnswersReport(@Named("quizID")String quizID) {
+  public List<Question> getFreeTextAnswersReport(@Named("quizID")String quizID) {
     return quizQuestionRepository.getQuizQuestions(quizID);
   }
 

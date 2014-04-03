@@ -35,27 +35,27 @@ public class SurvivalProbabilityService {
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
 
     // We assume a default survival probability
-    SurvivalProbabilityResult defaultResult = SurvivalProbabilityResult.getDefaultResult(a_from, b_from, c_from, a_to, b_to, c_to);
-    
-    if (values == null) {//empty cache
+    SurvivalProbabilityResult defaultResult =
+        SurvivalProbabilityResult.getDefaultResult(a_from, b_from, c_from, a_to, b_to, c_to);
+
+    if (values == null) {  //empty cache
       return defaultResult; 
     }
-    
+
     Integer users_from = values.containsKey(a_from) ? values.get(a_from).get(b_from) : null;
     Integer users_to = values.containsKey(a_to) ? values.get(a_to).get(b_to) : null;
-    
+
     if (users_from == null || users_to == null || users_from == 0) { 
       return defaultResult;
     }
-    
-    double psurvival = 1.0 * users_to / users_from;
 
-    return new SurvivalProbabilityResult(a_from, b_from, c_from, a_to, b_to, c_to, users_from, users_to, psurvival, false);
+    double psurvival = 1.0 * users_to / users_from;
+    return new SurvivalProbabilityResult(a_from, b_from, c_from, a_to, b_to, c_to,
+        users_from, users_to, psurvival, false);
   }
 
   public List<SurvivalProbabilityResult> getSurvivalProbabilities(String quizID) {
     List<SurvivalProbabilityResult> result = new ArrayList<SurvivalProbabilityResult>();
-
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
     if (values == null) return result;
 
@@ -70,7 +70,7 @@ public class SurvivalProbabilityService {
     }
 
     //TODO: incorporate c (number of exploits) in the loop
-    int c=0;
+    int c = 0;
     for (int a = 0; a < aMax; a++) {
       for (int b = 0; b < bMax; b++) {
         SurvivalProbabilityResult r1 = getSurvivalProbability(quizID, a, a + 1,  b, b, c, c);
@@ -79,10 +79,9 @@ public class SurvivalProbabilityService {
         if (!r2.getIsDefault()) result.add(r2);
       }
     }
-
     return result;
   }
-  
+
   @SuppressWarnings("unchecked")
   private Map<Integer, Map<Integer, Integer>> getCachedValues(String quizId) {
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
@@ -96,13 +95,11 @@ public class SurvivalProbabilityService {
     }
     return result;
   }
-  
+
   public void cacheValuesInMemcache(String quizId) {
     Map<Integer, Map<Integer, Integer>> values =
         quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
     CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
   }
-
-
 }

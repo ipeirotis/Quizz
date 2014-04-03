@@ -2,12 +2,13 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
+import eu.bitwalker.useragentutils.Browser;
+
 import us.quizz.entities.BrowserStats;
 import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserReferralRepository.Result;
-import eu.bitwalker.useragentutils.Browser;
 
 public class BrowserStatisticsService {
   private BrowserStatsRepository browserStatsRepository;

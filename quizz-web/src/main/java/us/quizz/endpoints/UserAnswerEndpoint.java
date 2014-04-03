@@ -75,6 +75,12 @@ public class UserAnswerEndpoint {
     return new NumberOfUnswersResponse(quiz, answers);
   }
 
+  @ApiMethod(name = "getUserAnswers", httpMethod = HttpMethod.POST,
+             path = "getUserAnswers")
+  public List<UserAnswer> getUserAnswers(@Named("quizID") String quizID) {
+    return userAnswerRepository.getUserAnswers(quizID);
+  }
+
   @ApiMethod(name = "addAnswerFeedback", httpMethod = HttpMethod.POST, path = "addAnswerFeedback")
   public UserAnswer addAnswerFeedback(
       @Named("quizID") String quizID,

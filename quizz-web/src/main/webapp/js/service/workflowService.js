@@ -43,19 +43,20 @@ angular.module('quizz').factory('workflowService', [function() {
       return isCurrentQuestionGold;
     },
     getNewCurrentQuestion: function() {
-
-    	if (numOfCalibrationQuestions == 0) {
-    	  isNextQuestionGold = false;
+      if (numOfCalibrationQuestions == 0) {
+        isNextQuestionGold = false;
       } else if (numOfCollectionQuestions == 0) {
-    	  isNextQuestionGold = true;
-      } 
+        isNextQuestionGold = true;
+      }
       if (isNextQuestionGold) {
-          currentQuestion = questions.calibration[currentQuestionIndex % numOfCalibrationQuestions];
-          isCurrentQuestionGold = true;
-        } else {
-        currentQuestion = questions.collection[currentQuestionIndex % numOfCollectionQuestions];
+        var index = currentQuestionIndex % numOfCalibrationQuestions;
+        currentQuestion = questions.calibration[index];
+        isCurrentQuestionGold = true;
+      } else {
+        var index = currentQuestionIndex % numOfCollectionQuestions;
+        currentQuestion = questions.collection[index];
         isCurrentQuestionGold = false;
-      }  
+      }
       return currentQuestion;
     },
     getCurrentQuestion: function() {

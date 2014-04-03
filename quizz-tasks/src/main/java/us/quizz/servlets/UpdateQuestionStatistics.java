@@ -1,16 +1,16 @@
 package us.quizz.servlets;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import us.quizz.entities.Question;
+import us.quizz.service.QuestionStatisticsService;
+
 import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import us.quizz.entities.Question;
-import us.quizz.service.QuestionStatisticsService;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
 @Singleton

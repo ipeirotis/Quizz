@@ -26,6 +26,11 @@ public class Question implements Serializable {
   // The text of the question. Can be any HTML-compliant code
   @Persistent
   private String text;
+
+  // The id assigned by the client/source for this question to allow us to rejoin the
+  // question with the original source.
+  @Persistent
+  private String clientID;
   
   // The type of the question. Should match the type of the quiz that is added to
   @Persistent
@@ -93,6 +98,14 @@ public class Question implements Serializable {
 
   public void setQuizID(String quizID) {
     this.quizID = quizID;
+  }
+
+  public String getClientID() {
+    return clientID;
+  }
+
+  public void setClientID(String clientID) {
+    this.clientID = clientID;
   }
 
   public Boolean getHasGoldAnswer() {
@@ -210,10 +223,17 @@ public class Question implements Serializable {
       }
     }
     // If no gold answer, return silver answer.
+    double maxProbability = -1;
+    Answer bestAnswer = null;
     for (final Answer answer : answers) {
-      if (answer.getKind() == AnswerKind.SILVER) {
-        return answer;
+      if (answer.getKind() == AnswerKind.SILVER &&
+          answer.getProbability() > maxProbability) {
+        maxProbability = answer.getProbability();
+        bestAnswer = answer;
       }
+    }
+    if (bestAnswer != null) {
+      return bestAnswer;
     }
     throw new IllegalArgumentException(
         "This question doesn't have any gold or silver answer");

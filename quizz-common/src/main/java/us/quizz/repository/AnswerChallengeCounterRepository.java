@@ -1,17 +1,17 @@
 package us.quizz.repository;
 
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.google.common.base.Strings;
+
+import us.quizz.entities.AnswerChallengeCounter;
+
 import java.util.HashMap;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
-import us.quizz.entities.AnswerChallengeCounter;
-
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.google.common.base.Strings;
 
 public class AnswerChallengeCounterRepository extends BaseRepository<AnswerChallengeCounter> {
   public AnswerChallengeCounterRepository() {

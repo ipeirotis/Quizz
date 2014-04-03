@@ -2,8 +2,8 @@ package us.quizz.utils;
 
 import org.apache.commons.math3.special.Gamma;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -184,7 +184,7 @@ public class Helper {
    * Selects random elements without replacement, modifies elements order in
    * given array!
    */
-  public static <T> Set<T> selectRandomElements(ArrayList<T> elements, int n) {
+  public static <T> Set<T> selectRandomElements(List<T> elements, int n) {
     Set<T> randomEls = trySelectingRandomElements(elements, n);
     if (randomEls.size() < n) {
       throw new IllegalArgumentException(
@@ -194,7 +194,7 @@ public class Helper {
     return randomEls;
   }
 
-  public static <T> Set<T> trySelectingRandomElements(ArrayList<T> elements, int n) {
+  public static <T> Set<T> trySelectingRandomElements(List<T> elements, int n) {
     Set<T> randomEls = new HashSet<T>(n);
     int size = elements.size();
     Random r = new Random();

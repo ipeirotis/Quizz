@@ -52,6 +52,11 @@ public class QuestionEndpoint {
         .setNextPageToken(cursor).build();
   }
 
+  @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.POST)
+  public List<Question> listAllQuestions(@Named("quizID") String quizID) {
+    return this.quizQuestionRepository.getQuizQuestions(quizID);
+  }
+
   @ApiMethod(name = "listQuestionsWithChallenges", path = "/listQuestionsWithChallenges")
   public CollectionResponse<QuestionWithChallenges> listQuestionsWithChallenges(
       @Nullable @Named("cursor") String cursor,
@@ -85,7 +90,7 @@ public class QuestionEndpoint {
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
   public Question insertQuestion(final Question question) throws BadRequestException {
     Quiz quiz = quizRepository.get(question.getQuizID());
-    
+
     if(!question.getKind().equals(quiz.getKind())) {
       throw new BadRequestException("Can't add " + question.getKind() + 
           " question to " + quiz.getKind() + " quiz");
@@ -93,19 +98,22 @@ public class QuestionEndpoint {
 
     Question newQuestion = new Question(
         question.getQuizID(), question.getText(), question.getKind());
+    newQuestion.setClientID(question.getClientID());
+
     // We save the object, because we need to get the questionID assigned by datastore.
     newQuestion = quizQuestionRepository.insert(newQuestion);
 
     if (question.getAnswers() != null) {
       int internalID = 0;
       for (final Answer answer : question.getAnswers()) {
+        Preconditions.checkNotNull(answer.getKind(), "Answer kind can't be empty");
+
         // Create a new Answer to generate a new answer ID.
         Answer newAnswer = new Answer(
             newQuestion.getID(), newQuestion.getQuizID(),
             answer.getText(), answer.getKind(), internalID);
+        newAnswer.setProbability(answer.getProbability());
 
-        Preconditions.checkNotNull(answer.getKind(), "Answer kind can't be empty");
-        newAnswer.setKind(answer.getKind());
         switch (newAnswer.getKind()) {
           case SILVER: {
             newQuestion.setHasSilverAnswers(true);

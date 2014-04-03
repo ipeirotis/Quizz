@@ -1,11 +1,11 @@
 package us.quizz.utils;
 
-import java.io.PrintStream;
-
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceException;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+
+import java.io.PrintStream;
 
 public class CachePMF {
   public static int DEFAULT_LIFETIME = 24 * 3600;

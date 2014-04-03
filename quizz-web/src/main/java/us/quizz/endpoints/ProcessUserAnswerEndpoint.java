@@ -1,14 +1,14 @@
 package us.quizz.endpoints;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -28,15 +28,15 @@ import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.utils.LevenshteinAlgorithm;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
@@ -91,7 +91,6 @@ public class ProcessUserAnswerEndpoint {
     User user = userRepository.get(userID);
     String action;
 
-    
     Boolean isCorrect = false;
     String message = "";
     if (answerID == -1) {
@@ -113,8 +112,6 @@ public class ProcessUserAnswerEndpoint {
       referer = "";
     }
     Long timestamp = (new Date()).getTime();
-    
-   
 
     UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
         answerID, userInput, isCorrect, correctanswers, totalanswers);
@@ -126,15 +123,14 @@ public class ProcessUserAnswerEndpoint {
 
     // Get the number of multiple choices for the quiz
     Integer N = this.quizRepository.get(quizID).getNumChoices();
-    if (N==null) {
+    if (N == null) {
       N = 4;
     }
-    
+
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userAnswer", ua);
     result.put("userAnswerFeedback", uaf);
     result.put("exploit", isExploit(a, b, c, N));
-
     return result;
   }
 
@@ -143,21 +139,8 @@ public class ProcessUserAnswerEndpoint {
     Question question = quizQuestionRepository.getQuizQuestion(questionID);
 
     if (question.getKind() == QuizKind.MULTIPLE_CHOICE) {
-      // We already have the answerID and we can retrieve the answer
-      Answer answer = answersRepository.getAnswer(questionID, answerID);
-      AnswerKind ak = answer.getKind();
-      if (ak == AnswerKind.GOLD || ak == AnswerKind.FEEDBACK_GOLD) {
-        isCorrect = true;
-      } else if (ak == AnswerKind.SILVER) {
-        Double prob = answer.getProbability();
-        if (prob==null) {
-          logger.log(Level.WARNING, "Silver answer "+answer.getID()+" for question " + question.getID() + " does not have a probability.");
-          prob=0.5;
-        }
-        isCorrect = (prob >= 0.5);
-      } else if (ak == AnswerKind.INCORRECT) {
-        isCorrect = false;
-      }
+      Answer goldAnswer = question.goldAnswer();
+      isCorrect = goldAnswer.getInternalID() == answerID;
     }
     if (question.getKind() == QuizKind.FREE_TEXT) {
       // since we do not have an id, to immediately retrieve
@@ -184,7 +167,6 @@ public class ProcessUserAnswerEndpoint {
   }
 
   private boolean isExploit(int a, int b, int c, int N) throws Exception {
-    
     explorationExploitationService.setN(N);
     return explorationExploitationService.getAction(a, b, c).getActionExploit();
   }
