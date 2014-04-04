@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.SurvivalProbabilityResult;
 import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.MemcacheKey;
 
@@ -20,12 +21,15 @@ public class SurvivalProbabilityService {
   private static final int SURVIVAL_PROBABILITIES_CACHED_TIME_MINS = 24 * 60;  // 24 hours.
 
   private QuizPerformanceRepository quizPerformanceRepository;
+  private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private Cache<String, Map<Integer, Map<Integer, Integer>>> inMemoryCache;
 
   @Inject
   public SurvivalProbabilityService(
-      QuizPerformanceRepository quizPerformanceRepository) {
+      QuizPerformanceRepository quizPerformanceRepository, 
+      SurvivalProbabilityResultRepository survivalProbabilityResultRepository) {
     this.quizPerformanceRepository = quizPerformanceRepository;
+    this.survivalProbabilityResultRepository = survivalProbabilityResultRepository;
     this.inMemoryCache = CacheBuilder.newBuilder()
         .expireAfterWrite(SURVIVAL_PROBABILITIES_CACHED_TIME_MINS, TimeUnit.MINUTES).build();
   }
@@ -58,6 +62,13 @@ public class SurvivalProbabilityService {
     List<SurvivalProbabilityResult> result = new ArrayList<SurvivalProbabilityResult>();
     Map<Integer, Map<Integer, Integer>> values = getCachedValues(quizID);
     if (values == null) return result;
+    
+    return valuesToResults(quizID, values);
+  }
+  
+  private List<SurvivalProbabilityResult> valuesToResults(String quizID,
+      Map<Integer, Map<Integer, Integer>> values){
+    List<SurvivalProbabilityResult> result = new ArrayList<SurvivalProbabilityResult>();
 
     int aMax = 0;
     int bMax = 0;
@@ -89,6 +100,11 @@ public class SurvivalProbabilityService {
 
     if (result == null) {
       result = CachePMF.get(key, HashMap.class);
+      if (result == null){
+        List<SurvivalProbabilityResult> list = survivalProbabilityResultRepository.list();
+        //TODO: convert list to map
+        CachePMF.put(key, result, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
+      }
       if (result != null) {
         inMemoryCache.put(key, result);
       }
@@ -101,5 +117,15 @@ public class SurvivalProbabilityService {
         quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
     CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public void saveValuesInDatastore(String quizId) {
+    String key = MemcacheKey.getSurvivalProbabilities(quizId);
+    Map<Integer, Map<Integer, Integer>> values = CachePMF.get(key, HashMap.class);
+    if (values == null) return;
+    
+    List<SurvivalProbabilityResult> list = valuesToResults(quizId, values);
+    survivalProbabilityResultRepository.saveAll(list);
   }
 }

@@ -46,6 +46,7 @@ public class CacheSurvivalProbability extends HttpServlet {
 
     if ("true".equals(executeNow)) {
       survivalProbabilityService.cacheValuesInMemcache(quizId);
+      survivalProbabilityService.saveValuesInDatastore(quizId);
       return;
     }
 

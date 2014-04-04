@@ -38,9 +38,11 @@ import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
+import us.quizz.repository.ExplorationExploitationResultRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
+import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.repository.TreatmentRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
@@ -98,6 +100,8 @@ public class QuizzTest {
   private UserRepository userRepository;
   private TreatmentRepository treatmentRepository;
   private UserReferralRepository userReferralRepository;
+  private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
+  private ExplorationExploitationResultRepository explorationExploitationResultRepository;
 
   private SurvivalProbabilityService survivalProbabilityService;
   private ExplorationExploitationService explorationExploitationService;
@@ -133,6 +137,9 @@ public class QuizzTest {
     quizRepository = spy(new QuizRepository(userReferralRepository, quizPerformanceRepository));
     quizQuestionRepository = spy(new QuizQuestionRepository(quizRepository));
     answersRepository = spy(new AnswersRepository(quizQuestionRepository));
+    survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
+    explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
+    
     
     when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userAnswerRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
@@ -144,9 +151,12 @@ public class QuizzTest {
     when(quizRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(survivalProbabilityResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(explorationExploitationResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     
-    survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository);
-    explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService);
+    survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository, survivalProbabilityResultRepository);
+    explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
+        explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(
         userAnswerRepository, quizPerformanceRepository);
 
