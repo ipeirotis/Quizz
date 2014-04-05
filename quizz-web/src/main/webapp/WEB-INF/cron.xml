@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-  <!-- 
-  <cron>
-    <url>/api/updateAllQuestionStatistics</url>
-    <description>Update the gold, silver, user counts for all questions</description>
-    <schedule>every 720 minutes</schedule>
-    <target>quizz-tasks</target>
-  </cron>
-    <cron>
-    <url>/api/updateAllUserStatistics</url>
-    <description>Update QuizPerformance statistics for all users</description>
-    <schedule>every 720 minutes</schedule>
-    <target>quizz-tasks</target>
-  </cron>
-   -->
+
   <cron>
     <url>/api/updateCountStatistics</url>
     <description>Update the counters that display number of questions, answers, etc in the admin interface</description>
@@ -42,19 +29,21 @@
     <target>quizz-tasks</target>
   </cron>
   
+   <cron>
+    <url>/api/updateAllQuestionStatistics</url>
+    <description>Update the gold, silver, user counts for all questions</description>
+    <schedule>every 60 minutes</schedule>
+    <target>quizz-tasks</target>
+  </cron>
+  
+      <cron>
+    <url>/api/updateAllUserStatistics</url>
+    <description>Update QuizPerformance statistics for all users</description>
+    <schedule>every 720 minutes</schedule>
+    <target>quizz-tasks</target>
+  </cron>
+  
   <!-- 
-  <cron>
-    <url>/api/updateAnswerCountsStatistics?all=true</url>
-    <description>Update answers statistics</description>
-    <schedule>every day 00:10</schedule>
-    <target>quizz-tasks</target>
-  </cron>
-  <cron>
-    <url>/api/updateAnswerBitsStatistics?all=true</url>
-    <description>Update answers statistics</description>
-    <schedule>every day 00:20</schedule>
-    <target>quizz-tasks</target>
-  </cron>
     <cron>
     <url>/api/updateBrowsersStatistics?all=true</url>
     <description>Update browser statistics</description>

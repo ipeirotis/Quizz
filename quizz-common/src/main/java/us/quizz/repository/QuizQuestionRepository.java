@@ -120,6 +120,8 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   private List<Question> getAllQuizQuestions(Query query, Map<String, Object> params) {
+    
+    query.setRange(0, DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
     Cursor cursor = null;
     List<Question> questions = new ArrayList<Question>();
     while (true) {
@@ -128,18 +130,24 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
         extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
         query.setExtensions(extensionMap);
       }
-      query.setRange(0, DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
 
       @SuppressWarnings("unchecked")
       List<Question> results = (List<Question>) query.executeWithMap(params);
       if (results.size() == 0) {
         break;
       }
-      questions.addAll(results);
+      for (Question q : results) {
+        for (Answer a : q.getAnswers()) {
+          ; // lazy fetching
+        }
+        questions.add(q);
+      }
+      //questions.addAll(results);
       cursor = JDOCursorHelper.getCursor(results);
     }
 
-    return removeInvalidQuestions(questions);
+    //return removeInvalidQuestions(questions);
+    return questions;
   }
 
   public List<Question> getQuizQuestions() {
@@ -334,10 +342,10 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     try {
       Query q = pm.newQuery(UserAnswer.class);
       q.setFilter("questionID == questionIDParam && action == submitParam");
-      q.declareParameters("String questionIDParam, String submitParam");
+      q.declareParameters("Long questionIDParam, String submitParam");
 
       Map<String, Object> params = new HashMap<String, Object>();
-      params.put("questionIDParam", questionID);
+      params.put("questionIDParam", Long.parseLong(questionID));
       params.put("submitParam", "Submit");
 
       @SuppressWarnings("unchecked")
@@ -354,10 +362,10 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       Query q = pm.newQuery(UserAnswer.class);
       q.setFilter("questionID == questionIDParam && action == submitParam && " +
                   "isCorrect == correctParam");
-      q.declareParameters("String questionIDParam, String submitParam, Boolean correctParam");
+      q.declareParameters("Long questionIDParam, String submitParam, Boolean correctParam");
 
       Map<String, Object> params = new HashMap<String, Object>();
-      params.put("questionIDParam", questionID);
+      params.put("questionIDParam", Long.parseLong(questionID));
       params.put("submitParam", "Submit");
       params.put("correctParam", Boolean.TRUE);
 

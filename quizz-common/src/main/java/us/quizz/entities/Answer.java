@@ -53,7 +53,7 @@ public class Answer implements Serializable{
   
   // The number of times that users have selected this answer
   @Persistent
-  private Long numberOfPicks;
+  private Integer numberOfPicks;
   
   // The total number of bits assigned to this answer
   // Calculated as the sum of the average information gain for all users
@@ -187,11 +187,11 @@ public class Answer implements Serializable{
     return text;
   }
 
-  public Long getNumberOfPicks() {
+  public Integer getNumberOfPicks() {
     return numberOfPicks;
   }
 
-  public void setNumberOfPicks(Long numberOfPicks) {
+  public void setNumberOfPicks(Integer numberOfPicks) {
     this.numberOfPicks = numberOfPicks;
   }
 

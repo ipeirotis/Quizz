@@ -72,7 +72,29 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
       pm.close();
     }
   }
+  
+  public List<UserAnswer> getUsersForQuestion(Long questionID) {
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("questionID == questionIDParam");
+      q.declareParameters("Long questionIDParam");
 
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("questionIDParam", questionID);
+
+      @SuppressWarnings("unchecked")
+      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
+      return results;
+    } finally {
+      pm.close();
+    }
+  }
+
+
+  
+  
+  
   public UserAnswer getUserAnswer(String questionID, String userID) {
     String key = MemcacheKey.getUserAnswer(questionID, userID);
     return singleGetObjectByIdWithCaching(key, UserAnswer.class,
