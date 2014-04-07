@@ -137,6 +137,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
         break;
       }
       for (Question q : results) {
+        if (q.getAnswers() !=null)
         for (Answer a : q.getAnswers()) {
           ; // lazy fetching
         }

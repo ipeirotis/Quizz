@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.PMF;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -149,6 +150,17 @@ public abstract class BaseRepository<T> {
       mgr.close();
     }
   }
+  
+  public void removeAll(Collection<T> objects) {
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      
+      mgr.deletePersistentAll(objects);
+    } finally {
+      mgr.close();
+    }
+  }
+
 
   public T get(Long id) {
     return get(id, false  /* use transaction */);

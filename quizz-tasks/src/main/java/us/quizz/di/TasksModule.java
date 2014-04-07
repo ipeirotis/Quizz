@@ -6,6 +6,8 @@ import us.quizz.servlets.CacheExploreExploit;
 import us.quizz.servlets.CacheQuizQuestions;
 import us.quizz.servlets.CacheSurvivalProbability;
 import us.quizz.servlets.GetQuizCounts;
+import us.quizz.servlets.RemoveOrphanQuestions;
+import us.quizz.servlets.RemoveOrphanUserAnswers;
 import us.quizz.servlets.UpdateAllQuestionStatistics;
 import us.quizz.servlets.UpdateAllUserStatistics;
 import us.quizz.servlets.UpdateBrowsersStatistics;
@@ -28,5 +30,7 @@ public class TasksModule extends ServletModule {
     serve("/api/updateCountStatistics").with(UpdateCountStatistics.class);
     serve("/api/getQuizCounts").with(GetQuizCounts.class);
     serve("/api/cacheExploreExploit").with(CacheExploreExploit.class);
+    serve("/consistency/removeOrphanQuestions").with(RemoveOrphanQuestions.class);
+    serve("/consistency/removeOrphanUserAnswers").with(RemoveOrphanUserAnswers.class);
   }
 }
