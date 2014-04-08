@@ -86,7 +86,7 @@ public class QuizzTest {
       .setEnvEmail("test@example.com")
       .setEnvIsAdmin(true)
       .setEnvIsLoggedIn(true);
-  
+
   private PersistenceManager persistenceManager;
   private PersistenceManager actualPersistenceManager;
 
@@ -139,8 +139,7 @@ public class QuizzTest {
     answersRepository = spy(new AnswersRepository(quizQuestionRepository));
     survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
-    
-    
+
     when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userAnswerRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
@@ -153,8 +152,9 @@ public class QuizzTest {
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(survivalProbabilityResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(explorationExploitationResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    
-    survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository, survivalProbabilityResultRepository);
+
+    survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository,
+        survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(

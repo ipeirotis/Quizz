@@ -26,7 +26,8 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
   private QuizQuestionRepository quizQuestionRepository;
 
   @Inject
-  public UpdateAllQuestionStatistics(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository) {
+  public UpdateAllQuestionStatistics(QuizRepository quizRepository,
+      QuizQuestionRepository quizQuestionRepository) {
     this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
   }
@@ -34,9 +35,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    
     Queue queue = QueueFactory.getQueue("updateUserStatistics");
-    
     String quizID = req.getParameter("quizID");
     if (quizID==null) {
       List<Quiz> quizzes = quizRepository.getQuizzes();
@@ -47,7 +46,6 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
             .method(TaskOptions.Method.GET));
       }
     } else {
-     
       List<Question> questions = quizQuestionRepository.getQuizQuestions(quizID);
        for (Question question : questions) {
         queue.add(Builder

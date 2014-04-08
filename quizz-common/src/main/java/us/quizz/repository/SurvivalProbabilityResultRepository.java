@@ -5,7 +5,6 @@ import com.google.appengine.api.datastore.Key;
 import us.quizz.entities.SurvivalProbabilityResult;
 
 public class SurvivalProbabilityResultRepository extends BaseRepository<SurvivalProbabilityResult> {
-
   public SurvivalProbabilityResultRepository() {
     super(SurvivalProbabilityResult.class);
   }
@@ -14,5 +13,4 @@ public class SurvivalProbabilityResultRepository extends BaseRepository<Survival
   protected Key getKey(SurvivalProbabilityResult item) {
     return item.getKey();
   }
-
 }

@@ -91,10 +91,6 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
     }
   }
 
-
-  
-  
-  
   public UserAnswer getUserAnswer(String questionID, String userID) {
     String key = MemcacheKey.getUserAnswer(questionID, userID);
     return singleGetObjectByIdWithCaching(key, UserAnswer.class,

@@ -26,7 +26,7 @@ public class SurvivalProbabilityService {
 
   @Inject
   public SurvivalProbabilityService(
-      QuizPerformanceRepository quizPerformanceRepository, 
+      QuizPerformanceRepository quizPerformanceRepository,
       SurvivalProbabilityResultRepository survivalProbabilityResultRepository) {
     this.quizPerformanceRepository = quizPerformanceRepository;
     this.survivalProbabilityResultRepository = survivalProbabilityResultRepository;

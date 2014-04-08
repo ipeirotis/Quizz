@@ -1,54 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-
   <cron>
     <url>/api/updateCountStatistics</url>
     <description>Update the counters that display number of questions, answers, etc in the admin interface</description>
     <schedule>every 5 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
-  <!-- 
+<!--
   <cron>
     <url>/api/cacheQuizQuestions</url>
     <description>Cache the 10 questions that will be asked for each quiz in memcache, so that the quiz starts quickly</description>
     <schedule>every 2 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
-   -->
+-->
   <cron>
     <url>/api/cacheSurvivalProbability?now=true</url>
     <description>Cache Survival Probability</description>
     <schedule>every day 00:00</schedule>
     <target>quizz-tasks</target>
   </cron>
-  
   <cron>
     <url>/api/cacheExploreExploit?a=20&amp;b=20&amp;c=10&amp;N=4</url>
     <description>Cache explore/exploit decisions</description>
     <schedule>every day 00:10</schedule>
     <target>quizz-tasks</target>
   </cron>
-  
-   <cron>
+  <cron>
     <url>/api/updateAllQuestionStatistics</url>
     <description>Update the gold, silver, user counts for all questions</description>
     <schedule>every 60 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
-  
-      <cron>
+  <cron>
     <url>/api/updateAllUserStatistics</url>
     <description>Update QuizPerformance statistics for all users</description>
     <schedule>every 720 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
-  
-  <!-- 
-    <cron>
+<!--
+  <cron>
     <url>/api/updateBrowsersStatistics?all=true</url>
     <description>Update browser statistics</description>
     <schedule>every day 00:30</schedule>
     <target>quizz-tasks</target>
   </cron>
-   -->
+-->
 </cronentries>

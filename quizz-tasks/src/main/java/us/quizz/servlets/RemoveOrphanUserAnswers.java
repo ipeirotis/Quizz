@@ -29,22 +29,20 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Task for removing all the questions that have a quizID that is not existing
  * in the system anymore
- * 
- * 
  */
 @SuppressWarnings("serial")
 @Singleton
 public class RemoveOrphanUserAnswers extends HttpServlet {
-
   private static Logger logger = Logger.getLogger(ExplorationExploitationService.class.getName());
 
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private UserAnswerRepository userAnswerRepository;
 
-
   @Inject
-  public RemoveOrphanUserAnswers(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository, UserAnswerRepository userAnswerRepository) {
+  public RemoveOrphanUserAnswers(QuizRepository quizRepository,
+      QuizQuestionRepository quizQuestionRepository,
+      UserAnswerRepository userAnswerRepository) {
     this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.userAnswerRepository = userAnswerRepository;
@@ -52,21 +50,19 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
     // The schedule parameter puts the task in the background
     // and returns immediately
     String schedule = req.getParameter("schedule");
     if (schedule != null) {
       Queue queue = QueueFactory.getQueue("survival");
-      queue.add(Builder.withUrl("/consistency/removeOrphanUserAnswers").method(TaskOptions.Method.GET));
+      queue.add(Builder.withUrl("/consistency/removeOrphanUserAnswers")
+                       .method(TaskOptions.Method.GET));
       logger.log(Level.INFO, "Placed request in queue...");
       return;
     }
 
     Set<String> quizIds = getQuizIds();
-
     // If we have a quizID, we will remove these questions
-    //
     String quizId = req.getParameter("quizid");
     if (quizId != null) {
       List<UserAnswer> answers = this.userAnswerRepository.getUserAnswers(quizId);
@@ -74,31 +70,6 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
 
       this.userAnswerRepository.removeAll(answers);
     }
-    
-    /*
-
-    logger.log(Level.INFO, "Fetched " + questions.size() + " questions...");
-
-    for (Question question : questions) {
-      String qquiz = question.getQuizID();
-      if (quizIds.contains(qquiz)) {
-        continue;
-      }
-
-      // If we see a new quiz, we add in the queue to be processed for
-      // deletion, and add the quiz in the "existing" ones to avoid
-      // creating duplicate entries in the Tasks Queue
-
-      quizIds.add(qquiz);
-      Queue queue = QueueFactory.getQueue("quizquestions");
-      queue.add(Builder.withUrl("/consistency/removeOrphanQuestions")
-          .param("quizid", qquiz)
-          .method(TaskOptions.Method.GET));
-      logger.log(Level.INFO, "Placed request in queue to remove quiz " + qquiz);
-
-    }
-
-  */
   }
 
   private Set<String> getQuizIds() {

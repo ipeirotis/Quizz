@@ -1,5 +1,8 @@
 package us.quizz.di;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
@@ -19,9 +22,6 @@ import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionStatisticsService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Singleton;
 
 public class CommonModule extends AbstractModule {
   @Override

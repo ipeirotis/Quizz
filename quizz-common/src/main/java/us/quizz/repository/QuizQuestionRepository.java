@@ -120,7 +120,6 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   private List<Question> getAllQuizQuestions(Query query, Map<String, Object> params) {
-    
     query.setRange(0, DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
     Cursor cursor = null;
     List<Question> questions = new ArrayList<Question>();
@@ -137,18 +136,17 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
         break;
       }
       for (Question q : results) {
-        if (q.getAnswers() !=null)
-        for (Answer a : q.getAnswers()) {
-          ; // lazy fetching
+        if (q.getAnswers() != null) {
+          for (Answer a : q.getAnswers()) {
+            // lazy fetching
+          }
         }
         questions.add(q);
       }
-      //questions.addAll(results);
       cursor = JDOCursorHelper.getCursor(results);
     }
 
-    //return removeInvalidQuestions(questions);
-    return questions;
+    return removeInvalidQuestions(questions);
   }
 
   public List<Question> getQuizQuestions() {

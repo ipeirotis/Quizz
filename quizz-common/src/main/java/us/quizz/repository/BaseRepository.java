@@ -150,17 +150,15 @@ public abstract class BaseRepository<T> {
       mgr.close();
     }
   }
-  
+
   public void removeAll(Collection<T> objects) {
     PersistenceManager mgr = getPersistenceManager();
     try {
-      
       mgr.deletePersistentAll(objects);
     } finally {
       mgr.close();
     }
   }
-
 
   public T get(Long id) {
     return get(id, false  /* use transaction */);
