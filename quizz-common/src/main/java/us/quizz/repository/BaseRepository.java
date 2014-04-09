@@ -12,6 +12,7 @@ import us.quizz.utils.PMF;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -178,6 +179,7 @@ public abstract class BaseRepository<T> {
       }
     } finally {
       if (tx.isActive()) {
+        logger.log(Level.WARNING, "Transaction fails to commit, rolling back.");
         tx.rollback();
       }
       mgr.close();
@@ -256,6 +258,7 @@ public abstract class BaseRepository<T> {
       }
     } finally {
       if (tx.isActive()) {
+        logger.log(Level.WARNING, "Transaction fails to commit, rolling back.");
         tx.rollback();
       }
       pm.close();

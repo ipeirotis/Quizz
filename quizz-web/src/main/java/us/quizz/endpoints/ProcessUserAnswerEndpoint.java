@@ -5,7 +5,6 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
@@ -27,6 +26,7 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.utils.LevenshteinAlgorithm;
+import us.quizz.utils.QueueUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -190,7 +190,7 @@ public class ProcessUserAnswerEndpoint {
   }
 
   private void updateQuizPerformance(User user, Long questionID) {
-    Queue queueUserStats = QueueFactory.getQueue("updateUserStatistics");
+    Queue queueUserStats = QueueUtils.getUserStatisticsQueue();
     String quizID = quizQuestionRepository.getQuizQuestion(questionID)
         .getQuizID();
     queueUserStats

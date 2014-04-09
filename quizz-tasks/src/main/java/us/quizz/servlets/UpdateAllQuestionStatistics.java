@@ -1,7 +1,6 @@
 package us.quizz.servlets;
 
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
@@ -11,6 +10,7 @@ import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
+import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,9 +35,9 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    Queue queue = QueueFactory.getQueue("updateUserStatistics");
+    Queue queue = QueueUtils.getQuestionStatisticsQueue();
     String quizID = req.getParameter("quizID");
-    if (quizID==null) {
+    if (quizID == null) {
       List<Quiz> quizzes = quizRepository.getQuizzes();
       for (Quiz q : quizzes) {
         queue.add(Builder

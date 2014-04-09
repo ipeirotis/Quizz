@@ -142,7 +142,6 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
           }
           questions.add(q);
         }
-        
       }
       cursor = JDOCursorHelper.getCursor(results);
     }
@@ -262,6 +261,12 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     List<Question> newQuestions = new ArrayList<Question>();
     for (final Question question : questions) {
       boolean isValidQuestion = true;
+      if (question.getAnswers() == null) {
+        logger.log(Level.WARNING, "removeInvalidQuestions: " + question.getKey().getId() +
+            " has null answers. This is likely permanent error due to answers field " +
+            "accidentally set to null.");
+        continue;
+      }
       for (final Answer answer : question.getAnswers()) {
         if (answer.getKind() == null) {
           isValidQuestion = false;

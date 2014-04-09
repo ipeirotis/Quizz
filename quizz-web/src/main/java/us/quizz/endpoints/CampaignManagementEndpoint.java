@@ -45,7 +45,6 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.common.collect.Lists;
@@ -54,6 +53,7 @@ import com.google.inject.Inject;
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
 import us.quizz.utils.ServletUtils;
+import us.quizz.utils.QueueUtils;
 
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
@@ -157,7 +157,7 @@ public class CampaignManagementEndpoint {
       // and run the call again.
       // This happens either when the Quiz object has not yet
       // persisted in the datastore the campaignId
-      Queue queueAdgroup = QueueFactory.getQueue("adgroup");
+      Queue queueAdgroup = QueueUtils.getAdGroupQueue();
       long delay = 10; // in seconds
       long etaMillis = System.currentTimeMillis() + delay * 1000L;
       TaskOptions taskOptions = Builder.withUrl("/campaignManagament")
@@ -189,9 +189,10 @@ public class CampaignManagementEndpoint {
       addKeyword(bidKeyword.replaceAll("[^A-Za-z0-9 ]", " "), adgroupId);
     }
 
-    String displayURL = "https://crowd-power.appspot.com";
+    String displayURL = "https://www.crowd-power.appspot.com";
     String targetURL =
-        "https://crowd-power.appspot.com/startQuiz?quizID=" + URLEncoder.encode(quizID, "UTF-8");
+        "https://www.crowd-power.appspot.com/startQuiz?quizID=" +
+        URLEncoder.encode(quizID, "UTF-8");
     AdGroupAd ad = createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
     Long textAdId = publishTextAd(ad);
 

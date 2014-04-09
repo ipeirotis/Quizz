@@ -1,7 +1,6 @@
 package us.quizz.servlets;
 
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
@@ -14,6 +13,7 @@ import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,7 +54,7 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
     // and returns immediately
     String schedule = req.getParameter("schedule");
     if (schedule != null) {
-      Queue queue = QueueFactory.getQueue("survival");
+      Queue queue = QueueUtils.getConsistencyQueue();
       queue.add(Builder.withUrl("/consistency/removeOrphanUserAnswers")
                        .method(TaskOptions.Method.GET));
       logger.log(Level.INFO, "Placed request in queue...");

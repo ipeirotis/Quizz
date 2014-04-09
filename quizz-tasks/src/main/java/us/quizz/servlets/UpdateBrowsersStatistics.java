@@ -1,7 +1,6 @@
 package us.quizz.servlets;
 
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
@@ -11,6 +10,7 @@ import com.google.inject.Singleton;
 import eu.bitwalker.useragentutils.Browser;
 
 import us.quizz.service.BrowserStatisticsService;
+import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -34,7 +34,7 @@ public class UpdateBrowsersStatistics extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     if ("true".equals(request.getParameter("all"))) {
-      Queue queue = QueueFactory.getDefaultQueue();
+      Queue queue = QueueUtils.getDefaultQueue();
 
       Set<Browser> browsers = new HashSet<Browser>();
       for (Browser browser : Browser.values()) {

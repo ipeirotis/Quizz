@@ -1,7 +1,6 @@
 package us.quizz.servlets;
 
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
@@ -9,6 +8,7 @@ import com.google.inject.Singleton;
 
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
+import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +30,7 @@ public class UpdateCountStatistics extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    Queue queue = QueueFactory.getQueue("default");
+    Queue queue = QueueUtils.getDefaultQueue();
     List<Quiz> list = quizRepository.getQuizzes();
 
     for (Quiz quiz : list) {

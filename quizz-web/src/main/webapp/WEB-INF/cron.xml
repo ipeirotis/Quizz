@@ -29,7 +29,7 @@
   <cron>
     <url>/api/updateAllQuestionStatistics</url>
     <description>Update the gold, silver, user counts for all questions</description>
-    <schedule>every 60 minutes</schedule>
+    <schedule>every 240 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>

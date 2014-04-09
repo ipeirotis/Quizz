@@ -1,7 +1,6 @@
 package us.quizz.servlets;
 
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
@@ -10,6 +9,7 @@ import com.google.inject.Singleton;
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
 import us.quizz.service.SurvivalProbabilityService;
+import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,7 +62,7 @@ public class CacheSurvivalProbability extends HttpServlet {
   }
 
   private void executeInQueue(String quizId) {
-    Queue queue = QueueFactory.getQueue("survival");
+    Queue queue = QueueUtils.getSurvivalQueue();
     queue.add(Builder.withUrl("/api/cacheSurvivalProbability")
         .method(TaskOptions.Method.GET)
         .param("quizId", quizId)

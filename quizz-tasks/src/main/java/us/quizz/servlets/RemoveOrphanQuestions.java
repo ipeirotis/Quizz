@@ -1,7 +1,6 @@
 package us.quizz.servlets;
 
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
@@ -13,6 +12,7 @@ import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +51,7 @@ public class RemoveOrphanQuestions extends HttpServlet {
     // and returns immediately
     String schedule = req.getParameter("schedule");
     if (schedule != null) {
-      Queue queue = QueueFactory.getQueue("survival");
+      Queue queue = QueueUtils.getConsistencyQueue();
       queue.add(Builder.withUrl("/consistency/removeOrphanQuestions")
            .method(TaskOptions.Method.GET));
       logger.log(Level.INFO, "Placed request in queue...");
@@ -87,7 +87,7 @@ public class RemoveOrphanQuestions extends HttpServlet {
       // deletion, and add the quiz in the "existing" ones to avoid
       // creating duplicate entries in the Tasks Queue
       quizIds.add(qquiz);
-      Queue queue = QueueFactory.getQueue("quizquestions");
+      Queue queue = QueueUtils.getConsistencyQueue();
       queue.add(Builder.withUrl("/consistency/removeOrphanQuestions")
           .param("quizid", qquiz)
           .method(TaskOptions.Method.GET));
