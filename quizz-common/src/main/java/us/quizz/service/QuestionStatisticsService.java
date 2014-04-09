@@ -39,8 +39,6 @@ public class QuestionStatisticsService {
     if (question == null) {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
-    quizQuestionRepository.removeWithoutUpdates(Long.parseLong(questionID));
-
     int u = getNumberOfUserAnswers(questionID);
     question.setHasUserAnswers((u > 0));
     question.setNumberOfUserAnswers(u);
