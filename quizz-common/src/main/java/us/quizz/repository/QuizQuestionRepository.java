@@ -138,10 +138,11 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       for (Question q : results) {
         if (q.getAnswers() != null) {
           for (Answer a : q.getAnswers()) {
-            // lazy fetching
+            a.getID();
           }
+          questions.add(q);
         }
-        questions.add(q);
+        
       }
       cursor = JDOCursorHelper.getCursor(results);
     }
