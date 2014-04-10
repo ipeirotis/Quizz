@@ -9,10 +9,11 @@ import com.google.common.base.Strings;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.PMF;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -21,6 +22,8 @@ import javax.jdo.Query;
 import javax.jdo.Transaction;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+
+import org.apache.commons.beanutils.BeanUtils;
 
 public abstract class BaseRepository<T> {
   private static final Logger logger = Logger.getLogger(BaseRepository.class.getName());
@@ -177,9 +180,27 @@ public abstract class BaseRepository<T> {
       } else {
         item = mgr.getObjectById(cls, id);
       }
+      try {
+        //Attempt to automatically read the child objects
+        //and fetch them from the datastore by forcing the 
+        //execution of a lazy evaluation. Perhaps the 
+        //BeanUtils.populate(cls, BeanUtils.describe(cls)) 
+        //is a better way to do this as it deals with array
+        //objects.
+        BeanUtils.describe(cls);
+        
+      } catch (IllegalAccessException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (NoSuchMethodException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     } finally {
       if (tx.isActive()) {
-        logger.log(Level.WARNING, "Transaction fails to commit, rolling back.");
         tx.rollback();
       }
       mgr.close();
@@ -258,7 +279,6 @@ public abstract class BaseRepository<T> {
       }
     } finally {
       if (tx.isActive()) {
-        logger.log(Level.WARNING, "Transaction fails to commit, rolling back.");
         tx.rollback();
       }
       pm.close();
