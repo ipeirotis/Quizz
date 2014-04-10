@@ -39,6 +39,7 @@ public class QuestionStatisticsService {
     if (question == null) {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
+
     int u = getNumberOfUserAnswers(questionID);
     question.setHasUserAnswers((u > 0));
     question.setNumberOfUserAnswers(u);

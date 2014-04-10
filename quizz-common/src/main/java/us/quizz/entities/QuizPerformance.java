@@ -7,7 +7,11 @@ import us.quizz.utils.Helper;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -112,10 +116,36 @@ public class QuizPerformance implements Serializable {
     this.score = 0.0;
   }
 
-  public void computeCorrect(List<UserAnswer> results) {
+  public void computeCorrect(List<UserAnswer> results, List<Question> questions) {
+    // questionID -> Question.
+    Map<Long, Question> questionsMap = new HashMap<Long, Question>(); 
+    for (final Question question : questions) {
+      questionsMap.put(question.getID(), question);
+    }
+
+    // Sort UserAnswer result by increasing timestamp. This modifies results.
+    Collections.sort(results, new Comparator<UserAnswer>() {
+      public int compare(UserAnswer userAnswer1, UserAnswer userAnswer2) {
+        return (int) (userAnswer1.getTimestamp() - userAnswer2.getTimestamp());
+      }
+    });
+
     int c = 0;
     int t = 0;
     for (UserAnswer ua : results) {
+      if (!questionsMap.containsKey(ua.getQuestionID())) {
+        continue;
+      }
+
+      // Only counts each question once, based on user's first answer.
+      // TODO(chunhowt): Have a better way to take into account of answers to the same question.
+      Question question = questionsMap.remove(ua.getQuestionID());
+
+      if (!question.getHasGoldAnswer()) {
+        // If the question is not a gold question, ignore.
+        continue;
+      }
+
       Boolean correct = ua.getIsCorrect();
       if (ua.getAction().equals("Submit")) {
         t++;

@@ -158,7 +158,7 @@ public class QuizzTest {
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(
-        userAnswerRepository, quizPerformanceRepository);
+        userAnswerRepository, quizPerformanceRepository, quizQuestionRepository);
 
     quizEndpoint = new QuizEndpoint(quizRepository, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizRepository, quizQuestionRepository,
