@@ -18,7 +18,10 @@ angular.module('quizz').controller('QuizController',
      $scope.fetchQuestions = function() {
        // If we don't have questions set in the workflowService, fetch them.
        if (!workflowService.hasQuestions()) {
-         questionService.list($scope.numOfQuestions, $routeParams.quizId,
+         questionService.list(
+           $scope.numOfQuestions,
+           $routeParams.quizId,
+           userService.getUsername(),
            function(response) {
              workflowService.setQuestions(response);
 

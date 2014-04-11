@@ -20,6 +20,8 @@ angular.module('quizz').factory('workflowService', [function() {
       userAnswers = [];
       userFeedbacks = [];
       currentQuestionIndex = 0;
+      currentGoldQuestionIndex = 0;
+      currentSilverQuestionIndex = 0;
       numOfCorrectAnswers = 0;
       numOfCalibrationQuestions = 0;
       numOfCollectionQuestions = 0;
@@ -49,11 +51,11 @@ angular.module('quizz').factory('workflowService', [function() {
         isNextQuestionGold = true;
       }
       if (isNextQuestionGold) {
-        var index = currentQuestionIndex % numOfCalibrationQuestions;
+        var index = currentGoldQuestionIndex % numOfCalibrationQuestions;
         currentQuestion = questions.calibration[index];
         isCurrentQuestionGold = true;
       } else {
-        var index = currentQuestionIndex % numOfCollectionQuestions;
+        var index = currentSilverQuestionIndex % numOfCollectionQuestions;
         currentQuestion = questions.collection[index];
         isCurrentQuestionGold = false;
       }
@@ -88,8 +90,11 @@ angular.module('quizz').factory('workflowService', [function() {
     },
     incCurrentQuestionIndex: function() {
       currentQuestionIndex++;
-      currentGoldQuestionIndex++;
-      currentSilverQuestionIndex++;
+      if (isCurrentQuestionGold) {
+        currentGoldQuestionIndex++;
+      } else {
+        currentSilverQuestionIndex++;
+      }
     },
     incNumOfCorrectAnswers: function() {
       numOfCorrectAnswers++;

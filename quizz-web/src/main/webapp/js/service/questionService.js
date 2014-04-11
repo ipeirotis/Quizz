@@ -5,9 +5,14 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
       }};
 
   return {
-    list: function(numOfQuestions, quizId, success, error) {
-      var url = Config.api + '/quizquestions/' + quizId + '?num=' + numOfQuestions;
-      $http.get(url).success(success).error(error);
+    list: function(numOfQuestions, quizId, userid, success, error) {
+      var params = {
+        num: numOfQuestions,
+        quizID: quizId,
+        userID: userid
+      };
+      var url = Config.api + '/listNextQuestions';
+      $http.post(url, $.param(params), options).success(success).error(error);
     },
     sendAnswer: function(params, success, error) {
       $http.post(Config.api + '/processUserAnswer', $.param(params), options)

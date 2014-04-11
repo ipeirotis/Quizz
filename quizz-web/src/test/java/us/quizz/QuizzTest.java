@@ -135,7 +135,7 @@ public class QuizzTest {
     treatmentRepository = spy(new TreatmentRepository());
     userReferralRepository = spy(new UserReferralRepository());
     quizRepository = spy(new QuizRepository(userReferralRepository, quizPerformanceRepository));
-    quizQuestionRepository = spy(new QuizQuestionRepository(quizRepository));
+    quizQuestionRepository = spy(new QuizQuestionRepository(quizRepository, userAnswerRepository));
     answersRepository = spy(new AnswersRepository(quizQuestionRepository));
     survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
@@ -312,7 +312,7 @@ public class QuizzTest {
 
   private Set<Question> startQuiz(String quizId) {
     Map<String, Set<Question>> questionMap =
-        quizEndpoint.getNextQuestions(quizId, NUMBER_OF_QUESTIONS);
+        quizEndpoint.getNextQuestions(quizId, "user1", NUMBER_OF_QUESTIONS);
     return questionMap.get("calibration");
   }
 

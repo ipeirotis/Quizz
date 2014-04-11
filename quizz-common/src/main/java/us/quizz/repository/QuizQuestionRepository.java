@@ -15,6 +15,7 @@ import us.quizz.utils.MemcacheKey;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +28,7 @@ import javax.jdo.Query;
 public class QuizQuestionRepository extends BaseRepository<Question> {
   // Multiplier used to fetch more questions than being asked when choosing the next questions
   // to allow us to randomly choose a subset of the candidate questions.
-  private static final int QUESTION_FETCHING_MULTIPLIER = 5;
+  private static final int QUESTION_FETCHING_MULTIPLIER = 10;
 
   // Number of seconds to cache the quiz questions.
   private static final int QUESTIONS_CACHED_TIME_SECONDS = 5 * 60;  // 5 minutes.
@@ -38,11 +39,14 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   private static final Logger logger = Logger.getLogger(QuizQuestionRepository.class.getName());
 
   QuizRepository quizRepository;
+  UserAnswerRepository userAnswerRepository;
 
   @Inject
-  public QuizQuestionRepository(QuizRepository quizRepository) {
+  public QuizQuestionRepository(QuizRepository quizRepository,
+      UserAnswerRepository userAnswerRepository) {
     super(Question.class);
     this.quizRepository = quizRepository;
+    this.userAnswerRepository = userAnswerRepository;
   }
 
   @Override
@@ -50,30 +54,28 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return item.getKey();
   }
 
-  public Map<String, Set<Question>> getNextQuizQuestionsWithoutCaching(String quizID, int n) {
-    Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
-
-    int N = n * QUESTION_FETCHING_MULTIPLIER;
-    List<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N);
-    result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
-    List<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N);
-    result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
-
-    String key = MemcacheKey.getQuizQuestionsByQuiz(quizID, n);
-    int cached_lifetime = QUESTIONS_CACHED_TIME_SECONDS;
-    CachePMF.put(key, result, cached_lifetime);
-    return result;
-  }
-
-  public Map<String, Set<Question>> getNextQuizQuestions(String quizID, int n) {
-    String key = MemcacheKey.getQuizQuestionsByQuiz(quizID, n);
-    @SuppressWarnings("unchecked")
-    Map<String, Set<Question>> result = CachePMF.get(key, Map.class);
-    if (result != null) {
-      return result;
-    } else {
-      return getNextQuizQuestionsWithoutCaching(quizID, n);
+  // Returns the next n calibration and collection questions in the given quizID for a given userID.
+  // The map result will has two values, mapping from:
+  // - "calibration" -> set of calibration questions.
+  // - "collection" -> set of collection questions.
+  // TODO(chunhowt): Const the keys in server and in angularJs.
+  public Map<String, Set<Question>> getNextQuizQuestions(String quizID, int n, String userID) {
+    // First, we try to get a list of questions that the user has answered before for this quiz.
+    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
+    Set<Long> questionIDs = new HashSet<Long>();
+    for (UserAnswer userAnswer : userAnswers) {
+      questionIDs.add(userAnswer.getQuestionID());
     }
+
+    // Then, we pick calibration and collection questions from datastore and filter the questions
+    // previously asked from the results.
+    Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
+    int N = n * QUESTION_FETCHING_MULTIPLIER;
+    List<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N, n, questionIDs);
+    result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
+    List<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N, n, questionIDs);
+    result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
+    return result;
   }
 
   public Question getQuizQuestion(String questionID) {
@@ -98,7 +100,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       return null;
     }
 
-    for (final Answer answer : question.getAnswers()) {
+    for (Answer answer : question.getAnswers()) {
       if (answer.getKind() == null) {
         logger.log(Level.SEVERE, "getQuizQuestion: " + questionID + ": one answer is null. " +
             "This is likely a transient error with datastore.");
@@ -217,39 +219,74 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return params;
   }
 
+  // Returns a list of calibration questions that is at least size min_amount and at most
+  // max_amount, if feasible (eg. enough candidate questions).
   @SuppressWarnings("unchecked")
-  public List<Question> getSomeQuizQuestionsWithGold(String quizID, int amount) {
+  private List<Question> getSomeQuizQuestionsWithGold(
+      String quizID, int max_amount, int min_amount, Set<Long> questionIDs) {
     PersistenceManager pm = getPersistenceManager();
 
     try {
       Quiz quiz = quizRepository.singleGetObjectById(Quiz.generateKeyFromID(quizID));
       int questionsWithGold = quiz.getGold();
       Query query = getQuizGoldQuestionsQuery(pm, quizID);
-      setRandomRange(query, questionsWithGold, amount);
+      setRandomRange(query, questionsWithGold, max_amount);
       List<Question> result =
           (List<Question>) query.executeWithMap(getQuizGoldQuestionsParameters(quizID));
-      return removeInvalidQuestions(result);
+      result = removeInvalidQuestions(result);
+      return diversifyQuestionsAsked(result, questionIDs, min_amount);
     } finally {
       pm.close();
     }
   }
 
+  // Returns a list of collection questions that is at least size min_amount and at most
+  // max_amount, if feasible (eg. enough candidate questions).
   @SuppressWarnings("unchecked")
-  public List<Question> getSomeQuizQuestionsWithSilver(String quizID, int amount) {
+  private List<Question> getSomeQuizQuestionsWithSilver(
+      String quizID, int max_amount, int min_amount, Set<Long> questionIDs) {
     PersistenceManager pm = getPersistenceManager();
 
     try {
       Quiz quiz = quizRepository.get(quizID);
       int questionsWithSilver = quiz.getQuestions() - quiz.getGold();
       Query query = getQuizSilverQuestionsQuery(pm, quizID);
-      setRandomRange(query, questionsWithSilver, amount);
+      setRandomRange(query, questionsWithSilver, max_amount);
       List<Question> result =
           (List<Question>) query.executeWithMap(getQuizSilverQuestionsParameters(quizID));
-
-      return removeInvalidQuestions(result);
+      result = removeInvalidQuestions(result);
+      return diversifyQuestionsAsked(result, questionIDs, min_amount);
     } finally {
       pm.close();
     }
+  }
+
+  // Filters questions to prefer choosing questions that are not contained in the set.
+  // TODO(chunhowt): This is essentially an attempt to do a join query of Question and
+  // UserAnswer entities but it seems like datastore doesn't allow such a join query. This
+  // works for now, but there should be a better solution.
+  private List<Question> diversifyQuestionsAsked(
+      List<Question> questions, Set<Long> questionIDs, int n) {
+    List<Question> results = new ArrayList<Question>();
+    List<Question> filtered = new ArrayList<Question>();
+    for (Question question : questions) {
+      // Question not in questionIDs (not asked before) is selected first.
+      if (!questionIDs.contains(question.getID())) {
+        results.add(question);
+      } else {
+        filtered.add(question);
+      }
+    }
+
+    // However, some quizz might be too small and a user has answered all its questions, here
+    // we will just randomly choose some questions users answered before.
+    // TODO(chunhowt): Instead of doing this, we can send a message to user to redirect him
+    // to another quizz.
+    if (results.size() < n) {
+      int numToChoose = Math.min(n - results.size(), filtered.size());
+      results.addAll(filtered.subList(0, numToChoose));
+    }
+    return results;
   }
 
   // Removes invalid questions that have answers' kind = null in the given questions list
@@ -257,9 +294,9 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   // TODO(chunhowt): Datastore sometimes has transient error and returns Questions with embedded
   // Answers entities not fully fetched. We should try to figure out how to do robust datastore
   // query and remove this.
-  private List<Question> removeInvalidQuestions(final List<Question> questions) {
+  private List<Question> removeInvalidQuestions(List<Question> questions) {
     List<Question> newQuestions = new ArrayList<Question>();
-    for (final Question question : questions) {
+    for (Question question : questions) {
       boolean isValidQuestion = true;
       if (question.getAnswers() == null) {
         logger.log(Level.WARNING, "removeInvalidQuestions: " + question.getKey().getId() +
@@ -267,7 +304,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
             "accidentally set to null.");
         continue;
       }
-      for (final Answer answer : question.getAnswers()) {
+      for (Answer answer : question.getAnswers()) {
         if (answer.getKind() == null) {
           isValidQuestion = false;
           break;

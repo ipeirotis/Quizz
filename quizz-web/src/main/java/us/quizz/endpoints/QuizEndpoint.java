@@ -69,15 +69,18 @@ public class QuizEndpoint {
   }
 
   /**
-   * This method generates a questions for quiz
+   * This method generates questions for quiz.
    */
-  @ApiMethod(name = "listNextQuestions", path = "quizquestions/{quiz}")
-  public Map<String, Set<Question>> getNextQuestions(@Named("quiz") String quiz,
+  @ApiMethod(name = "listNextQuestions", path = "listNextQuestions",
+             httpMethod = HttpMethod.POST)
+  public Map<String, Set<Question>> getNextQuestions(
+      @Named("quizID") String quizID,
+      @Named("userID") String userID,
       @Nullable @Named("num") Integer num) {
     if (num == null) {
       num = QUESTION_PACKAGE_SIZE;
     }
-    return quizQuestionRepository.getNextQuizQuestions(quiz, num);
+    return quizQuestionRepository.getNextQuizQuestions(quizID, num, userID);
   }
 
   /**
