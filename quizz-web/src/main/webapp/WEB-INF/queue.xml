@@ -12,8 +12,8 @@
   <queue>
     <name>userStatistics</name>
     <rate>50/s</rate>
-    <bucket-size>50</bucket-size>
-    <max-concurrent-requests>100</max-concurrent-requests>
+    <bucket-size>10</bucket-size>
+    <max-concurrent-requests>10</max-concurrent-requests>
     <target>quizz-tasks</target>
     <retry-parameters>
       <task-retry-limit>0</task-retry-limit>
@@ -23,8 +23,8 @@
   <queue>
     <name>questionStatistics</name>
     <rate>50/s</rate>
-    <bucket-size>50</bucket-size>
-    <max-concurrent-requests>50</max-concurrent-requests>
+    <bucket-size>10</bucket-size>
+    <max-concurrent-requests>10</max-concurrent-requests>
     <target>quizz-tasks</target>
     <retry-parameters>
       <task-retry-limit>0</task-retry-limit>

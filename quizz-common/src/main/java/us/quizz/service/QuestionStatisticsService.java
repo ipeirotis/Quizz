@@ -66,15 +66,16 @@ public class QuestionStatisticsService {
 
     Map<Integer, Double> answerBits = new HashMap<Integer, Double>();
     Map<Integer, Integer> answerCounts = new HashMap<Integer, Integer>();
-    Map<Integer, Double> answerLogit = new HashMap<Integer, Double>();
+    Map<Integer, Double> answerProb = new HashMap<Integer, Double>();
+    int n = question.getAnswers().size();
     for (Answer a : question.getAnswers()) {
       Integer aid = a.getInternalID();
       answerBits.put(aid, 0.0);
       answerCounts.put(aid, 0);
 
-      int n = question.getAnswers().size();
-      Double priorlogit = Gamma.digamma(1) - Gamma.digamma(n - 1);
-      answerLogit.put(aid, priorlogit);
+      
+      Double priorLogProb = 1.0/n;
+      answerProb.put(aid, priorLogProb);
     }
 
     List<UserAnswer> userAnswers = userAnswerRepository.getUsersForQuestion(questionId);
@@ -90,7 +91,7 @@ public class QuestionStatisticsService {
       }
       if (!exists) continue;
       Double userBits = 0.0;
-      Double userLogit = 0.0;
+      Double userProb;
 
       QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(quizID, userId);
       if (qp != null) {
@@ -99,11 +100,9 @@ public class QuestionStatisticsService {
         if (correct == null) correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
-        // Adding pseudocounts for Bayesian prior
-        // All users start with a uniform prior
-        correct++;
-        incorrect++;
-        userLogit = Gamma.digamma(correct) - Gamma.digamma(incorrect);
+
+        userProb = 1.0*(correct+1)/(correct+incorrect+n);
+        
       } else {
         continue;
       }
@@ -119,27 +118,25 @@ public class QuestionStatisticsService {
       answerCounts.put(ansId, currentCount + 1);
 
       // Estimate the probability that the answer is correct
-      // We use the fact that the logit of the probability of being correct
-      // is the sum of the logits of the users that picked the answer
-      // minus the logits of the users that picked another answer for the
-      // same question
-      // (We use a Bayesian version of that, hence the digammas, instead of the
-      // logs)
       //
       // NOTE: The computation of correctness below is applicable ONLY
       // for multiple choice questions. For free-text answers, we need
       // to use the Chinese Table process described by Dan Weld.
       //
-      // We go through all the answers as we need to add the logit in the 
-      // selected answer but also need to subtract the logit from the
-      // non-selected answers
+      // Given that we are using smoothed maximum likelihood estimated
+      // for the userProb value, the overall probability estimate 
+      // is going to be overconfident. Need to check the efficiency
+      // of doing some Monte Carlo estimates by sampling repeatedly
+      // from the Beta(correct,incorrect) distribution to get the quality
+      // of the user, and then estimate a distribution for the ProbCorrect
+      
       for (Answer a : question.getAnswers()) {
-        Double currentLogit = answerLogit.get(a.getInternalID());
+        Double currentProb = answerProb.get(a.getInternalID());
         // If this is also the answer chosen by the user
         if (a.getInternalID() == ansId) {
-          answerLogit.put(a.getInternalID(), currentLogit + userLogit);
+          answerProb.put(a.getInternalID(), currentProb * userProb);
         } else {
-          answerLogit.put(a.getInternalID(), currentLogit - userLogit);
+          answerProb.put(a.getInternalID(), currentProb * (1-userProb));
         }
       }
     }
@@ -147,16 +144,21 @@ public class QuestionStatisticsService {
     // Since we have processed now all the UserAnswer objects, we now
     // update the statistics of the Answer objects and store them
     Double questionBits = 0.0;
+    Double sumProb = 0.0;
     for (Answer a : question.getAnswers()) {
-      Double aBits = answerBits.get(a.getInternalID());
-      questionBits += aBits;
-      Integer aCount = answerCounts.get(a.getInternalID());
-      Double aLogit = answerLogit.get(a.getInternalID());
-      Double aProbCorrect = Math.exp(aLogit) / (Math.exp(aLogit) + 1);
-      a.setBits(aBits);
-      a.setNumberOfPicks(aCount);
-      a.setProbCorrect(aProbCorrect);
+      sumProb += answerProb.get(a.getInternalID());
+      questionBits += answerBits.get(a.getInternalID());
     }
     question.setTotalUserScore(questionBits);
+    
+    for (Answer a : question.getAnswers()) {
+      Double aBits = answerBits.get(a.getInternalID());
+      a.setBits(aBits);
+      Integer aCount = answerCounts.get(a.getInternalID());
+      a.setNumberOfPicks(aCount);
+      Double aProbCorrect = answerProb.get(a.getInternalID())/sumProb;
+      a.setProbCorrect(aProbCorrect);
+    }
+    
   }
 }
