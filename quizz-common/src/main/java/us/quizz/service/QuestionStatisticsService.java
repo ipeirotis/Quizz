@@ -10,6 +10,7 @@ import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerKind;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
@@ -146,14 +147,30 @@ public class QuestionStatisticsService {
     }
 
     // Since we have processed now all the UserAnswer objects, we now
-    // update the statistics of the Answer objects and store them
+    // update the statistics of the Question and Answer objects and store them
     Double questionBits = 0.0;
     Double sumProb = 0.0;
+    Double maxProb = 0.0;
+    String likelyAnswer = "";
+    Boolean isLikelyAnswerCorrect = null;
     for (Answer a : question.getAnswers()) {
-      sumProb += answerProb.get(a.getInternalID());
+      Double aProb = answerProb.get(a.getInternalID());
+      if (maxProb<aProb) {
+        maxProb = aProb;
+        likelyAnswer = a.getText();
+        if (a.getKind()==AnswerKind.GOLD) {
+          isLikelyAnswerCorrect = true;
+        } else if (a.getKind()==AnswerKind.INCORRECT) {
+          isLikelyAnswerCorrect = false;
+        }
+      }
+      sumProb += aProb;
       questionBits += answerBits.get(a.getInternalID());
     }
     question.setTotalUserScore(questionBits);
+    question.setConfidence(maxProb/sumProb);
+    question.setLikelyAnswer(likelyAnswer);
+    question.setIsLikelyAnswerCorrect(isLikelyAnswerCorrect);
     
     for (Answer a : question.getAnswers()) {
       Double aBits = answerBits.get(a.getInternalID());

@@ -65,7 +65,46 @@ public class Question implements Serializable {
   // after adding the answers
   @Persistent
   private Boolean hasSilverAnswers;
+  
+  // After computing the probability of correctness for each answer, the
+  // confidence is the highest probability 
+  @Persistent
+  private Double confidence;
+  
+  // After computing the probability of correctness for each answer,
+  // this is the answer with the highest probability 
+  @Persistent
+  private String likelyAnswer;
+  
+  // If likelyAnswer matches a GOLD answer, we set this to true
+  @Persistent
+  private Boolean isLikelyAnswerCorrect;
 
+
+
+  public Boolean getIsLikelyAnswerCorrect() {
+    return isLikelyAnswerCorrect;
+  }
+
+  public void setIsLikelyAnswerCorrect(Boolean isLikelyAnswerCorrect) {
+    this.isLikelyAnswerCorrect = isLikelyAnswerCorrect;
+  }
+
+  public Double getConfidence() {
+    return confidence;
+  }
+
+  public void setConfidence(Double confidence) {
+    this.confidence = confidence;
+  }
+
+  public String getLikelyAnswer() {
+    return likelyAnswer;
+  }
+
+  public void setLikelyAnswer(String likelyAnswer) {
+    this.likelyAnswer = likelyAnswer;
+  }
 
   @Persistent(defaultFetchGroup = "true")
   private ArrayList<Answer> answers;
