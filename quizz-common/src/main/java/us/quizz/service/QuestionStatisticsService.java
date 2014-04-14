@@ -1,10 +1,10 @@
 package us.quizz.service;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.inject.Inject;
-
-import org.apache.commons.math3.special.Gamma;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -13,14 +13,15 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
+import us.quizz.utils.Helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.inject.Inject;
 
 public class QuestionStatisticsService {
+  
+  private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
+
+  
   private QuizQuestionRepository quizQuestionRepository;
   private UserAnswerRepository userAnswerRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
@@ -97,10 +98,14 @@ public class QuestionStatisticsService {
         if (correct == null) correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
-
-        userBits = qp.getScore()/(correct+incorrect);
         
         userProb = 1.0*(correct+1)/(correct+incorrect+n);
+        try {
+          userBits = Helper.getInformationGain(userProb, n);
+        } catch (Exception e) {
+          logger.log(Level.WARNING, "Error when computing bits for user "+userId);
+        }
+
         
       } else {
         continue;
