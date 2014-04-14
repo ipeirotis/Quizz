@@ -72,10 +72,7 @@ public class QuestionStatisticsService {
       Integer aid = a.getInternalID();
       answerBits.put(aid, 0.0);
       answerCounts.put(aid, 0);
-
-      
-      Double priorLogProb = 1.0/n;
-      answerProb.put(aid, priorLogProb);
+      answerProb.put(aid, 1.0/n);
     }
 
     List<UserAnswer> userAnswers = userAnswerRepository.getUsersForQuestion(questionId);
@@ -95,12 +92,14 @@ public class QuestionStatisticsService {
 
       QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(quizID, userId);
       if (qp != null) {
-        userBits = qp.getScore();
+        
         Integer correct = qp.getCorrectanswers();
         if (correct == null) correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
 
+        userBits = qp.getScore()/(correct+incorrect);
+        
         userProb = 1.0*(correct+1)/(correct+incorrect+n);
         
       } else {
@@ -136,7 +135,7 @@ public class QuestionStatisticsService {
         if (a.getInternalID() == ansId) {
           answerProb.put(a.getInternalID(), currentProb * userProb);
         } else {
-          answerProb.put(a.getInternalID(), currentProb * (1-userProb));
+          answerProb.put(a.getInternalID(), currentProb * ((1-userProb)/(n-1)));
         }
       }
     }
