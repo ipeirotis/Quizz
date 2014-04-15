@@ -27,8 +27,8 @@ import javax.jdo.Query;
 
 public class QuizQuestionRepository extends BaseRepository<Question> {
   // Multiplier used to fetch more questions than being asked when choosing the next questions
-  // to allow us to randomly choose a subset of the candidate questions.
-  private static final int QUESTION_FETCHING_MULTIPLIER = 10;
+  // to allow us to fetch enough candidate questions for each user.
+  private static final int QUESTION_FETCHING_MULTIPLIER = 3;
 
   // Number of seconds to cache the quiz questions.
   private static final int QUESTIONS_CACHED_TIME_SECONDS = 5 * 60;  // 5 minutes.
@@ -70,11 +70,11 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     // Then, we pick calibration and collection questions from datastore and filter the questions
     // previously asked from the results.
     Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
-    int N = n * QUESTION_FETCHING_MULTIPLIER;
-    List<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, N, n, questionIDs);
-    result.put("calibration", Helper.trySelectingRandomElements(goldQuestions, n));
-    List<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, N, n, questionIDs);
-    result.put("collection", Helper.trySelectingRandomElements(silverQuestions, n));
+    List<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, n, questionIDs);
+    result.put("calibration", new HashSet<Question>(goldQuestions));
+
+    List<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, n, questionIDs);
+    result.put("collection", new HashSet<Question>(silverQuestions));
     return result;
   }
 
@@ -219,60 +219,69 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return params;
   }
 
-  // Returns a list of calibration questions that is at least size min_amount and at most
-  // max_amount, if feasible (eg. enough candidate questions).
+  // Returns a list of calibration questions that is at least size min_amount
+  // if feasible (eg. enough candidate questions).
   @SuppressWarnings("unchecked")
   private List<Question> getSomeQuizQuestionsWithGold(
-      String quizID, int max_amount, int min_amount, Set<Long> questionIDs) {
+      String quizID, int min_amount, Set<Long> questionIDs) {
     PersistenceManager pm = getPersistenceManager();
-
     try {
-      Quiz quiz = quizRepository.singleGetObjectById(Quiz.generateKeyFromID(quizID));
-      int questionsWithGold = quiz.getGold();
       Query query = getQuizGoldQuestionsQuery(pm, quizID);
-      setRandomRange(query, questionsWithGold, max_amount);
+      query.setOrdering("totalUserScore ascending");
+      // Fetch more than needed as there are filtering done below, proportional to how
+      // many questions users have answered.
+      query.setRange(0, min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER);
+
       List<Question> result =
           (List<Question>) query.executeWithMap(getQuizGoldQuestionsParameters(quizID));
       result = removeInvalidQuestions(result);
-      return diversifyQuestionsAsked(result, questionIDs, min_amount);
+      return diversifyQuestionsAsked(result, questionIDs, min_amount,
+          false  /* don't repeat if not enough questions. */);
     } finally {
       pm.close();
     }
   }
 
-  // Returns a list of collection questions that is at least size min_amount and at most
-  // max_amount, if feasible (eg. enough candidate questions).
+  // Returns a list of collection questions that is at least size min_amount
+  // if feasible (eg. enough candidate questions).
   @SuppressWarnings("unchecked")
   private List<Question> getSomeQuizQuestionsWithSilver(
-      String quizID, int max_amount, int min_amount, Set<Long> questionIDs) {
+      String quizID, int min_amount, Set<Long> questionIDs) {
     PersistenceManager pm = getPersistenceManager();
-
     try {
-      Quiz quiz = quizRepository.get(quizID);
-      int questionsWithSilver = quiz.getQuestions() - quiz.getGold();
       Query query = getQuizSilverQuestionsQuery(pm, quizID);
-      setRandomRange(query, questionsWithSilver, max_amount);
+      query.setOrdering("totalUserScore ascending");
+      // Fetch more than needed as there are filtering done below, proportional to how
+      // many questions users have answered.
+      query.setRange(0, min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER);
+
       List<Question> result =
           (List<Question>) query.executeWithMap(getQuizSilverQuestionsParameters(quizID));
       result = removeInvalidQuestions(result);
-      return diversifyQuestionsAsked(result, questionIDs, min_amount);
+      return diversifyQuestionsAsked(result, questionIDs, min_amount,
+          true  /* repeat if not enough questions. */);
     } finally {
       pm.close();
     }
   }
 
-  // Filters questions to prefer choosing questions that are not contained in the set.
+  // Filters questions to prefer choosing n questions that are not contained in the set.
+  // If repeatQuestions is true, allows duplicate questions when there is not enough candidate
+  // questions that have never been answered before.
   // TODO(chunhowt): This is essentially an attempt to do a join query of Question and
   // UserAnswer entities but it seems like datastore doesn't allow such a join query. This
   // works for now, but there should be a better solution.
   private List<Question> diversifyQuestionsAsked(
-      List<Question> questions, Set<Long> questionIDs, int n) {
+      List<Question> questions, Set<Long> questionIDs, int n, boolean repeatQuestions) {
     List<Question> results = new ArrayList<Question>();
     List<Question> filtered = new ArrayList<Question>();
     for (Question question : questions) {
       // Question not in questionIDs (not asked before) is selected first.
       if (!questionIDs.contains(question.getID())) {
         results.add(question);
+        if (results.size() == n) {
+          break;
+        }
       } else {
         filtered.add(question);
       }
@@ -282,7 +291,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     // we will just randomly choose some questions users answered before.
     // TODO(chunhowt): Instead of doing this, we can send a message to user to redirect him
     // to another quizz.
-    if (results.size() < n) {
+    if (results.size() < n && repeatQuestions) {
       int numToChoose = Math.min(n - results.size(), filtered.size());
       results.addAll(filtered.subList(0, numToChoose));
     }
@@ -318,12 +327,6 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       }
     }
     return newQuestions;
-  }
-
-  public void setRandomRange(Query query, int size, int amount) {
-    int lower = (int) (Math.random() * Math.max(0, size - amount));
-    int upper = Math.min(size, lower + amount);
-    query.setRange(lower, upper); // upper is excluded index
   }
 
   public List<Question> getQuizQuestionsWithGold(String quizID) {

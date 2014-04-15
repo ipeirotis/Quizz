@@ -51,8 +51,7 @@ public class Question implements Serializable {
 
   // Computed statistic showing the the total number of user bits assigned
   // to this question by the users that answered this question
-  // Can be used (although not used currently) to prioritize exposure of
-  // questions to users, favoring questions with low score
+  // Used to prioritize exposure of questions to users, favoring questions with low score
   @Persistent
   private Double totalUserScore;
 
@@ -79,8 +78,6 @@ public class Question implements Serializable {
   // If likelyAnswer matches a GOLD answer, we set this to true
   @Persistent
   private Boolean isLikelyAnswerCorrect;
-
-
 
   public Boolean getIsLikelyAnswerCorrect() {
     return isLikelyAnswerCorrect;
