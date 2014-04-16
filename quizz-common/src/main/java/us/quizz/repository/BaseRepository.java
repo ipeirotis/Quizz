@@ -181,14 +181,13 @@ public abstract class BaseRepository<T> {
         item = mgr.getObjectById(cls, id);
       }
       try {
-        //Attempt to automatically read the child objects
-        //and fetch them from the datastore by forcing the 
-        //execution of a lazy evaluation. Perhaps the 
-        //BeanUtils.populate(cls, BeanUtils.describe(cls)) 
-        //is a better way to do this as it deals with array
-        //objects.
+        // Attempt to automatically read the child objects
+        // and fetch them from the datastore by forcing the 
+        // execution of a lazy evaluation. Perhaps the 
+        // BeanUtils.populate(cls, BeanUtils.describe(cls)) 
+        // is a better way to do this as it deals with array
+        // objects.
         BeanUtils.describe(cls);
-        
       } catch (IllegalAccessException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

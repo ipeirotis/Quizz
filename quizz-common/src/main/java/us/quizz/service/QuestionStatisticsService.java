@@ -1,10 +1,6 @@
 package us.quizz.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -16,7 +12,11 @@ import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.Helper;
 
-import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
   
@@ -74,7 +74,7 @@ public class QuestionStatisticsService {
       Integer aid = a.getInternalID();
       answerBits.put(aid, 0.0);
       answerCounts.put(aid, 0);
-      answerProb.put(aid, 1.0/n);
+      answerProb.put(aid, 1.0 / n);
     }
 
     List<UserAnswer> userAnswers = userAnswerRepository.getUsersForQuestion(questionId);
@@ -94,20 +94,17 @@ public class QuestionStatisticsService {
 
       QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(quizID, userId);
       if (qp != null) {
-        
         Integer correct = qp.getCorrectanswers();
         if (correct == null) correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
-        
-        userProb = 1.0*(correct+1)/(correct+incorrect+n);
+
+        userProb = 1.0 * (correct + 1) / (correct + incorrect + n);
         try {
           userBits = Helper.getInformationGain(userProb, n);
         } catch (Exception e) {
           logger.log(Level.WARNING, "Error when computing bits for user "+userId);
         }
-
-        
       } else {
         continue;
       }
@@ -155,12 +152,12 @@ public class QuestionStatisticsService {
     Boolean isLikelyAnswerCorrect = null;
     for (Answer a : question.getAnswers()) {
       Double aProb = answerProb.get(a.getInternalID());
-      if (maxProb<aProb) {
+      if (maxProb < aProb) {
         maxProb = aProb;
         likelyAnswer = a.getText();
-        if (a.getKind()==AnswerKind.GOLD) {
+        if (a.getKind() == AnswerKind.GOLD) {
           isLikelyAnswerCorrect = true;
-        } else if (a.getKind()==AnswerKind.INCORRECT) {
+        } else if (a.getKind() == AnswerKind.INCORRECT) {
           isLikelyAnswerCorrect = false;
         }
       }

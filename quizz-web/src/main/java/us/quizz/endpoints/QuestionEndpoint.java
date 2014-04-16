@@ -84,7 +84,7 @@ public class QuestionEndpoint {
 
   @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.GET)
   public Question getQuestion(@Named("questionID") Long questionID) {
-    return quizQuestionRepository.singleGetObjectById(questionID);
+    return quizQuestionRepository.getQuizQuestion(questionID);
   }
 
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
