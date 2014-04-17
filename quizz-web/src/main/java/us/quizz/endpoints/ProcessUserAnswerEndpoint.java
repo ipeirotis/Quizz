@@ -120,6 +120,7 @@ public class ProcessUserAnswerEndpoint {
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, referer, timestamp, isCorrect);
     updateQuizPerformance(user, questionID);
+    updateQuestionStatistics(questionID);
 
     // Get the number of multiple choices for the quiz
     Integer N = this.quizRepository.get(quizID).getNumChoices();
@@ -199,6 +200,14 @@ public class ProcessUserAnswerEndpoint {
             .param("userid", user.getUserid())
             .param("channelNotify", "true")
             .method(TaskOptions.Method.POST));
+  }
+
+  private void updateQuestionStatistics(Long questionID) {
+    Queue queue = QueueUtils.getQuestionStatisticsQueue();
+    queue.add(Builder
+        .withUrl("/api/updateQuestionStatistics")
+        .param("questionID", questionID.toString())
+        .method(TaskOptions.Method.POST));
   }
 
   /**
