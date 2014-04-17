@@ -85,8 +85,12 @@ public class QuestionStatisticsService {
 
       // Check that the ansId corresponds to an answer
       boolean exists = false;
+      Answer selectedAnswer = null;
       for (Answer a : question.getAnswers()) {
-        if (ansId == a.getInternalID()) exists = true; 
+        if (ansId == a.getInternalID()) {
+          exists = true; 
+          selectedAnswer = a;
+        }
       }
       if (!exists) continue;
       Double userBits = 0.0;
@@ -99,6 +103,12 @@ public class QuestionStatisticsService {
         if (correct == null) correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
+        
+        if (selectedAnswer.getKind()==AnswerKind.GOLD) {
+          correct--;
+        } else if (selectedAnswer.getKind()==AnswerKind.INCORRECT) {
+          incorrect--;
+        } 
         
         userProb = 1.0*(correct+1)/(correct+incorrect+n);
         try {
