@@ -195,7 +195,7 @@ public class QuizPerformance implements Serializable {
       if (qp.userid.equals(this.userid)) {
         continue;
       }
-      if (qp.getScore() > this.getScore()) {
+      if (qp.getScore() >= this.getScore()) {
         higherScore++;
       }
     }
