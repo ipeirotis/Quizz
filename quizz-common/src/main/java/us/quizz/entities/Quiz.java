@@ -1,5 +1,6 @@
 package us.quizz.entities;
 
+import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -76,7 +77,15 @@ public class Quiz implements Serializable {
   @Persistent
   private Integer totalAnswers;
 
-  // The total number of all answers submitted
+  // The total number of answers submitted for calibration questions
+  @Persistent
+  private Integer totalCalibrationAnswers;
+
+  // The total number of answers submitted for collection questions
+  @Persistent
+  private Integer totalCollectionAnswers;
+
+  // The total number of all answers submitted (calibration + collection).
   @Persistent
   private Integer submitted;
 
@@ -172,6 +181,14 @@ public class Quiz implements Serializable {
     return submitted;
   }
 
+  public Integer getTotalCalibrationAnswers() {
+    return totalCalibrationAnswers;
+  }
+
+  public Integer getTotalCollectionAnswers() {
+    return totalCollectionAnswers;
+  }
+
   public Integer getTotalAnswers() {
     return totalAnswers;
   }
@@ -181,63 +198,87 @@ public class Quiz implements Serializable {
   }
 
   public void setAvgAnswerCorrectness(Double avgAnswerCorrectness) {
+    Preconditions.checkNotNull(avgAnswerCorrectness);
     this.avgAnswerCorrectness = avgAnswerCorrectness;
   }
 
   public void setAvgUserCorrectness(Double avgUserCorrectness) {
+    Preconditions.checkNotNull(avgUserCorrectness);
     this.avgUserCorrectness = avgUserCorrectness;
   }
 
   public void setCampaignid(Long campaignid) {
+    Preconditions.checkNotNull(campaignid);
     this.campaignid = campaignid;
   }
 
   public void setCapacity(Double capacity) {
+    Preconditions.checkNotNull(capacity);
     this.capacity = capacity;
   }
 
   public void setContributingUsers(Integer contributingUsers) {
+    Preconditions.checkNotNull(contributingUsers);
     this.contributingUsers = contributingUsers;
   }
 
   public void setConversionRate(Double conversionRate) {
+    Preconditions.checkNotNull(conversionRate);
     this.conversionRate = conversionRate;
   }
 
   public void setCorrectAnswers(Integer correctAnswers) {
+    Preconditions.checkNotNull(correctAnswers);
     this.correctAnswers = correctAnswers;
   }
 
-
   public void setGold(Integer gold) {
+    Preconditions.checkNotNull(gold);
     this.gold = gold;
   }
 
   public void setKey(Key key) {
+    Preconditions.checkNotNull(key);
     this.key = key;
   }
 
   public void setName(String name) {
+    Preconditions.checkNotNull(name);
     this.name = name;
   }
 
   public void setQuestions(Integer questions) {
+    Preconditions.checkNotNull(questions);
     this.questions = questions;
   }
 
   public void setQuizID(String quizID) {
+    Preconditions.checkNotNull(quizID);
     this.quizID = quizID;
   }
 
   public void setSubmitted(Integer submitted) {
+    Preconditions.checkNotNull(submitted);
     this.submitted = submitted;
   }
 
+  public void setTotalCalibrationAnswers(Integer totalCalibrationAnswers) {
+    Preconditions.checkNotNull(totalCalibrationAnswers);
+    this.totalCalibrationAnswers = totalCalibrationAnswers;
+  }
+
+  public void setTotalCollectionAnswers(Integer totalCollectionAnswers) {
+    Preconditions.checkNotNull(totalCollectionAnswers);
+    this.totalCollectionAnswers = totalCollectionAnswers;
+  }
+
   public void setTotalAnswers(Integer totalAnswers) {
+    Preconditions.checkNotNull(totalAnswers);
     this.totalAnswers = totalAnswers;
   }
 
   public void setTotalUsers(Integer totalUsers) {
+    Preconditions.checkNotNull(totalUsers);
     this.totalUsers = totalUsers;
   }
 
@@ -246,6 +287,7 @@ public class Quiz implements Serializable {
   }
 
   public void setKind(QuizKind kind) {
+    Preconditions.checkNotNull(kind);
     this.kind = kind;
   }
   
@@ -254,6 +296,7 @@ public class Quiz implements Serializable {
   }
 
   public void setNumChoices(Integer numChoices) {
+    Preconditions.checkNotNull(numChoices);
     this.numChoices = numChoices;
   }
 }
