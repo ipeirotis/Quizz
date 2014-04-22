@@ -16,15 +16,17 @@ angular.module('quizz').controller('QuizController',
        function(error) {});
 
      $scope.fetchQuestions = function() {
-       // If we don't have questions set in the workflowService, fetch them.
-       if (!workflowService.hasQuestions()) {
+       // If we don't have questions set in the workflowService OR
+       // the requested quizId is different from the quizId in the workflow
+       // service, fetch a new set of questions.
+       if (!workflowService.hasQuestions() ||
+           $routeParams.quizId != workflowService.getCurrentQuizID()) {
          questionService.list(
            $scope.numOfQuestions,
            $routeParams.quizId,
            userService.getUsername(),
            function(response) {
-             workflowService.setQuestions(response);
-
+             workflowService.setQuestions(response, $routeParams.quizId);
              $scope.currentQuestion = workflowService.getNewCurrentQuestion();
              $scope.readyToShow = true;
            },

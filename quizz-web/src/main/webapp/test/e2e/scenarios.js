@@ -86,5 +86,4 @@ describe('quizz e2e test', function() {
       }
     });
   }
-
 });

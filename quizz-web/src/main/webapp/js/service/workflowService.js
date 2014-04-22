@@ -13,10 +13,12 @@ angular.module('quizz').factory('workflowService', [function() {
   var isNextQuestionGold = true;
   var channelToken = '';
   var isCurrentQuestionGold = true;
+  var quizID = '';
 
   return {
     clear: function(){
       questions = {};
+      quizID = '';
       userAnswers = [];
       userFeedbacks = [];
       currentQuestionIndex = 0;
@@ -26,7 +28,8 @@ angular.module('quizz').factory('workflowService', [function() {
       numOfCalibrationQuestions = 0;
       numOfCollectionQuestions = 0;
     },
-    setQuestions: function(q) {
+    setQuestions: function(q, newQuizID) {
+      quizID = newQuizID;
       questions = q;
       if (q.calibration) {
         numOfCalibrationQuestions = q.calibration.length;
@@ -34,6 +37,9 @@ angular.module('quizz').factory('workflowService', [function() {
       if (q.collection) {
         numOfCollectionQuestions = q.collection.length;
       }
+    },
+    getCurrentQuizID: function() {
+      return quizID;
     },
     getQuestions: function() {
       return questions;
