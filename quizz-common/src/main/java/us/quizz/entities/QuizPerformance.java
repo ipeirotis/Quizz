@@ -1,5 +1,6 @@
 package us.quizz.entities;
 
+import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -56,9 +57,13 @@ public class QuizPerformance implements Serializable {
   @Persistent
   String quiz;
 
-  // The number of answers given by the user
+  // The number of answers given by the user for all questions (calibration + collection).
   @Persistent
   Integer totalanswers;
+
+  // The number of answers given by the user for golden questions (calibration).
+  @Persistent
+  Integer totalCalibrationAnswers;
 
   // The number of correct answers given by the user
   @Persistent
@@ -111,6 +116,7 @@ public class QuizPerformance implements Serializable {
     this.userid = userid;
     this.quiz = quiz;
     this.totalanswers = 0;
+    this.totalCalibrationAnswers = 0;
     this.correctanswers = 0;
     this.incorrectanswers = 0;
     this.score = 0.0;
@@ -130,9 +136,13 @@ public class QuizPerformance implements Serializable {
       }
     });
 
-    int c = 0;
-    int t = 0;
+    int numCalibrationAnswers = 0;
+    int numCorrectAnswers = 0;
+    int numAnswers = 0;
     for (UserAnswer ua : results) {
+      if (ua.getAction().equals("Submit")) {
+        ++numAnswers;
+      }
       if (!questionsMap.containsKey(ua.getQuestionID())) {
         continue;
       }
@@ -146,18 +156,18 @@ public class QuizPerformance implements Serializable {
         continue;
       }
 
-      Boolean correct = ua.getIsCorrect();
       if (ua.getAction().equals("Submit")) {
-        t++;
+        numCalibrationAnswers++;
       }
 
-      if (correct) {
-        c++;
+      if (ua.getIsCorrect()) {
+        numCorrectAnswers++;
       }
     }
-    this.correctanswers = c;
-    this.totalanswers = t;
-    this.incorrectanswers = t - c;
+    setTotalanswers(numAnswers);
+    setCorrectanswers(numCorrectAnswers);
+    setTotalCalibrationAnswers(numCalibrationAnswers);
+    setIncorrectanswers(numCalibrationAnswers - numCorrectAnswers);
 
     int numberOfMultipleChoiceOptions = 4;
 
@@ -168,23 +178,25 @@ public class QuizPerformance implements Serializable {
       meanInfoGainFrequentist = Helper.getInformationGain(
           getPercentageCorrect(), numberOfMultipleChoiceOptions);
       meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
-          this.correctanswers,
-          this.totalanswers - this.correctanswers,
+          getCorrectanswers(),
+          getTotalanswers() - getCorrectanswers(),
           numberOfMultipleChoiceOptions);
       varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
-          this.correctanswers,
-          this.totalanswers - this.correctanswers,
+          getCorrectanswers(),
+          getTotalanswers() - getCorrectanswers(),
           numberOfMultipleChoiceOptions);
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    this.freq_infogain = this.totalanswers * meanInfoGainFrequentist;
-    this.bayes_infogain = this.totalanswers * meanInfoGainBayes;
-    this.lcb_infogain = this.totalanswers
-        * (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
-    if (Double.isNaN(this.lcb_infogain) || this.lcb_infogain < 0) {
-      this.lcb_infogain = 0.0;
+    setFreqInfoGain(getTotalanswers() * meanInfoGainFrequentist);
+    setBayesInfoGain(getTotalanswers() * meanInfoGainBayes);
+    double lcbInfoGain =
+        getTotalanswers() * (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
+    if (Double.isNaN(lcbInfoGain) || lcbInfoGain < 0) {
+      setLcbInfoGain(0.0);
+    } else {
+      setLcbInfoGain(lcbInfoGain);
     }
   }
 
@@ -233,6 +245,10 @@ public class QuizPerformance implements Serializable {
 
   public Integer getIncorrectanswers() {
     return incorrectanswers;
+  }
+
+  public Integer getTotalCalibrationAnswers() {
+    return totalCalibrationAnswers;
   }
 
   public Key getKey() {
@@ -296,34 +312,62 @@ public class QuizPerformance implements Serializable {
   }
 
   public void setCorrectanswers(Integer correctanswers) {
+    Preconditions.checkNotNull(correctanswers);
     this.correctanswers = correctanswers;
   }
 
   public void setIncorrectanswers(Integer incorrectanswers) {
+    Preconditions.checkNotNull(incorrectanswers);
     this.incorrectanswers = incorrectanswers;
   }
 
+  public void setTotalCalibrationAnswers(Integer totalCalibrationAnswers) {
+    Preconditions.checkNotNull(totalCalibrationAnswers);
+    this.totalCalibrationAnswers = totalCalibrationAnswers;
+  }
+
   public void setKey(Key key) {
+    Preconditions.checkNotNull(key);
     this.key = key;
   }
 
   public void setQuiz(String quiz) {
+    Preconditions.checkNotNull(quiz);
     this.quiz = quiz;
   }
 
   public void setRankScore(Integer rankScore) {
+    Preconditions.checkNotNull(rankScore);
     this.rankScore = rankScore;
   }
 
   public void setTotalanswers(Integer totalanswers) {
+    Preconditions.checkNotNull(totalanswers);
     this.totalanswers = totalanswers;
   }
 
   public void setTotalUsers(Integer totalUsers) {
+    Preconditions.checkNotNull(totalUsers);
     this.totalUsers = totalUsers;
   }
 
   public void setUserid(String userid) {
+    Preconditions.checkNotNull(userid);
     this.userid = userid;
+  }
+
+  public void setFreqInfoGain(Double freqInfoGain) {
+    Preconditions.checkNotNull(freqInfoGain);
+    this.freq_infogain = freqInfoGain;
+  }
+
+  public void setBayesInfoGain(Double bayesInfoGain) {
+    Preconditions.checkNotNull(bayesInfoGain);
+    this.bayes_infogain = bayesInfoGain;
+  }
+
+  public void setLcbInfoGain(Double lcbInfoGain) {
+    Preconditions.checkNotNull(lcbInfoGain);
+    this.lcb_infogain = lcbInfoGain;
   }
 }

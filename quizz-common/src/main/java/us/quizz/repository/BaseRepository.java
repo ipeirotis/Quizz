@@ -10,6 +10,7 @@ import us.quizz.utils.CachePMF;
 import us.quizz.utils.PMF;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -325,5 +326,38 @@ public abstract class BaseRepository<T> {
       CachePMF.put(cacheKey, item);
     }
     return item;
+  }
+
+  // Returns the number of results obtained by executing the query.
+  protected Integer countResults(Query q, Map<String, Object> params) {
+    return fetchAllResults(q, params).size();
+  }
+
+  // Iteratively executes the query given the params using cursor to achieve paging to get
+  // through all the results, one chunk at a time.
+  // Combines and returns all the results obtained.
+  protected List<T> fetchAllResults(Query q, Map<String, Object> params) {
+    Cursor cursor = null;
+    List<T> finalResults = new ArrayList<T>();
+    q.setRange(0, 1000);
+    // Keep executing query until there is no more results left.
+    while (true) {
+      List<T> results = (List<T>) q.executeWithMap(params);
+      if (results.size() == 0) {
+        break;
+      }
+      finalResults.addAll(results);
+      cursor = JDOCursorHelper.getCursor(results);
+
+      if (cursor != null) {
+        Map<String, Object> extensionMap = new HashMap<String, Object>();
+        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+        q.setExtensions(extensionMap);
+      } else {
+        // Null if this query cannot be resumed.
+        break;
+      }
+    }
+    return finalResults;
   }
 }
