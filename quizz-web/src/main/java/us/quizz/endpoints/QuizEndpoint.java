@@ -68,6 +68,22 @@ public class QuizEndpoint {
     return quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(id));
   }
 
+  // Sets the quiz for the quizID given to be shown on landing page by default.
+  @ApiMethod(name = "showQuiz", path = "showQuiz", httpMethod = HttpMethod.GET)
+  public Quiz showQuiz(@Named("quizID") String quizID) {
+    Quiz quiz = quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(quizID));
+    quiz.setShowOnDefault(true);
+    return quizRepository.update(quiz);
+  }
+
+  // Sets the quiz for the quizID given to be hidden on landing page by default.
+  @ApiMethod(name = "hideQuiz", path = "hideQuiz", httpMethod = HttpMethod.GET)
+  public Quiz hideQuiz(@Named("quizID") String quizID) {
+    Quiz quiz = quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(quizID));
+    quiz.setShowOnDefault(false);
+    return quizRepository.update(quiz);
+  }
+
   /**
    * This method generates questions for quiz.
    */
@@ -95,6 +111,9 @@ public class QuizEndpoint {
   @ApiMethod(name = "insertQuiz", path = "insertQuiz", httpMethod = HttpMethod.POST)
   public Quiz insertQuiz(Quiz quiz) {
     quiz.setKey(Quiz.generateKeyFromID(quiz.getQuizID()));
+    if (quiz.getShowOnDefault() == null) {
+      quiz.setShowOnDefault(false);
+    }
     return quizRepository.insert(quiz);
   }
 

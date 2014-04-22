@@ -38,4 +38,8 @@ angular.module('quizz').controller('ListController',
       console.log("Error in channel gathering updates in performance");
     };
   };
+
+  $scope.filterVisible = function(quiz) {
+    return quiz.showOnDefault;
+  };
 }]);
