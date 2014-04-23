@@ -60,6 +60,11 @@
       <version>${appengine.target.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>com.google.guava</groupId>
+    	<artifactId>guava</artifactId>
+    	<version>16.0</version>
+    </dependency>
   </dependencies>
 
   <build>

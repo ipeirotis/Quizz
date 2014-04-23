@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-  pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.google.appengine.api.utils.SystemProperty"%>
 
 <!DOCTYPE html>
@@ -60,7 +59,7 @@
 
 </head>
 
-<body>
+<body style="padding-bottom: 70px;" >
   <div id="wrap">
     <div class="container">
       <div class="row">
