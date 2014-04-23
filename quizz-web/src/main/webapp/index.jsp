@@ -77,10 +77,9 @@
 
   <div id="footer">
     <div class="container">
-    <nav class="navbar navbar-default navbar-fixed-bottom">
-      <!-- div class="col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">  -->
-      <div class="navbar-inner navbar-content-center">
-        <div class="text-center text-muted credit">
+      <div
+        class="col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
+        <div class="text-center">
           <small> <a
             href="https://www.google.com/intl/en/policies/terms/">Terms
               of Service </a> - <a
@@ -89,7 +88,6 @@
           </small>
         </div>
       </div>
-      </nav>
     </div>
   </div>
 

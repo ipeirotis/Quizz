@@ -5,7 +5,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr ng-repeat="quiz in quizes | orderBy:'name'">
+    <tr ng-repeat="quiz in quizes | orderBy:'name' | filter:filterVisible">
       <td>
         <a href="#/quiz?quizId={{quiz.quizID}}">{{quiz.name}}</a>
         <div>

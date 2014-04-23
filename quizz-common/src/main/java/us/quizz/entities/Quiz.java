@@ -109,6 +109,10 @@ public class Quiz implements Serializable {
   @Persistent
   private Integer gold;
 
+  // Whether to show this quizz on default on the Quizz landing page.
+  @Persistent
+  private Boolean showOnDefault;
+
   @PrimaryKey
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
@@ -117,6 +121,7 @@ public class Quiz implements Serializable {
     this.name = name;
     this.quizID = quizID;
     this.kind = kind;
+    this.showOnDefault = false;
     this.key = generateKeyFromID(quizID);
   }
 
@@ -195,6 +200,10 @@ public class Quiz implements Serializable {
 
   public Integer getTotalUsers() {
     return totalUsers;
+  }
+
+  public Boolean getShowOnDefault() {
+    return showOnDefault;
   }
 
   public void setAvgAnswerCorrectness(Double avgAnswerCorrectness) {
@@ -298,5 +307,10 @@ public class Quiz implements Serializable {
   public void setNumChoices(Integer numChoices) {
     Preconditions.checkNotNull(numChoices);
     this.numChoices = numChoices;
+  }
+
+  public void setShowOnDefault(Boolean showOnDefault) {
+    Preconditions.checkNotNull(showOnDefault);
+    this.showOnDefault = showOnDefault;
   }
 }

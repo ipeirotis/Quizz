@@ -102,17 +102,15 @@ public class QuestionStatisticsService {
         if (correct == null) correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
-        
-        /*
-        if (selectedAnswer.getKind()==AnswerKind.GOLD) {
-          correct--;
-        } else if (selectedAnswer.getKind()==AnswerKind.INCORRECT) {
-          incorrect--;
-        } 
-        */
-        
-        userProb = 1.0*(correct+1)/(correct+incorrect+n);
 
+        /* TODO(ipeirotis): Fix this.
+        if (selectedAnswer.getKind() == AnswerKind.GOLD) {
+          correct--;
+        } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT) {
+          incorrect--;
+        }
+        */
+        userProb = 1.0 * (correct + 1) / (correct + incorrect + n);
         try {
           userBits = Helper.getInformationGain(userProb, n);
         } catch (Exception e) {
