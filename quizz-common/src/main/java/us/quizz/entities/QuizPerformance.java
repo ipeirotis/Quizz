@@ -1,8 +1,8 @@
 package us.quizz.entities;
 
-import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.common.base.Preconditions;
 
 import us.quizz.utils.Helper;
 

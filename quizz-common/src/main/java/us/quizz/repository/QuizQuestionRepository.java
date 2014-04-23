@@ -122,32 +122,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   private List<Question> getAllQuizQuestions(Query query, Map<String, Object> params) {
-    query.setRange(0, DEFAULT_QUESTIONS_MAX_FETCH_SIZE);
-    Cursor cursor = null;
-    List<Question> questions = new ArrayList<Question>();
-    while (true) {
-      if (cursor != null) {
-        Map<String, Object> extensionMap = new HashMap<String, Object>();
-        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-        query.setExtensions(extensionMap);
-      }
-
-      @SuppressWarnings("unchecked")
-      List<Question> results = (List<Question>) query.executeWithMap(params);
-      if (results.size() == 0) {
-        break;
-      }
-      for (Question q : results) {
-        if (q.getAnswers() != null) {
-          for (Answer a : q.getAnswers()) {
-            a.getID();
-          }
-          questions.add(q);
-        }
-      }
-      cursor = JDOCursorHelper.getCursor(results);
-    }
-
+    List<Question> questions = fetchAllResults(query, params);
     return removeInvalidQuestions(questions);
   }
 
@@ -329,14 +304,6 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return newQuestions;
   }
 
-  public List<Question> getQuizQuestionsWithGold(String quizID) {
-    String key = MemcacheKey.getGoldQuizQuestionsByQuiz(quizID);
-    String filter = "quizID == quizParam && hasGoldAnswer == hasGoldParam";
-    String declaredParameters = "String quizParam, Boolean hasGoldParam";
-    return getQuestionsWithCaching(key, filter, declaredParameters,
-        getQuizGoldQuestionsParameters(quizID));
-  }
-
   @SuppressWarnings("unchecked")
   public List<Question> getQuizQuestionsByKeys(List<Key> keys) {
     PersistenceManager pm = getPersistenceManager();
@@ -355,70 +322,6 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   }
 
   public void removeWithoutUpdates(Long questionID) {
-    PersistenceManager pm = getPersistenceManager();
-    try {
-      Question qq = pm.getObjectById(Question.class, questionID);
-      pm.deletePersistent(qq);
-    } finally {
-      pm.close();
-    }
-  }
-
-  public List<UserAnswer> getUserAnswers(Question question) {
-    PersistenceManager pm = getPersistenceManager();
-    try {
-      Query q = pm.newQuery(UserAnswer.class);
-      q.setFilter("questionID == questionParam");
-      q.declareParameters("Long questionParam");
-
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("questionParam", question.getID());
-
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
-      return result;
-    } finally {
-      pm.close();
-    }
-  }
-
-  public int getNumberOfUserAnswersExcludingIDK(String questionID) {
-    PersistenceManager pm = getPersistenceManager();
-    try {
-      Query q = pm.newQuery(UserAnswer.class);
-      q.setFilter("questionID == questionIDParam && action == submitParam");
-      q.declareParameters("Long questionIDParam, String submitParam");
-
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("questionIDParam", Long.parseLong(questionID));
-      params.put("submitParam", "Submit");
-
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-      return results.size();
-    } finally {
-      pm.close();
-    }
-  }
-
-  public int getNumberOfCorrectUserAnswers(String questionID) {
-    PersistenceManager pm = getPersistenceManager();
-    try {
-      Query q = pm.newQuery(UserAnswer.class);
-      q.setFilter("questionID == questionIDParam && action == submitParam && " +
-                  "isCorrect == correctParam");
-      q.declareParameters("Long questionIDParam, String submitParam, Boolean correctParam");
-
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("questionIDParam", Long.parseLong(questionID));
-      params.put("submitParam", "Submit");
-      params.put("correctParam", Boolean.TRUE);
-
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-      return results.size();
-    } finally {
-      pm.close();
-    }
+    removeByID(questionID);
   }
 }

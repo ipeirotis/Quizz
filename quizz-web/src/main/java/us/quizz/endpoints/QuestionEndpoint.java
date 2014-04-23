@@ -1,6 +1,5 @@
 package us.quizz.endpoints;
 
-import com.google.api.client.repackaged.com.google.common.base.Preconditions;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
@@ -9,6 +8,7 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;

@@ -2,11 +2,6 @@ package us.quizz.utils;
 
 // MemcacheKey organizes the construction of all the keys that we use for the Memcache system.
 public final class MemcacheKey {
-  // Returns a key to a UserAnswer entity for the given questionID and userID.
-  public static String getUserAnswer(String questionID, String userID) {
-    return "useranswer_" + questionID + userID;
-  }
-
   // Returns a key to a UserAnswerFeedback entity for the given questionID and userID.
   public static String getUserAnswerFeedback(Long questionID, String userID) {
     return "useranswerfeedback_" + questionID + userID;

@@ -44,6 +44,7 @@ import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.repository.TreatmentRepository;
+import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
@@ -94,6 +95,7 @@ public class QuizzTest {
   private QuizQuestionRepository quizQuestionRepository;
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
   private UserAnswerRepository userAnswerRepository;
+  private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
   private BadgeRepository badgeRepository;
   private AnswersRepository answersRepository;
@@ -129,6 +131,7 @@ public class QuizzTest {
     
     answerChallengeCounterRepository = spy(new AnswerChallengeCounterRepository());
     userAnswerRepository = spy(new UserAnswerRepository());
+    userAnswerFeedbackRepository = spy(new UserAnswerFeedbackRepository());
     quizPerformanceRepository = spy(new QuizPerformanceRepository());
     badgeRepository = spy(new BadgeRepository());
     userRepository = spy(new UserRepository());
@@ -142,6 +145,7 @@ public class QuizzTest {
 
     when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userAnswerRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(userAnswerFeedbackRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
@@ -164,8 +168,8 @@ public class QuizzTest {
     questionEndpoint = new QuestionEndpoint(quizRepository, quizQuestionRepository,
         answerChallengeCounterRepository);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizRepository, userRepository,
-        answersRepository, quizQuestionRepository, badgeRepository,
-        quizPerformanceRepository, userAnswerRepository, explorationExploitationService);
+        answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceRepository,
+        userAnswerRepository, userAnswerFeedbackRepository, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentRepository);
     userEndpoint = new UserEndpoint(userRepository, userReferralRepository);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceRepository);

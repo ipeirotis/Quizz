@@ -15,6 +15,7 @@ import us.quizz.utils.UrlUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -32,27 +33,20 @@ public class UserReferralRepository extends BaseRepository<UserReferal> {
     return item.getKey();
   }
 
-  public Set<String> getUserIDsByQuiz(String quizid) {
+  public Set<String> getUserIDsByQuiz(String quizID) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query query = pm.newQuery(UserReferal.class);
       query.setFilter("quiz == quizParam");
       query.declareParameters("String quizParam");
 
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quizID);
+
       TreeSet<String> userids = new TreeSet<String>();
-      int limit = 1000;
-      int i = 0;
-      while (true) {
-        query.setRange(i, i + limit);
-        @SuppressWarnings("unchecked")
-        List<UserReferal> results = (List<UserReferal>) query.execute(quizid);
-        if (results.size() == 0) {
-          break;
-        }
-        for (UserReferal ur : results) {
-          userids.add(ur.getUserid());
-        }
-        i += limit;
+      List<UserReferal> results = fetchAllResults(query, params);
+      for (UserReferal ur : results) {
+        userids.add(ur.getUserid());
       }
       return userids;
     } finally {
@@ -73,7 +67,6 @@ public class UserReferralRepository extends BaseRepository<UserReferal> {
 
     if (ur.getDomain() != null) {
       DomainStats domainStats = singleGetObjectById(DomainStats.class, ur.getDomain());
-
       if (domainStats == null) {
         domainStats = new DomainStats(ur.getDomain(), 0, 0);
       }
@@ -84,42 +77,28 @@ public class UserReferralRepository extends BaseRepository<UserReferal> {
 
   @SuppressWarnings("unchecked")
   public Result getCountByBrowser(Browser browser) {
-    PersistenceManager mgr = null;
+    PersistenceManager mgr = getPersistenceManager();
     long count = 0;
     Set<Key> users = new HashSet<Key>();
-    Cursor cursor = null;
     List<UserReferal> list = null;
 
     try {
-      mgr = getPersistenceManager();
-      while (true) {
-        Query q = mgr.newQuery(UserReferal.class);
-        q.setFilter("browser == browserParam");
-        q.declareParameters("String browserParam");
-        if (cursor != null) {
-          HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-          extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-          q.setExtensions(extensionMap);
-        }
+      Query q = mgr.newQuery(UserReferal.class);
+      q.setFilter("browser == browserParam");
+      q.declareParameters("String browserParam");
 
-        q.setRange(0, 1000);
-        list = (List<UserReferal>) q.execute(browser);
-        cursor = JDOCursorHelper.getCursor(list);
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("browserParam", browser);
 
-        if (list.size() == 0) {
-          break;
-        }
-
-        count += list.size();
-        for (UserReferal ref : list) {
-          users.add(KeyFactory.createKey(QuizPerformance.class.getSimpleName(),
-              "id_" + ref.getUserid() + "_" + ref.getQuiz()));
-        }
+      list = fetchAllResults(q, params);
+      count = list.size();
+      for (UserReferal ref : list) {
+        users.add(KeyFactory.createKey(QuizPerformance.class.getSimpleName(),
+            "id_" + ref.getUserid() + "_" + ref.getQuiz()));
       }
     } finally {
       mgr.close();
     }
-
     return new Result(count, users);
   }
 

@@ -22,6 +22,7 @@ import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
+import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
@@ -53,6 +54,7 @@ public class ProcessUserAnswerEndpoint {
   private BadgeRepository badgeRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
   private UserAnswerRepository userAnswerRepository;
+  private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
   private ExplorationExploitationService explorationExploitationService;
 
   @Inject
@@ -64,9 +66,11 @@ public class ProcessUserAnswerEndpoint {
       BadgeRepository badgeRepository,
       QuizPerformanceRepository quizPerformanceRepository,
       UserAnswerRepository userAnswerRepository,
+      UserAnswerFeedbackRepository userAnswerFeedbackRepository,
       ExplorationExploitationService explorationExploitationService) {
     this.quizRepository = quizRepository;
     this.userRepository = userRepository;
+    this.userAnswerFeedbackRepository = userAnswerFeedbackRepository;
     this.answersRepository = answersRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.badgeRepository = badgeRepository;
@@ -186,7 +190,7 @@ public class ProcessUserAnswerEndpoint {
         useranswerID).userAnswerText(userInput));
     uaf.setCorrectAnswerText(question.goldAnswer().getText());
     uaf.computeDifficulty();
-    userAnswerRepository.storeUserAnswerFeedback(uaf);
+    userAnswerFeedbackRepository.storeUserAnswerFeedback(uaf);
     return uaf;
   }
 

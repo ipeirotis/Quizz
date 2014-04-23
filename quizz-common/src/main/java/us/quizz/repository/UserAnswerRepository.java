@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -25,7 +27,7 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
     return item.getKey();
   }
 
-  public List<UserAnswer> getUserAnswers(String quiz) {
+  public List<UserAnswer> getUserAnswers(String quizID) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(UserAnswer.class);
@@ -33,22 +35,9 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
       q.declareParameters("String quizParam");
 
       Map<String, Object> params = new HashMap<String, Object>();
-      params.put("quizParam", quiz);
+      params.put("quizParam", quizID);
 
-      List<UserAnswer> answers = new ArrayList<UserAnswer>();
-      int limit = 1000;
-      int i = 0;
-      while (true) {
-        q.setRange(i, i + limit);
-        @SuppressWarnings("unchecked")
-        List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-        if (results.size() == 0) {
-          break;
-        }
-        answers.addAll(results);
-        i += limit;
-      }
-      return answers;
+      return fetchAllResults(q, params);
     } finally {
       pm.close();
     }
@@ -65,15 +54,13 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
       params.put("quizParam", quiz);
       params.put("useridParam", userid);
 
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-      return results;
+      return fetchAllResults(q, params);
     } finally {
       pm.close();
     }
   }
-  
-  public List<UserAnswer> getUsersForQuestion(Long questionID) {
+ 
+  public List<UserAnswer> getUserAnswersForQuestion(Long questionID) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(UserAnswer.class);
@@ -83,25 +70,10 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
       Map<String, Object> params = new HashMap<String, Object>();
       params.put("questionIDParam", questionID);
 
-      @SuppressWarnings("unchecked")
-      List<UserAnswer> results = (List<UserAnswer>) q.executeWithMap(params);
-      return results;
+      return fetchAllResults(q, params);
     } finally {
       pm.close();
     }
-  }
-
-  public UserAnswer getUserAnswer(String questionID, String userID) {
-    String key = MemcacheKey.getUserAnswer(questionID, userID);
-    return singleGetObjectByIdWithCaching(key, UserAnswer.class,
-        UserAnswer.generateKeyFromID(questionID, userID));
-  }
-
-  public UserAnswerFeedback getUserAnswerFeedback(Long questionID, String userID) {
-    String key = MemcacheKey.getUserAnswerFeedback(questionID, userID);
-    return singleGetObjectByIdWithCaching(key,
-        UserAnswerFeedback.class,
-        UserAnswerFeedback.generateKeyFromID(questionID, userID));
   }
 
   @SuppressWarnings("unchecked")
@@ -116,16 +88,54 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
       params.put("quizParam", quiz);
       params.put("useridParam", userid);
 
-      List<UserAnswer> result = (List<UserAnswer>) q.executeWithMap(params);
-      return result;
+      return fetchAllResults(q, params);
     } finally {
       pm.close();
     }
   }
 
-  public void storeUserAnswerFeedback(UserAnswerFeedback uaf) {
-    String key = MemcacheKey.getUserAnswerFeedback(uaf.getQuestionID(), uaf.getUserid());
-    CachePMF.put(key, uaf);
-    singleMakePersistent(uaf);
+  public int getNumberOfUserAnswersExcludingIDK(String questionID) {
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("questionID == questionIDParam && action == submitParam");
+      q.declareParameters("Long questionIDParam, String submitParam");
+
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("questionIDParam", Long.parseLong(questionID));
+      params.put("submitParam", "Submit");
+
+      return countResults(q, params);
+    } finally {
+      pm.close();
+    }
+  }
+
+  public int getNumberOfCorrectUserAnswers(String questionID) {
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("questionID == questionIDParam && action == submitParam && " +
+                  "isCorrect == correctParam");
+      q.declareParameters("Long questionIDParam, String submitParam, Boolean correctParam");
+
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("questionIDParam", Long.parseLong(questionID));
+      params.put("submitParam", "Submit");
+      params.put("correctParam", Boolean.TRUE);
+
+      return countResults(q, params);
+    } finally {
+      pm.close();
+    }
+  }
+
+  public Set<String> getUserIDs(String quizID) {
+    List<UserAnswer> results = getUserAnswers(quizID);
+    Set<String> answers = new TreeSet<String>();
+    for (UserAnswer ua : results) {
+      answers.add(ua.getUserid());
+    }
+    return answers;
   }
 }

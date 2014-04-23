@@ -13,8 +13,4 @@ public class BrowserStatsRepository extends BaseRepository<BrowserStats> {
   protected Key getKey(BrowserStats item) {
     return item.getKey();
   }
-
-  @Override
-  public void fetchItem(BrowserStats browser) {
-  }
 }

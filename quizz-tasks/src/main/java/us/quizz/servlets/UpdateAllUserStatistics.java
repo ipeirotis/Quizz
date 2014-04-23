@@ -8,7 +8,7 @@ import com.google.inject.Singleton;
 
 import us.quizz.entities.Quiz;
 import us.quizz.repository.QuizRepository;
-import us.quizz.repository.UserRepository;
+import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
@@ -23,12 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 public class UpdateAllUserStatistics extends HttpServlet {
   private QuizRepository quizRepository;
-  private UserRepository userRepository;
+  private UserAnswerRepository userAnswerRepository;
 
   @Inject
-  public UpdateAllUserStatistics(QuizRepository quizRepository, UserRepository userRepository) {
+  public UpdateAllUserStatistics(QuizRepository quizRepository,
+      UserAnswerRepository userAnswerRepository) {
     this.quizRepository = quizRepository;
-    this.userRepository = userRepository;
+    this.userAnswerRepository = userAnswerRepository;
   }
 
   @Override
@@ -36,7 +37,7 @@ public class UpdateAllUserStatistics extends HttpServlet {
       throws IOException {
     List<Quiz> quizzes = quizRepository.getQuizzes();
     for (Quiz q : quizzes) {
-      Set<String> userids = userRepository.getUserIDs(q.getQuizID());
+      Set<String> userids = userAnswerRepository.getUserIDs(q.getQuizID());
       Queue queue = QueueUtils.getUserStatisticsQueue();
       for (String userid : userids) {
         queue.add(Builder

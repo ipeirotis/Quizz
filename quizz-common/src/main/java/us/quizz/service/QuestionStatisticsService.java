@@ -42,24 +42,16 @@ public class QuestionStatisticsService {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
 
-    int u = getNumberOfUserAnswers(questionID);
+    int u = userAnswerRepository.getNumberOfUserAnswersExcludingIDK(questionID);
     question.setHasUserAnswers((u > 0));
     question.setNumberOfUserAnswers(u);
 
-    int c = getNumberOfCorrectUserAnswers(questionID);
+    int c = userAnswerRepository.getNumberOfCorrectUserAnswers(questionID);
     question.setNumberOfCorrentUserAnswers(c);
 
     updateAnswerStatistics(question);
     quizQuestionRepository.singleMakePersistent(question, true);
     return question;
-  }
-
-  private int getNumberOfUserAnswers(String questionID) {
-    return quizQuestionRepository.getNumberOfUserAnswersExcludingIDK(questionID);
-  }
-
-  private int getNumberOfCorrectUserAnswers(String questionID) {
-    return quizQuestionRepository.getNumberOfCorrectUserAnswers(questionID);
   }
 
   public void updateAnswerStatistics(Question question) {
@@ -77,7 +69,7 @@ public class QuestionStatisticsService {
       answerProb.put(aid, 1.0 / n);
     }
 
-    List<UserAnswer> userAnswers = userAnswerRepository.getUsersForQuestion(questionId);
+    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswersForQuestion(questionId);
     // TODO: We need to check about duplicate answers for the same user for the same question
     for (UserAnswer useranswer : userAnswers) {
       String userId = useranswer.getUserid();

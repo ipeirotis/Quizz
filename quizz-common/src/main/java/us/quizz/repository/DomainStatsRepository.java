@@ -13,8 +13,4 @@ public class DomainStatsRepository extends BaseRepository<DomainStats> {
   protected Key getKey(DomainStats item) {
     return item.getKey();
   }
-
-  @Override
-  public void fetchItem(DomainStats browser) {
-  }
 }

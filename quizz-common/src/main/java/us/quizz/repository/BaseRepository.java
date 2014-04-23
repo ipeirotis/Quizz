@@ -156,6 +156,16 @@ public abstract class BaseRepository<T> {
     }
   }
 
+  public void removeByID(Long id) {
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      T item = mgr.getObjectById(cls, id);
+      mgr.deletePersistent(item);
+    } finally {
+      mgr.close();
+    }
+  }
+
   public void removeAll(Collection<T> objects) {
     PersistenceManager mgr = getPersistenceManager();
     try {

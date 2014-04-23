@@ -48,8 +48,7 @@ public class UserAnswerFeedbackEndpoint {
   @ApiMethod(name = "getUserAnswerFeedback")
   public UserAnswerFeedback getUserAnswerFeedback(
       @Named("question") Long questionID, @Named("userid") String userid) {
-    return userAnswerFeedbackRepository.singleGetObjectByIdThrowing(
-        UserAnswerFeedback.generateKeyFromID(questionID, userid));
+    return userAnswerFeedbackRepository.getUserAnswerFeedback(questionID, userid);
   }
 
   /**

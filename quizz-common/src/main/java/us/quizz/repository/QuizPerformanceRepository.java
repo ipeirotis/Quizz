@@ -38,7 +38,6 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query q = pm.newQuery(QuizPerformance.class);
-
       String valueName = field + "Param";
       q.setFilter(field + " == " + valueName);
       q.declareParameters("String " + valueName);
@@ -46,14 +45,12 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
       Map<String, Object> params = new HashMap<String, Object>();
       params.put(valueName, value);
 
-      @SuppressWarnings("unchecked")
-      List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
-      return results;
+      return fetchAllResults(q, params);
     } finally {
       pm.close();
     }
   }
-  
+
   /** 
    * We are calculating the number of users that have at least "a" correct answers
    * and "b" incorrect answers for a given quiz (stats across quizzes if quizID==null)
@@ -62,14 +59,13 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
     List<QuizPerformance> list = getQuizPerformances(quizID);
 
     Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
-    
+
     for (QuizPerformance quizPerformance : list) {
       Integer correct = quizPerformance.getCorrectanswers();
       Integer incorrect = quizPerformance.getIncorrectanswers();
       if (correct == null || incorrect == null) continue;
       increaseCounts(result, correct, incorrect);
     }
-    
     return result;
   }
 
@@ -118,26 +114,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
       Map<String, Object> params = new HashMap<String, Object>();
       params.put("quizParam", quiz);
 
-      List<QuizPerformance> quizPerformances = new ArrayList<QuizPerformance>();
-      Cursor cursor = null;
-
-      while (true) {
-        if (cursor != null) {
-          HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-          extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-          q.setExtensions(extensionMap);
-        }
-
-        q.setRange(0, 1000);
-        @SuppressWarnings("unchecked")
-        List<QuizPerformance> results = (List<QuizPerformance>) q.executeWithMap(params);
-        cursor = JDOCursorHelper.getCursor(results);
-        if (results.size() == 0) {
-          break;
-        }
-        quizPerformances.addAll(results);
-      }
-      return quizPerformances;
+      return fetchAllResults(q, params);
     } finally {
       pm.close();
     }
@@ -154,15 +131,7 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
   }
 
   public void deleteQuizPerformance(String quizid, String userid) {
-    PersistenceManager pm = getPersistenceManager();
-    try {
-      QuizPerformance qp = pm.getObjectById(QuizPerformance.class,
-          QuizPerformance.generateKeyFromID(quizid, userid));
-      pm.deletePersistent(qp);
-    } catch (Exception e) {
-    } finally {
-      pm.close();
-    }
+    remove(QuizPerformance.generateKeyFromID(quizid, userid));
   }
 
   @SuppressWarnings("unchecked")
@@ -177,7 +146,6 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
         "select from " + QuizPerformance.class.getName() + " where key == :keys");
 
     List<Key> list = new ArrayList<Key>(ids);
-
     try {
       for (int i = 0; i < list.size(); i += 1000) {
         List<Key> sublist = list.subList(i, Math.min(i + 1000, list.size()));
@@ -189,7 +157,6 @@ public class QuizPerformanceRepository extends BaseRepository<QuizPerformance> {
     } finally {
       mgr.close();
     }
-
     return result;
   }
 }

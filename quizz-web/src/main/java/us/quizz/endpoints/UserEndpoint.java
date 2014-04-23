@@ -57,7 +57,7 @@ public class UserEndpoint {
    */
   @ApiMethod(name = "getUser", path = "user")
   public Map<String, Object> getUser(HttpServletRequest req, @Named("userid") String userid) {
-    User user = userRepository.getOrCreate(userid);
+    User user = userRepository.getOrCreateUser(userid);
 
     userReferralRepository.createAndStoreUserReferal(req, userid);
 
