@@ -26,8 +26,8 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
-     namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
-                               ownerName = "crowd-power.appspot.com",
+     namespace = @ApiNamespace(ownerDomain = "quizz-us.appspot.com",
+                               ownerName = "quizz-us.appspot.com",
                                packagePath = "us.quizz.endpoints"))
 public class QuestionEndpoint {
   private QuizRepository quizRepository;
@@ -65,7 +65,7 @@ public class QuestionEndpoint {
 
     List<Key> keys = new ArrayList<Key>();
     for (AnswerChallengeCounter c : challenges) {
-      keys.add(KeyFactory.createKey(Question.class.getSimpleName(), c.getQuestionID()));
+      keys.add(Question.generateKeyFromID(c.getQuestionID()));
     }
 
     List<QuestionWithChallenges> result = new ArrayList<QuestionWithChallenges>();

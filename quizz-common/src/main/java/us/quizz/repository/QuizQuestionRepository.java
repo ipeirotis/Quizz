@@ -26,6 +26,10 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 public class QuizQuestionRepository extends BaseRepository<Question> {
+  // Keys used to annotate the question results in the map returned by getNextQuizQuestions.
+  public static final String CALIBRATION_KEY = "calibration";
+  public static final String COLLECTION_KEY = "collection";
+
   // Multiplier used to fetch more questions than being asked when choosing the next questions
   // to allow us to fetch enough candidate questions for each user.
   private static final int QUESTION_FETCHING_MULTIPLIER = 3;
@@ -54,11 +58,30 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     return item.getKey();
   }
 
+  private Set<String> getQuestionClientIDs(Set<Long> questionIDs) {
+    // Pre-empt fast because getQuizQuestionsByKeys doesn't work for empty container.
+    if (questionIDs.isEmpty()) {
+      return new HashSet<String>();
+    }
+    List<Key> keys = new ArrayList<Key>();
+    for (Long questionID : questionIDs) {
+      keys.add(Question.generateKeyFromID(questionID));
+    }
+    List<Question> questions = getQuizQuestionsByKeys(keys);
+
+    Set<String> questionClientIDs = new HashSet<String>();
+    for (Question question : questions) {
+      if (question.getClientID() != null) {
+        questionClientIDs.add(question.getClientID());
+      }
+    }
+    return questionClientIDs;
+  }
+
   // Returns the next n calibration and collection questions in the given quizID for a given userID.
   // The map result will has two values, mapping from:
-  // - "calibration" -> set of calibration questions.
-  // - "collection" -> set of collection questions.
-  // TODO(chunhowt): Const the keys in server and in angularJs.
+  // - CALIBRATION_KEY -> set of calibration questions.
+  // - COLLECTION_KEY -> set of collection questions.
   public Map<String, Set<Question>> getNextQuizQuestions(String quizID, int n, String userID) {
     // First, we try to get a list of questions that the user has answered before for this quiz.
     List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
@@ -66,15 +89,18 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
     for (UserAnswer userAnswer : userAnswers) {
       questionIDs.add(userAnswer.getQuestionID());
     }
+    Set<String> questionClientIDs = getQuestionClientIDs(questionIDs);
 
     // Then, we pick calibration and collection questions from datastore and filter the questions
     // previously asked from the results.
     Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
-    List<Question> goldQuestions = getSomeQuizQuestionsWithGold(quizID, n, questionIDs);
-    result.put("calibration", new HashSet<Question>(goldQuestions));
+    List<Question> goldQuestions =
+        getSomeQuizQuestionsWithGold(quizID, n, questionIDs, questionClientIDs);
+    result.put(CALIBRATION_KEY, new HashSet<Question>(goldQuestions));
 
-    List<Question> silverQuestions = getSomeQuizQuestionsWithSilver(quizID, n, questionIDs);
-    result.put("collection", new HashSet<Question>(silverQuestions));
+    List<Question> silverQuestions =
+        getSomeQuizQuestionsWithSilver(quizID, n, questionIDs, questionClientIDs);
+    result.put(COLLECTION_KEY, new HashSet<Question>(silverQuestions));
     return result;
   }
 
@@ -198,7 +224,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   // if feasible (eg. enough candidate questions).
   @SuppressWarnings("unchecked")
   private List<Question> getSomeQuizQuestionsWithGold(
-      String quizID, int min_amount, Set<Long> questionIDs) {
+      String quizID, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query query = getQuizGoldQuestionsQuery(pm, quizID);
@@ -210,7 +236,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       List<Question> result =
           (List<Question>) query.executeWithMap(getQuizGoldQuestionsParameters(quizID));
       result = removeInvalidQuestions(result);
-      return diversifyQuestionsAsked(result, questionIDs, min_amount,
+      return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
           false  /* don't repeat if not enough questions. */);
     } finally {
       pm.close();
@@ -221,7 +247,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   // if feasible (eg. enough candidate questions).
   @SuppressWarnings("unchecked")
   private List<Question> getSomeQuizQuestionsWithSilver(
-      String quizID, int min_amount, Set<Long> questionIDs) {
+      String quizID, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {
     PersistenceManager pm = getPersistenceManager();
     try {
       Query query = getQuizSilverQuestionsQuery(pm, quizID);
@@ -233,7 +259,7 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
       List<Question> result =
           (List<Question>) query.executeWithMap(getQuizSilverQuestionsParameters(quizID));
       result = removeInvalidQuestions(result);
-      return diversifyQuestionsAsked(result, questionIDs, min_amount,
+      return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
           true  /* repeat if not enough questions. */);
     } finally {
       pm.close();
@@ -247,13 +273,22 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
   // UserAnswer entities but it seems like datastore doesn't allow such a join query. This
   // works for now, but there should be a better solution.
   private List<Question> diversifyQuestionsAsked(
-      List<Question> questions, Set<Long> questionIDs, int n, boolean repeatQuestions) {
+      List<Question> questions, Set<Long> questionIDs, Set<String> questionClientIDs,
+      int n, boolean repeatQuestions) {
     List<Question> results = new ArrayList<Question>();
     List<Question> filtered = new ArrayList<Question>();
     for (Question question : questions) {
-      // Question not in questionIDs (not asked before) is selected first.
-      if (!questionIDs.contains(question.getID())) {
+      // Question not asked before (not the same questionID and not the same clientID)
+      // is selected first.
+      if (!questionIDs.contains(question.getID()) &&
+          (question.getClientID() == null ||  // If no client id, ask.
+           question.getClientID().isEmpty() ||  // If client id is empty, ask.
+           !questionClientIDs.contains(question.getClientID()))) {
         results.add(question);
+        // Now that we selected this question, we need to blacklist the client id for the question.
+        if (question.getClientID() != null) {
+          questionClientIDs.add(question.getClientID());
+        }
         if (results.size() == n) {
           break;
         }

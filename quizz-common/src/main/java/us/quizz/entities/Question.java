@@ -123,9 +123,18 @@ public class Question implements Serializable {
     
     this.answers = new ArrayList<Answer>();
   }
-  
-  public static Key generateKeyFromID(Long id) {
-    return KeyFactory.createKey(Question.class.getSimpleName(), id);
+
+  public Question(String quizID, String text, QuizKind kind, Long questionID, String clientID,
+                  Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
+    this(quizID, text, kind);
+    this.clientID = clientID;
+    this.hasGoldAnswer = hasGoldAnswer;
+    this.hasSilverAnswers = hasSilverAnswers;
+    this.key = Question.generateKeyFromID(questionID);
+  }
+
+  public static Key generateKeyFromID(Long questionID) {
+    return KeyFactory.createKey(Question.class.getSimpleName(), questionID);
   }
 
   public String getQuizID() {

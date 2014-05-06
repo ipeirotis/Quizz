@@ -3,7 +3,7 @@ package us.quizz.entities;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import eu.bitwalker.useragentutils.Browser;
+import nl.bitwalker.useragentutils.Browser;
 
 import java.io.Serializable;
 
