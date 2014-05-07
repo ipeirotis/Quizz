@@ -21,6 +21,8 @@ angular.module('quizz').controller('QuizController',
        // service, fetch a new set of questions.
        if (!workflowService.hasQuestions() ||
            $routeParams.quizId != workflowService.getCurrentQuizID()) {
+         workflowService.clear();
+         $scope.currentQuestionIndex = 1;
          questionService.list(
            $scope.numOfQuestions,
            $routeParams.quizId,
