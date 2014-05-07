@@ -1,15 +1,10 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
@@ -19,15 +14,19 @@ import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Key;
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
-     namespace = @ApiNamespace(ownerDomain = "quizz-us.appspot.com",
-                               ownerName = "quizz-us.appspot.com",
+     namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
+                               ownerName = "crowd-power.appspot.com",
                                packagePath = "us.quizz.endpoints"))
 public class QuestionEndpoint {
   private QuizRepository quizRepository;

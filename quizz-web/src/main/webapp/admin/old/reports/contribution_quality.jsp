@@ -4,7 +4,7 @@
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="com.google.inject.Injector"%>
 <%@ page import="com.google.inject.Guice"%>
-<%@ page import="us.quizz.repository.QuizRepository"%>
+<%@ page import="us.quizz.service.QuizService"%>
 <%@ page import="us.quizz.di.CommonModule"%>
 
 <jsp:include page="../header.jsp"><jsp:param name="title" value="Conversion rate" /></jsp:include>
@@ -38,8 +38,8 @@
 				format.setMaximumFractionDigits(2);
 
 				Injector i = Guice.createInjector(new CommonModule());
-				QuizRepository quizRepository = i.getInstance(QuizRepository.class);
-				List<Quiz> quizzes = quizRepository.getQuizzes();
+				QuizService quizService = i.getInstance(QuizService.class);
+				List<Quiz> quizzes = quizService.list();
 				for (Quiz quiz : quizzes) {
 					
 					int totalUsers = quiz.getContributingUsers();

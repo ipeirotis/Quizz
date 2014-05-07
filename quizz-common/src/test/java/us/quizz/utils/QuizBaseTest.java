@@ -128,9 +128,7 @@ public class QuizBaseTest {
 
   protected QuizRepository getQuizRepository() {
     if (quizRepository == null) {
-      quizRepository = spy(new QuizRepository(getUserReferralRepository(),
-                                              getQuizPerformanceRepository()));
-      when(quizRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+      quizRepository = spy(new QuizRepository());
     }
     return quizRepository;
   }

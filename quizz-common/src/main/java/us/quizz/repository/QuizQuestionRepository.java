@@ -1,18 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.google.inject.Inject;
-
-import us.quizz.entities.Answer;
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.entities.UserAnswer;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.Helper;
-import us.quizz.utils.MemcacheKey;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +11,15 @@ import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.Answer;
+import us.quizz.entities.Question;
+import us.quizz.entities.UserAnswer;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.inject.Inject;
 
 public class QuizQuestionRepository extends BaseRepository<Question> {
   // Keys used to annotate the question results in the map returned by getNextQuizQuestions.
@@ -358,5 +354,56 @@ public class QuizQuestionRepository extends BaseRepository<Question> {
 
   public void removeWithoutUpdates(Long questionID) {
     removeByID(questionID);
+  }
+  
+  public Integer getNumberOfGoldQuestions(String quizID, boolean useCache) {
+    String key = MemcacheKey.getNumGoldQuestions(quizID);
+    if (useCache) {
+      Integer result = CachePMF.get(key, Integer.class);
+      if (result != null)
+        return result;
+    }
+
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query query = pm.newQuery(Question.class);
+      query.setFilter("quizID == quizParam && hasGoldAnswer == hasGoldParam");
+      query.declareParameters("String quizParam, Boolean hasGoldParam");
+
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quizID); 
+      params.put("hasGoldParam", Boolean.TRUE);
+
+      Integer count = countResults(query, params);
+      CachePMF.put(key, count);
+      return count;
+    } finally {
+      pm.close();
+    }
+  }
+  
+  public Integer getNumberOfQuizQuestions(String quizID, boolean useCache) {
+    String key = MemcacheKey.getNumQuizQuestions(quizID);
+    if (useCache) {
+      Integer result = CachePMF.get(key, Integer.class);
+      if (result != null)
+        return result;
+    }
+
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(Question.class);
+      q.setFilter("quizID == quizParam");
+      q.declareParameters("String quizParam");
+
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quizID);
+
+      Integer count = countResults(q, params);
+      CachePMF.put(key, count);
+      return count;
+    } finally {
+      pm.close();
+    }
   }
 }

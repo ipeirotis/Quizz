@@ -3,7 +3,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="com.google.inject.Injector"%>
 <%@ page import="com.google.inject.Guice"%>
-<%@ page import="us.quizz.repository.QuizRepository"%>
+<%@ page import="us.quizz.service.QuizService"%>
 <%@ page import="us.quizz.di.CommonModule"%>
 
 <jsp:include page="../header.jsp"><jsp:param name="title" value="Manage available quizzes" /></jsp:include>
@@ -21,8 +21,8 @@
 
 				<%
 					Injector i = Guice.createInjector(new CommonModule());
-					QuizRepository quizRepository = i.getInstance(QuizRepository.class);
-					List<Quiz> quizzes = quizRepository.getQuizzes();
+					QuizService quizService = i.getInstance(QuizService.class);
+					List<Quiz> quizzes = quizService.list();
 					if (quizzes.isEmpty()) {
 						;
 					} else {

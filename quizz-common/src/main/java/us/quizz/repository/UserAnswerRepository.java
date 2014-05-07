@@ -1,13 +1,5 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
-import us.quizz.entities.UserAnswer;
-import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.MemcacheKey;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +8,12 @@ import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import us.quizz.entities.UserAnswer;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
+import com.google.appengine.api.datastore.Key;
 
 public class UserAnswerRepository extends BaseRepository<UserAnswer> {
   public UserAnswerRepository() {
@@ -137,5 +135,30 @@ public class UserAnswerRepository extends BaseRepository<UserAnswer> {
       answers.add(ua.getUserid());
     }
     return answers;
+  }
+  
+  public Integer getNumberOfUserAnswers(String quizID, boolean useCache) {
+    String key = MemcacheKey.getNumUserAnswers(quizID);
+    if (useCache) {
+      Integer result = CachePMF.get(key, Integer.class);
+      if (result != null)
+        return result;
+    }
+
+    PersistenceManager pm = getPersistenceManager();
+    try {
+      Query q = pm.newQuery(UserAnswer.class);
+      q.setFilter("quizID == quizParam");
+      q.declareParameters("String quizParam");
+
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put("quizParam", quizID);
+
+      Integer count = countResults(q, params);
+      CachePMF.put(key, count);
+      return count;
+    } finally {
+      pm.close();
+    }
   }
 }

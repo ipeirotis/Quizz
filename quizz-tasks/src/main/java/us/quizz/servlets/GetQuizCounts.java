@@ -1,27 +1,27 @@
 package us.quizz.servlets;
 
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import us.quizz.entities.Quiz;
-import us.quizz.repository.QuizRepository;
-
 import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.entities.Quiz;
+import us.quizz.service.QuizService;
+
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 @SuppressWarnings("serial")
 @Singleton
 public class GetQuizCounts extends HttpServlet {
-  private QuizRepository quizRepository;
+  private QuizService quizService;
 
   @Inject
-  public GetQuizCounts(QuizRepository quizRepository) {
-    this.quizRepository = quizRepository;
+  public GetQuizCounts(QuizService quizService) {
+    this.quizService = quizService;
   }
 
   @Override
@@ -30,10 +30,10 @@ public class GetQuizCounts extends HttpServlet {
     String quiz = req.getParameter("quizID");
     String cache = req.getParameter("cache");
     if (cache != null && cache.equals("no")) {
-      quizRepository.updateQuizCounts(quiz);
+      quizService.updateQuizCounts(quiz);
     }
 
-    Quiz q = quizRepository.get(quiz);
+    Quiz q = quizService.get(quiz);
     Preconditions.checkArgument(q != null, "Unknown quiz ID: " + quiz);
 
     resp.setContentType("application/json;charset=utf-8");
