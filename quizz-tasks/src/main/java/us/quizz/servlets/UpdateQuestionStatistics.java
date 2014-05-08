@@ -7,6 +7,8 @@ import us.quizz.entities.Question;
 import us.quizz.service.QuestionStatisticsService;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,21 +18,21 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 public class UpdateQuestionStatistics extends HttpServlet {
   private QuestionStatisticsService questionStatisticsService;
-
+  private static final Logger logger = Logger.getLogger(UpdateQuestionStatistics.class.getName());
   @Inject
   public UpdateQuestionStatistics(QuestionStatisticsService questionStatisticsService) {
     this.questionStatisticsService = questionStatisticsService;
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse resp)
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
     String questionID = req.getParameter("questionID");
     Question question = questionStatisticsService.updateStatistics(questionID);
     
-    resp.getWriter().print("QuestionID:" + questionID + "\n");
-    resp.getWriter().print("Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
-    resp.getWriter().print("Number of correct user answers:" + 
+    logger.log(Level.INFO, "QuestionID:" + questionID + "\n");
+    logger.log(Level.INFO, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
+    logger.log(Level.INFO, "Number of correct user answers:" + 
         question.getNumberOfCorrentUserAnswers() + "\n");
   }
 }

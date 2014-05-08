@@ -5,6 +5,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 
 import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 
 import java.io.Serializable;
@@ -49,7 +50,7 @@ public class Question implements Serializable {
   
   // The type of the question. Should match the type of the quiz that is added to
   @Persistent
-  private QuizKind kind;
+  private QuestionKind kind;
 
   // Computed statistic about the number of users that answered this question
   @Persistent
@@ -138,7 +139,7 @@ public class Question implements Serializable {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
   
-  public Question(String quizID, String text, QuizKind kind) {
+  public Question(String quizID, String text, QuestionKind kind) {
     this.quizID = quizID;
     this.text = text;
     this.kind = kind;
@@ -152,7 +153,7 @@ public class Question implements Serializable {
     this.answers = new ArrayList<Answer>();
   }
 
-  public Question(String quizID, Text questionText, QuizKind kind) {
+  public Question(String quizID, Text questionText, QuestionKind kind) {
     this.quizID = quizID;
     this.questionText = questionText;
     this.kind = kind;
@@ -168,7 +169,7 @@ public class Question implements Serializable {
   
   
 
-  public Question(String quizID, String text, QuizKind kind, Long questionID, String clientID,
+  public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
     this(quizID, text, kind);
     this.clientID = clientID;
@@ -225,11 +226,11 @@ public class Question implements Serializable {
     this.text = text;
   }
   
-  public QuizKind getKind() {
+  public QuestionKind getKind() {
     return kind;
   }
 
-  public void setKind(QuizKind kind) {
+  public void setKind(QuestionKind kind) {
     this.kind = kind;
   }
 
@@ -297,35 +298,5 @@ public class Question implements Serializable {
     return answers.get(answerID);
   }
 
-  public Answer goldAnswer() {
-    // check if there's any designate one of the golds as the feedback
-    // answer i.e. feedback_gold
-    for (final Answer answer : answers) {
-      if (answer.getKind() == AnswerKind.FEEDBACK_GOLD) {
-        return answer;
-      }
-    }
-    // if no feedback gold is there return first gold answer
-    for (final Answer answer : answers) {
-      if (answer.getKind()  == AnswerKind.GOLD) {
-        return answer;
-      }
-    }
-    // If no gold answer, return silver answer.
-    double maxProbability = -1;
-    Answer bestAnswer = null;
-    for (final Answer answer : answers) {
-      if (answer.getKind() == AnswerKind.SILVER &&
-          answer.getProbability() > maxProbability) {
-        maxProbability = answer.getProbability();
-        bestAnswer = answer;
-      }
-    }
-    if (bestAnswer != null) {
-      return bestAnswer;
-    }
-    throw new IllegalArgumentException(
-        "This question doesn't have any gold or silver answer");
-  }
-
+    
 }

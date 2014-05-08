@@ -40,5 +40,6 @@ angular.module('quizz').controller('FeedbackController',
     }
   };
 
-  $scope.feedbackMessage = $scope.getFeedbackMessage();
+  // $scope.feedbackMessage = $scope.getFeedbackMessage();
+  $scope.feedbackMessage = $scope.feedback.message;
 }]);

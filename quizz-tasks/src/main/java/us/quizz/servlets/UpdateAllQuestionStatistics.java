@@ -51,7 +51,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
         queue.add(Builder
             .withUrl("/api/updateQuestionStatistics")
             .param("questionID", question.getID().toString())
-            .method(TaskOptions.Method.POST));
+            .method(TaskOptions.Method.GET));
       }
     }
   }

@@ -12,10 +12,7 @@ import us.quizz.repository.UserAnswerFeedbackRepository;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
-     namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
-                               ownerName = "crowd-power.appspot.com",
-                               packagePath = "us.quizz.endpoints"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserAnswerFeedbackEndpoint {
   private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
 

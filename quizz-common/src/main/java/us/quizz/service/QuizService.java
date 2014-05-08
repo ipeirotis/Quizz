@@ -83,11 +83,17 @@ public class QuizService {
     double avgCorrectness = 0;
 
     for (QuizPerformance qp : perf) {
-      totalCorrect += qp.getCorrectanswers();
-      totalAnswers += qp.getTotalanswers();
-      totalCalibrationAnswers += qp.getTotalCalibrationAnswers();
-      avgCorrectness += qp.getPercentageCorrect();
-      bits += qp.getScore();
+      
+      Integer t = qp.getCorrectanswers();
+      totalCorrect += (t==null)? 0 : t;
+      t = qp.getTotalanswers();
+      totalAnswers += (t==null)? 0 : t; 
+      t = qp.getTotalCalibrationAnswers();
+      totalCalibrationAnswers += (t==null)? 0 : t; 
+      Double d = qp.getPercentageCorrect(); 
+      avgCorrectness += (d==null)? 0 : d;
+      d = qp.getScore();
+      bits +=  (d==null)? 0 : d;
     }
     quiz.setCorrectAnswers(totalCorrect);
     quiz.setTotalAnswers(totalAnswers);

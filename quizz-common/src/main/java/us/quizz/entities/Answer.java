@@ -46,6 +46,17 @@ public class Answer implements Serializable{
 
   @Persistent
   private String quizID;
+  
+  // This is a transient field, only used to pass a temporary message to the user
+  private String message;
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
   // If this is a SILVER answer, the probability that it is correct
   @Persistent

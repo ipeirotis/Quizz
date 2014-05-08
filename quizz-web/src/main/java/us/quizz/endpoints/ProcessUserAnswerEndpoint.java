@@ -16,6 +16,7 @@ import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
@@ -39,10 +40,7 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
-     namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
-                               ownerName = "crowd-power.appspot.com",
-                               packagePath = "us.quizz.endpoints"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class ProcessUserAnswerEndpoint {
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
@@ -102,13 +100,84 @@ public class ProcessUserAnswerEndpoint {
     } else {
       action = "Submit";
       totalanswers++;
-
-      isCorrect = isUserAnswerCorrect(questionID, answerID, userInput);
-      if (isCorrect) {
-        correctanswers++;
-      }      
     }
 
+    Question question = quizQuestionRepository.getQuizQuestion(questionID);
+    Answer bestAnswer = null;
+    switch (question.getKind()) {
+      
+      case MULTIPLE_CHOICE_CALIBRATION:
+        for (final Answer answer : question.getAnswers()) {
+          if (answer.getKind()  == AnswerKind.GOLD) {
+            bestAnswer = answer;
+          }
+        }
+        if (bestAnswer.getInternalID() == answerID) {
+          isCorrect = true;
+          correctanswers++;
+          message = "Correct! The correct answer is " + bestAnswer.getText();
+        } else {
+          isCorrect = false;
+          message = "Sorry! The correct answer is " + bestAnswer.getText();
+        }
+        
+        break;
+        
+      case MULTIPLE_CHOICE_COLLECTION:
+        double maxProbability = -1;
+        for (final Answer answer : question.getAnswers()) {
+          if (answer.getProbability() > maxProbability) {
+            maxProbability = answer.getProbability();
+            bestAnswer = answer;
+          }
+        }
+        if (bestAnswer.getInternalID() == answerID && bestAnswer.getKind() == AnswerKind.SILVER) {
+          isCorrect = true;
+          correctanswers++;
+          message = "Great! We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbability() + " of the users agree." ;
+        } else if  (bestAnswer.getInternalID() != answerID && bestAnswer.getKind() == AnswerKind.SILVER) {
+          isCorrect = false;
+          message = "Sorry!  We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbability() + " of the users agree." ;
+        } else if (bestAnswer.getInternalID() == answerID && bestAnswer.getKind() == AnswerKind.INCORRECT) {
+          isCorrect = true;
+          correctanswers++;
+          message = "Nice! " + bestAnswer.getProbability() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
+        } else if (bestAnswer.getInternalID() != answerID && bestAnswer.getKind() == AnswerKind.INCORRECT) {
+          isCorrect = true;
+          correctanswers++;
+          message = "Sorry!  " + bestAnswer.getProbability() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
+        }
+        
+        break;
+        
+      case FREETEXT_CALIBRATION:
+        // TODO: We need to work further on free text quizzes
+        List<Answer> answers = question.getAnswers();
+        for (Answer ans : answers) {
+          AnswerKind ak = ans.getKind();
+          if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
+            if (ans.getText().equalsIgnoreCase(userInput)) {
+              isCorrect = true;
+              break;
+            } 
+            int editDistance = LevenshteinAlgorithm
+                .getLevenshteinDistance(userInput, ans.getText());
+            if (editDistance <= 1) {
+              isCorrect = true;
+              break;
+            }
+          }
+        }
+        break;
+        
+      case FREETEXT_COLLECTION:
+        // TODO: We need to work further on free text quizzes
+        break;
+    }
+    
+      
+    
+    
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
     String referer = req.getHeader("Referer");
@@ -118,7 +187,7 @@ public class ProcessUserAnswerEndpoint {
     Long timestamp = (new Date()).getTime();
 
     UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
-        answerID, userInput, isCorrect, correctanswers, totalanswers);
+        answerID, userInput, isCorrect, correctanswers, totalanswers, message);
     quickUpdateQuizPerformance(user, quizID, isCorrect, action);
     
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
@@ -139,37 +208,6 @@ public class ProcessUserAnswerEndpoint {
     return result;
   }
 
-  private Boolean isUserAnswerCorrect(Long questionID, Integer answerID, String userInput) {
-    Boolean isCorrect = false;
-    Question question = quizQuestionRepository.getQuizQuestion(questionID);
-
-    if (question.getKind() == QuizKind.MULTIPLE_CHOICE) {
-      Answer goldAnswer = question.goldAnswer();
-      isCorrect = goldAnswer.getInternalID() == answerID;
-    }
-    if (question.getKind() == QuizKind.FREE_TEXT) {
-      // since we do not have an id, to immediately retrieve
-      // the answer, we need to scan and see if the submitted answer 
-      // matches
-      List<Answer> answers = question.getAnswers();
-      for (Answer ans : answers) {
-        AnswerKind ak = ans.getKind();
-        if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
-          if (ans.getText().equalsIgnoreCase(userInput)) {
-            isCorrect = true;
-            break;
-          } 
-          int editDistance = LevenshteinAlgorithm
-              .getLevenshteinDistance(userInput, ans.getText());
-          if (editDistance <= 1) {
-            isCorrect = true;
-            break;
-          }
-        }
-      }
-    }
-    return isCorrect;
-  }
 
   private boolean isExploit(int a, int b, int c, int N) throws Exception {
     explorationExploitationService.setN(N);
@@ -179,7 +217,7 @@ public class ProcessUserAnswerEndpoint {
   protected UserAnswerFeedback createUserAnswerFeedback(User user,
       Long questionID, Integer useranswerID, String userInput,
       Boolean isCorrect, Integer correctanswers,
-      Integer totalanswers) {
+      Integer totalanswers, String message) {
     
     UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
         user.getUserid(), useranswerID, isCorrect);
@@ -188,7 +226,7 @@ public class ProcessUserAnswerEndpoint {
     Question question = quizQuestionRepository.getQuizQuestion(questionID);
     uaf.setUserAnswerText((useranswerID == -1) ? "" : question.getAnswer(
         useranswerID).userAnswerText(userInput));
-    uaf.setCorrectAnswerText(question.goldAnswer().getText());
+    uaf.setMessage(message);
     uaf.computeDifficulty();
     userAnswerFeedbackRepository.storeUserAnswerFeedback(uaf);
     return uaf;

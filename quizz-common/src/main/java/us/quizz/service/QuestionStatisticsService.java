@@ -4,11 +4,15 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.Helper;
 
@@ -22,15 +26,16 @@ public class QuestionStatisticsService {
   
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
 
-  
+  private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private UserAnswerRepository userAnswerRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
 
   @Inject
-  public QuestionStatisticsService(QuizQuestionRepository quizQuestionRepository,
+  public QuestionStatisticsService(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository,
       UserAnswerRepository userAnswerRepository,
       QuizPerformanceRepository quizPerformanceRepository) {
+    this.quizRepository=quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.userAnswerRepository = userAnswerRepository;
     this.quizPerformanceRepository = quizPerformanceRepository;
@@ -41,6 +46,40 @@ public class QuestionStatisticsService {
     if (question == null) {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
+    
+    Quiz quiz = quizRepository.get(question.getQuizID());
+    
+    Boolean isCalibration=false;
+    for (Answer a : question.getAnswers()) {
+      if (a.getKind()==AnswerKind.GOLD) {
+        isCalibration=true;
+        break;
+      } else if (a.getKind()==AnswerKind.SILVER) {
+        isCalibration=false;
+        break;
+      }
+    }
+    
+    if (quiz.getKind()==QuizKind.MULTIPLE_CHOICE) {
+      if (isCalibration) {
+        question.setKind(QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
+        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_CALIBRATION");
+      }
+      else {
+        question.setKind(QuestionKind.MULTIPLE_CHOICE_COLLECTION);
+        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_COLLECTION");
+      }
+    } else if (quiz.getKind()==QuizKind.FREE_TEXT) {
+      if (isCalibration) {
+        question.setKind(QuestionKind.FREETEXT_CALIBRATION);
+        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_CALIBRATION");
+      }
+      else {
+        question.setKind(QuestionKind.FREETEXT_COLLECTION);
+        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_COLLECTION");
+      }
+    }
+        
 
     int u = userAnswerRepository.getNumberOfUserAnswersExcludingIDK(questionID);
     question.setHasUserAnswers((u > 0));

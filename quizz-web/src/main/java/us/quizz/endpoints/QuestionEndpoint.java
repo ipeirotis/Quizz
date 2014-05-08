@@ -10,6 +10,8 @@ import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
+import us.quizz.enums.QuestionKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
@@ -24,10 +26,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
-     namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
-                               ownerName = "crowd-power.appspot.com",
-                               packagePath = "us.quizz.endpoints"))
+@Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class QuestionEndpoint {
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
@@ -89,8 +88,12 @@ public class QuestionEndpoint {
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
   public Question insertQuestion(final Question question) throws BadRequestException {
     Quiz quiz = quizRepository.get(question.getQuizID());
-
-    if(!question.getKind().equals(quiz.getKind())) {
+    QuizKind quizKind = quiz.getKind();
+    if(quizKind ==QuizKind.MULTIPLE_CHOICE && (!question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_CALIBRATION) && !question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_COLLECTION))) {
+      throw new BadRequestException("Can't add " + question.getKind() + 
+          " question to " + quiz.getKind() + " quiz");
+    }
+    if(quizKind ==QuizKind.FREE_TEXT && (!question.getKind().equals(QuestionKind.FREETEXT_CALIBRATION) && !question.getKind().equals(QuestionKind.FREETEXT_COLLECTION))) {
       throw new BadRequestException("Can't add " + question.getKind() + 
           " question to " + quiz.getKind() + " quiz");
     }

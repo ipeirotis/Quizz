@@ -1,18 +1,10 @@
 <div class="alert alert-success" ng-show="feedback.isCorrect == true">
-  The answer
-  <span class="label label-success">{{feedback.userAnswerText}}</span>
-  was
-  <span class="label label-success">correct</span>!
+  <span class="label label-success">{{feedback.message}}</span>
 </div>
 <div class="alert alert-danger" ng-show="feedback.isCorrect == false">
-  The answer
-  <span class="label label-danger">{{feedback.userAnswerText}}</span>
-  was
-  <span class="label label-danger">incorrect</span>!
+  <span class="label label-danger">{{feedback.message}}</span>
 </div>
 <div class="alert alert-success" ng-show="feedback.isCorrect == false">
-  {{feedbackMessage}}
-  <span class="label label-success">{{feedback.correctAnswerText}}</span>.
   <button class="btn btn-default btn-xs" ng-click="challengeAnswer()">
     Challenge the answer
   </button>
