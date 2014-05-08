@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -49,6 +50,7 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
 
@@ -105,6 +107,7 @@ public class QuizzTest {
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
 
+  private QuizService quizService;
   private SurvivalProbabilityService survivalProbabilityService;
   private ExplorationExploitationService explorationExploitationService;
   private UserQuizStatisticsService userQuizStatisticsService;
@@ -137,7 +140,7 @@ public class QuizzTest {
     userRepository = spy(new UserRepository());
     treatmentRepository = spy(new TreatmentRepository());
     userReferralRepository = spy(new UserReferralRepository());
-    quizRepository = spy(new QuizRepository(userReferralRepository, quizPerformanceRepository));
+    quizRepository = spy(new QuizRepository());
     quizQuestionRepository = spy(new QuizQuestionRepository(quizRepository, userAnswerRepository));
     answersRepository = spy(new AnswersRepository(quizQuestionRepository));
     survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
@@ -151,12 +154,13 @@ public class QuizzTest {
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(treatmentRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userReferralRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(quizRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(survivalProbabilityResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(explorationExploitationResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
+    quizService = new QuizService(userReferralRepository, quizPerformanceRepository, quizRepository, 
+        quizQuestionRepository, userAnswerRepository);
     survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository,
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
@@ -164,7 +168,7 @@ public class QuizzTest {
     userQuizStatisticsService = new UserQuizStatisticsService(
         userAnswerRepository, quizPerformanceRepository, quizQuestionRepository);
 
-    quizEndpoint = new QuizEndpoint(quizRepository, quizQuestionRepository);
+    quizEndpoint = new QuizEndpoint(quizService, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizRepository, quizQuestionRepository,
         answerChallengeCounterRepository);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizRepository, userRepository,
@@ -177,7 +181,7 @@ public class QuizzTest {
     questionsToCreate = new HashMap<String, Question>();
 
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-      Question question = new Question(QUIZ_ID, "Question_" + i, QuizKind.MULTIPLE_CHOICE);
+      Question question = new Question(QUIZ_ID, new Text("Question_" + i), QuizKind.MULTIPLE_CHOICE);
       for (int j = 1; j <= 4; j++) {
         AnswerKind ak = (j == 1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
         Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, ak, j);
@@ -235,7 +239,7 @@ public class QuizzTest {
     //add FREE_TEXT question to MULTIPLE_CHOICE quiz.
     //should throw an exception BadRequestException
     createFreeTextQuestionInMultichoiceQuiz(
-        new Question(QUIZ_ID, "Question", QuizKind.FREE_TEXT));
+        new Question(QUIZ_ID, new Text("Question"), QuizKind.FREE_TEXT));
 
     // create treatments
     for (String treatment : treatments) {
@@ -278,7 +282,7 @@ public class QuizzTest {
   }
 
   private void updateQuizCounts(Quiz quiz, Integer expectedGoldCount) {
-    Quiz updatedQuiz = quizRepository.updateQuizCounts(quiz.getQuizID());
+    Quiz updatedQuiz = quizService.updateQuizCounts(quiz.getQuizID());
     Assert.assertEquals(updatedQuiz.getGold(), expectedGoldCount);
     logResponse("update quiz counts", updatedQuiz);
   }

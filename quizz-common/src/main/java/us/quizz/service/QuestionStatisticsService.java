@@ -95,13 +95,13 @@ public class QuestionStatisticsService {
         Integer incorrect = qp.getIncorrectanswers();
         if (incorrect == null) incorrect = 0;
 
-        /* TODO(ipeirotis): Fix this.
+        
         if (selectedAnswer.getKind() == AnswerKind.GOLD) {
           correct--;
         } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT) {
           incorrect--;
         }
-        */
+
         userProb = 1.0 * (correct + 1) / (correct + incorrect + n);
         try {
           userBits = Helper.getInformationGain(userProb, n);

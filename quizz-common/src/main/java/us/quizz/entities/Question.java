@@ -2,6 +2,7 @@ package us.quizz.entities;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
 
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuizKind;
@@ -24,8 +25,22 @@ public class Question implements Serializable {
   private String quizID;
 
   // The text of the question. Can be any HTML-compliant code
+  // Use the questionText instead
+  @Deprecated
   @Persistent
   private String text;
+  
+  public Text getQuestionText() {
+    return questionText;
+  }
+
+  public void setQuestionText(Text questionText) {
+    this.questionText = questionText;
+  }
+
+  // The text of the question. Can be any HTML-compliant code
+  @Persistent
+  private Text questionText;
 
   // The id assigned by the client/source for this question to allow us to rejoin the
   // question with the original source.
@@ -78,6 +93,19 @@ public class Question implements Serializable {
   // If likelyAnswer matches a GOLD answer, we set this to true
   @Persistent
   private Boolean isLikelyAnswerCorrect;
+  
+  // The feedback that we give to the user to explain why a particular answer 
+  // was correct (or incorrect)
+  @Persistent
+  private Text feedback;
+
+  public Text getFeedback() {
+    return feedback;
+  }
+
+  public void setFeedback(Text feedback) {
+    this.feedback = feedback;
+  }
 
   public Boolean getIsLikelyAnswerCorrect() {
     return isLikelyAnswerCorrect;
@@ -123,6 +151,21 @@ public class Question implements Serializable {
     
     this.answers = new ArrayList<Answer>();
   }
+  
+  public Question(String quizID, Text questionText, QuizKind kind) {
+    this.quizID = quizID;
+    this.questionText = questionText;
+    this.kind = kind;
+    this.hasSilverAnswers = false;
+    this.hasGoldAnswer = false;
+    this.numberOfUserAnswers = 0;
+    this.hasUserAnswers = false;
+    this.totalUserScore = 0.0;
+    this.numberOfCorrentUserAnswers = 0;
+    
+    this.answers = new ArrayList<Answer>();
+  }
+  
   
   public static Key generateKeyFromID(Long id) {
     return KeyFactory.createKey(Question.class.getSimpleName(), id);
