@@ -82,6 +82,11 @@ public class UserAnswer implements Serializable {
     this(userid, Long.parseLong(questionID), Integer.parseInt(answerID));
   }
 
+  public UserAnswer(String userID, Long questionID, Integer answerID, String quizID) {
+    this(userID, questionID, answerID);
+    this.quizID = quizID;
+  }
+
   public String getAction() {
     return action;
   }

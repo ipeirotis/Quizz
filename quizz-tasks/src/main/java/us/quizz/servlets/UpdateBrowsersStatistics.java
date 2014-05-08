@@ -7,7 +7,7 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import eu.bitwalker.useragentutils.Browser;
+import nl.bitwalker.useragentutils.Browser;
 
 import us.quizz.service.BrowserStatisticsService;
 import us.quizz.utils.QueueUtils;

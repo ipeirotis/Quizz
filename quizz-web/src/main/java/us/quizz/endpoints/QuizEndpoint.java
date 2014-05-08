@@ -1,40 +1,41 @@
 package us.quizz.endpoints;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.QuizService;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Cursor;
 import com.google.inject.Inject;
-
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.enums.QuizKind;
-import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.jdo.PersistenceManager;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1",
      namespace = @ApiNamespace(ownerDomain = "crowd-power.appspot.com",
                                ownerName = "crowd-power.appspot.com",
                                packagePath = "us.quizz.endpoints"))
 public class QuizEndpoint {
+  @SuppressWarnings("unused")
+  private static final Logger logger = Logger.getLogger(QuizEndpoint.class.getName());
+  
   protected static int QUESTION_PACKAGE_SIZE = 10;
 
-  private QuizRepository quizRepository;
+  private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
 
   @Inject
-  public QuizEndpoint(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository) {
-    this.quizRepository = quizRepository;
+  public QuizEndpoint(QuizService quizService, QuizQuestionRepository quizQuestionRepository) {
+    this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
   }
 
@@ -49,9 +50,8 @@ public class QuizEndpoint {
   public CollectionResponse<Quiz> listQuiz(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-
-    List<Quiz> execute = quizRepository.getQuizzes();
-    return CollectionResponse.<Quiz> builder().setItems(execute)
+    List<Quiz> list = quizService.list();
+    return CollectionResponse.<Quiz> builder().setItems(list)
         .setNextPageToken(cursorString).build();
   }
 
@@ -65,23 +65,23 @@ public class QuizEndpoint {
    */
   @ApiMethod(name = "getQuiz", path = "getQuiz", httpMethod = HttpMethod.GET)
   public Quiz getQuiz(@Named("id") String id) {
-    return quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(id));
+    return quizService.get(id);
   }
 
   // Sets the quiz for the quizID given to be shown on landing page by default.
   @ApiMethod(name = "showQuiz", path = "showQuiz", httpMethod = HttpMethod.GET)
   public Quiz showQuiz(@Named("quizID") String quizID) {
-    Quiz quiz = quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(quizID));
+    Quiz quiz = quizService.get(quizID);
     quiz.setShowOnDefault(true);
-    return quizRepository.update(quiz);
+    return quizService.save(quiz);
   }
 
   // Sets the quiz for the quizID given to be hidden on landing page by default.
   @ApiMethod(name = "hideQuiz", path = "hideQuiz", httpMethod = HttpMethod.GET)
   public Quiz hideQuiz(@Named("quizID") String quizID) {
-    Quiz quiz = quizRepository.singleGetObjectByIdThrowing(Quiz.generateKeyFromID(quizID));
+    Quiz quiz = quizService.get(quizID);
     quiz.setShowOnDefault(false);
-    return quizRepository.update(quiz);
+    return quizService.save(quiz);
   }
 
   /**
@@ -110,11 +110,10 @@ public class QuizEndpoint {
    */
   @ApiMethod(name = "insertQuiz", path = "insertQuiz", httpMethod = HttpMethod.POST)
   public Quiz insertQuiz(Quiz quiz) {
-    quiz.setKey(Quiz.generateKeyFromID(quiz.getQuizID()));
     if (quiz.getShowOnDefault() == null) {
       quiz.setShowOnDefault(false);
     }
-    return quizRepository.insert(quiz);
+    return quizService.save(quiz);
   }
 
   /**
@@ -128,7 +127,7 @@ public class QuizEndpoint {
    */
   @ApiMethod(name = "updateQuiz", path = "updateQuiz", httpMethod = HttpMethod.PUT)
   public Quiz updateQuiz(Quiz quiz) {
-    return quizRepository.update(quiz);
+    return quizService.save(quiz);
   }
 
   /**
@@ -139,6 +138,6 @@ public class QuizEndpoint {
    */
   @ApiMethod(name = "removeQuiz", path = "removeQuiz", httpMethod = HttpMethod.DELETE)
   public void removeQuiz(@Named("id") String id) {
-    quizRepository.deleteQuiz(id);
+    quizService.delete(id);
   }
 }

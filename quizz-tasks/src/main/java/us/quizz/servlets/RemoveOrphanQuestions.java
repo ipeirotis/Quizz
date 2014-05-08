@@ -1,19 +1,5 @@
 package us.quizz.servlets;
 
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.repository.AnswersRepository;
-import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
-import us.quizz.service.ExplorationExploitationService;
-import us.quizz.utils.QueueUtils;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +11,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.repository.AnswersRepository;
+import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuizService;
+import us.quizz.utils.QueueUtils;
+
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Task for removing all the questions that have a quizID that is not existing
  * in the system anymore
@@ -33,14 +33,14 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 public class RemoveOrphanQuestions extends HttpServlet {
   private static Logger logger = Logger.getLogger(ExplorationExploitationService.class.getName());
-  private QuizRepository quizRepository;
+  private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
   private AnswersRepository answersRepository;
 
   @Inject
-  public RemoveOrphanQuestions(QuizRepository quizRepository,
+  public RemoveOrphanQuestions(QuizService quizService,
       QuizQuestionRepository quizQuestionRepository, AnswersRepository answersRepository) {
-    this.quizRepository = quizRepository;
+    this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
     this.answersRepository = answersRepository;
   }
@@ -69,7 +69,7 @@ public class RemoveOrphanQuestions extends HttpServlet {
     }
   
 
-    List<Quiz> quizzes = this.quizRepository.getQuizzes();
+    List<Quiz> quizzes = quizService.list();
     Set<String> quizIds = new TreeSet<String>();
     for (Quiz q : quizzes) {
       quizIds.add(q.getQuizID());

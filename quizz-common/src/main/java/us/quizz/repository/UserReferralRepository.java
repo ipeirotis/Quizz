@@ -5,7 +5,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
-import eu.bitwalker.useragentutils.Browser;
+import nl.bitwalker.useragentutils.Browser;
 
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.QuizPerformance;

@@ -2,7 +2,7 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
-import eu.bitwalker.useragentutils.Browser;
+import nl.bitwalker.useragentutils.Browser;
 
 import us.quizz.entities.BrowserStats;
 import us.quizz.repository.BrowserStatsRepository;
