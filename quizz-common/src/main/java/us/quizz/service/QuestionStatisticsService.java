@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
-  
+
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
 
   private QuizRepository quizRepository;
@@ -33,9 +33,8 @@ public class QuestionStatisticsService {
 
   @Inject
   public QuestionStatisticsService(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository,
-      UserAnswerRepository userAnswerRepository,
-      QuizPerformanceRepository quizPerformanceRepository) {
-    this.quizRepository=quizRepository;
+      UserAnswerRepository userAnswerRepository, QuizPerformanceRepository quizPerformanceRepository) {
+    this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.userAnswerRepository = userAnswerRepository;
     this.quizPerformanceRepository = quizPerformanceRepository;
@@ -46,40 +45,39 @@ public class QuestionStatisticsService {
     if (question == null) {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
-    
+
     Quiz quiz = quizRepository.get(question.getQuizID());
-    
-    Boolean isCalibration=false;
-    for (Answer a : question.getAnswers()) {
-      if (a.getKind()==AnswerKind.GOLD) {
-        isCalibration=true;
-        break;
-      } else if (a.getKind()==AnswerKind.SILVER) {
-        isCalibration=false;
-        break;
+
+    if (question.getKind()==null) {
+      Boolean isCalibration = false;
+      for (Answer a : question.getAnswers()) {
+        if (a.getKind() == AnswerKind.GOLD) {
+          isCalibration = true;
+          break;
+        } else if (a.getKind() == AnswerKind.SILVER) {
+          isCalibration = false;
+          break;
+        }
+      }
+  
+      if (quiz.getKind() == QuizKind.MULTIPLE_CHOICE) {
+        if (isCalibration) {
+          question.setKind(QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
+          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_CALIBRATION");
+        } else {
+          question.setKind(QuestionKind.MULTIPLE_CHOICE_COLLECTION);
+          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_COLLECTION");
+        }
+      } else if (quiz.getKind() == QuizKind.FREE_TEXT) {
+        if (isCalibration) {
+          question.setKind(QuestionKind.FREETEXT_CALIBRATION);
+          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_CALIBRATION");
+        } else {
+          question.setKind(QuestionKind.FREETEXT_COLLECTION);
+          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_COLLECTION");
+        }
       }
     }
-    
-    if (quiz.getKind()==QuizKind.MULTIPLE_CHOICE) {
-      if (isCalibration) {
-        question.setKind(QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
-        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_CALIBRATION");
-      }
-      else {
-        question.setKind(QuestionKind.MULTIPLE_CHOICE_COLLECTION);
-        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_COLLECTION");
-      }
-    } else if (quiz.getKind()==QuizKind.FREE_TEXT) {
-      if (isCalibration) {
-        question.setKind(QuestionKind.FREETEXT_CALIBRATION);
-        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_CALIBRATION");
-      }
-      else {
-        question.setKind(QuestionKind.FREETEXT_COLLECTION);
-        logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_COLLECTION");
-      }
-    }
-        
 
     int u = userAnswerRepository.getNumberOfUserAnswersExcludingIDK(questionID);
     question.setHasUserAnswers((u > 0));
@@ -109,7 +107,8 @@ public class QuestionStatisticsService {
     }
 
     List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswersForQuestion(questionId);
-    // TODO: We need to check about duplicate answers for the same user for the same question
+    // TODO: We need to check about duplicate answers for the same user for the
+    // same question
     for (UserAnswer useranswer : userAnswers) {
       String userId = useranswer.getUserid();
       Integer ansId = useranswer.getAnswerID();
@@ -119,22 +118,24 @@ public class QuestionStatisticsService {
       Answer selectedAnswer = null;
       for (Answer a : question.getAnswers()) {
         if (ansId == a.getInternalID()) {
-          exists = true; 
+          exists = true;
           selectedAnswer = a;
         }
       }
-      if (!exists) continue;
+      if (!exists)
+        continue;
       Double userBits = 0.0;
       Double userProb;
 
       QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(quizID, userId);
       if (qp != null) {
         Integer correct = qp.getCorrectanswers();
-        if (correct == null) correct = 0;
+        if (correct == null)
+          correct = 0;
         Integer incorrect = qp.getIncorrectanswers();
-        if (incorrect == null) incorrect = 0;
+        if (incorrect == null)
+          incorrect = 0;
 
-        
         if (selectedAnswer.getKind() == AnswerKind.GOLD) {
           correct--;
         } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT) {
@@ -145,7 +146,7 @@ public class QuestionStatisticsService {
         try {
           userBits = Helper.getInformationGain(userProb, n);
         } catch (Exception e) {
-          logger.log(Level.WARNING, "Error when computing bits for user "+userId);
+          logger.log(Level.WARNING, "Error when computing bits for user " + userId);
         }
       } else {
         continue;
@@ -153,12 +154,14 @@ public class QuestionStatisticsService {
 
       // Update the bits for the answer
       Double currentBits = answerBits.get(ansId);
-      if (currentBits == null) currentBits = 0.0;
+      if (currentBits == null)
+        currentBits = 0.0;
       answerBits.put(ansId, currentBits + userBits);
 
       // Update the counts for the answer
       Integer currentCount = answerCounts.get(ansId);
-      if (currentCount == null) currentCount = 0;
+      if (currentCount == null)
+        currentCount = 0;
       answerCounts.put(ansId, currentCount + 1);
 
       // Estimate the probability that the answer is correct
@@ -168,19 +171,19 @@ public class QuestionStatisticsService {
       // to use the Chinese Table process described by Dan Weld.
       //
       // Given that we are using smoothed maximum likelihood estimated
-      // for the userProb value, the overall probability estimate 
+      // for the userProb value, the overall probability estimate
       // is going to be overconfident. Need to check the efficiency
       // of doing some Monte Carlo estimates by sampling repeatedly
       // from the Beta(correct,incorrect) distribution to get the quality
       // of the user, and then estimate a distribution for the ProbCorrect
-      
+
       for (Answer a : question.getAnswers()) {
         Double currentProb = answerProb.get(a.getInternalID());
         // If this is also the answer chosen by the user
         if (a.getInternalID() == ansId) {
           answerProb.put(a.getInternalID(), currentProb * userProb);
         } else {
-          answerProb.put(a.getInternalID(), currentProb * ((1-userProb)/(n-1)));
+          answerProb.put(a.getInternalID(), currentProb * ((1 - userProb) / (n - 1)));
         }
       }
     }
@@ -207,18 +210,18 @@ public class QuestionStatisticsService {
       questionBits += answerBits.get(a.getInternalID());
     }
     question.setTotalUserScore(questionBits);
-    question.setConfidence(maxProb/sumProb);
+    question.setConfidence(maxProb / sumProb);
     question.setLikelyAnswer(likelyAnswer);
     question.setIsLikelyAnswerCorrect(isLikelyAnswerCorrect);
-    
+
     for (Answer a : question.getAnswers()) {
       Double aBits = answerBits.get(a.getInternalID());
       a.setBits(aBits);
       Integer aCount = answerCounts.get(a.getInternalID());
       a.setNumberOfPicks(aCount);
-      Double aProbCorrect = answerProb.get(a.getInternalID())/sumProb;
+      Double aProbCorrect = answerProb.get(a.getInternalID()) / sumProb;
       a.setProbCorrect(aProbCorrect);
     }
-    
+
   }
 }

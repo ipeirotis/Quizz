@@ -43,7 +43,6 @@ import com.google.api.ads.common.lib.auth.OfflineCredentials;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;

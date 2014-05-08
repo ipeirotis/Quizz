@@ -34,5 +34,6 @@ public class UpdateQuestionStatistics extends HttpServlet {
     logger.log(Level.INFO, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
     logger.log(Level.INFO, "Number of correct user answers:" + 
         question.getNumberOfCorrentUserAnswers() + "\n");
+    logger.log(Level.INFO, "Kind:" + question.getKind() + "\n");
   }
 }

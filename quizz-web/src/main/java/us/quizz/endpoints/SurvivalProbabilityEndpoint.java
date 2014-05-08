@@ -2,7 +2,6 @@ package us.quizz.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiNamespace;
 import com.google.inject.Inject;
 
 import us.quizz.entities.SurvivalProbabilityResult;
