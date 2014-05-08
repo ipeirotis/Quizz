@@ -1,5 +1,6 @@
 package us.quizz.service;
 
+import com.google.appengine.api.datastore.Text;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
@@ -77,6 +78,11 @@ public class QuestionStatisticsService {
           logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_COLLECTION");
         }
       }
+    }
+    
+    if (question.getQuestionText()==null) {
+      question.setQuestionText(new Text(question.getText()));
+      
     }
 
     int u = userAnswerRepository.getNumberOfUserAnswersExcludingIDK(questionID);

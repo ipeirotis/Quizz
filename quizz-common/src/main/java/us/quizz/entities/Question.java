@@ -295,7 +295,14 @@ public class Question implements Serializable {
   }
 
   public Answer getAnswer(Integer answerID) {
-    return answers.get(answerID);
+    
+    try {
+      Answer a = answers.get(answerID);
+      return a;
+    } catch (IndexOutOfBoundsException e) {
+      return null;
+    }
+    
   }
 
     

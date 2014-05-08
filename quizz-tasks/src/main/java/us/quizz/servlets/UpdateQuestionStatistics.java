@@ -30,10 +30,12 @@ public class UpdateQuestionStatistics extends HttpServlet {
     String questionID = req.getParameter("questionID");
     Question question = questionStatisticsService.updateStatistics(questionID);
     
-    logger.log(Level.INFO, "QuestionID:" + questionID + "\n");
-    logger.log(Level.INFO, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
-    logger.log(Level.INFO, "Number of correct user answers:" + 
+    
+    logger.log(Level.FINEST, "QuestionID:" + questionID + "\n");
+    logger.log(Level.FINEST, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
+    logger.log(Level.FINEST, "Number of correct user answers:" + 
         question.getNumberOfCorrentUserAnswers() + "\n");
-    logger.log(Level.INFO, "Kind:" + question.getKind() + "\n");
+    logger.log(Level.FINEST, "Kind:" + question.getKind() + "\n");
+    
   }
 }

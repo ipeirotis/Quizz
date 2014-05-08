@@ -4,6 +4,7 @@ import java.util.List;
 
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
+import us.quizz.enums.QuizKind;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
@@ -62,6 +63,14 @@ public class QuizService {
 
     count = quizQuestionRepository.getNumberOfGoldQuestions(quizID, false);
     quiz.setGold(count);
+    
+    if (quiz.getKind()==null) {
+      if (quiz.getName().startsWith("translate")) {
+        quiz.setKind(QuizKind.FREE_TEXT);
+      } else {
+        quiz.setKind(QuizKind.MULTIPLE_CHOICE);
+      }
+    }
 
     // TODO(chunhowt): UserReferral is broken now, so this will always return 0.
     count = userReferralRepository.getUserIDsByQuiz(quizID).size();

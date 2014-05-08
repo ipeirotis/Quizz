@@ -122,8 +122,10 @@ public class ProcessUserAnswerEndpoint {
       case MULTIPLE_CHOICE_COLLECTION:
         double maxProbability = -1;
         for (final Answer answer : question.getAnswers()) {
-          if (answer.getProbability() > maxProbability) {
-            maxProbability = answer.getProbability();
+          Double prob = answer.getProbability();
+          if (prob == null) prob = 0.0;
+          if (prob > maxProbability) {
+            maxProbability = prob;
             bestAnswer = answer;
           }
         }
@@ -220,8 +222,14 @@ public class ProcessUserAnswerEndpoint {
     uaf.setNumCorrectAnswers(correctanswers);
     uaf.setNumTotalAnswers(totalanswers);
     Question question = quizQuestionRepository.getQuizQuestion(questionID);
-    uaf.setUserAnswerText((useranswerID == -1) ? "" : question.getAnswer(
-        useranswerID).userAnswerText(userInput));
+    
+    String answerText = "";
+    if (useranswerID != -1) {
+      Answer a = question.getAnswer(useranswerID);
+      if (a!=null) answerText = a.userAnswerText(userInput);
+    }
+        
+    uaf.setUserAnswerText(answerText);
     uaf.setMessage(message);
     uaf.computeDifficulty();
     userAnswerFeedbackRepository.storeUserAnswerFeedback(uaf);
