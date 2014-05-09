@@ -46,6 +46,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -185,9 +186,9 @@ public class CampaignManagementEndpoint {
       addKeyword(bidKeyword.replaceAll("[^A-Za-z0-9 ]", " "), adgroupId);
     }
 
-    String displayURL = "https://www.crowd-power.appspot.com";
+    String displayURL = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
     String targetURL =
-        "https://www.crowd-power.appspot.com/startQuiz?quizID=" +
+        "https://" + SystemProperty.applicationId.get() + ".appspot.com/startQuiz?quizID=" +
         URLEncoder.encode(quizID, "UTF-8");
     AdGroupAd ad = createTextAd(adheadline, adline1, adline2, displayURL, targetURL, adgroupId);
     Long textAdId = publishTextAd(ad);
@@ -430,8 +431,8 @@ public class CampaignManagementEndpoint {
       String adHeadline = "This is a headline";
       String adDescr1 = "This is the first line";
       String adDescr2 = "This is the second line";
-      String displayURL = "http://crowd-power.appspot.com";
-      String targetURL = "http://crowd-power.appspot.com";
+      String displayURL = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
+      String targetURL = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
       AdGroupAd ad = createTextAd(adHeadline, adDescr1, adDescr2,
           displayURL, targetURL, adgroupId);
       // Long textAdId = service.publishTextAd(ad);

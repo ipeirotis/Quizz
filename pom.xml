@@ -10,7 +10,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <appengine.target.version>1.9.4</appengine.target.version>
-    <appspotAppId>crowd-power</appspotAppId>
+    <appspot.app.id>crowd-power</appspot.app.id>
     <google.analytics.id>UA-42553914-1</google.analytics.id>
     <appengine.app.version>1</appengine.app.version>
     <api.adwords.clientId>572385566876-99pm64281kbtfjd6i15rhj3a72tdper5.apps.googleusercontent.com</api.adwords.clientId>
