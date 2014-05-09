@@ -9,23 +9,22 @@ import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
-import us.quizz.repository.UserReferralRepository;
 
 import com.google.inject.Inject;
 
 public class QuizService {
 
-  private UserReferralRepository userReferralRepository;
+  private UserReferralService userReferralService;
   private QuizPerformanceRepository quizPerformanceRepository;
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private UserAnswerRepository userAnswerRepository;
   
   @Inject
-  public QuizService(UserReferralRepository userReferralRepository, 
+  public QuizService(UserReferralService userReferralService, 
       QuizPerformanceRepository quizPerformanceRepository, QuizRepository quizRepository,
       QuizQuestionRepository quizQuestionRepository, UserAnswerRepository userAnswerRepository){
-    this.userReferralRepository = userReferralRepository;
+    this.userReferralService = userReferralService;
     this.quizPerformanceRepository = quizPerformanceRepository;
     this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
@@ -73,7 +72,7 @@ public class QuizService {
     }
 
     // TODO(chunhowt): UserReferral is broken now, so this will always return 0.
-    count = userReferralRepository.getUserIDsByQuiz(quizID).size();
+    count = userReferralService.getUserIDsByQuiz(quizID).size();
     quiz.setTotalUsers(count + 1);  // +1 for smoothing, ensuring no division by 0
 
     List<QuizPerformance> perf = quizPerformanceRepository

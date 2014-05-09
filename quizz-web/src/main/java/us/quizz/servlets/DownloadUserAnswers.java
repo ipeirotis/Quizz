@@ -1,12 +1,5 @@
 package us.quizz.servlets;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import us.quizz.entities.UserAnswer;
-import us.quizz.repository.QuizRepository;
-import us.quizz.repository.UserAnswerRepository;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -15,18 +8,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.entities.UserAnswer;
+import us.quizz.repository.UserAnswerRepository;
+import us.quizz.service.QuizService;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 @SuppressWarnings("serial")
 @Singleton
 public class DownloadUserAnswers extends HttpServlet {
   final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
 
-  private QuizRepository quizRepository;
+  private QuizService quizService;
   private UserAnswerRepository userAnswerRepository;
 
   @Inject
-  public DownloadUserAnswers(QuizRepository quizRepository,
+  public DownloadUserAnswers(QuizService quizService,
                              UserAnswerRepository userAnswerRepository) {
-    this.quizRepository = quizRepository;
+    this.quizService = quizService;
     this.userAnswerRepository = userAnswerRepository;
   }
 
@@ -34,7 +34,7 @@ public class DownloadUserAnswers extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     String quizID = request.getParameter("quizID");
-    String name = quizRepository.get(quizID).getName();
+    String name = quizService.get(quizID).getName();
 
     List<UserAnswer> answers = userAnswerRepository.getUserAnswers(quizID);
     StringBuffer sb = new StringBuffer();

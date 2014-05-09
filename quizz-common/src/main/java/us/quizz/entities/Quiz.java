@@ -88,6 +88,7 @@ public class Quiz implements Serializable {
   // Whether to show this quizz on default on the Quizz landing page.
   private Boolean showOnDefault;
   
+  //for Objectify
   @SuppressWarnings("unused")
   private Quiz(){}
 

@@ -1,33 +1,31 @@
 package us.quizz.service;
 
-import com.google.inject.Inject;
-
 import nl.bitwalker.useragentutils.Browser;
-
 import us.quizz.entities.BrowserStats;
 import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.UserReferralRepository;
-import us.quizz.repository.UserReferralRepository.Result;
+import us.quizz.service.UserReferralService.Result;
+
+import com.google.inject.Inject;
 
 public class BrowserStatisticsService {
   private BrowserStatsRepository browserStatsRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
-  private UserReferralRepository userReferralRepository;
+  private UserReferralService userReferralService;
 
   @Inject
   public BrowserStatisticsService(
       QuizPerformanceRepository quizPerformanceRepository,
-      UserReferralRepository userReferralRepository,
+      UserReferralService userReferralService,
       BrowserStatsRepository browserStatsRepository) {
     this.quizPerformanceRepository = quizPerformanceRepository;
-    this.userReferralRepository = userReferralRepository;
+    this.userReferralService = userReferralService;
     this.browserStatsRepository = browserStatsRepository;
   }
   
   public void updateStatistics(String browser) {
     Browser b = Browser.valueOf(browser);
-    Result res = userReferralRepository.getCountByBrowser(b);
+    Result res = userReferralService.getCountByBrowser(b);
 
     Double userScores = quizPerformanceRepository.getScoreSumByIds(res.getUsers());
     if (res.getCount() > 0) {

@@ -1,12 +1,13 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -19,29 +20,28 @@ import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuizService;
 import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.QueueUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class ProcessUserAnswerEndpoint {
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
 
-  private QuizRepository quizRepository;
+  private QuizService quizService;
   private UserRepository userRepository;
   private AnswersRepository answersRepository;
   private QuizQuestionRepository quizQuestionRepository;
@@ -53,7 +53,7 @@ public class ProcessUserAnswerEndpoint {
 
   @Inject
   public ProcessUserAnswerEndpoint(
-      QuizRepository quizRepository,
+      QuizService quizService,
       UserRepository userRepository,
       AnswersRepository answersRepository,
       QuizQuestionRepository quizQuestionRepository,
@@ -62,7 +62,7 @@ public class ProcessUserAnswerEndpoint {
       UserAnswerRepository userAnswerRepository,
       UserAnswerFeedbackRepository userAnswerFeedbackRepository,
       ExplorationExploitationService explorationExploitationService) {
-    this.quizRepository = quizRepository;
+    this.quizService = quizService;
     this.userRepository = userRepository;
     this.userAnswerFeedbackRepository = userAnswerFeedbackRepository;
     this.answersRepository = answersRepository;
@@ -194,7 +194,7 @@ public class ProcessUserAnswerEndpoint {
     updateQuestionStatistics(questionID);
 
     // Get the number of multiple choices for the quiz
-    Integer N = this.quizRepository.get(quizID).getNumChoices();
+    Integer N = quizService.get(quizID).getNumChoices();
     if (N == null) {
       N = 4;
     }

@@ -1,16 +1,10 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
 import us.quizz.entities.DomainStats;
+import us.quizz.ofy.OfyBaseRepository;
 
-public class DomainStatsRepository extends BaseRepository<DomainStats> {
+public class DomainStatsRepository  extends OfyBaseRepository<DomainStats> {
   public DomainStatsRepository() {
     super(DomainStats.class);
-  }
-
-  @Override
-  protected Key getKey(DomainStats item) {
-    return item.getKey();
   }
 }

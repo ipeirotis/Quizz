@@ -1,49 +1,35 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Text;
-
-import nl.bitwalker.useragentutils.Browser;
-
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import nl.bitwalker.useragentutils.Browser;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+import com.google.appengine.api.datastore.Text;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+
+@Entity
+@Cache
+@Index
 public class UserReferal implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
-  // The id for the user.
-  @Persistent
+  @Id
+  private Long id;
   private String userid;
-
-  // The id for the user.
-  @Persistent
   private String quiz;
-
-  @Persistent
   private Long timestamp;
-
-  @Persistent
   private String ipaddress;
-
-  @Persistent
   private Text referer;
-
-  @Persistent
   private String domain;
-
-  @Persistent
   private Browser browser;
+  
+  //for Objectify
+  @SuppressWarnings("unused")
+  private UserReferal(){}
 
   public UserReferal(String userid) {
     this.userid = userid;
@@ -51,17 +37,17 @@ public class UserReferal implements Serializable {
   }
 
   /**
-   * @return the key
+   * @return the id
    */
-  public Key getKey() {
-    return key;
+  public Long getId() {
+    return id;
   }
 
   /**
-   * @param key The key to set
+   * @param id The id to set
    */
-  public void setKey(Key key) {
-    this.key = key;
+  public void setId(Long id) {
+    this.id = id;
   }
 
   /**

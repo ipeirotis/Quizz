@@ -1,16 +1,5 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
-
-import us.quizz.entities.Experiment;
-import us.quizz.entities.User;
-import us.quizz.repository.UserReferralRepository;
-import us.quizz.repository.UserRepository;
-import us.quizz.utils.ChannelHelpers;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,16 +7,27 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import us.quizz.entities.Experiment;
+import us.quizz.entities.User;
+import us.quizz.repository.UserRepository;
+import us.quizz.service.UserReferralService;
+import us.quizz.utils.ChannelHelpers;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.inject.Inject;
+
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserEndpoint {
   private UserRepository userRepository;
-  private UserReferralRepository userReferralRepository;
+  private UserReferralService userReferralService;
 
   @Inject
-  public UserEndpoint(UserRepository userRepository,
-                      UserReferralRepository userReferralRepository) {
+  public UserEndpoint(UserRepository userRepository, 
+      UserReferralService userReferralService) {
     this.userRepository = userRepository;
-    this.userReferralRepository = userReferralRepository;
+    this.userReferralService = userReferralService;
   }
 
   /**
@@ -55,7 +55,7 @@ public class UserEndpoint {
   public Map<String, Object> getUser(HttpServletRequest req, @Named("userid") String userid) {
     User user = userRepository.getOrCreateUser(userid);
 
-    userReferralRepository.createAndStoreUserReferal(req, userid);
+    userReferralService.createAndStoreUserReferal(req, userid);
 
     Experiment e = user.getExperiment();
     if (e != null && e.getTreatments() != null) {

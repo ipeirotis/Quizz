@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.Key;
@@ -141,21 +142,53 @@ public class OfyBaseRepository<T> {
         q = q.startAt(cursor);
       }
 
+      boolean continu = false;
       QueryResultIterator<T> iterator = q.iterator();
       cursor = iterator.getCursor();
-      
-      if (cursor == null) {
-        break;
-      } 
 
       while (iterator.hasNext()) {
         T t = iterator.next(); 
         list.add(t);
+        continu = true;
       }
 
+      if (continu) {
+        cursor = iterator.getCursor();
+      } else {
+        break;
+      }
     }
 
     return list;
+  }
+
+  public CollectionResponse<T> listWithCursor(String cursorString, Integer limit) {
+    List<T> result = new ArrayList<T>();
+    Query<T> query = ofy().load().type(clazz);
+
+    if (cursorString != null) {
+      query = query.startAt(Cursor.fromWebSafeString(cursorString));
+    }
+
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+
+    boolean cont = false;
+    QueryResultIterator<T> iterator = query.iterator();
+
+    while (iterator.hasNext()) {
+      T item = iterator.next();
+      result.add(item);
+      cont = true;
+    }
+
+    if (cont) {
+      Cursor cursor = iterator.getCursor();
+      return CollectionResponse.<T> builder().setItems(result).setNextPageToken(cursor.toWebSafeString()).build();
+    } else {
+      return CollectionResponse.<T> builder().setItems(result).build();
+    }
   }
 
   public List<T> listByProperty(String propName, Object propValue) {

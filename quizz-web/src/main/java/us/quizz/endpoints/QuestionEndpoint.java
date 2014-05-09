@@ -14,7 +14,7 @@ import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
+import us.quizz.service.QuizService;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -27,16 +27,16 @@ import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class QuestionEndpoint {
-  private QuizRepository quizRepository;
+  private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
 
   @Inject
   public QuestionEndpoint(
-      QuizRepository quizRepository,
+      QuizService quizService,
       QuizQuestionRepository quizQuestionRepository,
       AnswerChallengeCounterRepository answerChallengeCounterRepository) {
-    this.quizRepository = quizRepository;
+    this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
     this.answerChallengeCounterRepository = answerChallengeCounterRepository;
   }
@@ -86,7 +86,7 @@ public class QuestionEndpoint {
 
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
   public Question insertQuestion(final Question question) throws BadRequestException {
-    Quiz quiz = quizRepository.get(question.getQuizID());
+    Quiz quiz = quizService.get(question.getQuizID());
     QuizKind quizKind = quiz.getKind();
     if(quizKind ==QuizKind.MULTIPLE_CHOICE && (!question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_CALIBRATION) && !question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_COLLECTION))) {
       throw new BadRequestException("Can't add " + question.getKind() + 
