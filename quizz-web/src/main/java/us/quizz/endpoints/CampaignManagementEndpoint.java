@@ -51,7 +51,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Quiz;
-import us.quizz.repository.QuizRepository;
+import us.quizz.service.QuizService;
 import us.quizz.utils.ServletUtils;
 import us.quizz.utils.QueueUtils;
 
@@ -71,8 +71,12 @@ public class CampaignManagementEndpoint {
   private AdWordsServices  adWordsServices;
   private AdWordsSession session;
 
+  private QuizService quizService;
+
   @Inject
-  private QuizRepository quizRepository;
+  public CampaignManagementEndpoint(QuizService quizService) {
+    this.quizService = quizService;
+  }
 
   @ApiMethod(name = "adwords", path="adwords")
   public void adwords(HttpServletRequest req) throws Exception {
@@ -132,9 +136,9 @@ public class CampaignManagementEndpoint {
     Campaign campaign = createCampaign(campaignName, dailyBudget);
     Long campaignId = publishCampaign(campaign);
 
-    Quiz q = quizRepository.get(quizID);
+    Quiz q = quizService.get(quizID);
     q.setCampaignid(campaignId);
-    quizRepository.save(q);
+    quizService.save(q);
   }
 
   private void addAdGroup(HttpServletRequest req) throws Exception {
@@ -145,7 +149,7 @@ public class CampaignManagementEndpoint {
     String adline1 = req.getParameter("adline1").trim();
     String adline2 = req.getParameter("adline2").trim();
 
-    Quiz q = quizRepository.get(quizID);
+    Quiz q = quizService.get(quizID);
     Long campaignId = q.getCampaignid();
 
     if (campaignId == null) {

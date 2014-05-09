@@ -2,14 +2,14 @@ package us.quizz.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import java.util.Properties;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,18 +17,16 @@ import org.junit.Before;
 import us.quizz.entities.Question;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.QuestionKind;
-import us.quizz.enums.QuizKind;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 
-import java.util.Properties;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
 // A test util class to do all the common initialization of persistent manager and repositories
 // construction and content.
@@ -114,7 +112,6 @@ public class QuizBaseTest {
   protected UserReferralRepository getUserReferralRepository() {
     if (userReferralRepository == null) {
       userReferralRepository = spy(new UserReferralRepository());
-      when(userReferralRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     }
     return userReferralRepository;
   }

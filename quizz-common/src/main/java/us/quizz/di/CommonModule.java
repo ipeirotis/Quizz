@@ -18,11 +18,13 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.BrowserStatisticsService;
+import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionStatisticsService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserQuizStatisticsService;
+import us.quizz.service.UserReferralService;
 
 public class CommonModule extends AbstractModule {
   @Override
@@ -48,5 +50,7 @@ public class CommonModule extends AbstractModule {
     bind(QuestionStatisticsService.class).in(Singleton.class);
     bind(BrowserStatisticsService.class).in(Singleton.class);
     bind(QuizService.class).in(Singleton.class);
+    bind(UserReferralService.class).in(Singleton.class);
+    bind(DomainStatsService.class).in(Singleton.class);
   }
 }

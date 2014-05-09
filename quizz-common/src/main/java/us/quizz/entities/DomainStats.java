@@ -1,47 +1,31 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import java.io.Serializable;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class DomainStats implements Serializable {
-
   private static final long serialVersionUID = 1L;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
-  @Persistent
+  @Id
   private String domain;
-
-  @Persistent
   private long userCount = 0;
-
-  @Persistent
-  private double userScores = 0;
+  private double userScores = 0.0;
+  
+  //for Objectify
+  @SuppressWarnings("unused")
+  private DomainStats(){}
 
   public DomainStats(String domain, long userCount, double userScores) {
-    this.key = KeyFactory.createKey(DomainStats.class.getSimpleName(), domain);
     this.domain = domain;
     this.userCount = userCount;
     this.userScores = userScores;
-  }
-
-  public Key getKey() {
-    return key;
-  }
-
-  public void setKey(Key key) {
-    this.key = key;
   }
 
   public long getUserCount() {

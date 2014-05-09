@@ -3,6 +3,7 @@ package us.quizz.di;
 import us.quizz.servlets.CacheExploreExploit;
 import us.quizz.servlets.CacheSurvivalProbability;
 import us.quizz.servlets.GetQuizCounts;
+import us.quizz.servlets.MigrateToObjectify;
 import us.quizz.servlets.RemoveOrphanQuestions;
 import us.quizz.servlets.RemoveOrphanUserAnswers;
 import us.quizz.servlets.UpdateAllQuestionStatistics;
@@ -30,5 +31,6 @@ public class TasksModule extends ServletModule {
     serve("/api/cacheExploreExploit").with(CacheExploreExploit.class);
     serve("/consistency/removeOrphanQuestions").with(RemoveOrphanQuestions.class);
     serve("/consistency/removeOrphanUserAnswers").with(RemoveOrphanUserAnswers.class);
+    serve("/ofy").with(MigrateToObjectify.class);
   }
 }
