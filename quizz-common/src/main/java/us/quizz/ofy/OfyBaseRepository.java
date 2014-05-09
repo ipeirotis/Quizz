@@ -142,16 +142,20 @@ public class OfyBaseRepository<T> {
         q = q.startAt(cursor);
       }
 
+      boolean continu = false;
       QueryResultIterator<T> iterator = q.iterator();
       cursor = iterator.getCursor();
-      
-      if (cursor == null) {
-        break;
-      } 
 
       while (iterator.hasNext()) {
         T t = iterator.next(); 
         list.add(t);
+        continu = true;
+      }
+
+      if (continu) {
+        cursor = iterator.getCursor();
+      } else {
+        break;
       }
     }
 
