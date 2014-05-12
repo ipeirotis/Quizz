@@ -2,6 +2,7 @@ package us.quizz.ofy;
 
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.Quiz;
+import us.quizz.entities.Treatment;
 import us.quizz.entities.UserReferal;
 
 import com.googlecode.objectify.Objectify;
@@ -12,6 +13,7 @@ public class OfyService {
   static {
     register(DomainStats.class);
     register(Quiz.class);
+    register(Treatment.class);
     register(UserReferal.class);
   }
 

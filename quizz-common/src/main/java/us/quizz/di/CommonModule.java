@@ -13,6 +13,7 @@ import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
+import us.quizz.repository.TreatmentRepository;
 import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
@@ -23,6 +24,7 @@ import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionStatisticsService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
+import us.quizz.service.TreatmentService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
 
@@ -43,6 +45,7 @@ public class CommonModule extends AbstractModule {
     bind(UserAnswerRepository.class).in(Singleton.class);
     bind(UserReferralRepository.class).in(Singleton.class);
     bind(UserRepository.class).in(Singleton.class);
+    bind(TreatmentRepository.class).in(Singleton.class);
 
     bind(ExplorationExploitationService.class).in(Singleton.class);
     bind(UserQuizStatisticsService.class).in(Singleton.class);
@@ -52,5 +55,6 @@ public class CommonModule extends AbstractModule {
     bind(QuizService.class).in(Singleton.class);
     bind(UserReferralService.class).in(Singleton.class);
     bind(DomainStatsService.class).in(Singleton.class);
+    bind(TreatmentService.class).in(Singleton.class);
   }
 }

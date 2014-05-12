@@ -54,6 +54,7 @@ import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
+import us.quizz.service.TreatmentService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
 
@@ -111,6 +112,7 @@ public class QuizzTest {
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
 
+  private TreatmentService treatmentService;
   private DomainStatsService domainStatsService;
   private UserReferralService userReferralService;
   private QuizService quizService;
@@ -159,12 +161,12 @@ public class QuizzTest {
     when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(treatmentRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(survivalProbabilityResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(explorationExploitationResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
+    treatmentService = new TreatmentService(treatmentRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
     quizService = new QuizService(userReferralService, quizPerformanceRepository, quizRepository, 
@@ -182,7 +184,7 @@ public class QuizzTest {
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userRepository,
         answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceRepository,
         userAnswerRepository, userAnswerFeedbackRepository, explorationExploitationService);
-    treatmentEndpoint = new TreatmentEndpoint(treatmentRepository);
+    treatmentEndpoint = new TreatmentEndpoint(treatmentService);
     userEndpoint = new UserEndpoint(userRepository, userReferralService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceRepository);
 
@@ -323,7 +325,7 @@ public class QuizzTest {
 
   private void createTreatment(String name) {
     Treatment treatment = treatmentEndpoint.addTreatment(name, 1.0);
-    Assert.assertNotNull(treatment.getKey());
+    Assert.assertNotNull(treatment.getName());
   }
 
   private Set<Question> startQuiz(String quizId) {

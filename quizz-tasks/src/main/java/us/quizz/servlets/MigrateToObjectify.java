@@ -3,6 +3,8 @@ package us.quizz.servlets;
 import static us.quizz.ofy.OfyService.ofy;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.DomainStats;
+import us.quizz.entities.Treatment;
 import us.quizz.utils.QueueUtils;
 
 import com.google.appengine.api.datastore.Cursor;
@@ -18,6 +21,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -46,6 +50,8 @@ public class MigrateToObjectify extends HttpServlet {
       if ("true".equals(now)) {
         if("DomainStats".equals(kind)){
           updateDomainStats();
+        } else if("Treatment".equals(kind)){
+          updateTreatments();
         }
       }else{
         sched(kind);
@@ -64,7 +70,7 @@ public class MigrateToObjectify extends HttpServlet {
         fetchOptions.startCursor(cursor);
       }
       
-      Query q = new Query("DomainStats").setKeysOnly();
+      Query q = new Query("DomainStats");
       PreparedQuery pq = ds.prepare(q);
       QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
       cursor = entities.getCursor();
@@ -86,6 +92,48 @@ public class MigrateToObjectify extends HttpServlet {
     //test reading with objectify
     DomainStats domainStats = ofy().load().type(DomainStats.class).limit(1).first().now();
     logger.log(Level.INFO, "Test reading DomainStats: " + domainStats.getDomain());
+  }
+
+  private void updateTreatments(){
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
+    Cursor cursor = null;
+    long counter = 0L;
+    List<Entity> newEntities = new ArrayList<Entity>();
+
+    while (true) {
+      if (cursor != null) {
+        fetchOptions.startCursor(cursor);
+      }
+
+      Query q = new Query("Treatment");
+      PreparedQuery pq = ds.prepare(q);
+      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
+      List<Key> toDeleteKeys = new ArrayList<Key>();
+      cursor = entities.getCursor();
+
+      if (cursor == null || entities.size() == 0) {
+        break;
+      }
+
+      for(Entity e : entities){
+        Entity newEntity = new Entity("Treatment", (String)e.getProperty("name"));
+        newEntity.setPropertiesFrom(e);
+        newEntity.removeProperty("name");
+        newEntities.add(newEntity);
+        toDeleteKeys.add(e.getKey());
+        counter++;
+      }
+      ds.delete(toDeleteKeys);
+    }
+
+    ds.put(newEntities);
+
+    logger.log(Level.INFO, counter + " Treatment entities updated successfully");
+
+    //test reading with objectify
+    Treatment treatment = ofy().load().type(Treatment.class).limit(1).first().now();
+    logger.log(Level.INFO, "Test reading Treatment: " + treatment.getProbability());
   }
 
   private void sched(String kind){
