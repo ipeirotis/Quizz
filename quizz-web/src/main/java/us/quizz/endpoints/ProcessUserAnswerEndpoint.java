@@ -122,7 +122,7 @@ public class ProcessUserAnswerEndpoint {
       case MULTIPLE_CHOICE_COLLECTION:
         double maxProbability = -1;
         for (final Answer answer : question.getAnswers()) {
-          Double prob = answer.getProbability();
+          Double prob = answer.getProbCorrect();
           if (prob == null) prob = 0.0;
           if (prob > maxProbability) {
             maxProbability = prob;
