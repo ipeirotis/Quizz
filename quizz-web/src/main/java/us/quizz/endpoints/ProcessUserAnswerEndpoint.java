@@ -132,18 +132,17 @@ public class ProcessUserAnswerEndpoint {
         if (bestAnswer.getInternalID() == answerID && bestAnswer.getKind() == AnswerKind.SILVER) {
           isCorrect = true;
           correctanswers++;
-          message = "Great! We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbability() + " of the users agree." ;
+          message = "Great! We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbCorrect() + " of the users agree." ;
         } else if  (bestAnswer.getInternalID() != answerID && bestAnswer.getKind() == AnswerKind.SILVER) {
           isCorrect = false;
-          message = "Sorry!  We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbability() + " of the users agree." ;
+          message = "Sorry!  We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbCorrect() + " of the users agree." ;
         } else if (bestAnswer.getInternalID() == answerID && bestAnswer.getKind() == AnswerKind.INCORRECT) {
           isCorrect = true;
           correctanswers++;
-          message = "Nice! " + bestAnswer.getProbability() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
+          message = "Nice! " + bestAnswer.getProbCorrect() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
         } else if (bestAnswer.getInternalID() != answerID && bestAnswer.getKind() == AnswerKind.INCORRECT) {
-          isCorrect = true;
-          correctanswers++;
-          message = "Sorry!  " + bestAnswer.getProbability() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
+          isCorrect = false;
+          message = "Sorry!  " + bestAnswer.getProbCorrect() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
         }
         
         break;
