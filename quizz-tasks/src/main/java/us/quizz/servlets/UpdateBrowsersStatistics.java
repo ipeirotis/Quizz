@@ -9,7 +9,7 @@ import com.google.inject.Singleton;
 
 import nl.bitwalker.useragentutils.Browser;
 
-import us.quizz.service.BrowserStatisticsService;
+import us.quizz.service.BrowserStatsService;
 import us.quizz.utils.QueueUtils;
 
 import java.io.IOException;
@@ -23,10 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class UpdateBrowsersStatistics extends HttpServlet {
-  private BrowserStatisticsService browserStatisticsService;
+  private BrowserStatsService browserStatisticsService;
 
   @Inject
-  public UpdateBrowsersStatistics(BrowserStatisticsService browserStatisticsService) {
+  public UpdateBrowsersStatistics(BrowserStatsService browserStatisticsService) {
     this.browserStatisticsService = browserStatisticsService;
   }
 

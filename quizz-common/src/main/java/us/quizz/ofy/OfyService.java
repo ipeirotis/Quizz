@@ -1,5 +1,6 @@
 package us.quizz.ofy;
 
+import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.Treatment;
@@ -11,6 +12,7 @@ import com.googlecode.objectify.ObjectifyService;
 
 public class OfyService {
   static {
+    register(BrowserStats.class);
     register(DomainStats.class);
     register(Quiz.class);
     register(Treatment.class);

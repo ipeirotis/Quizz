@@ -1,16 +1,10 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
 import us.quizz.entities.BrowserStats;
+import us.quizz.ofy.OfyBaseRepository;
 
-public class BrowserStatsRepository extends BaseRepository<BrowserStats> {
+public class BrowserStatsRepository extends OfyBaseRepository<BrowserStats> {
   public BrowserStatsRepository() {
     super(BrowserStats.class);
-  }
-
-  @Override
-  protected Key getKey(BrowserStats item) {
-    return item.getKey();
   }
 }

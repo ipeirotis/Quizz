@@ -1,52 +1,45 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
+import java.io.Serializable;
 
 import nl.bitwalker.useragentutils.Browser;
 
-import java.io.Serializable;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class BrowserStats implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
-  @Persistent
+  @Id
+  private String id;
   private Browser browser;
-
-  @Persistent
   private String browserName;
-
-  @Persistent
   private long userCount = 0;
-
-  @Persistent
   private double userScores = 0;
 
+  //for Objectify
+  @SuppressWarnings("unused")
+  private BrowserStats(){}
+
   public BrowserStats(Browser browser, long userCount, double userScores) {
-    this.key = KeyFactory.createKey(BrowserStats.class.getSimpleName(), browser.toString());
+    this.id = browser.toString();
     this.browser = browser;
     this.browserName = browser.getName();
     this.userCount = userCount;
     this.userScores = userScores;
   }
 
-  public Key getKey() {
-    return key;
+  public String getId() {
+    return id;
   }
 
-  public void setKey(Key key) {
-    this.key = key;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public Browser getBrowser() {

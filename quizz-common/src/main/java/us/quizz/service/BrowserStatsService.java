@@ -1,5 +1,7 @@
 package us.quizz.service;
 
+import java.util.List;
+
 import nl.bitwalker.useragentutils.Browser;
 import us.quizz.entities.BrowserStats;
 import us.quizz.repository.BrowserStatsRepository;
@@ -8,13 +10,13 @@ import us.quizz.service.UserReferralService.Result;
 
 import com.google.inject.Inject;
 
-public class BrowserStatisticsService {
+public class BrowserStatsService {
   private BrowserStatsRepository browserStatsRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
   private UserReferralService userReferralService;
 
   @Inject
-  public BrowserStatisticsService(
+  public BrowserStatsService(
       QuizPerformanceRepository quizPerformanceRepository,
       UserReferralService userReferralService,
       BrowserStatsRepository browserStatsRepository) {
@@ -23,6 +25,10 @@ public class BrowserStatisticsService {
     this.browserStatsRepository = browserStatsRepository;
   }
   
+  public List<BrowserStats> list(){
+    return browserStatsRepository.list();
+  }
+
   public void updateStatistics(String browser) {
     Browser b = Browser.valueOf(browser);
     Result res = userReferralService.getCountByBrowser(b);

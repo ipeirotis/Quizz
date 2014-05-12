@@ -12,8 +12,8 @@ import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
-import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.BrowserStatsService;
 import us.quizz.service.DomainStatsService;
 import us.quizz.service.QuizService;
 
@@ -26,18 +26,18 @@ import com.google.inject.Inject;
 public class ReportsEndpoint {
   private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
-  private BrowserStatsRepository browserStatsRepository;
+  private BrowserStatsService browserStatsService;
   private DomainStatsService domainStatsService;
 
   @Inject
   public ReportsEndpoint(
       QuizService quizService,
       QuizQuestionRepository quizQuestionRepository,
-      BrowserStatsRepository browserStatsRepository,
+      BrowserStatsService browserStatsService,
       DomainStatsService domainStatsService) {
     this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
-    this.browserStatsRepository = browserStatsRepository;
+    this.browserStatsService = browserStatsService;
     this.domainStatsService = domainStatsService;
   }
 
@@ -53,7 +53,7 @@ public class ReportsEndpoint {
 
   @ApiMethod(name = "reports.scoreByBrowser", path = "reports/scoreByBrowser")
   public List<BrowserStats> getScoreByBrowserReport() {
-    return browserStatsRepository.list();
+    return browserStatsService.list();
   }
 
   @ApiMethod(name = "reports.scoreByDomain", path = "reports/scoreByDomain")
