@@ -5,19 +5,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
@@ -55,21 +58,18 @@ import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.TreatmentService;
+import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @SuppressWarnings("unused")
 public class QuizzTest {
@@ -112,6 +112,7 @@ public class QuizzTest {
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
 
+  private UserAnswerService userAnswerService;
   private TreatmentService treatmentService;
   private DomainStatsService domainStatsService;
   private UserReferralService userReferralService;
@@ -156,7 +157,6 @@ public class QuizzTest {
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
 
     when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(userAnswerRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userAnswerFeedbackRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
@@ -166,24 +166,25 @@ public class QuizzTest {
     when(survivalProbabilityResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(explorationExploitationResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
+    userAnswerService = new UserAnswerService(userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
     quizService = new QuizService(userReferralService, quizPerformanceRepository, quizRepository, 
-        quizQuestionRepository, userAnswerRepository);
+        quizQuestionRepository, userAnswerService);
     survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository,
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(
-        userAnswerRepository, quizPerformanceRepository, quizQuestionRepository);
+        userAnswerService, quizPerformanceRepository, quizQuestionRepository);
 
     quizEndpoint = new QuizEndpoint(quizService, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizService, quizQuestionRepository,
         answerChallengeCounterRepository);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userRepository,
         answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceRepository,
-        userAnswerRepository, userAnswerFeedbackRepository, explorationExploitationService);
+        userAnswerService, userAnswerFeedbackRepository, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentService);
     userEndpoint = new UserEndpoint(userRepository, userReferralService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceRepository);

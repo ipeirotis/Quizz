@@ -1,10 +1,8 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.appengine.api.datastore.Text;
-import com.google.inject.Inject;
+import java.util.List;
+
+import javax.inject.Named;
 
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.User;
@@ -12,27 +10,29 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerChallengeStatus;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
+import us.quizz.service.UserAnswerService;
 
-import java.util.List;
-
-import javax.inject.Named;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.appengine.api.datastore.Text;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserAnswerEndpoint {
-  private UserAnswerRepository userAnswerRepository;
+  private UserAnswerService userAnswerService;
   private UserRepository userRepository;
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
   private QuizQuestionRepository quizQuestionRepository;
 
   @Inject
   public UserAnswerEndpoint(
-      UserAnswerRepository userAnswerRepository,
+      UserAnswerService userAnswerService,
       UserRepository userRepository,
       AnswerChallengeCounterRepository answerChallengeCounterRepository,
       QuizQuestionRepository quizQuestionRepository) {
-    this.userAnswerRepository = userAnswerRepository;
+    this.userAnswerService = userAnswerService;
     this.userRepository = userRepository;
     this.answerChallengeCounterRepository = answerChallengeCounterRepository;
     this.quizQuestionRepository = quizQuestionRepository;
@@ -60,21 +60,21 @@ public class UserAnswerEndpoint {
     if (isCorrect != null) {
       ue.setIsCorrect(isCorrect);
     }
-    userAnswerRepository.singleMakePersistent(ue);
+    userAnswerService.save(ue);
   }
 
   @ApiMethod(name = "getNumberOfSubmittedAnswers", httpMethod = HttpMethod.POST,
              path = "getNumberOfSubmittedAnswers")
   public NumberOfUnswersResponse getNumberOfSubmittedAnswers(
       @Named("quiz") String quiz, @Named("userid") String userid){
-    int answers = userAnswerRepository.getUserAnswers(quiz, userid).size();
+    int answers = userAnswerService.getUserAnswers(quiz, userid).size();
     return new NumberOfUnswersResponse(quiz, answers);
   }
 
   @ApiMethod(name = "getUserAnswers", httpMethod = HttpMethod.POST,
              path = "getUserAnswers")
   public List<UserAnswer> getUserAnswers(@Named("quizID") String quizID) {
-    return userAnswerRepository.getUserAnswers(quizID);
+    return userAnswerService.getUserAnswersForQuiz(quizID);
   }
 
   @ApiMethod(name = "addAnswerFeedback", httpMethod = HttpMethod.POST, path = "addAnswerFeedback")
@@ -93,10 +93,10 @@ public class UserAnswerEndpoint {
     }
     answerChallengeCounterRepository.save(cc);
 
-    UserAnswer userAnswer = userAnswerRepository.get(userAnswerID);
+    UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeText(new Text(message));
 
-    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswersWithChallenge(quizID, userid);
+    List<UserAnswer> userAnswers = userAnswerService.getUserAnswers(quizID, userid);
 
     if (userAnswers.size() != 0) {
       boolean exist = false;
@@ -115,31 +115,31 @@ public class UserAnswerEndpoint {
         userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
       }
     }
-    return userAnswerRepository.update(userAnswer);
+    return userAnswerService.save(userAnswer);
   }
 
   @ApiMethod(name = "approveAnswerChallenge", path = "answerChallenge/approve")
   public UserAnswer approveChallenge(@Named("userAnswerID") Long userAnswerID) {
-    UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(userAnswerID);
+    UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 
     User user = userRepository.singleGetObjectById(userAnswer.getUserid());
     user.incChallengeBudget();
     userRepository.singleMakePersistent(user);
 
-    return userAnswerRepository.update(userAnswer);
+    return userAnswerService.save(userAnswer);
   }
 
   @ApiMethod(name = "rejectAnswerChallenge", path = "answerChallenge/reject")
   public UserAnswer rejectChallenge(@Named("userAnswerID") Long userAnswerID) {
-    UserAnswer userAnswer = userAnswerRepository.singleGetObjectById(userAnswerID);
+    UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
 
     User user = userRepository.singleGetObjectById(userAnswer.getUserid());
     user.decChallengeBudget();
     userRepository.singleMakePersistent(user);
 
-    return userAnswerRepository.update(userAnswer);
+    return userAnswerService.save(userAnswer);
   }
 
   class NumberOfUnswersResponse {

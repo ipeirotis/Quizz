@@ -1,7 +1,10 @@
 package us.quizz.service;
 
-import com.google.appengine.api.datastore.Text;
-import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -13,31 +16,26 @@ import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.QuizRepository;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.Helper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.appengine.api.datastore.Text;
+import com.google.inject.Inject;
 
 public class QuestionStatisticsService {
 
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
 
-  private QuizRepository quizRepository;
+  private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
-  private UserAnswerRepository userAnswerRepository;
+  private UserAnswerService userAnswerService;
   private QuizPerformanceRepository quizPerformanceRepository;
 
   @Inject
-  public QuestionStatisticsService(QuizRepository quizRepository, QuizQuestionRepository quizQuestionRepository,
-      UserAnswerRepository userAnswerRepository, QuizPerformanceRepository quizPerformanceRepository) {
-    this.quizRepository = quizRepository;
+  public QuestionStatisticsService(QuizService quizService, QuizQuestionRepository quizQuestionRepository,
+      UserAnswerService userAnswerService, QuizPerformanceRepository quizPerformanceRepository) {
+    this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
-    this.userAnswerRepository = userAnswerRepository;
+    this.userAnswerService = userAnswerService;
     this.quizPerformanceRepository = quizPerformanceRepository;
   }
 
@@ -47,7 +45,7 @@ public class QuestionStatisticsService {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
 
-    Quiz quiz = quizRepository.get(question.getQuizID());
+    Quiz quiz = quizService.get(question.getQuizID());
 
     if (question.getKind()==null) {
       Boolean isCalibration = false;
@@ -85,11 +83,11 @@ public class QuestionStatisticsService {
       
     }
 
-    int u = userAnswerRepository.getNumberOfUserAnswersExcludingIDK(questionID);
+    int u = userAnswerService.getNumberOfUserAnswersExcludingIDK(Long.parseLong(questionID));
     question.setHasUserAnswers((u > 0));
     question.setNumberOfUserAnswers(u);
 
-    int c = userAnswerRepository.getNumberOfCorrectUserAnswers(questionID);
+    int c = userAnswerService.getNumberOfCorrectUserAnswers(Long.parseLong(questionID));
     question.setNumberOfCorrentUserAnswers(c);
 
     updateAnswerStatistics(question);
@@ -112,7 +110,7 @@ public class QuestionStatisticsService {
       answerProb.put(aid, 1.0 / n);
     }
 
-    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswersForQuestion(questionId);
+    List<UserAnswer> userAnswers = userAnswerService.getUserAnswersForQuestion(questionId);
     // TODO: We need to check about duplicate answers for the same user for the
     // same question
     for (UserAnswer useranswer : userAnswers) {

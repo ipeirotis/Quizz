@@ -8,7 +8,6 @@ import us.quizz.enums.QuizKind;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
-import us.quizz.repository.UserAnswerRepository;
 
 import com.google.inject.Inject;
 
@@ -18,17 +17,17 @@ public class QuizService {
   private QuizPerformanceRepository quizPerformanceRepository;
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
-  private UserAnswerRepository userAnswerRepository;
+  private UserAnswerService userAnswerService;
   
   @Inject
   public QuizService(UserReferralService userReferralService, 
       QuizPerformanceRepository quizPerformanceRepository, QuizRepository quizRepository,
-      QuizQuestionRepository quizQuestionRepository, UserAnswerRepository userAnswerRepository){
+      QuizQuestionRepository quizQuestionRepository, UserAnswerService userAnswerService){
     this.userReferralService = userReferralService;
     this.quizPerformanceRepository = quizPerformanceRepository;
     this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
-    this.userAnswerRepository = userAnswerRepository;
+    this.userAnswerService = userAnswerService;
   }
   
   public List<Quiz> list(){
@@ -57,7 +56,7 @@ public class QuizService {
     Integer count = quizQuestionRepository.getNumberOfQuizQuestions(quizID, false);
     quiz.setQuestions(count);
 
-    count = userAnswerRepository.getNumberOfUserAnswers(quizID, false);
+    count = userAnswerService.getNumberOfUserAnswers(quizID);
     quiz.setSubmitted(count);
 
     count = quizQuestionRepository.getNumberOfGoldQuestions(quizID, false);

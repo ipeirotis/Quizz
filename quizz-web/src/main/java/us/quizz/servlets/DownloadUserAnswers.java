@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.UserAnswer;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.service.QuizService;
+import us.quizz.service.UserAnswerService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -21,13 +21,13 @@ public class DownloadUserAnswers extends HttpServlet {
   final static Logger logger = Logger.getLogger("com.ipeirotis.crowdquiz");
 
   private QuizService quizService;
-  private UserAnswerRepository userAnswerRepository;
+  private UserAnswerService userAnswerService;
 
   @Inject
   public DownloadUserAnswers(QuizService quizService,
-                             UserAnswerRepository userAnswerRepository) {
+      UserAnswerService userAnswerService) {
     this.quizService = quizService;
-    this.userAnswerRepository = userAnswerRepository;
+    this.userAnswerService = userAnswerService;
   }
 
   @Override
@@ -36,7 +36,7 @@ public class DownloadUserAnswers extends HttpServlet {
     String quizID = request.getParameter("quizID");
     String name = quizService.get(quizID).getName();
 
-    List<UserAnswer> answers = userAnswerRepository.getUserAnswers(quizID);
+    List<UserAnswer> answers = userAnswerService.getUserAnswersForQuiz(quizID);
     StringBuffer sb = new StringBuffer();
     sbApp(sb, "userid");
     sbApp(sb, "questionID");

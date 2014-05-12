@@ -1,76 +1,42 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Text;
+import java.io.Serializable;
 
 import us.quizz.enums.AnswerChallengeStatus;
 
-import java.io.Serializable;
+import com.google.appengine.api.datastore.Text;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class UserAnswer implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public static Key generateKeyFromID(String questionID, String userID) {
-    return KeyFactory.createKey(UserAnswer.class.getSimpleName(), "id_"
-        + questionID + "_" + userID);
-  }
-
-  @Persistent
+  @Id
+  private Long id;
   private String userid;
-
-  @Persistent
   private Long timestamp;
-
-  @Persistent
   private String ipaddress;
-
-  @Persistent
   private Integer answerID;
-
-  @Persistent
   private String userInput;
-
-  @Persistent
   private Double score;
-
-  @Persistent
   private String referer;
-
-  @Persistent
   private Long questionID;
-
-  @Persistent
   private String quizID;
-
-  @Persistent
   private String browser;
-
-  @Persistent
   private String action;
-
-  @Persistent
   private Boolean isCorrect;
-
-  @Persistent
   private Text answerChallengeText;
-
-  @Persistent
   private AnswerChallengeStatus answerChallengeStatus;
-
-  @Persistent
   private Double answerChallengeWeight = 0.0d;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
+  //for Objectify
+  @SuppressWarnings("unused")
+  private UserAnswer(){}
 
   public UserAnswer(String userid, Long questionID, Integer useranswerID) {
     this.questionID = questionID;
@@ -109,10 +75,6 @@ public class UserAnswer implements Serializable {
 
   public Boolean getIsCorrect() {
     return isCorrect;
-  }
-
-  public Key getKey() {
-    return key;
   }
 
   public Long getQuestionID() {
@@ -217,5 +179,13 @@ public class UserAnswer implements Serializable {
 
   public void setAnswerChallengeText(Text answerChallengeText) {
     this.answerChallengeText = answerChallengeText;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 }

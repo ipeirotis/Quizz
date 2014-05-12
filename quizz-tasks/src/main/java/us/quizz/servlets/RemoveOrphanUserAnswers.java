@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizService;
+import us.quizz.service.UserAnswerService;
 import us.quizz.utils.QueueUtils;
 
 import com.google.appengine.api.taskqueue.Queue;
@@ -36,15 +36,15 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
 
   private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
-  private UserAnswerRepository userAnswerRepository;
+  private UserAnswerService userAnswerService;
 
   @Inject
   public RemoveOrphanUserAnswers(QuizService quizService,
       QuizQuestionRepository quizQuestionRepository,
-      UserAnswerRepository userAnswerRepository) {
+      UserAnswerService userAnswerService) {
     this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
-    this.userAnswerRepository = userAnswerRepository;
+    this.userAnswerService = userAnswerService;
   }
 
   @Override
@@ -64,10 +64,10 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
     // If we have a quizID, we will remove these questions
     String quizId = req.getParameter("quizid");
     if (quizId != null) {
-      List<UserAnswer> answers = this.userAnswerRepository.getUserAnswers(quizId);
+      List<UserAnswer> answers = this.userAnswerService.getUserAnswersForQuiz(quizId);
       logger.log(Level.INFO, "Removing " + answers.size() + " answers...");
 
-      this.userAnswerRepository.removeAll(answers);
+      this.userAnswerService.remove(answers);
     }
   }
 

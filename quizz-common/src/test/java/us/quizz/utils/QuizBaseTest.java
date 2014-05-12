@@ -104,7 +104,6 @@ public class QuizBaseTest {
   protected UserAnswerRepository getUserAnswerRepository() {
     if (userAnswerRepository == null) {
       userAnswerRepository = spy(new UserAnswerRepository());
-      when(userAnswerRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     }
     return userAnswerRepository;
   }

@@ -21,10 +21,10 @@ import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserAnswerFeedbackRepository;
-import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizService;
+import us.quizz.service.UserAnswerService;
 import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.QueueUtils;
 
@@ -47,7 +47,7 @@ public class ProcessUserAnswerEndpoint {
   private QuizQuestionRepository quizQuestionRepository;
   private BadgeRepository badgeRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
-  private UserAnswerRepository userAnswerRepository;
+  private UserAnswerService userAnswerService;
   private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
   private ExplorationExploitationService explorationExploitationService;
 
@@ -59,7 +59,7 @@ public class ProcessUserAnswerEndpoint {
       QuizQuestionRepository quizQuestionRepository,
       BadgeRepository badgeRepository,
       QuizPerformanceRepository quizPerformanceRepository,
-      UserAnswerRepository userAnswerRepository,
+      UserAnswerService userAnswerService,
       UserAnswerFeedbackRepository userAnswerFeedbackRepository,
       ExplorationExploitationService explorationExploitationService) {
     this.quizService = quizService;
@@ -69,7 +69,7 @@ public class ProcessUserAnswerEndpoint {
     this.quizQuestionRepository = quizQuestionRepository;
     this.badgeRepository = badgeRepository;
     this.quizPerformanceRepository = quizPerformanceRepository;
-    this.userAnswerRepository = userAnswerRepository;
+    this.userAnswerService = userAnswerService;
     this.explorationExploitationService = explorationExploitationService;
   }
 
@@ -281,7 +281,7 @@ public class ProcessUserAnswerEndpoint {
     ue.setIsCorrect(isCorrect);
     ue.setQuizID(quizID);
     ue.setUserInput(userInput);
-    return userAnswerRepository.singleMakePersistent(ue);
+    return userAnswerService.save(ue);
   }
 
   /**
