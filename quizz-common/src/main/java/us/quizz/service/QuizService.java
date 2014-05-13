@@ -62,14 +62,6 @@ public class QuizService {
     count = quizQuestionRepository.getNumberOfGoldQuestions(quizID, false);
     quiz.setGold(count);
     
-    if (quiz.getKind()==null) {
-      if (quiz.getName().startsWith("translate")) {
-        quiz.setKind(QuizKind.FREE_TEXT);
-      } else {
-        quiz.setKind(QuizKind.MULTIPLE_CHOICE);
-      }
-    }
-
     // TODO(chunhowt): UserReferral is broken now, so this will always return 0.
     count = userReferralService.getUserIDsByQuiz(quizID).size();
     quiz.setTotalUsers(count + 1);  // +1 for smoothing, ensuring no division by 0
