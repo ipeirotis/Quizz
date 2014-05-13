@@ -1,16 +1,10 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
-
 import us.quizz.entities.SurvivalProbabilityResult;
+import us.quizz.ofy.OfyBaseRepository;
 
-public class SurvivalProbabilityResultRepository extends BaseRepository<SurvivalProbabilityResult> {
+public class SurvivalProbabilityResultRepository extends OfyBaseRepository<SurvivalProbabilityResult> {
   public SurvivalProbabilityResultRepository() {
     super(SurvivalProbabilityResult.class);
-  }
-
-  @Override
-  protected Key getKey(SurvivalProbabilityResult item) {
-    return item.getKey();
   }
 }

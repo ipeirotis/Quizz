@@ -4,6 +4,7 @@ import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.ExplorationExploitationResult;
 import us.quizz.entities.Quiz;
+import us.quizz.entities.SurvivalProbabilityResult;
 import us.quizz.entities.Treatment;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
@@ -19,6 +20,7 @@ public class OfyService {
     register(DomainStats.class);
     register(ExplorationExploitationResult.class);
     register(Quiz.class);
+    register(SurvivalProbabilityResult.class);
     register(Treatment.class);
     register(UserAnswer.class);
     register(UserAnswerFeedback.class);

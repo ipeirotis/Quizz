@@ -1,18 +1,16 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class SurvivalProbabilityResult implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -20,59 +18,25 @@ public class SurvivalProbabilityResult implements Serializable {
   private static final int defaultusersTo = 75;
   private static final double defaultProbSurvival = 0.75;
 
-  public static Key generateKeyFromID(int a_from, int b_from, int c_from,
-      int a_to, int b_to, int c_to) {
-    return KeyFactory.createKey(SurvivalProbabilityResult.class.getSimpleName(),
-        "id_" + a_from + "_" + b_from + "_" + c_from + "_" +
-        a_to + "_" + b_to + "_" + c_to);
-  }
-
-  public static SurvivalProbabilityResult getDefaultResult(
-      Integer a_from, Integer b_from, Integer c_from,
-      Integer a_to, Integer b_to, Integer c_to) {
-    boolean isDefault = true;
-    return new SurvivalProbabilityResult(a_from, b_from, c_from, a_to, b_to, c_to,
-        defaultUsersFrom, defaultusersTo, defaultProbSurvival, isDefault);
-  }
-
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
+  @Id
+  private String id;
   // Marks a "default" result whenever we do not have actual numbers to report
-  @Persistent
   private Boolean isDefault;
-
-  @Persistent
   private Integer correctFrom;
-  @Persistent
   private Integer incorrectFrom;
-  @Persistent
   private Integer exploitFrom;
-  @Persistent
   private Integer correctTo;
-  @Persistent
   private Integer incorrectTo;
-  @Persistent
   private Integer exploitTo;
-  @Persistent
   private Integer usersFrom;
-  @Persistent
   private Integer usersTo;
-  @Persistent
   private Double probSurvival;
-
   // Last time that we computed the object
-  @Persistent
   private Date timestamp;
 
-  public Date getTimestamp() {
-    return timestamp;
-  }
-
-  public void setTimestamp(Date timestamp) {
-    this.timestamp = timestamp;
-  }
+  //for Objectify
+  @SuppressWarnings("unused")
+  private SurvivalProbabilityResult(){}
 
   public SurvivalProbabilityResult(Integer a_from, Integer b_from, Integer c_from,
       Integer a_to, Integer b_to, Integer c_to,
@@ -88,16 +52,30 @@ public class SurvivalProbabilityResult implements Serializable {
     this.usersTo = users_to;
     this.probSurvival = psurvival;
     this.isDefault = isDefault;
-    this.key = generateKeyFromID(correctFrom, incorrectFrom, exploitFrom,
+    this.id = generateId(correctFrom, incorrectFrom, exploitFrom,
         correctTo, incorrectTo, exploitTo);
   }
 
-  public Key getKey() {
-    return key;
+  public static String generateId(int a_from, int b_from, int c_from,
+      int a_to, int b_to, int c_to) {
+    return a_from + "_" + b_from + "_" + c_from + "_" +
+        a_to + "_" + b_to + "_" + c_to;
   }
 
-  public void setKey(Key key) {
-    this.key = key;
+  public static SurvivalProbabilityResult getDefaultResult(
+      Integer a_from, Integer b_from, Integer c_from,
+      Integer a_to, Integer b_to, Integer c_to) {
+    boolean isDefault = true;
+    return new SurvivalProbabilityResult(a_from, b_from, c_from, a_to, b_to, c_to,
+        defaultUsersFrom, defaultusersTo, defaultProbSurvival, isDefault);
+  }
+
+  public Date getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(Date timestamp) {
+    this.timestamp = timestamp;
   }
 
   public Boolean getIsDefault() {
@@ -178,5 +156,13 @@ public class SurvivalProbabilityResult implements Serializable {
 
   public void setProbSurvival(Double probSurvival) {
     this.probSurvival = probSurvival;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 }

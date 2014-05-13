@@ -164,7 +164,6 @@ public class QuizzTest {
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(survivalProbabilityResultRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
     userAnswerService = new UserAnswerService(userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
