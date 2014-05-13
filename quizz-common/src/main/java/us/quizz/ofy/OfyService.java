@@ -2,6 +2,7 @@ package us.quizz.ofy;
 
 import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
+import us.quizz.entities.ExplorationExploitationResult;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.Treatment;
 import us.quizz.entities.UserAnswer;
@@ -16,6 +17,7 @@ public class OfyService {
   static {
     register(BrowserStats.class);
     register(DomainStats.class);
+    register(ExplorationExploitationResult.class);
     register(Quiz.class);
     register(Treatment.class);
     register(UserAnswer.class);
