@@ -58,6 +58,7 @@ import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.TreatmentService;
+import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
@@ -112,6 +113,7 @@ public class QuizzTest {
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
 
+  private UserAnswerFeedbackService userAnswerFeedbackService;
   private UserAnswerService userAnswerService;
   private TreatmentService treatmentService;
   private DomainStatsService domainStatsService;
@@ -157,7 +159,6 @@ public class QuizzTest {
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
 
     when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(userAnswerFeedbackRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
@@ -184,7 +185,7 @@ public class QuizzTest {
         answerChallengeCounterRepository);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userRepository,
         answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceRepository,
-        userAnswerService, userAnswerFeedbackRepository, explorationExploitationService);
+        userAnswerService, userAnswerFeedbackService, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentService);
     userEndpoint = new UserEndpoint(userRepository, userReferralService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceRepository);

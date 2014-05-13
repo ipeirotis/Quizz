@@ -1,90 +1,51 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.List;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class UserAnswerFeedback implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public static Key generateKeyFromID(Long questionID, String userid) {
-    return KeyFactory.createKey(UserAnswerFeedback.class.getSimpleName(),
-        "id_" + questionID + "_" + userid);
-  }
-
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
-  @Persistent
+  @Id
+  private String id;
   private Long questionID;
-
-  @Persistent
   private String userid;
-
-  @Persistent
   private Integer userAnswerID;
-
-  @Persistent
   private String userAnswerText;
-
-  @Persistent
   private String userNewBadges;
-
-  @Persistent
   private Boolean isCorrect;
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  @Persistent
   private String correctAnswerText;
-
-  @Persistent
   private String message;
-
-  @Persistent
   private Integer numCorrectAnswers;
-
-  @Persistent
   private Integer numTotalAnswers;
-
-  @Persistent
   private String difficulty;
 
   public UserAnswerFeedback(Long questionID, String userid,
       Integer userAnswerID, Boolean isCorrect) {
+    this.id = questionID + "_" + userid;
     this.questionID = questionID;
     this.userid = userid;
     this.userAnswerID = userAnswerID;
     this.isCorrect = isCorrect;
-
-    this.key = generateKeyFromID(questionID, userid);
   }
 
-  public Key getKey() {
-    return key;
+  public String getId() {
+    return id;
   }
 
-  public void setKey(Key key) {
-    this.key = key;
+  public void setId(String id) {
+    this.id = id;
   }
-
+  
   public Long getQuestionID() {
     return questionID;
   }
@@ -165,6 +126,14 @@ public class UserAnswerFeedback implements Serializable {
     this.numTotalAnswers = numTotalAnswers;
   }
 
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
   public String getDifficulty() {
     return difficulty;
   }
@@ -182,4 +151,5 @@ public class UserAnswerFeedback implements Serializable {
     percentFormat.setMaximumFractionDigits(0);
     this.difficulty = percentFormat.format(d);
   }
+
 }

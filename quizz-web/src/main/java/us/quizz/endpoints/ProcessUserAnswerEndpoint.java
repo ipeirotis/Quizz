@@ -20,10 +20,10 @@ import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizService;
+import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.QueueUtils;
@@ -48,7 +48,7 @@ public class ProcessUserAnswerEndpoint {
   private BadgeRepository badgeRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
   private UserAnswerService userAnswerService;
-  private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
+  private UserAnswerFeedbackService userAnswerFeedbackService;
   private ExplorationExploitationService explorationExploitationService;
 
   @Inject
@@ -60,11 +60,11 @@ public class ProcessUserAnswerEndpoint {
       BadgeRepository badgeRepository,
       QuizPerformanceRepository quizPerformanceRepository,
       UserAnswerService userAnswerService,
-      UserAnswerFeedbackRepository userAnswerFeedbackRepository,
+      UserAnswerFeedbackService userAnswerFeedbackService,
       ExplorationExploitationService explorationExploitationService) {
     this.quizService = quizService;
     this.userRepository = userRepository;
-    this.userAnswerFeedbackRepository = userAnswerFeedbackRepository;
+    this.userAnswerFeedbackService = userAnswerFeedbackService;
     this.answersRepository = answersRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.badgeRepository = badgeRepository;
@@ -231,7 +231,7 @@ public class ProcessUserAnswerEndpoint {
     uaf.setUserAnswerText(answerText);
     uaf.setMessage(message);
     uaf.computeDifficulty();
-    userAnswerFeedbackRepository.storeUserAnswerFeedback(uaf);
+    userAnswerFeedbackService.save(uaf);
     return uaf;
   }
 

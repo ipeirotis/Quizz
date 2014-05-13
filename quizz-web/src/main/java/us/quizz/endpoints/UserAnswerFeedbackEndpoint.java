@@ -1,23 +1,23 @@
 package us.quizz.endpoints;
 
+import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.service.UserAnswerFeedbackService;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
 
-import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.repository.UserAnswerFeedbackRepository;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserAnswerFeedbackEndpoint {
-  private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
+  private UserAnswerFeedbackService userAnswerFeedbackService;
 
   @Inject
-  public UserAnswerFeedbackEndpoint(UserAnswerFeedbackRepository userAnswerFeedbackRepository) {
-    this.userAnswerFeedbackRepository = userAnswerFeedbackRepository;
+  public UserAnswerFeedbackEndpoint(UserAnswerFeedbackService userAnswerFeedbackService) {
+    this.userAnswerFeedbackService = userAnswerFeedbackService;
   }
 
   /**
@@ -31,7 +31,7 @@ public class UserAnswerFeedbackEndpoint {
   public CollectionResponse<UserAnswerFeedback> listUserAnswerFeedback(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-    return userAnswerFeedbackRepository.listItems(cursorString, limit);
+    return userAnswerFeedbackService.listWithCursor(cursorString, limit);
   }
 
   /**
@@ -44,7 +44,7 @@ public class UserAnswerFeedbackEndpoint {
   @ApiMethod(name = "getUserAnswerFeedback")
   public UserAnswerFeedback getUserAnswerFeedback(
       @Named("question") Long questionID, @Named("userid") String userid) {
-    return userAnswerFeedbackRepository.getUserAnswerFeedback(questionID, userid);
+    return userAnswerFeedbackService.get(questionID, userid);
   }
 
   /**
@@ -57,7 +57,7 @@ public class UserAnswerFeedbackEndpoint {
   @ApiMethod(name = "insertUserAnswerFeedback")
   public UserAnswerFeedback insertUserAnswerFeedback(
       UserAnswerFeedback useranswerfeedback) {
-    return userAnswerFeedbackRepository.insert(useranswerfeedback);
+    return userAnswerFeedbackService.save(useranswerfeedback);
   }
 
   /**
@@ -68,9 +68,8 @@ public class UserAnswerFeedbackEndpoint {
    * @return The updated entity.
    */
   @ApiMethod(name = "updateUserAnswerFeedback")
-  public UserAnswerFeedback updateUserAnswerFeedback(
-      UserAnswerFeedback useranswerfeedback) {
-    return userAnswerFeedbackRepository.update(useranswerfeedback);
+  public UserAnswerFeedback updateUserAnswerFeedback(UserAnswerFeedback useranswerfeedback) {
+    return userAnswerFeedbackService.save(useranswerfeedback);
   }
 
   /**
@@ -79,8 +78,7 @@ public class UserAnswerFeedbackEndpoint {
    * @param id the primary key of the entity to be deleted.
    */
   @ApiMethod(name = "removeUserAnswerFeedback")
-  public void removeUserAnswerFeedback(@Named("id") Long id) {
-    UserAnswerFeedback uaf = userAnswerFeedbackRepository.singleGetObjectByIdThrowing(id);
-    userAnswerFeedbackRepository.remove(uaf.getKey());
+  public void removeUserAnswerFeedback(@Named("id") String id) {
+    userAnswerFeedbackService.delete(id);
   }
 }

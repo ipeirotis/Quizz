@@ -5,6 +5,7 @@ import us.quizz.entities.DomainStats;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.Treatment;
 import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.entities.UserReferal;
 
 import com.googlecode.objectify.Objectify;
@@ -18,6 +19,7 @@ public class OfyService {
     register(Quiz.class);
     register(Treatment.class);
     register(UserAnswer.class);
+    register(UserAnswerFeedback.class);
     register(UserReferal.class);
   }
 
