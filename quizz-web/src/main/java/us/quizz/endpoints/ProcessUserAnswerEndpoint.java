@@ -11,17 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
-import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.enums.AnswerKind;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
-import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
@@ -46,7 +45,7 @@ public class ProcessUserAnswerEndpoint {
   private AnswersRepository answersRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private BadgeRepository badgeRepository;
-  private QuizPerformanceRepository quizPerformanceRepository;
+  private QuizPerformanceService quizPerformanceService;
   private UserAnswerService userAnswerService;
   private UserAnswerFeedbackService userAnswerFeedbackService;
   private ExplorationExploitationService explorationExploitationService;
@@ -58,7 +57,7 @@ public class ProcessUserAnswerEndpoint {
       AnswersRepository answersRepository,
       QuizQuestionRepository quizQuestionRepository,
       BadgeRepository badgeRepository,
-      QuizPerformanceRepository quizPerformanceRepository,
+      QuizPerformanceService quizPerformanceService,
       UserAnswerService userAnswerService,
       UserAnswerFeedbackService userAnswerFeedbackService,
       ExplorationExploitationService explorationExploitationService) {
@@ -68,7 +67,7 @@ public class ProcessUserAnswerEndpoint {
     this.answersRepository = answersRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.badgeRepository = badgeRepository;
-    this.quizPerformanceRepository = quizPerformanceRepository;
+    this.quizPerformanceService = quizPerformanceService;
     this.userAnswerService = userAnswerService;
     this.explorationExploitationService = explorationExploitationService;
   }
@@ -185,7 +184,6 @@ public class ProcessUserAnswerEndpoint {
 
     UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
         answerID, userInput, isCorrect, correctanswers, totalanswers, message);
-    quickUpdateQuizPerformance(user, quizID, isCorrect, action);
     
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, referer, timestamp, isCorrect);
@@ -283,35 +281,4 @@ public class ProcessUserAnswerEndpoint {
     return userAnswerService.save(ue);
   }
 
-  /**
-   * With this call, we just update the counts of correct and incorrect
-   * answers. The full update happens asynchronously from the
-   * updateUserStatistics call that is placed in the task queue.
-   * 
-   * @param user
-   * @param quizID
-   * @param isCorrect
-   * @param action
-   */
-  private void quickUpdateQuizPerformance(User user, String quizID,
-      Boolean isCorrect, String action) {
-
-    QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(
-        quizID, user.getUserid());
-    if (qp == null) {
-      qp = new QuizPerformance(quizID, user.getUserid());
-    }
-
-    if (isCorrect) {
-      qp.increaseCorrect();
-    } else {
-      qp.increaseIncorrect();
-    }
-
-    if (action.equals("Submit")) {
-      qp.increaseTotal();
-    }
-
-    quizPerformanceRepository.cacheQuizPerformance(qp);
-  }
 }

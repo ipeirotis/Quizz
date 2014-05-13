@@ -8,7 +8,6 @@ import java.util.Set;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
-import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 
 import com.google.appengine.api.datastore.Key;
@@ -17,15 +16,15 @@ import com.google.inject.Inject;
 
 public class UserQuizStatisticsService {
   private UserAnswerService userAnswerService;
-  private QuizPerformanceRepository quizPerformanceRepository;
+  private QuizPerformanceService quizPerformanceService;
   private QuizQuestionRepository quizQuestionRepository;
 
   @Inject
   public UserQuizStatisticsService(UserAnswerService userAnswerService,
-      QuizPerformanceRepository quizPerformanceRepository,
+      QuizPerformanceService quizPerformanceService,
       QuizQuestionRepository quizQuestionRepository) {
     this.userAnswerService = userAnswerService;
-    this.quizPerformanceRepository = quizPerformanceRepository;
+    this.quizPerformanceService = quizPerformanceService;
     this.quizQuestionRepository = quizQuestionRepository;
   }
 
@@ -43,9 +42,9 @@ public class UserQuizStatisticsService {
 
     qp.computeCorrect(userAnswerList, questionList);
 
-    List<QuizPerformance> quizPerformanceList = quizPerformanceRepository
+    List<QuizPerformance> quizPerformanceList = quizPerformanceService
         .getQuizPerformancesByQuiz(quizId);
     qp.computeRank(quizPerformanceList);
-    quizPerformanceRepository.storeQuizPerformance(qp);
+    quizPerformanceService.save(qp);
   }
 }

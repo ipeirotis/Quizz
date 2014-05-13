@@ -1,11 +1,5 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.common.base.Preconditions;
-
-import us.quizz.utils.Helper;
-
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -14,11 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import us.quizz.utils.Helper;
+
+import com.google.common.base.Preconditions;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 /**
  * Keeps track of the performance of a user within a Quiz. This is a "caching"
@@ -36,83 +32,57 @@ import javax.jdo.annotations.PrimaryKey;
  * that participated in the quiz, and computes the relative rank of the user
  * within the group.
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class QuizPerformance implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public static Key generateKeyFromID(String quiz, String userid) {
-    return KeyFactory.createKey(QuizPerformance.class.getSimpleName(),
-        "id_" + userid + "_" + quiz);
-  }
-
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
+  @Id
+  private String id;
   // The userid of the user
-  @Persistent
-  String userid;
-
+  private String userid;
   // The id of the quiz
-  @Persistent
-  String quiz;
-
+  private String quiz;
   // The number of answers given by the user for all questions (calibration + collection).
-  @Persistent
-  Integer totalanswers;
-
+  private Integer totalanswers;
   // The number of answers given by the user for golden questions (calibration).
-  @Persistent
-  Integer totalCalibrationAnswers;
-
+  private Integer totalCalibrationAnswers;
   // The number of correct answers given by the user
-  @Persistent
-  Integer correctanswers;
-
+  private Integer correctanswers;
   // The number of incorrect answers given by the user
-  @Persistent
-  Integer incorrectanswers;
-
+  private Integer incorrectanswers;
   // The total information gain by this user. This is the total number of
   // answers given (excluding the "I do not know" answers)
   // multiplied with the Bayesian Information Gain.
-  @Persistent
-  Double percentageCorrect;
-
+  private Double percentageCorrect;
   // The total information gain by this user. This is the total number of
   // answers given (excluding the "I do not know" answers)
   // multiplied with the Bayesian Information Gain.
-  @Persistent
-  Double score;
-
+  private Double score;
   // The total information gain by this user. This is the total number of
   // answers given (excluding the "I do not know" answers)
   // multiplied with the Bayesian Information Gain.
-  @Persistent
-  Double bayes_infogain;
-
+  private Double bayes_infogain;
   // The (frequentist) total information gain by this user. This is the total
   // number of answers given (excluding the "I do not know" answers)
   // multiplied with the Information Gain, computed in a frequentist way.
-  @Persistent
-  Double freq_infogain;
-
+  private Double freq_infogain;
   // The Bayesian information gain by this user, computed in an LCB fashion.
   // This is the total number of answers given (excluding the "I do not know" answers)
   // multiplied with the Bayesian Information Gain minus one standard deviation.
-  @Persistent
-  Double lcb_infogain;
-
+  private Double lcb_infogain;
   // The rank across the IG score
-  @Persistent
-  Integer rankScore;
-
+  private Integer rankScore;
   // The number of other users that participated in the same quiz
-  @Persistent
-  Integer totalUsers;
+  private Integer totalUsers;
+
+  //for Objectify
+  @SuppressWarnings("unused")
+  private QuizPerformance(){}
 
   public QuizPerformance(String quiz, String userid) {
-    this.key = QuizPerformance.generateKeyFromID(quiz, userid);
+    this.id = QuizPerformance.generateId(quiz, userid);
     this.userid = userid;
     this.quiz = quiz;
     this.totalanswers = 0;
@@ -120,6 +90,10 @@ public class QuizPerformance implements Serializable {
     this.correctanswers = 0;
     this.incorrectanswers = 0;
     this.score = 0.0;
+  }
+
+  public static String generateId(String quiz, String userid) {
+    return "id_" + userid + "_" + quiz;
   }
 
   public void computeCorrect(List<UserAnswer> results, List<Question> questions) {
@@ -251,10 +225,6 @@ public class QuizPerformance implements Serializable {
     return totalCalibrationAnswers;
   }
 
-  public Key getKey() {
-    return key;
-  }
-
   public Double getPercentageCorrect() {
     if (this.totalanswers != null &&
         this.correctanswers != null &&
@@ -326,11 +296,6 @@ public class QuizPerformance implements Serializable {
     this.totalCalibrationAnswers = totalCalibrationAnswers;
   }
 
-  public void setKey(Key key) {
-    Preconditions.checkNotNull(key);
-    this.key = key;
-  }
-
   public void setQuiz(String quiz) {
     Preconditions.checkNotNull(quiz);
     this.quiz = quiz;
@@ -369,5 +334,13 @@ public class QuizPerformance implements Serializable {
   public void setLcbInfoGain(Double lcbInfoGain) {
     Preconditions.checkNotNull(lcbInfoGain);
     this.lcb_infogain = lcbInfoGain;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 }

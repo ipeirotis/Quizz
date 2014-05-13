@@ -10,7 +10,7 @@
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.HashMap"%>
 
-<%@ page import="us.quizz.repository.QuizPerformanceRepository"%>
+<%@ page import="us.quizz.service.QuizPerformanceService"%>
 <%@ page import="com.google.inject.Injector"%>
 <%@ page import="com.google.inject.Guice"%>
 <%@ page import="us.quizz.di.CommonModule"%>
@@ -35,7 +35,7 @@
 <% 
 Injector i = Guice.createInjector(new CommonModule());
 UserRepository userRepository = i.getInstance(UserRepository.class);
-QuizPerformanceRepository quizPerformanceRepository = i.getInstance(QuizPerformanceRepository.class);
+QuizPerformanceService quizPerformanceService = i.getInstance(QuizPerformanceService.class);
 %>
 
 <body>
@@ -67,7 +67,7 @@ QuizPerformanceRepository quizPerformanceRepository = i.getInstance(QuizPerforma
 				
 					<tr><th colspan="4">Quiz Performance</th></tr>
 					<%
-					List<QuizPerformance> results = quizPerformanceRepository.getQuizPerformancesByUser(u.getUserid());				
+					List<QuizPerformance> results = quizPerformanceService.getQuizPerformancesByUser(u.getUserid());				
 				
 					for (QuizPerformance qp : results) {
 						%> 

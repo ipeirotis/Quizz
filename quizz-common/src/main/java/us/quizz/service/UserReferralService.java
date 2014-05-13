@@ -18,8 +18,6 @@ import us.quizz.repository.UserReferralRepository;
 import us.quizz.utils.UrlUtils;
 
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.inject.Inject;
 
 public class UserReferralService {
@@ -87,15 +85,14 @@ public class UserReferralService {
   }
 
   public Result getCountByBrowser(Browser browser) {
-    Set<Key> users = new HashSet<Key>();
+    Set<String> users = new HashSet<String>();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("browserParam", browser);
 
     List<UserReferal> list = userReferralRepository.listAll(params);
     long count = list.size();
     for (UserReferal ref : list) {
-      users.add(KeyFactory.createKey(QuizPerformance.class.getSimpleName(),
-          "id_" + ref.getUserid() + "_" + ref.getQuiz()));
+      users.add(QuizPerformance.generateId(ref.getQuiz(), ref.getUserid()));
     }
 
     return new Result(count, users);
@@ -103,9 +100,9 @@ public class UserReferralService {
 
   public class Result {
     private long count;
-    private Set<Key> users;
+    private Set<String> users;
 
-    public Result(long count, Set<Key> users) {
+    public Result(long count, Set<String> users) {
       this.count = count;
       this.users = users;
     }
@@ -114,7 +111,7 @@ public class UserReferralService {
       return count;
     }
 
-    public Set<Key> getUsers() {
+    public Set<String> getUsers() {
       return users;
     }
   }

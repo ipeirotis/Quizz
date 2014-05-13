@@ -102,8 +102,16 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz).filter(propName, propValue).first().now();
   }
 
-  public List<T> listByIds(Collection<Long> ids) {
+  public List<T> listByIds(Iterable<Long> ids) {
     Map<Long, T> map = ofy().load().type(clazz).ids(ids);
+    if (map != null)
+      return new ArrayList<T>(map.values());
+    else
+      return null;
+  }
+
+  public List<T> listByStringIds(Iterable<String> ids) {
+    Map<String, T> map = ofy().load().type(clazz).ids(ids);
     if (map != null)
       return new ArrayList<T>(map.values());
     else
@@ -121,11 +129,11 @@ public class OfyBaseRepository<T> {
   public List<T> list(String sortOrder) {
     return ofy().load().type(clazz).order(sortOrder).list();
   }
-  
+
   public List<T> listAll(){
     return listAll(null);
   }
-  
+
   public List<T> listAll(Map<String, Object> params){
     List<T> list = new ArrayList<T>();
     Query<T> q = ofy().load().type(clazz).limit(1000);

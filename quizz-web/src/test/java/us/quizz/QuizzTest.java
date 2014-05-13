@@ -55,6 +55,7 @@ import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.TreatmentService;
@@ -113,6 +114,7 @@ public class QuizzTest {
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
 
+  private QuizPerformanceService quizPerformanceService;
   private UserAnswerFeedbackService userAnswerFeedbackService;
   private UserAnswerService userAnswerService;
   private TreatmentService treatmentService;
@@ -158,35 +160,35 @@ public class QuizzTest {
     survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
 
-    when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());;
     when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
+    quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
-    quizService = new QuizService(userReferralService, quizPerformanceRepository, quizRepository, 
+    quizService = new QuizService(userReferralService, quizPerformanceService, quizRepository, 
         quizQuestionRepository, userAnswerService);
-    survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceRepository,
+    survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceService,
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(
-        userAnswerService, quizPerformanceRepository, quizQuestionRepository);
+        userAnswerService, quizPerformanceService, quizQuestionRepository);
 
     quizEndpoint = new QuizEndpoint(quizService, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizService, quizQuestionRepository,
         answerChallengeCounterRepository);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userRepository,
-        answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceRepository,
+        answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceService,
         userAnswerService, userAnswerFeedbackService, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentService);
     userEndpoint = new UserEndpoint(userRepository, userReferralService);
-    quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceRepository);
+    quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceService);
 
     questionsToCreate = new HashMap<String, Question>();
 

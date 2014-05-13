@@ -4,8 +4,6 @@ import java.util.List;
 
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
-import us.quizz.enums.QuizKind;
-import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 
@@ -14,17 +12,17 @@ import com.google.inject.Inject;
 public class QuizService {
 
   private UserReferralService userReferralService;
-  private QuizPerformanceRepository quizPerformanceRepository;
+  private QuizPerformanceService quizPerformanceService;
   private QuizRepository quizRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private UserAnswerService userAnswerService;
   
   @Inject
   public QuizService(UserReferralService userReferralService, 
-      QuizPerformanceRepository quizPerformanceRepository, QuizRepository quizRepository,
+      QuizPerformanceService quizPerformanceService, QuizRepository quizRepository,
       QuizQuestionRepository quizQuestionRepository, UserAnswerService userAnswerService){
     this.userReferralService = userReferralService;
-    this.quizPerformanceRepository = quizPerformanceRepository;
+    this.quizPerformanceService = quizPerformanceService;
     this.quizRepository = quizRepository;
     this.quizQuestionRepository = quizQuestionRepository;
     this.userAnswerService = userAnswerService;
@@ -66,8 +64,7 @@ public class QuizService {
     count = userReferralService.getUserIDsByQuiz(quizID).size();
     quiz.setTotalUsers(count + 1);  // +1 for smoothing, ensuring no division by 0
 
-    List<QuizPerformance> perf = quizPerformanceRepository
-        .getQuizPerformancesByQuiz(quizID);
+    List<QuizPerformance> perf = quizPerformanceService.getQuizPerformancesByQuiz(quizID);
 
     int contributingUsers = perf.size();
     // +1 for smoothing, ensuring no division by 0

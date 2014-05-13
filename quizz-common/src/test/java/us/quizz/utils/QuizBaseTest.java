@@ -118,7 +118,6 @@ public class QuizBaseTest {
   protected QuizPerformanceRepository getQuizPerformanceRepository() {
     if (quizPerformanceRepository == null) {
       quizPerformanceRepository = spy(new QuizPerformanceRepository());
-      when(quizPerformanceRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     }
     return quizPerformanceRepository;
   }

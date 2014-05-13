@@ -1,34 +1,33 @@
 package us.quizz.service;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.inject.Inject;
-
-import us.quizz.entities.SurvivalProbabilityResult;
-import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.SurvivalProbabilityResultRepository;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.MemcacheKey;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import us.quizz.entities.SurvivalProbabilityResult;
+import us.quizz.repository.SurvivalProbabilityResultRepository;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.MemcacheKey;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.inject.Inject;
+
 public class SurvivalProbabilityService {
   // Number of minutes to cache survival probability in Memcache.
   private static final int SURVIVAL_PROBABILITIES_CACHED_TIME_MINS = 24 * 60;  // 24 hours.
 
-  private QuizPerformanceRepository quizPerformanceRepository;
+  private QuizPerformanceService quizPerformanceService;
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private Cache<String, Map<Integer, Map<Integer, Integer>>> inMemoryCache;
 
   @Inject
   public SurvivalProbabilityService(
-      QuizPerformanceRepository quizPerformanceRepository,
+      QuizPerformanceService quizPerformanceService,
       SurvivalProbabilityResultRepository survivalProbabilityResultRepository) {
-    this.quizPerformanceRepository = quizPerformanceRepository;
+    this.quizPerformanceService = quizPerformanceService;
     this.survivalProbabilityResultRepository = survivalProbabilityResultRepository;
     this.inMemoryCache = CacheBuilder.newBuilder()
         .expireAfterWrite(SURVIVAL_PROBABILITIES_CACHED_TIME_MINS, TimeUnit.MINUTES).build();
@@ -114,7 +113,7 @@ public class SurvivalProbabilityService {
 
   public void cacheValuesInMemcache(String quizId) {
     Map<Integer, Map<Integer, Integer>> values =
-        quizPerformanceRepository.getCountsForSurvivalProbability(quizId);
+        quizPerformanceService.getCountsForSurvivalProbability(quizId);
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
     CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
   }

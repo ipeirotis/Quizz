@@ -14,7 +14,6 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
-import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.utils.Helper;
 
@@ -28,15 +27,15 @@ public class QuestionStatisticsService {
   private QuizService quizService;
   private QuizQuestionRepository quizQuestionRepository;
   private UserAnswerService userAnswerService;
-  private QuizPerformanceRepository quizPerformanceRepository;
+  private QuizPerformanceService quizPerformanceService;
 
   @Inject
   public QuestionStatisticsService(QuizService quizService, QuizQuestionRepository quizQuestionRepository,
-      UserAnswerService userAnswerService, QuizPerformanceRepository quizPerformanceRepository) {
+      UserAnswerService userAnswerService, QuizPerformanceService quizPerformanceService) {
     this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
     this.userAnswerService = userAnswerService;
-    this.quizPerformanceRepository = quizPerformanceRepository;
+    this.quizPerformanceService = quizPerformanceService;
   }
 
   public Question updateStatistics(String questionID) {
@@ -131,7 +130,7 @@ public class QuestionStatisticsService {
       Double userBits = 0.0;
       Double userProb;
 
-      QuizPerformance qp = quizPerformanceRepository.getQuizPerformance(quizID, userId);
+      QuizPerformance qp = quizPerformanceService.get(quizID, userId);
       if (qp != null) {
         Integer correct = qp.getCorrectanswers();
         if (correct == null)

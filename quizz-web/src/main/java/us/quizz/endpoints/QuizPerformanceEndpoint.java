@@ -1,25 +1,25 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
-
-import us.quizz.entities.QuizPerformance;
-import us.quizz.repository.QuizPerformanceRepository;
-
 import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
+import us.quizz.entities.QuizPerformance;
+import us.quizz.service.QuizPerformanceService;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.inject.Inject;
+
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class QuizPerformanceEndpoint {
-  private QuizPerformanceRepository quizPerformanceRepository;
+  private QuizPerformanceService quizPerformanceService;
 
   @Inject
-  public QuizPerformanceEndpoint(QuizPerformanceRepository quizPerformanceRepository) {
-    this.quizPerformanceRepository = quizPerformanceRepository;
+  public QuizPerformanceEndpoint(QuizPerformanceService quizPerformanceService) {
+    this.quizPerformanceService = quizPerformanceService;
   }
 
   /**
@@ -33,7 +33,7 @@ public class QuizPerformanceEndpoint {
   public CollectionResponse<QuizPerformance> listQuizPerformance(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-    return quizPerformanceRepository.listItems(cursorString, limit);
+    return quizPerformanceService.listWithCursor(cursorString, limit);
   }
 
   /**
@@ -46,7 +46,7 @@ public class QuizPerformanceEndpoint {
   @ApiMethod(name = "listQuizPerformanceByUser", path = "quizperformance/user/{user}")
   public CollectionResponse<QuizPerformance> listQuizPerformanceByUser(
       @Named("user") String userid) {
-    List<QuizPerformance> execute = quizPerformanceRepository
+    List<QuizPerformance> execute = quizPerformanceService
         .getQuizPerformancesByUser(userid);
     return CollectionResponse.<QuizPerformance> builder().setItems(execute).build();
   }
@@ -60,8 +60,7 @@ public class QuizPerformanceEndpoint {
   @ApiMethod(name = "getQuizPerformance", path = "quizperformance/quiz/{quiz}/user/{user}")
   public QuizPerformance getQuizPerformance(@Named("quiz") String quiz,
       @Named("user") String userid) {
-    QuizPerformance quizperformance = quizPerformanceRepository
-        .getQuizPerformance(quiz, userid);
+    QuizPerformance quizperformance = quizPerformanceService.get(quiz, userid);
     if (quizperformance == null) {
       quizperformance = new QuizPerformance(quiz, userid);
     }
@@ -78,7 +77,7 @@ public class QuizPerformanceEndpoint {
    */
   @ApiMethod(name = "insertQuizPerformance")
   public QuizPerformance insertQuizPerformance(QuizPerformance quizperformance) {
-    return quizPerformanceRepository.insert(quizperformance);
+    return quizPerformanceService.save(quizperformance);
   }
 
   /**
@@ -91,7 +90,7 @@ public class QuizPerformanceEndpoint {
    */
   @ApiMethod(name = "updateQuizPerformance")
   public QuizPerformance updateQuizPerformance(QuizPerformance quizperformance) {
-    return quizPerformanceRepository.update(quizperformance);
+    return quizPerformanceService.save(quizperformance);
   }
 
   /**
@@ -102,6 +101,6 @@ public class QuizPerformanceEndpoint {
   @ApiMethod(name = "removeQuizPerformance")
   public void removeQuizPerformance(@Named("quizid") String quiz,
       @Named("userid") String userid) {
-    quizPerformanceRepository.remove(QuizPerformance.generateKeyFromID(quiz, userid));
+    quizPerformanceService.delete(quiz, userid);
   }
 }
