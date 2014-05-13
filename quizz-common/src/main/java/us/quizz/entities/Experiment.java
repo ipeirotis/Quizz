@@ -1,20 +1,18 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-
-import us.quizz.utils.PMF;
+import static us.quizz.ofy.OfyService.ofy;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import com.google.appengine.api.datastore.Key;
 
 /**
  * An experiment is a set of treatments that gets assigned to a user.
@@ -74,11 +72,7 @@ public class Experiment implements Serializable {
     // treatments according to their probabilities.
 
     // At this point, we do not use/support the blocking functionality
-    PersistenceManager pm = PMF.getPM();
-    Query q = pm.newQuery(Treatment.class);
-    @SuppressWarnings("unchecked")
-    List<Treatment> allTreatments = (List<Treatment>) q.execute();
-    pm.close();
+    List<Treatment> allTreatments = ofy().load().type(Treatment.class).list();
 
     this.treatments = new HashMap<String, Boolean>();
     for (Treatment t : allTreatments) {
