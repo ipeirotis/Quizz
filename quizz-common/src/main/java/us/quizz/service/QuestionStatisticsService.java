@@ -30,8 +30,10 @@ public class QuestionStatisticsService {
   private QuizPerformanceService quizPerformanceService;
 
   @Inject
-  public QuestionStatisticsService(QuizService quizService, QuizQuestionRepository quizQuestionRepository,
-      UserAnswerService userAnswerService, QuizPerformanceService quizPerformanceService) {
+  public QuestionStatisticsService(QuizService quizService,
+      QuizQuestionRepository quizQuestionRepository,
+      UserAnswerService userAnswerService,
+      QuizPerformanceService quizPerformanceService) {
     this.quizService = quizService;
     this.quizQuestionRepository = quizQuestionRepository;
     this.userAnswerService = userAnswerService;
@@ -46,7 +48,11 @@ public class QuestionStatisticsService {
 
     Quiz quiz = quizService.get(question.getQuizID());
 
-    if (question.getKind()==null) {
+    // This migrates the Question's kind to be using QuestionKind.
+    // TODO(chunhowt): Remove this once we finish the migration.
+    if (question.getKind() == null ||
+        question.getKind() == QuestionKind.MULTIPLE_CHOICE ||
+        question.getKind() == QuestionKind.FREE_TEXT) {
       Boolean isCalibration = false;
       for (Answer a : question.getAnswers()) {
         if (a.getKind() == AnswerKind.GOLD) {
@@ -76,10 +82,11 @@ public class QuestionStatisticsService {
         }
       }
     }
-    
-    if (question.getQuestionText()==null) {
+
+    // This migrates question's text from string into Text.
+    // TODO(chunhowt): Remove this once we finish the migration.
+    if (question.getQuestionText() == null) {
       question.setQuestionText(new Text(question.getText()));
-      
     }
 
     int u = userAnswerService.getNumberOfUserAnswersExcludingIDK(Long.parseLong(questionID));
@@ -139,9 +146,9 @@ public class QuestionStatisticsService {
         if (incorrect == null)
           incorrect = 0;
 
-        if (selectedAnswer.getKind() == AnswerKind.GOLD) {
+        if (selectedAnswer.getKind() == AnswerKind.GOLD && correct > 0) {
           correct--;
-        } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT) {
+        } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT && incorrect > 0) {
           incorrect--;
         }
 

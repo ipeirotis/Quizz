@@ -30,14 +30,6 @@ public class Question implements Serializable {
   @Deprecated
   @Persistent
   private String text;
-  
-  public Text getQuestionText() {
-    return questionText;
-  }
-
-  public void setQuestionText(Text questionText) {
-    this.questionText = questionText;
-  }
 
   // The text of the question. Can be any HTML-compliant code
   @Persistent
@@ -225,7 +217,15 @@ public class Question implements Serializable {
   public void setText(String text) {
     this.text = text;
   }
-  
+
+  public Text getQuestionText() {
+    return questionText;
+  }
+
+  public void setQuestionText(Text questionText) {
+    this.questionText = questionText;
+  }
+
   public QuestionKind getKind() {
     return kind;
   }
@@ -295,7 +295,6 @@ public class Question implements Serializable {
   }
 
   public Answer getAnswer(Integer answerID) {
-    
     try {
       Answer a = answers.get(answerID);
       return a;
@@ -304,6 +303,4 @@ public class Question implements Serializable {
     }
     
   }
-
-    
 }

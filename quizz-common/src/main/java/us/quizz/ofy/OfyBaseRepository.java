@@ -14,7 +14,6 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
 
 public class OfyBaseRepository<T> {
-
   protected Class<T> clazz;
 
   protected OfyBaseRepository(Class<T> clazz) {
@@ -29,6 +28,7 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz).filter(propName, propValue).count();
   }
 
+  // All the save operations here are synchronous (now()).
   public Key<T> save(T entity) {
     return ofy().save().entity(entity).now();
   }
@@ -42,6 +42,7 @@ public class OfyBaseRepository<T> {
     ofy().save().entities(entities).now();
   }
 
+  // All the delete operations here are asynchronous (without now()).
   public void delete(T entity) {
     ofy().delete().entity(entity);
   }
@@ -70,6 +71,7 @@ public class OfyBaseRepository<T> {
     ofy().delete().keys(keys);
   }
 
+  // All the get operations here are synchronous.
   public T get(Long id) {
     return ofy().load().type(clazz).id(id).now();
   }
@@ -139,14 +141,14 @@ public class OfyBaseRepository<T> {
     Query<T> q = ofy().load().type(clazz).limit(1000);
     Cursor cursor = null;
     
-    if(params != null){
-      for(Map.Entry<String, Object> entry : params.entrySet()){
+    if (params != null) {
+      for (Map.Entry<String, Object> entry : params.entrySet()) {
         q = q.filter(entry.getKey(), entry.getValue());
       }
     }
 
     while (true) {
-      if(cursor != null){
+      if (cursor != null) {
         q = q.startAt(cursor);
       }
 
@@ -162,6 +164,9 @@ public class OfyBaseRepository<T> {
 
       if (continu) {
         cursor = iterator.getCursor();
+        if (cursor == null) {
+          break;
+        }
       } else {
         break;
       }

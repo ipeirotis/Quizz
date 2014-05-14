@@ -10,12 +10,12 @@
     <span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
   </div>
 
-  <div class="lead text-center" ng-bind-html="currentQuestion.text"></div>
+  <div class="lead text-center" ng-bind-html="currentQuestion.questionText.value"></div>
 
   <div class="answers">
     <button type="button" class="btn btn-primary btn-lg btn-block"
-    ng-click="answerQuestion(answer.internalID, getGaType(answer))"
-    ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
+            ng-click="answerQuestion(answer.internalID, getGaType(answer))"
+            ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
       {{answer.text}}
     </button>
 
@@ -23,14 +23,14 @@
       <h4>Your answer:</h4>
       <input type="text" class="form-control" ng-model="userInput">
       <button type="button" class="btn btn-primary btn-lg btn-block send"
-      ng-disabled="!userInput || userInput==''"
-      ng-click="answerQuestion(-1, 'input_text')">
+              ng-disabled="!userInput || userInput==''"
+              ng-click="answerQuestion(-1, 'input_text')">
         Send
       </button>
     </div>
 
     <button type="button" class="btn btn-danger btn-lg btn-block"
-    ng-click="answerQuestion(-1, 'multiple-choice-idk')">
+            ng-click="answerQuestion(-1, 'multiple-choice-idk')">
       Don't know
     </button>
   </div>

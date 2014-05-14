@@ -1,3 +1,5 @@
+// This class fixes the question's answers field to restore the link between
+// each question to the list of answers.
 package us.quizz.servlets;
 
 import java.io.IOException;

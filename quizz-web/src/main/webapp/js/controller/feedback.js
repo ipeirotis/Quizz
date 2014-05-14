@@ -32,14 +32,5 @@ angular.module('quizz').controller('FeedbackController',
     }
   };
 
-  $scope.getFeedbackMessage = function() {
-    if (workflowService.getIsCurrentQuestionGold()) {
-      return 'The correct answer is ';
-    } else {
-      return 'More users say the answer is ';
-    }
-  };
-
-  // $scope.feedbackMessage = $scope.getFeedbackMessage();
   $scope.feedbackMessage = $scope.feedback.message;
 }]);

@@ -26,6 +26,5 @@ $POM_FILE > "$POM_FILE.bak"
   mv $POM_FILE.bak $POM_FILE
 }
 
-replace_pom_version_id $VERSION_ID 'quizz-web/pom.xml'
-replace_pom_version_id $VERSION_ID 'quizz-tasks/pom.xml'
+replace_pom_version_id $VERSION_ID 'pom.xml'
 mvn install -U && cd quizz-ear && mvn appengine:update

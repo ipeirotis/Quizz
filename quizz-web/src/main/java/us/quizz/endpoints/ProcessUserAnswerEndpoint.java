@@ -72,6 +72,19 @@ public class ProcessUserAnswerEndpoint {
     this.explorationExploitationService = explorationExploitationService;
   }
 
+  private String constructCollectionFeedback(
+    String bestAnswerText, double probability, boolean isCorrect) {
+    String feedback = "";
+    long roundedProbability = Math.round(probability * 100);
+    boolean isFirst = roundedProbability == 0;
+    feedback += (isCorrect || isFirst) ? "Great! " : "Sorry! ";
+    feedback += "We are not 100% sure about the correct answer ";
+    feedback += (isFirst) ? "and you are the first user to answer!" :
+        "but we believe " + bestAnswerText + " to be correct and " +
+        roundedProbability + "% of the users agree.";
+    return feedback;
+  }
+
   @ApiMethod(name = "processUserAnswer", path = "processUserAnswer", httpMethod = HttpMethod.POST)
   public Map<String, Object> processUserAnswer(
       HttpServletRequest req,
@@ -97,14 +110,16 @@ public class ProcessUserAnswerEndpoint {
       totalanswers++;
     }
 
+    // TODO(chunhowt): Moves this logic to some other place.
+    // TODO(chunhowt): Deal with I don't know action.
     Question question = quizQuestionRepository.getQuizQuestion(questionID);
     Answer bestAnswer = null;
     switch (question.getKind()) {
-      
       case MULTIPLE_CHOICE_CALIBRATION:
         for (final Answer answer : question.getAnswers()) {
           if (answer.getKind()  == AnswerKind.GOLD) {
             bestAnswer = answer;
+            break;
           }
         }
         if (bestAnswer.getInternalID() == answerID) {
@@ -115,9 +130,7 @@ public class ProcessUserAnswerEndpoint {
           isCorrect = false;
           message = "Sorry! The correct answer is " + bestAnswer.getText();
         }
-        
         break;
-        
       case MULTIPLE_CHOICE_COLLECTION:
         double maxProbability = -1;
         for (final Answer answer : question.getAnswers()) {
@@ -128,24 +141,10 @@ public class ProcessUserAnswerEndpoint {
             bestAnswer = answer;
           }
         }
-        if (bestAnswer.getInternalID() == answerID && bestAnswer.getKind() == AnswerKind.SILVER) {
-          isCorrect = true;
-          correctanswers++;
-          message = "Great! We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbCorrect() + " of the users agree." ;
-        } else if  (bestAnswer.getInternalID() != answerID && bestAnswer.getKind() == AnswerKind.SILVER) {
-          isCorrect = false;
-          message = "Sorry!  We are not 100% sure about the correct answer but we believe " + bestAnswer.getText() +" to be correct and " + bestAnswer.getProbCorrect() + " of the users agree." ;
-        } else if (bestAnswer.getInternalID() == answerID && bestAnswer.getKind() == AnswerKind.INCORRECT) {
-          isCorrect = true;
-          correctanswers++;
-          message = "Nice! " + bestAnswer.getProbCorrect() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
-        } else if (bestAnswer.getInternalID() != answerID && bestAnswer.getKind() == AnswerKind.INCORRECT) {
-          isCorrect = false;
-          message = "Sorry!  " + bestAnswer.getProbCorrect() + " of the users think that " + bestAnswer.getText() +" is the best answer." ;
-        }
-        
+        isCorrect = bestAnswer.getInternalID() == answerID;
+        correctanswers += isCorrect ? 1 : 0;
+        message = constructCollectionFeedback(bestAnswer.getText(), maxProbability, isCorrect);
         break;
-        
       case FREETEXT_CALIBRATION:
         // TODO: We need to work further on free text quizzes
         List<Answer> answers = question.getAnswers();
@@ -165,15 +164,11 @@ public class ProcessUserAnswerEndpoint {
           }
         }
         break;
-        
       case FREETEXT_COLLECTION:
         // TODO: We need to work further on free text quizzes
         break;
     }
-    
-      
-    
-    
+
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
     String referer = req.getHeader("Referer");
@@ -223,7 +218,7 @@ public class ProcessUserAnswerEndpoint {
     String answerText = "";
     if (useranswerID != -1) {
       Answer a = question.getAnswer(useranswerID);
-      if (a!=null) answerText = a.userAnswerText(userInput);
+      if (a != null) answerText = a.userAnswerText(userInput);
     }
         
     uaf.setUserAnswerText(answerText);

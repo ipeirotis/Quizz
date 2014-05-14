@@ -32,59 +32,55 @@
 <link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
 
 </head>
-<% 
+<%
 Injector i = Guice.createInjector(new CommonModule());
 UserRepository userRepository = i.getInstance(UserRepository.class);
 QuizPerformanceService quizPerformanceService = i.getInstance(QuizPerformanceService.class);
 %>
 
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8">
-			<h2>User info</h2>
-				<table class="table table-striped table-bordered">
-				
-					<tr><th colspan="4">User Information</th></tr>
-					<% User u = userRepository.getUseridFromCookie(request, response); %>
-					<tr>
-						<td>Userid:</td>
-						<td colspan="3"><%=u.getUserid() %></td>
-					</tr>
-				
-					<tr><th colspan="4">Treatments</th></tr>
-					<%  
-					Map<String, Boolean> treatments = u.getTreatments();
-					for (String name : treatments.keySet()) {
-						%> 
-						<tr>
-							<td><%= name %></td>
-							<td colspan="3"><%= treatments.get(name) %></td>
-						</tr>
-						<%	
-					}
-					%>
-				
-					<tr><th colspan="4">Quiz Performance</th></tr>
-					<%
-					List<QuizPerformance> results = quizPerformanceService.getQuizPerformancesByUser(u.getUserid());				
-				
-					for (QuizPerformance qp : results) {
-						%> 
-						<tr>
-							<td><%= qp.getQuiz() %></td>
-							<td>Correct (%)<br><%= qp.getCorrectanswers() %>/<%= qp.getTotalanswers() %> (<%= qp.displayPercentageCorrect() %>)</td>
-							<td>Rank<br><%= qp.getRankScore() %>/<%=qp.getTotalUsers() %> (Top-<%= qp.displayRankScore() %>)</td>
-							
-						</tr>
-						<%	
-					}
-					
-					%>
-				</table>
-	
-			</div>
-		</div>
-	</div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8">
+        <h2>User info</h2>
+        <table class="table table-striped table-bordered">
+          <tr><th colspan="4">User Information</th></tr>
+          <% User u = userRepository.getUseridFromCookie(request, response); %>
+          <tr>
+            <td>Userid:</td>
+            <td colspan="3"><%=u.getUserid() %></td>
+          </tr>
+
+          <tr><th colspan="4">Treatments</th></tr>
+          <%
+            Map<String, Boolean> treatments = u.getTreatments();
+            if (treatments != null) {
+              for (String name : treatments.keySet()) {
+          %>
+              <tr>
+                <td><%= name %></td>
+                <td colspan="3"><%= treatments.get(name) %></td>
+              </tr>
+          <%
+              }
+            }
+          %>
+          <tr><th colspan="4">Quiz Performance</th></tr>
+          <%
+            List<QuizPerformance> results = quizPerformanceService.getQuizPerformancesByUser(u.getUserid());
+            for (QuizPerformance qp : results) {
+          %>
+          <tr>
+            <td><%= qp.getQuiz() %></td>
+            <td>Correct (%)<br><%= qp.getCorrectanswers() %>/<%= qp.getTotalanswers() %> (<%= qp.displayPercentageCorrect() %>)</td>
+            <td>Rank<br><%= qp.getRankScore() %>/<%=qp.getTotalUsers() %> (Top-<%= qp.displayRankScore() %>)</td>
+          </tr>
+          <%
+            }
+          %>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

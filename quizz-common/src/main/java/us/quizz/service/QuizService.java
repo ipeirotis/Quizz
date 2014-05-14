@@ -20,7 +20,7 @@ public class QuizService {
   @Inject
   public QuizService(UserReferralService userReferralService, 
       QuizPerformanceService quizPerformanceService, QuizRepository quizRepository,
-      QuizQuestionRepository quizQuestionRepository, UserAnswerService userAnswerService){
+      QuizQuestionRepository quizQuestionRepository, UserAnswerService userAnswerService) {
     this.userReferralService = userReferralService;
     this.quizPerformanceService = quizPerformanceService;
     this.quizRepository = quizRepository;
@@ -42,11 +42,18 @@ public class QuizService {
   
   public void delete(String quizID) {
     quizRepository.delete(quizID);
+  }
 
-    /*Class<?>[] itemsClasses = new Class<?>[] { UserAnswer.class, Answer.class, Question.class };
+  // Deletes all entities associated with the given quizID.
+  public void deleteAll(String quizID) {
+    delete(quizID);
+
+    /* TODO(chunhowt): Implement this.
+    Class<?>[] itemsClasses = new Class<?>[] { UserAnswer.class, Answer.class, Question.class };
     for (Class<?> cls : itemsClasses) {
       deleteAll(pm, quizID, cls);
-    }*/
+    }
+    */
   }
   
   public Quiz updateQuizCounts(String quizID) {
@@ -78,18 +85,17 @@ public class QuizService {
     double bits = 0;
     double avgCorrectness = 0;
 
-    for (QuizPerformance qp : perf) {
-      
+    for (QuizPerformance qp : perf) { 
       Integer t = qp.getCorrectanswers();
-      totalCorrect += (t==null)? 0 : t;
+      totalCorrect += (t == null) ? 0 : t;
       t = qp.getTotalanswers();
-      totalAnswers += (t==null)? 0 : t; 
+      totalAnswers += (t == null) ? 0 : t; 
       t = qp.getTotalCalibrationAnswers();
-      totalCalibrationAnswers += (t==null)? 0 : t; 
+      totalCalibrationAnswers += (t == null) ? 0 : t; 
       Double d = qp.getPercentageCorrect(); 
-      avgCorrectness += (d==null)? 0 : d;
+      avgCorrectness += (d == null) ? 0 : d;
       d = qp.getScore();
-      bits +=  (d==null)? 0 : d;
+      bits +=  (d == null) ? 0 : d;
     }
     quiz.setCorrectAnswers(totalCorrect);
     quiz.setTotalAnswers(totalAnswers);

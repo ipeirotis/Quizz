@@ -136,4 +136,16 @@ public class QuizEndpoint {
   public void removeQuiz(@Named("id") String id) {
     quizService.delete(id);
   }
+
+  /**
+   * This method removes Quiz with the given quizID and all other entities associated with this
+   * quiz. It uses HTTP DELETE method.
+   *
+   * @param id the primary key of the entity to be deleted.
+   */
+  @ApiMethod(name = "removeQuizRecursively", path = "removeQuizRecursively",
+             httpMethod = HttpMethod.DELETE)
+  public void removeQuizRecursively(@Named("id") String id) {
+    quizService.deleteAll(id);
+  }
 }

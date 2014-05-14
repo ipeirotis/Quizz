@@ -88,17 +88,21 @@ public class QuestionEndpoint {
   public Question insertQuestion(final Question question) throws BadRequestException {
     Quiz quiz = quizService.get(question.getQuizID());
     QuizKind quizKind = quiz.getKind();
-    if(quizKind ==QuizKind.MULTIPLE_CHOICE && (!question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_CALIBRATION) && !question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_COLLECTION))) {
-      throw new BadRequestException("Can't add " + question.getKind() + 
+    if (quizKind ==QuizKind.MULTIPLE_CHOICE &&
+        (!question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_CALIBRATION) &&
+         !question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_COLLECTION))) {
+      throw new BadRequestException("Can't add " + question.getKind() +
           " question to " + quiz.getKind() + " quiz");
     }
-    if(quizKind ==QuizKind.FREE_TEXT && (!question.getKind().equals(QuestionKind.FREETEXT_CALIBRATION) && !question.getKind().equals(QuestionKind.FREETEXT_COLLECTION))) {
-      throw new BadRequestException("Can't add " + question.getKind() + 
+    if (quizKind ==QuizKind.FREE_TEXT &&
+        (!question.getKind().equals(QuestionKind.FREETEXT_CALIBRATION) &&
+         !question.getKind().equals(QuestionKind.FREETEXT_COLLECTION))) {
+      throw new BadRequestException("Can't add " + question.getKind() +
           " question to " + quiz.getKind() + " quiz");
     }
 
     Question newQuestion = new Question(
-        question.getQuizID(), question.getText(), question.getKind());
+        question.getQuizID(), question.getQuestionText(), question.getKind());
     newQuestion.setClientID(question.getClientID());
 
     // We save the object, because we need to get the questionID assigned by datastore.

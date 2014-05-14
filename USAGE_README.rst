@@ -23,7 +23,9 @@ Here is an example of creating a multiple choice entry gold question::
 
   $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json' --data '{
         "quizID": "'$QUIZ_ID'",
-        "text": "Question text goes here",
+        "questionText": {
+            "value": "Question text goes here"
+        },
         "kind": "MULTIPLE_CHOICE",
         "weight": 1,
         "answers": [{
@@ -38,7 +40,9 @@ Here is an example of creating a multiple choice entry silver question::
 
   $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json' --data '{
         "quizID": "'$QUIZ_ID'",
-        "text": "Question text goes here",
+        "questionText": {
+            "value": "Question text goes here"
+        },
         "kind": "MULTIPLE_CHOICE",
         "weight": 1,
         "answers": [{
@@ -56,7 +60,9 @@ correct)::
 
   $ curl https://crowd-power.appspot.com/_ah/api/quizz/v1/insertQuestion --header 'Content-Type: application/json; charset=utf-8' --data '{
         "quizID": "'$QUIZ_ID'",
-        "text": "How would you say <a target=\"_blank\" href=\"http://freebase.com/m/07ylj‎\">Venezuela</a> in Greek?",
+        "questionText": {
+            "value": "How would you say <a target=\"_blank\" href=\"http://freebase.com/m/07ylj‎\">Venezuela</a> in Greek?"
+        },
         "kind": "FREE_TEXT",
         "weight": 1,
         "answers": [{

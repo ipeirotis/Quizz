@@ -29,8 +29,6 @@ public class UpdateQuestionStatistics extends HttpServlet {
       throws IOException {
     String questionID = req.getParameter("questionID");
     Question question = questionStatisticsService.updateStatistics(questionID);
-    
-    
     logger.log(Level.FINEST, "QuestionID:" + questionID + "\n");
     logger.log(Level.FINEST, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
     logger.log(Level.FINEST, "Number of correct user answers:" + 

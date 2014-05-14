@@ -54,3 +54,8 @@ body {
   position: absolute;
   width: 100%;
 }
+
+.label {
+  white-space: normal;
+  word-wrap: break-word;
+}
