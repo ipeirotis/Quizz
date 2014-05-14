@@ -6,6 +6,7 @@ import us.quizz.repository.BadgeAssignmentRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.repository.DomainStatsRepository;
+import us.quizz.repository.ExperimentRepository;
 import us.quizz.repository.ExplorationExploitationResultRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
@@ -20,6 +21,7 @@ import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
 import us.quizz.service.DomainStatsService;
+import us.quizz.service.ExperimentService;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionStatisticsService;
 import us.quizz.service.QuizPerformanceService;
@@ -30,6 +32,7 @@ import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
+import us.quizz.service.UserService;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
@@ -43,6 +46,7 @@ public class CommonModule extends AbstractModule {
     bind(BadgeRepository.class).in(Singleton.class);
     bind(BrowserStatsRepository.class).in(Singleton.class);
     bind(DomainStatsRepository.class).in(Singleton.class);
+    bind(ExperimentRepository.class).in(Singleton.class);
     bind(QuizPerformanceRepository.class).in(Singleton.class);
     bind(QuizQuestionRepository.class).in(Singleton.class);
     bind(QuizRepository.class).in(Singleton.class);
@@ -54,6 +58,8 @@ public class CommonModule extends AbstractModule {
     bind(UserRepository.class).in(Singleton.class);
     bind(TreatmentRepository.class).in(Singleton.class);
 
+    bind(ExperimentService.class).in(Singleton.class);
+    bind(UserService.class).in(Singleton.class);
     bind(BadgeAssignmentService.class).in(Singleton.class);
     bind(BadgeService.class).in(Singleton.class);
     bind(QuizPerformanceService.class).in(Singleton.class);

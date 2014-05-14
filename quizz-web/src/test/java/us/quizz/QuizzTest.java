@@ -43,6 +43,7 @@ import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.DomainStatsRepository;
+import us.quizz.repository.ExperimentRepository;
 import us.quizz.repository.ExplorationExploitationResultRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizQuestionRepository;
@@ -54,6 +55,7 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.DomainStatsService;
+import us.quizz.service.ExperimentService;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
@@ -63,6 +65,7 @@ import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
+import us.quizz.service.UserService;
 
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -113,7 +116,10 @@ public class QuizzTest {
   private DomainStatsRepository domainStatsRepository;
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
+  private ExperimentRepository experimentRepository;
 
+  private ExperimentService experimentService;
+  private UserService userService;
   private QuizPerformanceService quizPerformanceService;
   private UserAnswerFeedbackService userAnswerFeedbackService;
   private UserAnswerService userAnswerService;
@@ -159,12 +165,14 @@ public class QuizzTest {
     answersRepository = spy(new AnswersRepository(quizQuestionRepository));
     survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
+    experimentRepository = spy(new ExperimentRepository());
 
     when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
+    experimentService = new ExperimentService(experimentRepository, treatmentService);
+    userService = new UserService(userRepository, experimentService);
     quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
@@ -182,11 +190,11 @@ public class QuizzTest {
     quizEndpoint = new QuizEndpoint(quizService, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizService, quizQuestionRepository,
         answerChallengeCounterRepository);
-    processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userRepository,
+    processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
         answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceService,
         userAnswerService, userAnswerFeedbackService, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentService);
-    userEndpoint = new UserEndpoint(userRepository, userReferralService);
+    userEndpoint = new UserEndpoint(userService, userReferralService, experimentService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceService);
 
     questionsToCreate = new HashMap<String, Question>();

@@ -3,7 +3,8 @@
 <%@ page import="us.quizz.utils.PMF"%>
 <%@ page import="us.quizz.entities.QuizPerformance"%>
 <%@ page import="us.quizz.entities.User"%>
-<%@ page import="us.quizz.repository.UserRepository"%>
+<%@ page import="us.quizz.service.UserService"%>
+<%@ page import="us.quizz.service.ExperimentService"%>
 <%@ page import="us.quizz.utils.Helper"%>
 <%@ page import="javax.jdo.Query"%>
 <%@ page import="java.util.List"%>
@@ -34,7 +35,8 @@
 </head>
 <%
 Injector i = Guice.createInjector(new CommonModule());
-UserRepository userRepository = i.getInstance(UserRepository.class);
+UserService userService = i.getInstance(UserService.class);
+ExperimentService experimentService = i.getInstance(ExperimentService.class);
 QuizPerformanceService quizPerformanceService = i.getInstance(QuizPerformanceService.class);
 %>
 
@@ -45,7 +47,7 @@ QuizPerformanceService quizPerformanceService = i.getInstance(QuizPerformanceSer
         <h2>User info</h2>
         <table class="table table-striped table-bordered">
           <tr><th colspan="4">User Information</th></tr>
-          <% User u = userRepository.getUseridFromCookie(request, response); %>
+          <% User u = userService.getUseridFromCookie(request, response); %>
           <tr>
             <td>Userid:</td>
             <td colspan="3"><%=u.getUserid() %></td>
@@ -53,7 +55,7 @@ QuizPerformanceService quizPerformanceService = i.getInstance(QuizPerformanceSer
 
           <tr><th colspan="4">Treatments</th></tr>
           <%
-            Map<String, Boolean> treatments = u.getTreatments();
+            Map<String, Boolean> treatments = experimentService.get(u.getExperimentId()).getTreatments();
             if (treatments != null) {
               for (String name : treatments.keySet()) {
           %>

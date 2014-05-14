@@ -10,8 +10,8 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerChallengeStatus;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.UserRepository;
 import us.quizz.service.UserAnswerService;
+import us.quizz.service.UserService;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -22,18 +22,18 @@ import com.google.inject.Inject;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserAnswerEndpoint {
   private UserAnswerService userAnswerService;
-  private UserRepository userRepository;
+  private UserService userService;
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
   private QuizQuestionRepository quizQuestionRepository;
 
   @Inject
   public UserAnswerEndpoint(
       UserAnswerService userAnswerService,
-      UserRepository userRepository,
+      UserService userService,
       AnswerChallengeCounterRepository answerChallengeCounterRepository,
       QuizQuestionRepository quizQuestionRepository) {
     this.userAnswerService = userAnswerService;
-    this.userRepository = userRepository;
+    this.userService = userService;
     this.answerChallengeCounterRepository = answerChallengeCounterRepository;
     this.quizQuestionRepository = quizQuestionRepository;
   }
@@ -104,9 +104,9 @@ public class UserAnswerEndpoint {
         if (ua.getAnswerChallengeText() != null && ua.getAnswerChallengeText().equals(message)) {
           userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 
-          User user = userRepository.singleGetObjectById(userAnswer.getUserid());
+          User user = userService.get(userAnswer.getUserid());
           user.incChallengeBudget();
-          userRepository.singleMakePersistent(user);
+          userService.save(user);
           exist = true;
           break;
         }
@@ -123,9 +123,9 @@ public class UserAnswerEndpoint {
     UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
 
-    User user = userRepository.singleGetObjectById(userAnswer.getUserid());
+    User user = userService.get(userAnswer.getUserid());
     user.incChallengeBudget();
-    userRepository.singleMakePersistent(user);
+    userService.save(user);
 
     return userAnswerService.save(userAnswer);
   }
@@ -135,9 +135,9 @@ public class UserAnswerEndpoint {
     UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
 
-    User user = userRepository.singleGetObjectById(userAnswer.getUserid());
+    User user = userService.get(userAnswer.getUserid());
     user.decChallengeBudget();
-    userRepository.singleMakePersistent(user);
+    userService.save(user);
 
     return userAnswerService.save(userAnswer);
   }

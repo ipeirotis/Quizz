@@ -9,8 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
-import us.quizz.repository.UserRepository;
+import us.quizz.service.ExperimentService;
 import us.quizz.service.UserReferralService;
+import us.quizz.service.UserService;
 import us.quizz.utils.ChannelHelpers;
 
 import com.google.api.server.spi.config.Api;
@@ -20,14 +21,16 @@ import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserEndpoint {
-  private UserRepository userRepository;
+  private UserService userService;
+  private ExperimentService experimentService;
   private UserReferralService userReferralService;
 
   @Inject
-  public UserEndpoint(UserRepository userRepository, 
-      UserReferralService userReferralService) {
-    this.userRepository = userRepository;
+  public UserEndpoint(UserService userService,
+      UserReferralService userReferralService, ExperimentService experimentService) {
+    this.userService = userService;
     this.userReferralService = userReferralService;
+    this.experimentService = experimentService;
   }
 
   /**
@@ -41,7 +44,7 @@ public class UserEndpoint {
   public CollectionResponse<User> listUser(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-    return userRepository.listItems(cursorString, limit);
+    return userService.listWithCursor(cursorString, limit);
   }
 
   /**
@@ -53,20 +56,14 @@ public class UserEndpoint {
    */
   @ApiMethod(name = "getUser", path = "user")
   public Map<String, Object> getUser(HttpServletRequest req, @Named("userid") String userid) {
-    User user = userRepository.getOrCreateUser(userid);
+    User user = userService.getOrCreateUser(userid);
 
     userReferralService.createAndStoreUserReferal(req, userid);
 
-    Experiment e = user.getExperiment();
+    Experiment e = experimentService.get(user.getExperimentId());
     if (e != null && e.getTreatments() != null) {
       for (String s : e.getTreatments().keySet()) {
         e.getTreatments().get(s);
-      }
-    }
-    Map<String, Boolean> treatments = user.getTreatments();
-    if (treatments != null) {
-      for (String s : treatments.keySet()) {
-        treatments.get(s);
       }
     }
 
@@ -85,7 +82,7 @@ public class UserEndpoint {
    */
   @ApiMethod(name = "insertUser")
   public User insertUser(User user) {
-    return userRepository.insert(user);
+    return userService.save(user);
   }
 
   /**
@@ -97,7 +94,7 @@ public class UserEndpoint {
    */
   @ApiMethod(name = "updateUser")
   public User updateUser(User user) {
-    return userRepository.update(user);
+    return userService.save(user);
   }
 
   /**
@@ -107,21 +104,18 @@ public class UserEndpoint {
    */
   @ApiMethod(name = "removeUser")
   public void removeUser(@Named("userid") String userid) {
-    userRepository.remove(User.generateKeyFromID(userid));
+    userService.delete(User.generateId(userid));
   }
 
   @ApiMethod(name = "updateUserExperiment", path = "updateUserExperiment")
   public void updateUserExperiment(@Named("userid") String userid) {
-    User user = null;
-    try {
-      user = userRepository.singleGetObjectByIdThrowing(User.generateKeyFromID(userid));
-    } catch (Exception e) {
+    User user = userService.get(User.generateId(userid));
+    if(user == null) {
       user = new User(userid);
-    } finally {
-      Experiment exp = new Experiment();
-      exp.assignTreatments();
-      user.setExperiment(exp);
-      userRepository.save(user);
     }
+    Experiment exp = new Experiment();
+    exp = experimentService.save(exp);
+    user.setExperimentId(exp.getId());
+    userService.save(user);
   }
 }

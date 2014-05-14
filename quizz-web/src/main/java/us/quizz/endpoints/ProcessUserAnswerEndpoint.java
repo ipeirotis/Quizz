@@ -18,12 +18,12 @@ import us.quizz.enums.AnswerKind;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.QuizQuestionRepository;
-import us.quizz.repository.UserRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
+import us.quizz.service.UserService;
 import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.QueueUtils;
 
@@ -41,7 +41,7 @@ public class ProcessUserAnswerEndpoint {
   private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
 
   private QuizService quizService;
-  private UserRepository userRepository;
+  private UserService userService;
   private AnswersRepository answersRepository;
   private QuizQuestionRepository quizQuestionRepository;
   private BadgeRepository badgeRepository;
@@ -53,7 +53,7 @@ public class ProcessUserAnswerEndpoint {
   @Inject
   public ProcessUserAnswerEndpoint(
       QuizService quizService,
-      UserRepository userRepository,
+      UserService userService,
       AnswersRepository answersRepository,
       QuizQuestionRepository quizQuestionRepository,
       BadgeRepository badgeRepository,
@@ -62,7 +62,7 @@ public class ProcessUserAnswerEndpoint {
       UserAnswerFeedbackService userAnswerFeedbackService,
       ExplorationExploitationService explorationExploitationService) {
     this.quizService = quizService;
-    this.userRepository = userRepository;
+    this.userService = userService;
     this.userAnswerFeedbackService = userAnswerFeedbackService;
     this.answersRepository = answersRepository;
     this.quizQuestionRepository = quizQuestionRepository;
@@ -98,7 +98,7 @@ public class ProcessUserAnswerEndpoint {
       @Named("a") Integer a,
       @Named("b") Integer b,
       @Named("c") Integer c) throws Exception {
-    User user = userRepository.get(userID);
+    User user = userService.get(userID);
     String action;
 
     Boolean isCorrect = false;

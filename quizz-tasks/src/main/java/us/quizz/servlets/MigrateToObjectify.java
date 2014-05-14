@@ -58,6 +58,8 @@ public class MigrateToObjectify extends HttpServlet {
           updateQuizzes();
         } else if("Badge".equals(kind)){
           updateBadges();
+        } else if("User".equals(kind)){
+          updateUsers();
         }
       }else{
         sched(kind);
@@ -182,6 +184,40 @@ public class MigrateToObjectify extends HttpServlet {
     //test reading with objectify
     Badge badge = ofy().load().type(Badge.class).limit(1).first().now();
     logger.log(Level.INFO, "Test reading Badge: " + badge.getBadgename());
+  }
+
+  private void updateUsers(){
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
+    Cursor cursor = null;
+    long counter = 0L;
+
+    while (true) {
+      if (cursor != null) {
+        fetchOptions.startCursor(cursor);
+      }
+
+      Query q = new Query("User");
+      PreparedQuery pq = ds.prepare(q);
+      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
+      cursor = entities.getCursor();
+
+      if (cursor == null || entities.size() == 0) {
+        break;
+      }
+
+      for(Entity e : entities){
+        Object key = e.getProperty("experiment_key_OID");
+        if(key != null){
+          e.setProperty("experimentId", ((Key)key).getId());
+          e.removeProperty("experiment_key_OID");
+        }
+        counter++;
+      }
+      ds.put(entities);
+    }
+
+    logger.log(Level.INFO, counter + " User entities updated successfully");
   }
 
   private void updateQuizzes(){
