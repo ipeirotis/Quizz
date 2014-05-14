@@ -1,5 +1,7 @@
 package us.quizz.ofy;
 
+import us.quizz.entities.Badge;
+import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.ExplorationExploitationResult;
@@ -17,6 +19,8 @@ import com.googlecode.objectify.ObjectifyService;
 
 public class OfyService {
   static {
+    register(Badge.class);
+    register(BadgeAssignment.class);
     register(BrowserStats.class);
     register(DomainStats.class);
     register(ExplorationExploitationResult.class);

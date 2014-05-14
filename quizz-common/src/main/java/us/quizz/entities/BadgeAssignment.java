@@ -1,48 +1,36 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import java.io.Serializable;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class BadgeAssignment implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
-  @Persistent
+  @Id
+  private String id;
   private String userid;
-
-  @Persistent
   private String badgename;
+
+  //for Objectify
+  @SuppressWarnings("unused")
+  private BadgeAssignment(){}
 
   public BadgeAssignment(String userid, String badgename) {
     this.userid = userid;
     this.badgename = badgename;
-    this.key = generateKeyFromUserBadge(userid, badgename);
+    this.id = generateId(userid, badgename);
   }
 
-  public static Key generateKeyFromUserBadge(String userid, String badgeid) {
-    return KeyFactory.createKey(BadgeAssignment.class.getSimpleName(),
-        "id_" + userid + "_" + badgeid);
-  }
-
-  public Key getKey() {
-    return key;
-  }
-
-  public void setKey(Key key) {
-    this.key = key;
+  public static String generateId(String userid, String badgeid) {
+    return "id_" + userid + "_" + badgeid;
   }
 
   public String getUserid() {
@@ -59,5 +47,13 @@ public class BadgeAssignment implements Serializable {
 
   public void setBadgename(String badgename) {
     this.badgename = badgename;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 }

@@ -160,8 +160,7 @@ public class QuizzTest {
     survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
     explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
 
-    when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());;
-    when(badgeRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+    when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(userRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());

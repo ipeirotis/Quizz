@@ -7,21 +7,22 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Badge;
 import us.quizz.repository.BadgeRepository;
+import us.quizz.service.BadgeService;
 
 import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class BadgeEndpoint {
-  private BadgeRepository badgeRepository;
+  private BadgeService badgeService;
 
   @Inject
-  public BadgeEndpoint(BadgeRepository badgeRepository) {
-    this.badgeRepository = badgeRepository;
+  public BadgeEndpoint(BadgeService badgeService) {
+    this.badgeService = badgeService;
   }
 
   @ApiMethod(name = "addBadge", path="addBadge", httpMethod=HttpMethod.POST)
   public void addBadge(@Named("name") String name, @Named("sname") String sname) {
     Badge badge = new Badge(name, sname);
-    badgeRepository.singleMakePersistent(badge);
+    badgeService.save(badge);
   }
 }

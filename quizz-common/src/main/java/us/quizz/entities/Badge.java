@@ -1,46 +1,29 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import java.io.Serializable;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
+@Cache
+@Index
 public class Badge implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
-
-  @Persistent
+  @Id
   private String badgename;
-
-  @Persistent
   private String shortname;
 
+  //for Objectify
+  @SuppressWarnings("unused")
+  private Badge(){}
+
   public Badge(String badgename, String shortname) {
-    this.key = generateKeyFromID(badgename);
     this.badgename = badgename;
     this.shortname = shortname;
-  }
-
-  public static Key generateKeyFromID(String name) {
-    return KeyFactory.createKey(Badge.class.getSimpleName(), "id_" + name);
-  }
-
-  public Key getKey() {
-    return key;
-  }
-
-  public void setKey(Key key) {
-    this.key = key;
   }
 
   public String getBadgename() {

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.entities.Badge;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.Treatment;
@@ -55,6 +56,8 @@ public class MigrateToObjectify extends HttpServlet {
           updateTreatments();
         } else if("Quiz".equals(kind)){
           updateQuizzes();
+        } else if("Badge".equals(kind)){
+          updateBadges();
         }
       }else{
         sched(kind);
@@ -137,6 +140,48 @@ public class MigrateToObjectify extends HttpServlet {
     //test reading with objectify
     Treatment treatment = ofy().load().type(Treatment.class).limit(1).first().now();
     logger.log(Level.INFO, "Test reading Treatment: " + treatment.getProbability());
+  }
+  
+  private void updateBadges(){
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
+    Cursor cursor = null;
+    long counter = 0L;
+    List<Entity> newEntities = new ArrayList<Entity>();
+
+    while (true) {
+      if (cursor != null) {
+        fetchOptions.startCursor(cursor);
+      }
+
+      Query q = new Query("Badge");
+      PreparedQuery pq = ds.prepare(q);
+      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
+      List<Key> toDeleteKeys = new ArrayList<Key>();
+      cursor = entities.getCursor();
+
+      if (cursor == null || entities.size() == 0) {
+        break;
+      }
+
+      for(Entity e : entities){
+        Entity newEntity = new Entity("Badge", (String)e.getProperty("badgename"));
+        newEntity.setPropertiesFrom(e);
+        newEntity.removeProperty("badgename");
+        newEntities.add(newEntity);
+        toDeleteKeys.add(e.getKey());
+        counter++;
+      }
+      ds.delete(toDeleteKeys);
+    }
+
+    ds.put(newEntities);
+
+    logger.log(Level.INFO, counter + " Badge entities updated successfully");
+
+    //test reading with objectify
+    Badge badge = ofy().load().type(Badge.class).limit(1).first().now();
+    logger.log(Level.INFO, "Test reading Badge: " + badge.getBadgename());
   }
 
   private void updateQuizzes(){
