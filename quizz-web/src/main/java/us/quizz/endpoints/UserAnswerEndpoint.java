@@ -8,8 +8,8 @@ import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerChallengeStatus;
-import us.quizz.repository.AnswerChallengeCounterRepository;
-import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
 
@@ -23,19 +23,19 @@ import com.google.inject.Inject;
 public class UserAnswerEndpoint {
   private UserAnswerService userAnswerService;
   private UserService userService;
-  private AnswerChallengeCounterRepository answerChallengeCounterRepository;
-  private QuizQuestionRepository quizQuestionRepository;
+  private AnswerChallengeCounterService answerChallengeCounterService;
+  private QuestionService questionService;
 
   @Inject
   public UserAnswerEndpoint(
       UserAnswerService userAnswerService,
       UserService userService,
-      AnswerChallengeCounterRepository answerChallengeCounterRepository,
-      QuizQuestionRepository quizQuestionRepository) {
+      AnswerChallengeCounterService answerChallengeCounterService,
+      QuestionService questionService) {
     this.userAnswerService = userAnswerService;
     this.userService = userService;
-    this.answerChallengeCounterRepository = answerChallengeCounterRepository;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.answerChallengeCounterService = answerChallengeCounterService;
+    this.questionService = questionService;
   }
 
   @ApiMethod(name = "addUserAnswer", httpMethod = HttpMethod.POST, path = "addUserAnswer")
@@ -56,7 +56,7 @@ public class UserAnswerEndpoint {
     ue.setIpaddress(ipAddress);
     ue.setTimestamp(timestamp);
     ue.setAction(action);
-    ue.setQuizID(quizQuestionRepository.getQuizQuestion(questionID).getQuizID());
+    ue.setQuizID(questionService.get(Long.parseLong(questionID)).getQuizID());
     if (isCorrect != null) {
       ue.setIsCorrect(isCorrect);
     }
@@ -84,14 +84,14 @@ public class UserAnswerEndpoint {
       @Named("userAnswerID") Long userAnswerID,
       @Named("userid") String userid,
       @Named("message") String message) {
-    AnswerChallengeCounter cc = answerChallengeCounterRepository.get(quizID, questionID);
+    AnswerChallengeCounter cc = answerChallengeCounterService.get(quizID, questionID);
     if (cc == null) {
       cc = new AnswerChallengeCounter(quizID, questionID);
       cc.setCount(1L);
     } else {
       cc.incCount();
     }
-    answerChallengeCounterRepository.save(cc);
+    answerChallengeCounterService.save(cc);
 
     UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeText(new Text(message));

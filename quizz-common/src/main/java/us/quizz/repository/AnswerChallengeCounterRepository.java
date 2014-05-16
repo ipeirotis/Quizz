@@ -1,62 +1,10 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.google.common.base.Strings;
-
 import us.quizz.entities.AnswerChallengeCounter;
+import us.quizz.ofy.OfyBaseRepository;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
-public class AnswerChallengeCounterRepository extends BaseRepository<AnswerChallengeCounter> {
+public class AnswerChallengeCounterRepository extends OfyBaseRepository<AnswerChallengeCounter> {
   public AnswerChallengeCounterRepository() {
     super(AnswerChallengeCounter.class);
-  }
-
-  @Override
-  protected Key getKey(AnswerChallengeCounter item) {
-    return item.getKey();
-  }
-
-  public AnswerChallengeCounter get(String quizID, Long questionID) {
-    return singleGetObjectById(AnswerChallengeCounter.generateKey(quizID, questionID));
-  }
-
-  @SuppressWarnings("unchecked")
-  public List<AnswerChallengeCounter> list(String cursorString, Integer limit) {
-    PersistenceManager mgr = null;
-    Cursor cursor = null;
-    List<AnswerChallengeCounter> result = null;
-    try {
-      mgr = getPersistenceManager();
-      Query query = mgr.newQuery(AnswerChallengeCounter.class);
-      query.setOrdering("count desc");
-      if (!Strings.isNullOrEmpty(cursorString)) {
-        cursor = Cursor.fromWebSafeString(cursorString);
-        HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-        extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-        query.setExtensions(extensionMap);
-      }
-
-      if (limit != null && limit != 0) {
-        query.setRange(0, limit);
-      }
-
-      result = (List<AnswerChallengeCounter>) query.execute();
-      cursor = JDOCursorHelper.getCursor(result);
-      if (cursor != null) {
-        cursorString = cursor.toWebSafeString();
-      } else {
-        cursorString = "";
-      }
-    } finally {
-      mgr.close();
-    }
-    return result;
   }
 }

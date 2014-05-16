@@ -5,7 +5,6 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
@@ -15,8 +14,8 @@ import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
-import us.quizz.repository.AnswerChallengeCounterRepository;
-import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
 import java.util.ArrayList;
@@ -28,46 +27,46 @@ import javax.inject.Named;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class QuestionEndpoint {
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
-  private AnswerChallengeCounterRepository answerChallengeCounterRepository;
+  private QuestionService questionService;
+  private AnswerChallengeCounterService answerChallengeCounterService;
 
   @Inject
   public QuestionEndpoint(
       QuizService quizService,
-      QuizQuestionRepository quizQuestionRepository,
-      AnswerChallengeCounterRepository answerChallengeCounterRepository) {
+      QuestionService questionService,
+      AnswerChallengeCounterService answerChallengeCounterService) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
-    this.answerChallengeCounterRepository = answerChallengeCounterRepository;
+    this.questionService = questionService;
+    this.answerChallengeCounterService = answerChallengeCounterService;
   }
 
   @ApiMethod(name = "listQuestions", path = "listQuestions", httpMethod = HttpMethod.GET)
   public CollectionResponse<Question> listQuestions(
       @Nullable @Named("cursor") String cursor) {
-    List<Question> questions = quizQuestionRepository.getQuizQuestions();
+    List<Question> questions = questionService.list();
     return CollectionResponse.<Question> builder().setItems(questions)
         .setNextPageToken(cursor).build();
   }
 
   @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.POST)
   public List<Question> listAllQuestions(@Named("quizID") String quizID) {
-    return this.quizQuestionRepository.getQuizQuestions(quizID);
+    return this.questionService.getQuizQuestions(quizID);
   }
 
   @ApiMethod(name = "listQuestionsWithChallenges", path = "/listQuestionsWithChallenges")
   public CollectionResponse<QuestionWithChallenges> listQuestionsWithChallenges(
       @Nullable @Named("cursor") String cursor,
       @Nullable @Named("limit") Integer limit) {
-    List<AnswerChallengeCounter> challenges = answerChallengeCounterRepository.list(cursor, limit);
+    List<AnswerChallengeCounter> challenges = answerChallengeCounterService.listAll();
 
-    List<Key> keys = new ArrayList<Key>();
+    List<Long> ids = new ArrayList<Long>();
     for (AnswerChallengeCounter c : challenges) {
-      keys.add(Question.generateKeyFromID(c.getQuestionID()));
+      ids.add(c.getQuestionID());
     }
 
     List<QuestionWithChallenges> result = new ArrayList<QuestionWithChallenges>();
-    if (keys.size() != 0) {
-      List<Question> questions = quizQuestionRepository.getQuizQuestionsByKeys(keys);
+    if (ids.size() != 0) {
+      List<Question> questions = questionService.listByIds(ids);
       int i = 0;
       for (Question question : questions) {
         result.add(new QuestionWithChallenges(question, challenges.get(i).getCount()));
@@ -81,7 +80,7 @@ public class QuestionEndpoint {
 
   @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.GET)
   public Question getQuestion(@Named("questionID") Long questionID) {
-    return quizQuestionRepository.getQuizQuestion(questionID);
+    return questionService.get(questionID);
   }
 
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
@@ -106,7 +105,7 @@ public class QuestionEndpoint {
     newQuestion.setClientID(question.getClientID());
 
     // We save the object, because we need to get the questionID assigned by datastore.
-    newQuestion = quizQuestionRepository.insert(newQuestion);
+    newQuestion = questionService.save(newQuestion);
 
     if (question.getAnswers() != null) {
       int internalID = 0;
@@ -115,7 +114,7 @@ public class QuestionEndpoint {
 
         // Create a new Answer to generate a new answer ID.
         Answer newAnswer = new Answer(
-            newQuestion.getID(), newQuestion.getQuizID(),
+            newQuestion.getId(), newQuestion.getQuizID(),
             answer.getText(), answer.getKind(), internalID);
         newAnswer.setProbability(answer.getProbability());
 
@@ -134,7 +133,7 @@ public class QuestionEndpoint {
         internalID++;
         newQuestion.addAnswer(newAnswer);
       }
-      return quizQuestionRepository.singleMakePersistent(newQuestion, true  /* use transaction */);
+      return questionService.save(newQuestion);
     } else {
       return newQuestion;
     }
@@ -142,12 +141,12 @@ public class QuestionEndpoint {
 
   @ApiMethod(name = "updateQuestion", path = "updateQuestion", httpMethod = HttpMethod.PUT)
   public Question updateQuestion(Question newQuestion) {
-    return quizQuestionRepository.update(newQuestion);
+    return questionService.save(newQuestion);
   }
 
   @ApiMethod(name = "removeQuestion", path="removeQuestion", httpMethod = HttpMethod.DELETE)
   public void removeQuestion(@Named("questionID") Long questionID) {
-    quizQuestionRepository.remove(Question.generateKeyFromID(questionID));
+    questionService.delete(questionID);
   }
 
   class QuestionWithChallenges {

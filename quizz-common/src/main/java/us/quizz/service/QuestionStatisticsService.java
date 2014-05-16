@@ -14,10 +14,8 @@ import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.utils.Helper;
 
-import com.google.appengine.api.datastore.Text;
 import com.google.inject.Inject;
 
 public class QuestionStatisticsService {
@@ -25,23 +23,23 @@ public class QuestionStatisticsService {
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
 
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
   private UserAnswerService userAnswerService;
   private QuizPerformanceService quizPerformanceService;
 
   @Inject
   public QuestionStatisticsService(QuizService quizService,
-      QuizQuestionRepository quizQuestionRepository,
+      QuestionService questionService,
       UserAnswerService userAnswerService,
       QuizPerformanceService quizPerformanceService) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
     this.userAnswerService = userAnswerService;
     this.quizPerformanceService = quizPerformanceService;
   }
 
   public Question updateStatistics(String questionID) {
-    Question question = quizQuestionRepository.getQuizQuestion(questionID);
+    Question question = questionService.get(Long.parseLong(questionID));
     if (question == null) {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
@@ -67,26 +65,20 @@ public class QuestionStatisticsService {
       if (quiz.getKind() == QuizKind.MULTIPLE_CHOICE) {
         if (isCalibration) {
           question.setKind(QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
-          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_CALIBRATION");
+          logger.log(Level.INFO, "Question:" + question.getId() + " is set to kind MULTIPLE_CHOICE_CALIBRATION");
         } else {
           question.setKind(QuestionKind.MULTIPLE_CHOICE_COLLECTION);
-          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind MULTIPLE_CHOICE_COLLECTION");
+          logger.log(Level.INFO, "Question:" + question.getId() + " is set to kind MULTIPLE_CHOICE_COLLECTION");
         }
       } else if (quiz.getKind() == QuizKind.FREE_TEXT) {
         if (isCalibration) {
           question.setKind(QuestionKind.FREETEXT_CALIBRATION);
-          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_CALIBRATION");
+          logger.log(Level.INFO, "Question:" + question.getId() + " is set to kind FREETEXT_CALIBRATION");
         } else {
           question.setKind(QuestionKind.FREETEXT_COLLECTION);
-          logger.log(Level.INFO, "Question:" + question.getID() + " is set to kind FREETEXT_COLLECTION");
+          logger.log(Level.INFO, "Question:" + question.getId() + " is set to kind FREETEXT_COLLECTION");
         }
       }
-    }
-
-    // This migrates question's text from string into Text.
-    // TODO(chunhowt): Remove this once we finish the migration.
-    if (question.getQuestionText() == null) {
-      question.setQuestionText(new Text(question.getText()));
     }
 
     int u = userAnswerService.getNumberOfUserAnswersExcludingIDK(Long.parseLong(questionID));
@@ -97,13 +89,13 @@ public class QuestionStatisticsService {
     question.setNumberOfCorrentUserAnswers(c);
 
     updateAnswerStatistics(question);
-    quizQuestionRepository.singleMakePersistent(question, true);
+    questionService.save(question);
     return question;
   }
 
   public void updateAnswerStatistics(Question question) {
     String quizID = question.getQuizID();
-    Long questionId = question.getID();
+    Long questionId = question.getId();
 
     Map<Integer, Double> answerBits = new HashMap<Integer, Double>();
     Map<Integer, Integer> answerCounts = new HashMap<Integer, Integer>();

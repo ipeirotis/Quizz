@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.utils.QueueUtils;
@@ -35,15 +35,15 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
   private static Logger logger = Logger.getLogger(ExplorationExploitationService.class.getName());
 
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
   private UserAnswerService userAnswerService;
 
   @Inject
   public RemoveOrphanUserAnswers(QuizService quizService,
-      QuizQuestionRepository quizQuestionRepository,
+      QuestionService questionService,
       UserAnswerService userAnswerService) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
     this.userAnswerService = userAnswerService;
   }
 

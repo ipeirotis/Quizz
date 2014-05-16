@@ -10,7 +10,7 @@ import javax.inject.Named;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
-import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
 import com.google.api.server.spi.config.Api;
@@ -27,12 +27,12 @@ public class QuizEndpoint {
   protected static int QUESTION_PACKAGE_SIZE = 10;
 
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
 
   @Inject
-  public QuizEndpoint(QuizService quizService, QuizQuestionRepository quizQuestionRepository) {
+  public QuizEndpoint(QuizService quizService, QuestionService questionService) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
   }
 
   /**
@@ -92,7 +92,7 @@ public class QuizEndpoint {
     if (num == null) {
       num = QUESTION_PACKAGE_SIZE;
     }
-    return quizQuestionRepository.getNextQuizQuestions(quizID, num, userID);
+    return questionService.getNextQuizQuestions(quizID, num, userID);
   }
 
   /**

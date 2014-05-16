@@ -42,8 +42,8 @@ import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.DomainStatsRepository;
 import us.quizz.repository.ExperimentRepository;
 import us.quizz.repository.ExplorationExploitationResultRepository;
+import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.repository.TreatmentRepository;
@@ -51,9 +51,11 @@ import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
+import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExperimentService;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
@@ -104,7 +106,7 @@ public class QuizzTest {
   private PersistenceManager actualPersistenceManager;
 
   private QuizRepository quizRepository;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionRepository questionRepository;
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
   private UserAnswerRepository userAnswerRepository;
   private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
@@ -119,6 +121,8 @@ public class QuizzTest {
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
   private ExperimentRepository experimentRepository;
 
+  private AnswerChallengeCounterService answerChallengeCounterService;
+  private QuestionService questionService;
   private ExperimentService experimentService;
   private UserService userService;
   private QuizPerformanceService quizPerformanceService;
@@ -149,29 +153,27 @@ public class QuizzTest {
   public void setUp() {
 
     helper.setUp();
-    initPersistenceManager();
     gson = new GsonBuilder().setPrettyPrinting().create();
     
-    answerChallengeCounterRepository = spy(new AnswerChallengeCounterRepository());
-    userAnswerRepository = spy(new UserAnswerRepository());
-    userAnswerFeedbackRepository = spy(new UserAnswerFeedbackRepository());
-    quizPerformanceRepository = spy(new QuizPerformanceRepository());
-    badgeRepository = spy(new BadgeRepository());
-    userRepository = spy(new UserRepository());
-    treatmentRepository = spy(new TreatmentRepository());
-    userReferralRepository = spy(new UserReferralRepository());
-    quizRepository = spy(new QuizRepository());
-    domainStatsRepository = spy(new DomainStatsRepository());
-    quizQuestionRepository = spy(new QuizQuestionRepository(quizRepository, userAnswerRepository));
-    answersRepository = spy(new AnswersRepository(quizQuestionRepository));
-    survivalProbabilityResultRepository = spy(new SurvivalProbabilityResultRepository());
-    explorationExploitationResultRepository = spy(new ExplorationExploitationResultRepository());
-    experimentRepository = spy(new ExperimentRepository());
+    answerChallengeCounterRepository = new AnswerChallengeCounterRepository();
+    userAnswerRepository = new UserAnswerRepository();
+    userAnswerFeedbackRepository = new UserAnswerFeedbackRepository();
+    quizPerformanceRepository = new QuizPerformanceRepository();
+    badgeRepository = new BadgeRepository();
+    userRepository = new UserRepository();
+    treatmentRepository = new TreatmentRepository();
+    userReferralRepository = new UserReferralRepository();
+    quizRepository = new QuizRepository();
+    domainStatsRepository = new DomainStatsRepository();
+    questionRepository = new QuestionRepository();
+    answersRepository = new AnswersRepository();
+    survivalProbabilityResultRepository = new SurvivalProbabilityResultRepository();
+    explorationExploitationResultRepository = new ExplorationExploitationResultRepository();
+    experimentRepository = new ExperimentRepository();
 
-    when(answerChallengeCounterRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-    when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
-
+    answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
+    userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
+    questionService = new QuestionService(questionRepository, userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentService);
     userService = new UserService(userRepository, experimentService);
@@ -180,20 +182,19 @@ public class QuizzTest {
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
     quizService = new QuizService(userReferralService, quizPerformanceService, quizRepository, 
-        quizQuestionRepository, userAnswerService);
+        questionService, userAnswerService);
     survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceService,
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(
-        userAnswerService, quizPerformanceService, quizQuestionRepository);
-    userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
+        userAnswerService, quizPerformanceService, questionService);
 
-    quizEndpoint = new QuizEndpoint(quizService, quizQuestionRepository);
-    questionEndpoint = new QuestionEndpoint(quizService, quizQuestionRepository,
-        answerChallengeCounterRepository);
+    quizEndpoint = new QuizEndpoint(quizService, questionService);
+    questionEndpoint = new QuestionEndpoint(quizService, questionService,
+        answerChallengeCounterService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
-        answersRepository, quizQuestionRepository, badgeRepository, quizPerformanceService,
+        answersRepository, questionService, badgeRepository, quizPerformanceService,
         userAnswerService, userAnswerFeedbackService, explorationExploitationService);
     treatmentEndpoint = new TreatmentEndpoint(treatmentService);
     userEndpoint = new UserEndpoint(userService, userReferralService, experimentService);
@@ -220,29 +221,6 @@ public class QuizzTest {
   public void tearDown() {
     helper.tearDown();
   }
-
-  private void initPersistenceManager() {
-    Properties newProperties = new Properties();
-    newProperties
-    .put("javax.jdo.PersistenceManagerFactoryClass",
-        "org.datanucleus.api.jdo.JDOPersistenceManagerFactory");
-    newProperties.put("javax.jdo.option.ConnectionURL", "appengine");
-    newProperties.put("javax.jdo.option.NontransactionalRead", "true");
-    newProperties.put("javax.jdo.option.NontransactionalWrite", "true");
-    newProperties.put("javax.jdo.option.RetainValues", "true");
-    newProperties.put("datanucleus.appengine.autoCreateDatastoreTxns", "true");
-    newProperties.put("datanucleus.appengine.allowMultipleRelationsOfSameType", "true");
-
-    PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
-
-    actualPersistenceManager = pmf.getPersistenceManager();
-    persistenceManager = spy(actualPersistenceManager);
-    doNothing().when(persistenceManager).close();
-  }
-
-  private PersistenceManager getPersistenceManager(){
-    return persistenceManager;
-  } 
 
   @Test
   public void run() throws Exception {
@@ -316,7 +294,7 @@ public class QuizzTest {
 
   private Question createQuestion(Question question) throws BadRequestException {
     Question newQuestion =  questionEndpoint.insertQuestion(question);
-    Assert.assertNotNull(newQuestion.getID());
+    Assert.assertNotNull(newQuestion.getId());
     return newQuestion;
   }
   
@@ -354,7 +332,7 @@ public class QuizzTest {
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
     Map<String, Object> resp = processUserAnswerEndpoint.processUserAnswer(req,
-        quiz.getQuizID(), question.getID(), 0, user.getUserid(),
+        quiz.getQuizID(), question.getId(), 0, user.getUserid(),
         numberOfCorrectAnswers, NUMBER_OF_QUESTIONS, null,
         numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0);
 

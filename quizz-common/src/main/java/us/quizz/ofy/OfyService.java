@@ -1,11 +1,14 @@
 package us.quizz.ofy;
 
+import us.quizz.entities.Answer;
+import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Badge;
 import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.Experiment;
 import us.quizz.entities.ExplorationExploitationResult;
+import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.SurvivalProbabilityResult;
@@ -21,12 +24,15 @@ import com.googlecode.objectify.ObjectifyService;
 
 public class OfyService {
   static {
+    register(Answer.class);
+    register(AnswerChallengeCounter.class);
     register(Badge.class);
     register(BadgeAssignment.class);
     register(BrowserStats.class);
     register(DomainStats.class);
     register(Experiment.class);
     register(ExplorationExploitationResult.class);
+    register(Question.class);
     register(Quiz.class);
     register(QuizPerformance.class);
     register(SurvivalProbabilityResult.class);

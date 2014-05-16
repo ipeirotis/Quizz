@@ -1,31 +1,26 @@
 package us.quizz.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
-import us.quizz.repository.QuizQuestionRepository;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.inject.Inject;
 
 public class UserQuizStatisticsService {
   private UserAnswerService userAnswerService;
   private QuizPerformanceService quizPerformanceService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
 
   @Inject
   public UserQuizStatisticsService(UserAnswerService userAnswerService,
       QuizPerformanceService quizPerformanceService,
-      QuizQuestionRepository quizQuestionRepository) {
+      QuestionService questionService) {
     this.userAnswerService = userAnswerService;
     this.quizPerformanceService = quizPerformanceService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
   }
 
   public void updateStatistics(String quizId, String userId) {
@@ -33,12 +28,11 @@ public class UserQuizStatisticsService {
 
     List<UserAnswer> userAnswerList = userAnswerService.getUserAnswers(quizId, userId);
     // This is used to get a set of unique questions answered by user.
-    Set<Key> keys = new HashSet<Key>();
+    List<Long> ids = new ArrayList<Long>();
     for (UserAnswer userAnswer : userAnswerList) {
-      keys.add(KeyFactory.createKey(Question.class.getSimpleName(), userAnswer.getQuestionID()));
+      ids.add(userAnswer.getQuestionID());
     }
-    List<Question> questionList = quizQuestionRepository.getQuizQuestionsByKeys(
-        new ArrayList<Key>(keys));
+    List<Question> questionList = questionService.listByIds(ids);
 
     qp.computeCorrect(userAnswerList, questionList);
 
