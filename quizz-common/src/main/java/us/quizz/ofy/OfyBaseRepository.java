@@ -2,16 +2,17 @@ package us.quizz.ofy;
 
 import static us.quizz.ofy.OfyService.ofy;
 
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.QueryResultIterator;
+
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.Query;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.QueryResultIterator;
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.cmd.Query;
 
 public class OfyBaseRepository<T> {
   protected Class<T> clazz;
@@ -198,7 +199,8 @@ public class OfyBaseRepository<T> {
 
     if (cont) {
       Cursor cursor = iterator.getCursor();
-      return CollectionResponse.<T> builder().setItems(result).setNextPageToken(cursor.toWebSafeString()).build();
+      return CollectionResponse.<T> builder().setItems(result)
+          .setNextPageToken(cursor.toWebSafeString()).build();
     } else {
       return CollectionResponse.<T> builder().setItems(result).build();
     }

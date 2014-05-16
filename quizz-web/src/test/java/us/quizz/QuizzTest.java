@@ -5,22 +5,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
@@ -67,14 +64,18 @@ import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
 
-import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("unused")
 public class QuizzTest {
@@ -171,11 +172,11 @@ public class QuizzTest {
     when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
     when(answersRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
 
+    treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentService);
     userService = new UserService(userRepository, experimentService);
     quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
-    treatmentService = new TreatmentService(treatmentRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
     quizService = new QuizService(userReferralService, quizPerformanceService, quizRepository, 
@@ -186,6 +187,7 @@ public class QuizzTest {
         explorationExploitationResultRepository);
     userQuizStatisticsService = new UserQuizStatisticsService(
         userAnswerService, quizPerformanceService, quizQuestionRepository);
+    userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
 
     quizEndpoint = new QuizEndpoint(quizService, quizQuestionRepository);
     questionEndpoint = new QuestionEndpoint(quizService, quizQuestionRepository,
@@ -242,7 +244,7 @@ public class QuizzTest {
     return persistenceManager;
   } 
 
-  //@Test
+  @Test
   public void run() throws Exception {
     // create new quiz
     Quiz quiz = createQuiz(new Quiz("testName", "testQuizId", QuizKind.MULTIPLE_CHOICE));

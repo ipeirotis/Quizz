@@ -1,5 +1,17 @@
 package us.quizz.service;
 
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.inject.Inject;
+
+import nl.bitwalker.useragentutils.Browser;
+
+import us.quizz.entities.DomainStats;
+import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.UserReferal;
+import us.quizz.repository.DomainStatsRepository;
+import us.quizz.repository.UserReferralRepository;
+import us.quizz.utils.UrlUtils;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,37 +21,25 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nl.bitwalker.useragentutils.Browser;
-import us.quizz.entities.DomainStats;
-import us.quizz.entities.QuizPerformance;
-import us.quizz.entities.UserReferal;
-import us.quizz.repository.DomainStatsRepository;
-import us.quizz.repository.UserReferralRepository;
-import us.quizz.utils.UrlUtils;
-
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
-
 public class UserReferralService {
-
   private UserReferralRepository userReferralRepository;
   private DomainStatsRepository domainStatsRepository;
-  
+
   @Inject
   public UserReferralService(UserReferralRepository userReferralRepository,
       DomainStatsRepository domainStatsRepository){
     this.userReferralRepository = userReferralRepository;
     this.domainStatsRepository = domainStatsRepository;
   }
-  
+
   public List<UserReferal> list(){
     return userReferralRepository.list();
   }
-  
+
   public CollectionResponse<UserReferal> listWithCursor(String cursor, Integer limit){
     return userReferralRepository.listWithCursor(cursor, limit);
   }
-  
+
   public UserReferal get(Long id){
     return userReferralRepository.get(id);
   }
@@ -47,7 +47,7 @@ public class UserReferralService {
   public UserReferal save(UserReferal userReferal){
     return userReferralRepository.saveAndGet(userReferal);
   }
-  
+
   public void delete(Long id) {
     userReferralRepository.delete(id);
   }
@@ -63,7 +63,7 @@ public class UserReferralService {
     }
     return userids;
   }
-  
+
   public void createAndStoreUserReferal(HttpServletRequest req, String userid) {
     UserReferal ur = new UserReferal(userid);
     ur.setQuiz(req.getParameter("quizID"));

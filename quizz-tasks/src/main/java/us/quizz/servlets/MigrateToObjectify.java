@@ -2,22 +2,6 @@ package us.quizz.servlets;
 
 import static us.quizz.ofy.OfyService.ofy;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import us.quizz.entities.Badge;
-import us.quizz.entities.DomainStats;
-import us.quizz.entities.Quiz;
-import us.quizz.entities.Treatment;
-import us.quizz.utils.QueueUtils;
-
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -33,56 +17,373 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.inject.Singleton;
 
+import us.quizz.entities.Badge;
+import us.quizz.entities.BadgeAssignment;
+import us.quizz.entities.BrowserStats;
+import us.quizz.entities.DomainStats;
+import us.quizz.entities.Experiment;
+import us.quizz.entities.ExplorationExploitationResult;
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.SurvivalProbabilityResult;
+import us.quizz.entities.Treatment;
+import us.quizz.entities.User;
+import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.entities.UserReferal;
+import us.quizz.utils.QueueUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @SuppressWarnings("serial")
 @Singleton
 public class MigrateToObjectify extends HttpServlet {
-  
   private static final Logger logger = Logger.getLogger(MigrateToObjectify.class.getName());
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-
     String kind = req.getParameter("kind");
     String now = req.getParameter("now");
-    
+    String cursor = req.getParameter("cursor");
+
     if (kind == null) {
       resp.sendError(400,"'kind' param is required");
     } else {
       if ("true".equals(now)) {
-        if("DomainStats".equals(kind)){
-          updateDomainStats();
-        } else if("Treatment".equals(kind)){
-          updateTreatments();
-        } else if("Quiz".equals(kind)){
-          updateQuizzes();
-        } else if("Badge".equals(kind)){
-          updateBadges();
-        } else if("User".equals(kind)){
-          updateUsers();
+        if ("DomainStats".equals(kind)) {
+          updateDomainStats(cursor);
+        } else if ("Treatment".equals(kind)) {
+          updateTreatments(cursor);
+        } else if ("Quiz".equals(kind)) {
+          updateQuizzes(cursor);
+        } else if ("Badge".equals(kind)) {
+          updateBadges(cursor);
+        } else if ("User".equals(kind)) {
+          updateUsers(cursor);
+        } else if ("BadgeAssignment".equals(kind)) {
+          updateBadgeAssignments(cursor);
+        } else if ("BrowserStats".equals(kind)) {
+          updateBrowserStats(cursor);
+        } else if ("Experiment".equals(kind)) {
+          updateExperiments(cursor);
+        } else if ("ExplorationExploitationResult".equals(kind)) {
+          updateExplorationExploitationResults(cursor);
+        } else if ("QuizPerformance".equals(kind)) {
+          updateQuizPerformances(cursor);
+        } else if ("SurvivalProbabilityResult".equals(kind)) {
+          updateSurvivalProbabilityResult(cursor);
+        } else if ("UserAnswer".equals(kind)) {
+          updateUserAnswers(cursor);
+        } else if ("UserAnswerFeedback".equals(kind)) {
+          updateUserAnswerFeedbacks(cursor);
+        } else if ("UserReferal".equals(kind)) {
+          updateUserReferal(cursor);
         }
       }else{
-        sched(kind);
+        sched(kind, cursor);
       }
     }
   }
 
-  private void updateDomainStats(){
+  private QueryResultList<Entity> executeQuery(DatastoreService ds, String kind, String cursorString) {
+    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
+    Cursor cursor = null;
+    if (cursorString != null) {
+      cursor = Cursor.fromWebSafeString(cursorString);
+    }
+    if (cursor != null) {
+      fetchOptions.startCursor(cursor);
+    }
+    Query q = new Query(kind);
+    PreparedQuery pq = ds.prepare(q);
+    QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
+    return entities;
+  }
+
+  private void updateUserReferal(String cursorString) {
+    String kind = "UserReferal";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind);
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " UserReferal entities updated successfully");
+  }
+
+  private void updateUserAnswerFeedbacks(String cursorString) {
+    String kind = "UserAnswerFeedback";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind,
+          UserAnswerFeedback.generateId((Long)e.getProperty("questionID"),
+                                        (String)e.getProperty("userid")));
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+
+    logger.log(Level.INFO, counter + " UserAnswerFeedback entities updated successfully");
+  }
+
+  private void updateUserAnswers(String cursorString) {
+    String kind = "UserAnswer";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind);
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " UserAnswer entities updated successfully");
+  }
+
+  private void updateSurvivalProbabilityResult(String cursorString) {
+    String kind = "SurvivalProbabilityResult";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind,
+          SurvivalProbabilityResult.generateId(
+              (int)(long)(Long)e.getProperty("correctFrom"),
+              (int)(long)(Long)e.getProperty("incorrectFrom"),
+              (int)(long)(Long)e.getProperty("exploitFrom"),
+              (int)(long)(Long)e.getProperty("correctTo"),
+              (int)(long)(Long)e.getProperty("incorrectTo"),
+              (int)(long)(Long)e.getProperty("exploitTo")));
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " SurvivalProbabilityResult entities updated successfully");
+  }
+
+  private void updateQuizPerformances(String cursorString) {
+    String kind = "QuizPerformance";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind,
+          QuizPerformance.generateId((String)e.getProperty("quiz"),
+                                     (String)e.getProperty("userid")));
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " QuizPerformance entities updated successfully");
+  }
+
+  private void updateExplorationExploitationResults(String cursorString) {
+    String kind = "ExplorationExploitationResult";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind,
+          ExplorationExploitationResult.generateId(
+              (int)(long)(Long)e.getProperty("a"),
+              (int)(long)(Long)e.getProperty("b"),
+              (int)(long)(Long)e.getProperty("c")));
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " ExplorationExploitationResult entities updated successfully");
+  }
+
+  private void updateExperiments(String cursorString) {
+    String kind = "Experiment";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind);
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " Experiment entities updated successfully");
+  }
+
+  private void updateBadgeAssignments(String cursorString) {
+    String kind = "BadgeAssignment";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind,
+          BadgeAssignment.generateId((String)e.getProperty("userid"),
+                                     (String)e.getProperty("badgename")));
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " BadgeAssignment entities updated successfully");
+  }
+
+  private void updateBrowserStats(String cursorString) {
+    String kind = "BrowserStats";
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
+    }
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Entity newEntity = new Entity(kind, e.getProperty("browser").toString());
+      newEntity.setPropertiesFrom(e);
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
+    logger.log(Level.INFO, counter + " BrowserStats entities updated successfully");
+  }
+
+  private void updateDomainStats(String cursorString){
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService(); 
     FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
     Cursor cursor = null;
+    if (cursorString != null) {
+      cursor = Cursor.fromWebSafeString(cursorString);
+    }
     long counter = 0L;
-    
+
     while (true) {
       if (cursor != null) {
         fetchOptions.startCursor(cursor);
       }
-      
+
       Query q = new Query("DomainStats");
       PreparedQuery pq = ds.prepare(q);
       QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
       cursor = entities.getCursor();
-     
+
       if (cursor == null || entities.size() == 0) {
         break;
       }
@@ -91,183 +392,135 @@ public class MigrateToObjectify extends HttpServlet {
         e.removeProperty("domain");
         counter++;
       }
-      
+
       ds.put(entities);
     }
-    
+
     logger.log(Level.INFO, counter + " DomainStats entities updated successfully");
-    
-    //test reading with objectify
-    DomainStats domainStats = ofy().load().type(DomainStats.class).limit(1).first().now();
-    logger.log(Level.INFO, "Test reading DomainStats: " + domainStats.getDomain());
   }
 
-  private void updateTreatments(){
+  private void updateTreatments(String cursorString){
+    String kind = "Treatment";
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
-    Cursor cursor = null;
-    long counter = 0L;
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
     List<Entity> newEntities = new ArrayList<Entity>();
-
-    while (true) {
-      if (cursor != null) {
-        fetchOptions.startCursor(cursor);
-      }
-
-      Query q = new Query("Treatment");
-      PreparedQuery pq = ds.prepare(q);
-      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
-      List<Key> toDeleteKeys = new ArrayList<Key>();
-      cursor = entities.getCursor();
-
-      if (cursor == null || entities.size() == 0) {
-        break;
-      }
-
-      for(Entity e : entities){
-        Entity newEntity = new Entity("Treatment", (String)e.getProperty("name"));
-        newEntity.setPropertiesFrom(e);
-        newEntity.removeProperty("name");
-        newEntities.add(newEntity);
-        toDeleteKeys.add(e.getKey());
-        counter++;
-      }
-      ds.delete(toDeleteKeys);
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
     }
-
+    Long counter = 0L;
+    for(Entity e : entities){
+      Entity newEntity = new Entity(kind, (String)e.getProperty("name"));
+      newEntity.setPropertiesFrom(e);
+      newEntity.removeProperty("name");
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
     ds.put(newEntities);
-
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
     logger.log(Level.INFO, counter + " Treatment entities updated successfully");
-
-    //test reading with objectify
-    Treatment treatment = ofy().load().type(Treatment.class).limit(1).first().now();
-    logger.log(Level.INFO, "Test reading Treatment: " + treatment.getProbability());
   }
   
-  private void updateBadges(){
+  private void updateBadges(String cursorString){
+    String kind = "Badge";
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
-    Cursor cursor = null;
-    long counter = 0L;
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
     List<Entity> newEntities = new ArrayList<Entity>();
-
-    while (true) {
-      if (cursor != null) {
-        fetchOptions.startCursor(cursor);
-      }
-
-      Query q = new Query("Badge");
-      PreparedQuery pq = ds.prepare(q);
-      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
-      List<Key> toDeleteKeys = new ArrayList<Key>();
-      cursor = entities.getCursor();
-
-      if (cursor == null || entities.size() == 0) {
-        break;
-      }
-
-      for(Entity e : entities){
-        Entity newEntity = new Entity("Badge", (String)e.getProperty("badgename"));
-        newEntity.setPropertiesFrom(e);
-        newEntity.removeProperty("badgename");
-        newEntities.add(newEntity);
-        toDeleteKeys.add(e.getKey());
-        counter++;
-      }
-      ds.delete(toDeleteKeys);
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
     }
 
+    Long counter = 0L;
+    for(Entity e : entities){
+      Entity newEntity = new Entity(kind, (String)e.getProperty("badgename"));
+      newEntity.setPropertiesFrom(e);
+      newEntity.removeProperty("badgename");
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
     ds.put(newEntities);
-
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
     logger.log(Level.INFO, counter + " Badge entities updated successfully");
-
-    //test reading with objectify
-    Badge badge = ofy().load().type(Badge.class).limit(1).first().now();
-    logger.log(Level.INFO, "Test reading Badge: " + badge.getBadgename());
   }
 
-  private void updateUsers(){
+  private void updateUsers(String cursorString){
+    String kind = "User";
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
-    Cursor cursor = null;
-    long counter = 0L;
-
-    while (true) {
-      if (cursor != null) {
-        fetchOptions.startCursor(cursor);
-      }
-
-      Query q = new Query("User");
-      PreparedQuery pq = ds.prepare(q);
-      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
-      cursor = entities.getCursor();
-
-      if (cursor == null || entities.size() == 0) {
-        break;
-      }
-
-      for(Entity e : entities){
-        Object key = e.getProperty("experiment_key_OID");
-        if(key != null){
-          e.setProperty("experimentId", ((Key)key).getId());
-          e.removeProperty("experiment_key_OID");
-        }
-        counter++;
-      }
-      ds.put(entities);
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
+    List<Entity> newEntities = new ArrayList<Entity>();
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
     }
 
+    Long counter = 0L;
+    for (Entity e : entities) {
+      Object key = e.getProperty("experiment_key_OID");
+      if (key != null) {
+        e.setProperty("experimentId", ((Key)key).getId());
+        e.removeProperty("experiment_key_OID");
+      }
+      Entity newEntity = new Entity(kind, (String)e.getProperty("userid"));
+      newEntity.setPropertiesFrom(e);
+      newEntity.removeProperty("userid");
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
+    ds.put(newEntities);
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
     logger.log(Level.INFO, counter + " User entities updated successfully");
   }
 
-  private void updateQuizzes(){
+  private void updateQuizzes(String cursorString){
+    String kind = "Quiz";
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
-    Cursor cursor = null;
-    long counter = 0L;
+    QueryResultList<Entity> entities = executeQuery(ds, kind, cursorString);
+    List<Key> toDeleteKeys = new ArrayList<Key>();
     List<Entity> newEntities = new ArrayList<Entity>();
-
-    while (true) {
-      if (cursor != null) {
-        fetchOptions.startCursor(cursor);
-      }
-
-      Query q = new Query("Quiz");
-      PreparedQuery pq = ds.prepare(q);
-      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
-      List<Key> toDeleteKeys = new ArrayList<Key>();
-      cursor = entities.getCursor();
-
-      if (cursor == null || entities.size() == 0) {
-        break;
-      }
-
-      for(Entity e : entities){
-        Entity newEntity = new Entity("Quiz", (String)e.getProperty("quizID"));
-        newEntity.setPropertiesFrom(e);
-        newEntity.removeProperty("quizID");
-        newEntities.add(newEntity);
-        toDeleteKeys.add(e.getKey());
-        counter++;
-      }
-      ds.delete(toDeleteKeys);
+    Cursor cursor = entities.getCursor();
+    if (cursor == null || entities.size() == 0) {
+      return;
     }
-
+    Long counter = 0L;
+    for(Entity e : entities){
+      Entity newEntity = new Entity(kind, (String)e.getProperty("quizID"));
+      newEntity.setPropertiesFrom(e);
+      newEntity.removeProperty("quizID");
+      newEntities.add(newEntity);
+      toDeleteKeys.add(e.getKey());
+      counter++;
+    }
+    ds.delete(toDeleteKeys);
     ds.put(newEntities);
-
+    if (cursor != null) {
+      sched(kind, cursor.toWebSafeString());
+    }
     logger.log(Level.INFO, counter + " Quiz entities updated successfully");
-
-    //test reading with objectify
-    Quiz quiz = ofy().load().type(Quiz.class).limit(1).first().now();
-    logger.log(Level.INFO, "Test reading Quiz: " + quiz.getName());
   }
 
-  private void sched(String kind){
+  private void sched(String kind, String cursor){
     Queue queue = QueueUtils.getConsistencyQueue();
     queue.add(Builder
         .withUrl("/ofy")
         .param("kind", kind)
         .param("now", "true")
+        .param("cursor", cursor)
         .retryOptions(RetryOptions.Builder.withTaskRetryLimit(0))
         .method(TaskOptions.Method.GET));
   } 

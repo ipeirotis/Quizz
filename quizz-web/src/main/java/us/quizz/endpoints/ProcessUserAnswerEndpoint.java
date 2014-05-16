@@ -1,13 +1,12 @@
 package us.quizz.endpoints;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -27,13 +26,14 @@ import us.quizz.service.UserService;
 import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.QueueUtils;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class ProcessUserAnswerEndpoint {
@@ -73,7 +73,7 @@ public class ProcessUserAnswerEndpoint {
   }
 
   private String constructCollectionFeedback(
-    String bestAnswerText, double probability, boolean isCorrect) {
+      String bestAnswerText, double probability, boolean isCorrect) {
     String feedback = "";
     long roundedProbability = Math.round(probability * 100);
     boolean isFirst = roundedProbability == 0;

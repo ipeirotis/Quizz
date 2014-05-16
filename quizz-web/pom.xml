@@ -152,7 +152,6 @@
 
   <build>
     <outputDirectory>target/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
-	
 
     <plugins>
       <plugin>

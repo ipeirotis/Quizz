@@ -86,7 +86,7 @@ public class Question implements Serializable {
   // If likelyAnswer matches a GOLD answer, we set this to true
   @Persistent
   private Boolean isLikelyAnswerCorrect;
-  
+
   // The feedback that we give to the user to explain why a particular answer 
   // was correct (or incorrect)
   @Persistent
@@ -158,8 +158,6 @@ public class Question implements Serializable {
     
     this.answers = new ArrayList<Answer>();
   }
-  
-  
 
   public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
@@ -301,6 +299,5 @@ public class Question implements Serializable {
     } catch (IndexOutOfBoundsException e) {
       return null;
     }
-    
   }
 }

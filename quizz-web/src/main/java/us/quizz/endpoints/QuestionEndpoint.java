@@ -1,10 +1,13 @@
 package us.quizz.endpoints;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Key;
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
@@ -16,14 +19,11 @@ import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.service.QuizService;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Key;
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class QuestionEndpoint {
@@ -88,13 +88,13 @@ public class QuestionEndpoint {
   public Question insertQuestion(final Question question) throws BadRequestException {
     Quiz quiz = quizService.get(question.getQuizID());
     QuizKind quizKind = quiz.getKind();
-    if (quizKind ==QuizKind.MULTIPLE_CHOICE &&
+    if (quizKind == QuizKind.MULTIPLE_CHOICE &&
         (!question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_CALIBRATION) &&
          !question.getKind().equals(QuestionKind.MULTIPLE_CHOICE_COLLECTION))) {
       throw new BadRequestException("Can't add " + question.getKind() +
           " question to " + quiz.getKind() + " quiz");
     }
-    if (quizKind ==QuizKind.FREE_TEXT &&
+    if (quizKind == QuizKind.FREE_TEXT &&
         (!question.getKind().equals(QuestionKind.FREETEXT_CALIBRATION) &&
          !question.getKind().equals(QuestionKind.FREETEXT_COLLECTION))) {
       throw new BadRequestException("Can't add " + question.getKind() +

@@ -16,7 +16,7 @@ VERSION_ID=$1
 #   $1: target version id to replace the id in the pom.xml.
 #   $2: POM file to replace version id.
 replace_pom_version_id() {
-  APPENGINE_VERSION='appengine.app.version'
+  APPENGINE_VERSION='appspot.app.version'
   TARGET_VERSION_ID=$1
   POM_FILE=$2
 
@@ -27,4 +27,5 @@ $POM_FILE > "$POM_FILE.bak"
 }
 
 replace_pom_version_id $VERSION_ID 'pom.xml'
+
 mvn install -U && cd quizz-ear && mvn appengine:update
