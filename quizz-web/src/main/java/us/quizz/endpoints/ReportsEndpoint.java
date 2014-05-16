@@ -12,9 +12,9 @@ import us.quizz.entities.BrowserStats;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.service.BrowserStatsService;
 import us.quizz.service.DomainStatsService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
 import com.google.api.server.spi.config.Api;
@@ -25,30 +25,30 @@ import com.google.inject.Inject;
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class ReportsEndpoint {
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
   private BrowserStatsService browserStatsService;
   private DomainStatsService domainStatsService;
 
   @Inject
   public ReportsEndpoint(
       QuizService quizService,
-      QuizQuestionRepository quizQuestionRepository,
+      QuestionService questionService,
       BrowserStatsService browserStatsService,
       DomainStatsService domainStatsService) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
     this.browserStatsService = browserStatsService;
     this.domainStatsService = domainStatsService;
   }
 
   @ApiMethod(name = "reports.multiChoiceAnswers", path = "reports/multiChoiceAnswers")
   public List<Question> getMultiChoiceAnswersReport(@Named("quizID")String quizID) {
-    return quizQuestionRepository.getQuizQuestions(quizID);
+    return questionService.getQuizQuestions(quizID);
   }
 
   @ApiMethod(name = "reports.freeTextAnswers", path = "reports/freeTextAnswers")
   public List<Question> getFreeTextAnswersReport(@Named("quizID")String quizID) {
-    return quizQuestionRepository.getQuizQuestions(quizID);
+    return questionService.getQuizQuestions(quizID);
   }
 
   @ApiMethod(name = "reports.scoreByBrowser", path = "reports/scoreByBrowser")

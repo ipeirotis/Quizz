@@ -1,19 +1,18 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+
+@Entity
+@Cache
+@Index
 public class AnswerChallengeCounter {
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
+  @Id
+  private String id;
 
   @Persistent
   private String quizID;
@@ -23,24 +22,19 @@ public class AnswerChallengeCounter {
 
   @Persistent
   private Long count = 0L;
+  
+  //for Objectify
+  @SuppressWarnings("unused")
+  private AnswerChallengeCounter(){}
 
   public AnswerChallengeCounter(String quizID, Long questionID) {
-    this.key = generateKey(quizID, questionID);
+    this.id = generateId(quizID, questionID);
     this.quizID = quizID;
     this.questionID = questionID;
   }
 
-  public static Key generateKey(String quizID, Long questionID) {
-    return KeyFactory.createKey(AnswerChallengeCounter.class.getSimpleName(),
-        quizID + "_" + questionID);
-  }
-
-  public Key getKey() {
-    return key;
-  }
-
-  public void setKey(Key key) {
-    this.key = key;
+  public static String generateId(String quizID, Long questionID) {
+    return quizID + "_" + questionID;
   }
 
   public String getQuizID() {
@@ -73,5 +67,13 @@ public class AnswerChallengeCounter {
 
   public void decCount() {
     this.count--;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 }

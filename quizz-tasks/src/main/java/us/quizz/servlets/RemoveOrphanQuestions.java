@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.repository.AnswersRepository;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 import us.quizz.utils.QueueUtils;
 
@@ -34,14 +34,14 @@ import com.google.inject.Singleton;
 public class RemoveOrphanQuestions extends HttpServlet {
   private static Logger logger = Logger.getLogger(ExplorationExploitationService.class.getName());
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
   private AnswersRepository answersRepository;
 
   @Inject
   public RemoveOrphanQuestions(QuizService quizService,
-      QuizQuestionRepository quizQuestionRepository, AnswersRepository answersRepository) {
+      QuestionService questionService, AnswersRepository answersRepository) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
     this.answersRepository = answersRepository;
   }
 
@@ -61,9 +61,9 @@ public class RemoveOrphanQuestions extends HttpServlet {
     // If we have a quizID, we will remove these questions
     String quizId = req.getParameter("quizid");
     if (quizId != null) {
-      List<Question> questions = this.quizQuestionRepository.getQuizQuestions(quizId);
+      List<Question> questions = this.questionService.getQuizQuestions(quizId);
       logger.log(Level.INFO, "Removing " + questions.size() + " questions...");
-      this.quizQuestionRepository.removeAll(questions);
+      this.questionService.delete(questions);
       //List<Answer> quesansawerstions = this.answersRepository.
       return;
     }
@@ -75,7 +75,7 @@ public class RemoveOrphanQuestions extends HttpServlet {
       quizIds.add(q.getQuizID());
     }
 
-    List<Question> questions = this.quizQuestionRepository.getQuizQuestions();
+    List<Question> questions = this.questionService.list();
     logger.log(Level.INFO, "Fetched " + questions.size() + " questions...");
     for (Question question : questions) {
       String qquiz = question.getQuizID();

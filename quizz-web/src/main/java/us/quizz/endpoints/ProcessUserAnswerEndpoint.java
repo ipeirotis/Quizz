@@ -17,8 +17,8 @@ import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.enums.AnswerKind;
 import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerFeedbackService;
@@ -43,7 +43,7 @@ public class ProcessUserAnswerEndpoint {
   private QuizService quizService;
   private UserService userService;
   private AnswersRepository answersRepository;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
   private BadgeRepository badgeRepository;
   private QuizPerformanceService quizPerformanceService;
   private UserAnswerService userAnswerService;
@@ -55,7 +55,7 @@ public class ProcessUserAnswerEndpoint {
       QuizService quizService,
       UserService userService,
       AnswersRepository answersRepository,
-      QuizQuestionRepository quizQuestionRepository,
+      QuestionService questionService,
       BadgeRepository badgeRepository,
       QuizPerformanceService quizPerformanceService,
       UserAnswerService userAnswerService,
@@ -65,7 +65,7 @@ public class ProcessUserAnswerEndpoint {
     this.userService = userService;
     this.userAnswerFeedbackService = userAnswerFeedbackService;
     this.answersRepository = answersRepository;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
     this.badgeRepository = badgeRepository;
     this.quizPerformanceService = quizPerformanceService;
     this.userAnswerService = userAnswerService;
@@ -112,7 +112,7 @@ public class ProcessUserAnswerEndpoint {
 
     // TODO(chunhowt): Moves this logic to some other place.
     // TODO(chunhowt): Deal with I don't know action.
-    Question question = quizQuestionRepository.getQuizQuestion(questionID);
+    Question question = questionService.get(questionID);
     Answer bestAnswer = null;
     switch (question.getKind()) {
       case MULTIPLE_CHOICE_CALIBRATION:
@@ -213,7 +213,7 @@ public class ProcessUserAnswerEndpoint {
         user.getUserid(), useranswerID, isCorrect);
     uaf.setNumCorrectAnswers(correctanswers);
     uaf.setNumTotalAnswers(totalanswers);
-    Question question = quizQuestionRepository.getQuizQuestion(questionID);
+    Question question = questionService.get(questionID);
     
     String answerText = "";
     if (useranswerID != -1) {
@@ -230,7 +230,7 @@ public class ProcessUserAnswerEndpoint {
 
   private void updateQuizPerformance(User user, Long questionID) {
     Queue queueUserStats = QueueUtils.getUserStatisticsQueue();
-    String quizID = quizQuestionRepository.getQuizQuestion(questionID)
+    String quizID = questionService.get(questionID)
         .getQuizID();
     queueUserStats
         .add(Builder.withUrl("/api/updateUserQuizStatistics")

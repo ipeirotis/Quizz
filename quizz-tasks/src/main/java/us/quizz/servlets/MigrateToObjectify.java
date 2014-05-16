@@ -4,7 +4,10 @@ import static us.quizz.ofy.OfyService.ofy;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,10 +15,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.Badge;
 import us.quizz.entities.DomainStats;
+import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.Treatment;
+import us.quizz.repository.AnswersRepository;
+import us.quizz.repository.QuestionRepository;
 import us.quizz.utils.QueueUtils;
 
 import com.google.appengine.api.datastore.Cursor;
@@ -31,13 +38,23 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
 @Singleton
 public class MigrateToObjectify extends HttpServlet {
-  
+
   private static final Logger logger = Logger.getLogger(MigrateToObjectify.class.getName());
+
+  private AnswersRepository answerRepository;
+  private QuestionRepository questionRepository;
+
+  @Inject
+  public MigrateToObjectify(AnswersRepository answerRepository, QuestionRepository questionRepository){
+    this.answerRepository = answerRepository;
+    this.questionRepository = questionRepository;
+  }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -60,11 +77,70 @@ public class MigrateToObjectify extends HttpServlet {
           updateBadges();
         } else if("User".equals(kind)){
           updateUsers();
+        } else if("Question".equals(kind)){
+          updateQuestions();
         }
       }else{
         sched(kind);
       }
     }
+  }
+  
+  private void updateQuestions(){
+    //remove 'answers' property from all questions
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService(); 
+    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1000);
+    Cursor cursor = null;
+    long counter = 0L;
+    
+    while (true) {
+      if (cursor != null) {
+        fetchOptions.startCursor(cursor);
+      }
+      
+      Query q = new Query("Question");
+      PreparedQuery pq = ds.prepare(q);
+      QueryResultList<Entity> entities = pq.asQueryResultList(fetchOptions);
+      cursor = entities.getCursor();
+     
+      if (cursor == null || entities.size() == 0) {
+        break;
+      }
+
+      for(Entity e : entities){
+        e.removeProperty("answers");
+        counter++;
+      }
+      
+      ds.put(entities);
+    }
+    //add answers to questions
+    List<Answer> answers = answerRepository.listAll();
+    List<Question> questions = questionRepository.listAll();
+    
+    Map<Long, ArrayList<Answer>> map = new HashMap<Long, ArrayList<Answer>>();
+    for(Answer answer : answers){
+      if(map.containsKey(answer.getQuestionID())){
+        map.get(answer.getQuestionID()).add(answer);
+      } else {
+        map.put(answer.getQuestionID(), new ArrayList<Answer>(Arrays.asList(answer)));
+      }
+    }
+    
+    for(Question question : questions){
+      question.setAnswers(map.get(question.getId()));
+    }
+    
+    for (int i = 0; i < questions.size(); i += 1000) {
+      List<Question> sublist = questions.subList(i, Math.min(i + 1000, questions.size()));
+      ofy().save().entities(sublist);
+    }
+    
+    logger.log(Level.INFO, counter + " Question entities updated successfully");
+    
+    //test reading with objectify
+    Question question = ofy().load().type(Question.class).limit(1).first().now();
+    logger.log(Level.INFO, "Test reading Questions: " + question.getQuizID());
   }
 
   private void updateDomainStats(){

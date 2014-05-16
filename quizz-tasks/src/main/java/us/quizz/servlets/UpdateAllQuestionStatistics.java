@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
-import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 import us.quizz.utils.QueueUtils;
 
@@ -23,13 +23,13 @@ import com.google.inject.Singleton;
 @Singleton
 public class UpdateAllQuestionStatistics extends HttpServlet {
   private QuizService quizService;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
 
   @Inject
   public UpdateAllQuestionStatistics(QuizService quizService,
-      QuizQuestionRepository quizQuestionRepository) {
+      QuestionService questionService) {
     this.quizService = quizService;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
   }
 
   @Override
@@ -46,11 +46,11 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
             .method(TaskOptions.Method.GET));
       }
     } else {
-      List<Question> questions = quizQuestionRepository.getQuizQuestions(quizID);
+      List<Question> questions = questionService.getQuizQuestions(quizID);
        for (Question question : questions) {
         queue.add(Builder
             .withUrl("/api/updateQuestionStatistics")
-            .param("questionID", question.getID().toString())
+            .param("questionID", String.valueOf(question.getId()))
             .method(TaskOptions.Method.GET));
       }
     }

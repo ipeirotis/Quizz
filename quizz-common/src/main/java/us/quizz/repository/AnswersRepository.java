@@ -1,25 +1,13 @@
 package us.quizz.repository;
 
-import com.google.appengine.api.datastore.Key;
+import us.quizz.entities.Answer;
+import us.quizz.ofy.OfyBaseRepository;
+
 import com.google.inject.Inject;
 
-import us.quizz.entities.Answer;
-
-public class AnswersRepository extends BaseRepository<Answer> {
-  QuizQuestionRepository quizQuestionRepository;
-
+public class AnswersRepository extends OfyBaseRepository<Answer> {
   @Inject
-  public AnswersRepository(QuizQuestionRepository quizQuestionRepository) {
+  public AnswersRepository() {
     super(Answer.class);
-    this.quizQuestionRepository = quizQuestionRepository;
-  }
-
-  @Override
-  protected Key getKey(Answer item) {
-    return item.getID();
-  }
-
-  public Answer getAnswer(Long questionID, Integer answerID) {
-    return quizQuestionRepository.getQuizQuestion(questionID).getAnswer(answerID);
   }
 }

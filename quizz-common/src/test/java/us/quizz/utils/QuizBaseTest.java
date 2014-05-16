@@ -1,15 +1,6 @@
 package us.quizz.utils;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.Properties;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,11 +8,12 @@ import org.junit.Before;
 import us.quizz.entities.Question;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.QuestionKind;
+import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
-import us.quizz.repository.QuizQuestionRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
+import us.quizz.service.QuestionService;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
@@ -51,8 +43,6 @@ public class QuizBaseTest {
   protected static final int ANSWER_ID1 = 1;
   protected static final int ANSWER_ID2 = 2;
 
-  protected PersistenceManager persistenceManager;
-  protected PersistenceManager actualPersistenceManager;
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(
           new LocalDatastoreServiceTestConfig().setApplyAllHighRepJobPolicy(), 
@@ -60,7 +50,8 @@ public class QuizBaseTest {
           new LocalMemcacheServiceTestConfig());
 
   protected QuizPerformanceRepository quizPerformanceRepository = null;
-  protected QuizQuestionRepository quizQuestionRepository = null;
+  protected QuestionRepository questionRepository = null;
+  protected QuestionService questionService = null;
   protected QuizRepository quizRepository = null;
   protected UserAnswerRepository userAnswerRepository = null;
   protected UserReferralRepository userReferralRepository = null;
@@ -69,7 +60,8 @@ public class QuizBaseTest {
   public void setUp() {
     helper.setUp();
     quizPerformanceRepository = null;
-    quizQuestionRepository = null;
+    questionRepository = null;
+    questionService = null;
     quizRepository = null;
     userAnswerRepository = null;
     userReferralRepository = null;
@@ -80,62 +72,46 @@ public class QuizBaseTest {
     helper.tearDown();
   }
 
-  protected void initPersistenceManager() {
-    Properties newProperties = new Properties();
-    newProperties.put("javax.jdo.PersistenceManagerFactoryClass",
-                      "org.datanucleus.api.jdo.JDOPersistenceManagerFactory");
-    newProperties.put("javax.jdo.option.ConnectionURL", "appengine");
-    newProperties.put("javax.jdo.option.NontransactionalRead", "true");
-    newProperties.put("javax.jdo.option.NontransactionalWrite", "true");
-    newProperties.put("javax.jdo.option.RetainValues", "true");
-    newProperties.put("datanucleus.appengine.autoCreateDatastoreTxns", "true");
-    newProperties.put("datanucleus.appengine.allowMultipleRelationsOfSameType", "true");
-
-    PersistenceManagerFactory pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
-    actualPersistenceManager = pmf.getPersistenceManager();
-    persistenceManager = spy(actualPersistenceManager);
-    doNothing().when(persistenceManager).close();
-  }
-
-  protected PersistenceManager getPersistenceManager() {
-    return persistenceManager;
-  }
-
   protected UserAnswerRepository getUserAnswerRepository() {
     if (userAnswerRepository == null) {
-      userAnswerRepository = spy(new UserAnswerRepository());
+      userAnswerRepository = new UserAnswerRepository();
     }
     return userAnswerRepository;
   }
 
   protected UserReferralRepository getUserReferralRepository() {
     if (userReferralRepository == null) {
-      userReferralRepository = spy(new UserReferralRepository());
+      userReferralRepository = new UserReferralRepository();
     }
     return userReferralRepository;
   }
 
   protected QuizPerformanceRepository getQuizPerformanceRepository() {
     if (quizPerformanceRepository == null) {
-      quizPerformanceRepository = spy(new QuizPerformanceRepository());
+      quizPerformanceRepository = new QuizPerformanceRepository();
     }
     return quizPerformanceRepository;
   }
 
   protected QuizRepository getQuizRepository() {
     if (quizRepository == null) {
-      quizRepository = spy(new QuizRepository());
+      quizRepository = new QuizRepository();
     }
     return quizRepository;
   }
-
-  protected QuizQuestionRepository getQuizQuestionRepository() {
-    if (quizQuestionRepository == null) {
-      quizQuestionRepository = spy(new QuizQuestionRepository(getQuizRepository(),
-                                                              getUserAnswerRepository()));
-      when(quizQuestionRepository.getPersistenceManager()).thenReturn(getPersistenceManager());
+  
+  protected QuestionRepository getQuestionRepository() {
+    if (questionRepository == null) {
+      questionRepository = new QuestionRepository();
     }
-    return quizQuestionRepository;
+    return questionRepository;
+  }
+
+  protected QuestionService getQuestionService() {    
+    if (questionService == null) {
+      questionService = new QuestionService(getQuestionRepository(), getUserAnswerRepository());
+    }
+    return questionService;
   }
 
   protected void initUserAnswerRepository() {
@@ -150,40 +126,40 @@ public class QuizBaseTest {
     // User 2 answers 0 questions.
   }
 
-  protected void initQuizQuestionRepository() {
-    assertNotNull(getQuizQuestionRepository());
+  protected void initQuestionService() {
+    assertNotNull(getQuestionService());
     initUserAnswerRepository();
 
     // Quiz 1 has 5 questions, 2 are calibration, 3 are collections.
     // Question 1 and 4 have the same client id.
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
                      QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID1, "test2", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
                      QUESTION_CLIENT_ID2, false, true));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID1, "test3", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
                      QUESTION_CLIENT_ID3, false, true));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID1, "test4", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
                      QUESTION_CLIENT_ID1, true, false));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID1, "test5", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
                      QUESTION_CLIENT_ID4, false, true));
 
     // Quiz 2 has 4 questions, 1 is calibration, 3 are collections.
     // All the questions have null or empty client id.
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID2, "test6", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
                      true, false));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID2, "test7", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
                      false, true));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID2, "test8", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8, null,
                      false, true));
-    quizQuestionRepository.save(
+    questionService.save(
         new Question(QUIZ_ID2, "test9", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9, null,
                      false, true));
   }

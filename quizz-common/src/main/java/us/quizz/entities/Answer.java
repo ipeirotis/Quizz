@@ -1,70 +1,48 @@
 package us.quizz.entities;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import java.io.Serializable;
 
 import us.quizz.enums.AnswerKind;
 
-import java.io.Serializable;
-
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+import com.google.appengine.api.datastore.Key;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Parent;
+//TODO: remove all annotations after migration on all servers, because Answer is embedded entity
+@Entity
+@Cache
+@Index
 public class Answer implements Serializable{
   private static final long serialVersionUID = 1L;
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key id;
-
-  @Persistent
+  @Id
+  private String id;
+  @Parent
+  private Key parent;
   private Integer internalID;
-
-  // contains the text/html to display
-  @Persistent
   private String text;
- 
-  // Used to identify what to expect in metadata and how to interpret the score
-  @Persistent
   private AnswerKind kind;
-  
-  // The source of the answer. Mainly used for SILVER answers and refers to KV
-  @Persistent
   private String source;
-
-  @Persistent
   private JsonObject metadata;
-
-  @Persistent
   private Long questionID;
-
-  @Persistent
   private String quizID;
-
-  // If this is a SILVER answer, the probability that it is correct
-  @Persistent
   private Double probability;
-  
-  // The number of times that users have selected this answer
-  @Persistent
   private Integer numberOfPicks;
-  
   // The total number of bits assigned to this answer
   // Calculated as the sum of the average information gain for all users
   // that picked this answer.
-  @Persistent
   private Double bits;
-
-  @Persistent
   // The (estimated/computed) probability that the given answer is correct, 
   // based on the answers from the users.
   private Double probCorrect;
+  
+  //for Objectify
+  @SuppressWarnings("unused")
+  private Answer(){}
 
   public Answer(Long questionID, String quizID, String text, AnswerKind kind,
       Integer internalID) {
@@ -73,23 +51,11 @@ public class Answer implements Serializable{
     this.text = text;
     this.kind = kind;
     this.internalID = internalID;
-    this.id = generateKeyFromID(questionID, internalID);
+    this.id = questionID + quizID + internalID;
   }
   
-  public static String generateKeyID(Long questionID, Integer internalID) {
+  public static String generateId(Long questionID, Integer internalID) {
     return "id_" + questionID + "_" + internalID;
-  }
-
-  public static Key generateKeyFromID(Long questionID, Integer internalID) {
-    return generateKeyFromKeyID(generateKeyID(questionID, internalID));
-  }
-
-  public static Key generateKeyFromKeyID(String keyID) {
-    return KeyFactory.createKey(Answer.class.getSimpleName(), keyID);
-  }
-
-  public Key getID() {
-    return id;
   }
 
   public Integer getInternalID() {
@@ -176,10 +142,6 @@ public class Answer implements Serializable{
     return quizID;
   }
 
-  public void setId(Key id) {
-    this.id = id;
-  }
-
   public String userAnswerText(String userInput) {
     if (kind != null && kind == AnswerKind.USER_SUBMITTED) {
       return userInput;
@@ -209,5 +171,21 @@ public class Answer implements Serializable{
 
   public void setProbCorrect(Double probCorrect) {
     this.probCorrect = probCorrect;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public Key getParent() {
+    return parent;
+  }
+
+  public void setParent(Key parent) {
+    this.parent = parent;
   }
 }

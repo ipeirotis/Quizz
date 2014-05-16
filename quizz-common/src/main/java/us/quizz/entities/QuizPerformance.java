@@ -100,7 +100,7 @@ public class QuizPerformance implements Serializable {
     // questionID -> Question.
     Map<Long, Question> questionsMap = new HashMap<Long, Question>(); 
     for (final Question question : questions) {
-      questionsMap.put(question.getID(), question);
+      questionsMap.put(question.getId(), question);
     }
 
     // Sort UserAnswer result by increasing timestamp. This modifies results.

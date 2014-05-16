@@ -4,7 +4,7 @@ import java.util.List;
 
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
-import us.quizz.repository.QuizQuestionRepository;
+import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizRepository;
 
 import com.google.inject.Inject;
@@ -14,17 +14,17 @@ public class QuizService {
   private UserReferralService userReferralService;
   private QuizPerformanceService quizPerformanceService;
   private QuizRepository quizRepository;
-  private QuizQuestionRepository quizQuestionRepository;
+  private QuestionService questionService;
   private UserAnswerService userAnswerService;
   
   @Inject
   public QuizService(UserReferralService userReferralService, 
       QuizPerformanceService quizPerformanceService, QuizRepository quizRepository,
-      QuizQuestionRepository quizQuestionRepository, UserAnswerService userAnswerService) {
+      QuestionService questionService, UserAnswerService userAnswerService) {
     this.userReferralService = userReferralService;
     this.quizPerformanceService = quizPerformanceService;
     this.quizRepository = quizRepository;
-    this.quizQuestionRepository = quizQuestionRepository;
+    this.questionService = questionService;
     this.userAnswerService = userAnswerService;
   }
   
@@ -58,13 +58,13 @@ public class QuizService {
   
   public Quiz updateQuizCounts(String quizID) {
     Quiz quiz = quizRepository.get(quizID);
-    Integer count = quizQuestionRepository.getNumberOfQuizQuestions(quizID, false);
+    Integer count = questionService.getNumberOfQuizQuestions(quizID, false);
     quiz.setQuestions(count);
 
     count = userAnswerService.getNumberOfUserAnswers(quizID);
     quiz.setSubmitted(count);
 
-    count = quizQuestionRepository.getNumberOfGoldQuestions(quizID, false);
+    count = questionService.getNumberOfGoldQuestions(quizID, false);
     quiz.setGold(count);
     
     // TODO(chunhowt): UserReferral is broken now, so this will always return 0.
