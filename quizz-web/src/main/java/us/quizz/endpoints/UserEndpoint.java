@@ -1,11 +1,9 @@
 package us.quizz.endpoints;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
@@ -14,10 +12,12 @@ import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
 import us.quizz.utils.ChannelHelpers;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserEndpoint {
@@ -104,12 +104,12 @@ public class UserEndpoint {
    */
   @ApiMethod(name = "removeUser")
   public void removeUser(@Named("userid") String userid) {
-    userService.delete(User.generateId(userid));
+    userService.delete(userid);
   }
 
   @ApiMethod(name = "updateUserExperiment", path = "updateUserExperiment")
   public void updateUserExperiment(@Named("userid") String userid) {
-    User user = userService.get(User.generateId(userid));
+    User user = userService.get(userid);
     if(user == null) {
       user = new User(userid);
     }

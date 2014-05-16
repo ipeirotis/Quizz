@@ -1,5 +1,14 @@
 package us.quizz.entities;
 
+import com.google.common.base.Preconditions;
+
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+
+import us.quizz.utils.Helper;
+
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -7,14 +16,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import us.quizz.utils.Helper;
-
-import com.google.common.base.Preconditions;
-import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Index;
 
 /**
  * Keeps track of the performance of a user within a Quiz. This is a "caching"
@@ -93,7 +94,7 @@ public class QuizPerformance implements Serializable {
   }
 
   public static String generateId(String quiz, String userid) {
-    return "id_" + userid + "_" + quiz;
+    return userid + "_" + quiz;
   }
 
   public void computeCorrect(List<UserAnswer> results, List<Question> questions) {

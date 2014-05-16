@@ -1,16 +1,15 @@
 package us.quizz.service;
 
-import java.util.List;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizRepository;
 
-import com.google.inject.Inject;
+import java.util.List;
 
 public class QuizService {
-
   private UserReferralService userReferralService;
   private QuizPerformanceService quizPerformanceService;
   private QuizRepository quizRepository;
@@ -55,7 +54,7 @@ public class QuizService {
     }
     */
   }
-  
+
   public Quiz updateQuizCounts(String quizID) {
     Quiz quiz = quizRepository.get(quizID);
     Integer count = questionService.getNumberOfQuizQuestions(quizID, false);
@@ -66,7 +65,7 @@ public class QuizService {
 
     count = questionService.getNumberOfGoldQuestions(quizID, false);
     quiz.setGold(count);
-    
+
     // TODO(chunhowt): UserReferral is broken now, so this will always return 0.
     count = userReferralService.getUserIDsByQuiz(quizID).size();
     quiz.setTotalUsers(count + 1);  // +1 for smoothing, ensuring no division by 0
@@ -85,11 +84,11 @@ public class QuizService {
     double bits = 0;
     double avgCorrectness = 0;
 
-    for (QuizPerformance qp : perf) { 
+    for (QuizPerformance qp : perf) {
       Integer t = qp.getCorrectanswers();
       totalCorrect += (t == null) ? 0 : t;
       t = qp.getTotalanswers();
-      totalAnswers += (t == null) ? 0 : t; 
+      totalAnswers += (t == null) ? 0 : t;
       t = qp.getTotalCalibrationAnswers();
       totalCalibrationAnswers += (t == null) ? 0 : t; 
       Double d = qp.getPercentageCorrect(); 
@@ -107,5 +106,4 @@ public class QuizService {
         1.0 * quiz.getCorrectAnswers() / quiz.getTotalCalibrationAnswers());
     return quizRepository.saveAndGet(quiz);
   }
-  
 }

@@ -1,13 +1,13 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-import java.text.NumberFormat;
-import java.util.List;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import java.io.Serializable;
+import java.text.NumberFormat;
+import java.util.List;
 
 @Entity
 @Cache
@@ -31,11 +31,15 @@ public class UserAnswerFeedback implements Serializable {
 
   public UserAnswerFeedback(Long questionID, String userid,
       Integer userAnswerID, Boolean isCorrect) {
-    this.id = questionID + "_" + userid;
+    this.id = UserAnswerFeedback.generateId(questionID, userid);
     this.questionID = questionID;
     this.userid = userid;
     this.userAnswerID = userAnswerID;
     this.isCorrect = isCorrect;
+  }
+
+  public static String generateId(Long questionID, String userID) {
+    return questionID + "_" + userID;
   }
 
   public String getId() {
