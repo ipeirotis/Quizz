@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import us.quizz.enums.QuestionKind;
 
+import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -22,10 +23,10 @@ public class Question implements Serializable {
   private String quizID;
   // The text of the question. Can be any HTML-compliant code
   // Use the questionText instead
-  @Deprecated
-  private String text;
+  //@Deprecated
+  //private String text;
   // The text of the question. Can be any HTML-compliant code
-  private String questionText;
+  private Text questionText;
   // The id assigned by the client/source for this question to allow us to rejoin the
   // question with the original source.
   private String clientID;
@@ -65,7 +66,7 @@ public class Question implements Serializable {
   @SuppressWarnings("unused")
   private Question(){}
 
-  public Question(String quizID, String questionText, QuestionKind kind) {
+  public Question(String quizID, Text questionText, QuestionKind kind) {
     this.quizID = quizID;
     this.questionText = questionText;
     this.kind = kind;
@@ -78,7 +79,7 @@ public class Question implements Serializable {
     this.answers = new ArrayList<Answer>();
   }
 
-  public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
+  public Question(String quizID, Text text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
     this(quizID, text, kind);
     this.clientID = clientID;
@@ -110,19 +111,12 @@ public class Question implements Serializable {
     return hasSilverAnswers;
   }
 
-  public String getText() {
-    return text;
-  }
 
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public String getQuestionText() {
+  public Text getQuestionText() {
     return questionText;
   }
 
-  public void setQuestionText(String questionText) {
+  public void setQuestionText(Text questionText) {
     this.questionText = questionText;
   }
 
