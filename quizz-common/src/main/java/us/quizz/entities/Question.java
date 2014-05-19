@@ -2,6 +2,7 @@ package us.quizz.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import us.quizz.enums.QuestionKind;
 
@@ -15,6 +16,7 @@ import com.googlecode.objectify.annotation.Index;
 @Index
 public class Question implements Serializable {
   private static final long serialVersionUID = 1L;
+  private static final Logger logger = Logger.getLogger(Question.class.getName());
 
   @Id
   private Long id;
@@ -78,9 +80,16 @@ public class Question implements Serializable {
     this.answers = new ArrayList<Answer>();
   }
 
+  // Note: This function should ONLY be used for test purpose because it sets the questionID
+  // explicitly.
+  // TODO(chunhowt): Makes this a private/protected method only visible for testing.
   public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
     this(quizID, text, kind);
+    logger.warning("This Question constructor should only be used for testing.");
+    // Note: We are setting the entity id here explicitly so that we can control it for unit
+    // test purpose.
+    this.id = questionID;
     this.clientID = clientID;
     this.hasGoldAnswer = hasGoldAnswer;
     this.hasSilverAnswers = hasSilverAnswers;

@@ -124,11 +124,13 @@ public class QuestionService {
   private List<Question> getSomeQuizQuestionsWithGold(
       String quizID, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {   
     List<Question> result =
-    questionRepository.query()
-    .filter("quizID", quizID)
-    .filter("hasGoldAnswer", Boolean.TRUE)
-    .order("totalUserScore")
-    .limit(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER).list();
+        questionRepository
+        .query()
+        .filter("quizID", quizID)
+        .filter("hasGoldAnswer", Boolean.TRUE)
+        .order("totalUserScore")
+        .limit(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER)
+        .list();
 
     return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
         false  /* don't repeat if not enough questions. */);
@@ -138,13 +140,17 @@ public class QuestionService {
   // if feasible (eg. enough candidate questions).
   private List<Question> getSomeQuizQuestionsWithSilver(
       String quizId, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {
-      
-      List<Question> result =
-      questionRepository.query().filter("quizID", quizId).filter("hasGoldAnswer", Boolean.TRUE)
-      .order("totalUserScore").limit(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER).list();
+    List<Question> result =
+        questionRepository
+        .query()
+        .filter("quizID", quizId)
+        .filter("hasSilverAnswers", Boolean.TRUE)
+        .order("totalUserScore")
+        .limit(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER)
+        .list();
 
-      return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
-          true  /* repeat if not enough questions. */);
+    return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
+        true  /* repeat if not enough questions. */);
   }
 
   // Filters questions to prefer choosing n questions that are not contained in the set.

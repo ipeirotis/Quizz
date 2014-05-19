@@ -1,6 +1,7 @@
 package us.quizz.repository;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
@@ -71,5 +72,32 @@ public class QuizQuestionRepositoryTest extends QuizBaseTest {
     assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
     assertEquals(3, results.get(QuestionService.COLLECTION_KEY).size());
+  }
+
+  @Test
+  public void testCollectionQuestion() throws Exception {
+    Map<String, Set<Question>> results =
+        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
+    assertEquals(2, results.size());
+
+    assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
+    assertEquals(3, results.get(QuestionService.COLLECTION_KEY).size());
+    for (Question question : results.get(QuestionService.COLLECTION_KEY)) {
+      assertTrue(question.getHasSilverAnswers());
+      assertFalse(question.getHasGoldAnswer());
+    }
+  }
+
+  @Test
+  public void testCalibrationQuestion() throws Exception {
+    Map<String, Set<Question>> results =
+        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
+    assertEquals(2, results.size());
+
+    assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
+    assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
+    Question question = (Question) results.get(QuestionService.CALIBRATION_KEY).toArray()[0];
+    assertFalse(question.getHasSilverAnswers());
+    assertTrue(question.getHasGoldAnswer());
   }
 }
