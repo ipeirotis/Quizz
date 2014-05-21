@@ -1,13 +1,13 @@
 package us.quizz.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserQuizStatisticsService {
   private UserAnswerService userAnswerService;

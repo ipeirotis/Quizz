@@ -16,8 +16,6 @@ public class User implements Serializable {
 
   @Id
   private String userid;
-  private String sessionid;
-  private String socialid;
   private Integer challengeBudget;
   private Long experimentId;
 
@@ -36,22 +34,6 @@ public class User implements Serializable {
 
   public void setUserid(String userid) {
     this.userid = userid;
-  }
-
-  public String getSocialid() {
-    return socialid;
-  }
-
-  public void setSocialid(String sid) {
-    this.socialid = sid;
-  }
-
-  public String getSessionid() {
-    return sessionid;
-  }
-
-  public void setSessionid(String sessionid) {
-    this.sessionid = sessionid;
   }
 
   public Integer getChallengeBudget() {

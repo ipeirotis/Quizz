@@ -1,19 +1,18 @@
 package us.quizz.service;
 
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.inject.Inject;
+
+import us.quizz.entities.QuizPerformance;
+import us.quizz.repository.QuizPerformanceRepository;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import us.quizz.entities.QuizPerformance;
-import us.quizz.repository.QuizPerformanceRepository;
-
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
-
 public class QuizPerformanceService {
-
   private QuizPerformanceRepository quizPerformanceRepository;
   
   @Inject

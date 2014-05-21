@@ -1,16 +1,14 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
-/**
- * An experiment is a set of treatments that gets assigned to a user.
- */
+import java.io.Serializable;
+import java.util.Map;
+
+// An experiment is a set of treatments that gets assigned to a user.
 @Entity
 @Cache
 @Index

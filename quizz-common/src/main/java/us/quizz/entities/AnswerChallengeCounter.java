@@ -1,7 +1,5 @@
 package us.quizz.entities;
 
-import javax.jdo.annotations.Persistent;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -14,13 +12,10 @@ public class AnswerChallengeCounter {
   @Id
   private String id;
 
-  @Persistent
   private String quizID;
 
-  @Persistent
   private Long questionID;
 
-  @Persistent
   private Long count = 0L;
   
   //for Objectify

@@ -1,20 +1,18 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
-/**
- * The treatment object assigns a set of **boolean** variables that indicate
- * which treatments are active for the given user. At this point, we only
- * support boolean treatments. In the future we plan to add support for enum
- * fields as treatments.
- */
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+// The treatment object assigns a set of **boolean** variables that indicate
+// which treatments are active for the given user. At this point, we only
+// support boolean treatments. In the future we plan to add support for enum
+// fields as treatments.
 @Entity
 @Cache
 @Index

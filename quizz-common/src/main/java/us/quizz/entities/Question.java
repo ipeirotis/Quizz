@@ -1,16 +1,17 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-
-import us.quizz.enums.QuestionKind;
-
 import com.google.appengine.api.datastore.Text;
+
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import us.quizz.enums.QuestionKind;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 @Entity
 @Cache
@@ -24,10 +25,6 @@ public class Question implements Serializable {
   // The quizID of the parent quiz
   private String quizID;
   // The text of the question. Can be any HTML-compliant code
-  // Use the questionText instead
-  //@Deprecated
-  //private String text;
-  // The text of the question. Can be any HTML-compliant code
   private Text questionText;
   // The id assigned by the client/source for this question to allow us to rejoin the
   // question with the original source.
@@ -38,8 +35,8 @@ public class Question implements Serializable {
   private Integer numberOfUserAnswers;
   // Computed statistic on whether the question has any user answers
   private Boolean hasUserAnswers;
-  // Computed statistic on  how many users answered this question correctly.
-  // Applicable only for questions with GOLD 
+  // Computed statistic on how many users answered this question correctly.
+  // Applicable only for calibration questions. 
   private Integer numberOfCorrentUserAnswers;
   // Computed statistic showing the the total number of user bits assigned
   // to this question by the users that answered this question
@@ -72,19 +69,28 @@ public class Question implements Serializable {
     this.quizID = quizID;
     this.questionText = questionText;
     this.kind = kind;
-    this.hasSilverAnswers = false;
-    this.hasGoldAnswer = false;
     this.numberOfUserAnswers = 0;
     this.hasUserAnswers = false;
-    this.totalUserScore = 0.0;
     this.numberOfCorrentUserAnswers = 0;
+    this.totalUserScore = 0.0;
+    this.hasGoldAnswer = false;
+    this.hasSilverAnswers = false;
+    this.confidence = 0.0;
+    this.likelyAnswer = "";
+    this.isLikelyAnswerCorrect = false;
+    this.feedback = "";
+
     this.answers = new ArrayList<Answer>();
+  }
+
+  public Question(String quizID, String text, QuestionKind kind) {
+    this(quizID, new Text(text), kind); 
   }
 
   // Note: This function should ONLY be used for test purpose because it sets the questionID
   // explicitly.
   // TODO(chunhowt): Makes this a private/protected method only visible for testing.
-  public Question(String quizID, Text text, QuestionKind kind, Long questionID, String clientID,
+  public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
     this(quizID, text, kind);
     logger.warning("This Question constructor should only be used for testing.");
@@ -120,7 +126,6 @@ public class Question implements Serializable {
     return hasSilverAnswers;
   }
 
-
   public Text getQuestionText() {
     return questionText;
   }
@@ -137,10 +142,6 @@ public class Question implements Serializable {
     this.kind = kind;
   }
 
-  public void setRelation(String quizID) {
-    this.quizID = quizID;
-  }
-
   public Boolean hasUserAnswers() {
     return numberOfUserAnswers > 0;
   }
@@ -153,12 +154,12 @@ public class Question implements Serializable {
     this.numberOfUserAnswers = numberOfUserAnswers;
   }
 
-  public Integer getNumberOfCorrentUserAnswers() {
+  public Integer getNumberOfCorrectUserAnswers() {
     return numberOfCorrentUserAnswers;
   }
 
-  public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
-    this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
+  public void setNumberOfCorrectUserAnswers(Integer numberOfCorrectUserAnswers) {
+    this.numberOfCorrentUserAnswers = numberOfCorrectUserAnswers;
   }
 
   public Double getTotalUserScore() {
@@ -199,8 +200,7 @@ public class Question implements Serializable {
 
   public Answer getAnswer(Integer answerID) {
     try {
-      Answer a = answers.get(answerID);
-      return a;
+      return answers.get(answerID);
     } catch (IndexOutOfBoundsException e) {
       return null;
     }

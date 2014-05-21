@@ -1,5 +1,9 @@
 package us.quizz.ofy;
 
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyFactory;
+import com.googlecode.objectify.ObjectifyService;
+
 import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Badge;
@@ -17,10 +21,6 @@ import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.entities.UserReferal;
-
-import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.ObjectifyFactory;
-import com.googlecode.objectify.ObjectifyService;
 
 public class OfyService {
   static {

@@ -1,13 +1,14 @@
 package us.quizz.service;
 
-import java.util.List;
+import com.google.inject.Inject;
 
 import nl.bitwalker.useragentutils.Browser;
+
 import us.quizz.entities.BrowserStats;
 import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.service.UserReferralService.Result;
 
-import com.google.inject.Inject;
+import java.util.List;
 
 public class BrowserStatsService {
   private BrowserStatsRepository browserStatsRepository;

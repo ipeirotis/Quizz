@@ -1,19 +1,19 @@
 package us.quizz.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.inject.Inject;
 
 import us.quizz.entities.SurvivalProbabilityResult;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.MemcacheKey;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class SurvivalProbabilityService {
   // Number of minutes to cache survival probability in Memcache.

@@ -1,5 +1,12 @@
 package us.quizz.servlets;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import us.quizz.entities.UserAnswer;
+import us.quizz.service.QuizService;
+import us.quizz.service.UserAnswerService;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -7,13 +14,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import us.quizz.entities.UserAnswer;
-import us.quizz.service.QuizService;
-import us.quizz.service.UserAnswerService;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
 @Singleton

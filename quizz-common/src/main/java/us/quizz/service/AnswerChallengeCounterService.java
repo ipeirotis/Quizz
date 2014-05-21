@@ -1,24 +1,26 @@
 package us.quizz.service;
 
-import java.util.List;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.inject.Inject;
 
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
+import java.util.List;
 
 public class AnswerChallengeCounterService {
 
   private AnswerChallengeCounterRepository answerChallengeCounterRepository;
   
   @Inject
-  public AnswerChallengeCounterService(AnswerChallengeCounterRepository answerChallengeCounterRepository){
+  public AnswerChallengeCounterService(
+      AnswerChallengeCounterRepository answerChallengeCounterRepository){
     this.answerChallengeCounterRepository = answerChallengeCounterRepository;
   }
   
   public AnswerChallengeCounter get(String quizID, Long questionID) {
-    return answerChallengeCounterRepository.get(AnswerChallengeCounter.generateId(quizID, questionID));
+    return answerChallengeCounterRepository.get(
+        AnswerChallengeCounter.generateId(quizID, questionID));
   }
   
   public AnswerChallengeCounter save(AnswerChallengeCounter answerChallengeCounter){

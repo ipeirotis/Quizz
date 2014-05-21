@@ -1,17 +1,16 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
+import java.io.Serializable;
+
 @Entity
 @Cache
 @Index
 public class BadgeAssignment implements Serializable {
-
   private static final long serialVersionUID = 1L;
 
   @Id

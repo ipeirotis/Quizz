@@ -1,8 +1,8 @@
 package us.quizz.utils;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -11,8 +11,11 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import org.junit.After;
 import org.junit.Before;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
+import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
@@ -20,6 +23,11 @@ import us.quizz.repository.QuizRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.service.QuestionService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // A test util class to do all the common initialization of persistent manager and repositories
 // construction and content.
@@ -134,34 +142,97 @@ public class QuizBaseTest {
     // Quiz 1 has 5 questions, 2 are calibration, 3 are collections.
     // Question 1 and 4 have the same client id.
     questionService.save(
-        new Question(QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
+        new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
                      QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */));
     questionService.save(
-        new Question(QUIZ_ID1, new Text("test2"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
+        new Question(QUIZ_ID1, "test2", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
                      QUESTION_CLIENT_ID2, false, true));
     questionService.save(
-        new Question(QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
+        new Question(QUIZ_ID1, "test3", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
                      QUESTION_CLIENT_ID3, false, true));
     questionService.save(
-        new Question(QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
+        new Question(QUIZ_ID1, "test4", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
                      QUESTION_CLIENT_ID1, true, false));
     questionService.save(
-        new Question(QUIZ_ID1, new Text("test5"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
+        new Question(QUIZ_ID1, "test5", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
                      QUESTION_CLIENT_ID4, false, true));
 
     // Quiz 2 has 4 questions, 1 is calibration, 3 are collections.
     // All the questions have null or empty client id.
     questionService.save(
-        new Question(QUIZ_ID2, new Text("test6"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
+        new Question(QUIZ_ID2, "test6", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
                      true, false));
     questionService.save(
-        new Question(QUIZ_ID2, new Text("test7"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
+        new Question(QUIZ_ID2, "test7", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
                      false, true));
     questionService.save(
-        new Question(QUIZ_ID2, new Text("test8"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8, null,
+        new Question(QUIZ_ID2, "test8", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8, null,
                      false, true));
     questionService.save(
-        new Question(QUIZ_ID2, new Text("test9"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9, null,
+        new Question(QUIZ_ID2, "test9", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9, null,
                      false, true));
+  }
+
+  // Returns a list of Question of num * 2 size, each with numChoices answers for the given quizID.
+  // The returned list will have num number of calibration questions and num number of collection
+  // questions, where the calibration question has the first answer as gold.
+  // The questionID will range from 1 to num for calibration questions and num + 1 to 2 * num
+  // for collection questions.
+  protected List<Question> getFakeMultipleChoiceQuestions(int num, int numChoices, String quizID) {
+    assertTrue(numChoices > 0);
+    assertTrue(num > 0);
+    List<Question> questions = new ArrayList<Question>();
+    for (int i = 1; i <= num; ++i) {
+      Long questionID = (long) i;
+      Question question = new Question(
+          quizID, "Calibration Question " + i, QuestionKind.MULTIPLE_CHOICE_CALIBRATION,
+          questionID, "client_gold_" + i, true  /* is Gold */, false  /* Not silver */);
+      for (int j = 0; j < numChoices; ++j) {
+        question.addAnswer(new Answer(questionID, quizID, "Answer " + j,
+                                      j == 0 ? AnswerKind.GOLD : AnswerKind.INCORRECT, j));
+      }
+      questions.add(question);
+    }
+    for (int i = 1; i <= num; ++i) {
+      Long questionID = (long) (i + num);
+      Question question = new Question(
+          quizID, "Collection Question " + i, QuestionKind.MULTIPLE_CHOICE_COLLECTION,
+          questionID, "client_silver_" + i, false, true);
+      for (int j = 0; j < numChoices; ++j) { 
+        question.addAnswer(new Answer(questionID, quizID, "Answer " + j,
+                                      AnswerKind.SILVER, j));
+      } 
+      questions.add(question);
+    }
+    return questions;
+  }
+
+  // Returns a list of UserAnswer from startNum to endNum questionID for the given userid,
+  // answerID and quizID. The UserAnswer is correct if answerID == 0.
+  protected List<UserAnswer> getFakeMultipleChoiceUserAnswers(
+      int startNum, int endNum, String userid, String quizID, int answerID) {
+    assertTrue(startNum > 0);
+    assertTrue(endNum >= startNum);
+    List<UserAnswer> userAnswers = new ArrayList<UserAnswer>();
+    for (int i = startNum; i <= endNum; ++i) {
+      UserAnswer userAnswer = new UserAnswer(userid, (long) i, answerID, quizID);
+      userAnswer.setCorrect(answerID == 0);
+      userAnswer.setAction("Submit");
+      userAnswer.setTimestamp((long) i);
+      userAnswers.add(userAnswer);
+    }
+    return userAnswers;
+  }
+
+  // Returns a map of (userID, QuizPerformance) of num size for the given quizID, where the userID
+  // starts from 1 to num (inclusive), and score is equal to userID.
+  protected Map<Integer, QuizPerformance> getFakeQuizPerformances(int num, String quizID) {
+    Map<Integer, QuizPerformance> quizPerformances = new HashMap<Integer, QuizPerformance>();
+    for (int userID = 1; userID <= num; ++userID) {
+      QuizPerformance quizPerformance = new QuizPerformance(quizID, Integer.toString(userID));
+      quizPerformance.setScore((double) userID);
+      quizPerformances.put(userID, quizPerformance);
+    }
+    return quizPerformances;
   }
 }

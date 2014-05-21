@@ -1,10 +1,6 @@
 package us.quizz.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -16,7 +12,11 @@ import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.utils.Helper;
 
-import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
 
@@ -86,7 +86,7 @@ public class QuestionStatisticsService {
     question.setNumberOfUserAnswers(u);
 
     int c = userAnswerService.getNumberOfCorrectUserAnswers(Long.parseLong(questionID));
-    question.setNumberOfCorrentUserAnswers(c);
+    question.setNumberOfCorrectUserAnswers(c);
 
     updateAnswerStatistics(question);
     questionService.save(question);

@@ -1,17 +1,19 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
-import us.quizz.enums.AnswerKind;
-
 import com.google.appengine.api.datastore.Key;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Parent;
+
+import us.quizz.enums.AnswerKind;
+
+import java.io.Serializable;
+
 //TODO: remove all annotations after migration on all servers, because Answer is embedded entity
 @Entity
 @Cache
@@ -30,14 +32,15 @@ public class Answer implements Serializable{
   private JsonObject metadata;
   private Long questionID;
   private String quizID;
+  // The prior probability that this answer is correct, given by the client.
   private Double probability;
   private Integer numberOfPicks;
   // The total number of bits assigned to this answer
   // Calculated as the sum of the average information gain for all users
   // that picked this answer.
   private Double bits;
-  // The (estimated/computed) probability that the given answer is correct, 
-  // based on the answers from the users.
+  // The posterior (estimated) probability that the given answer is correct, 
+  // computed based on the answers from the users.
   private Double probCorrect;
   
   //for Objectify
@@ -51,7 +54,7 @@ public class Answer implements Serializable{
     this.text = text;
     this.kind = kind;
     this.internalID = internalID;
-    this.id = questionID + quizID + internalID;
+    this.id = generateId(questionID, internalID);
   }
   
   public static String generateId(Long questionID, Integer internalID) {

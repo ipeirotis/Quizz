@@ -1,41 +1,40 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
-import us.quizz.enums.QuizKind;
-import us.quizz.utils.Helper;
-
 import com.google.common.base.Preconditions;
+
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
-/**
- * The Quiz is the basic unit of the application. Each quiz contains a set of
- * Questions. The Quiz object is essentially a placeholder for storing overall
- * statistics about the quiz, and for storing the id and the title of the quiz.
- */
+import us.quizz.enums.QuizKind;
+import us.quizz.utils.Helper;
+
+import java.io.Serializable;
+
+// The Quiz is the basic unit of the application. Each quiz contains a set of
+// Questions. The Quiz object is essentially a placeholder for storing overall
+// statistics about the quiz, and for storing the id and the title of the quiz.
 @Entity
 @Cache
 @Index
 public class Quiz implements Serializable {
   private static final long serialVersionUID = 1L;
-  
+
+  private static final int DEFAULT_NUM_CHOICES = 4;
+
   // The name of the quiz that we are targeting.
-  // Typically, we assign the name of a KP attribute on this one
-  // and serves as a defacto primary key for the quiz.
   @Id
   private String quizID;
 
   // The user-friendly name of the quiz that we are targeting
   private String name;
-  
+
   // This defines the type of questions that can be entered into the quiz
   // e.g., can be either free-text or multiple choice. See the corresponding
   // enum for the currently supported set.
   private QuizKind kind;
-  
+
   // This is only used for multiple choice tests and indicates the number of
   // answers that each multiple choice question should have
   private Integer numChoices;
@@ -43,9 +42,11 @@ public class Quiz implements Serializable {
   // The id of the AdWords ad campaign that brings visitors to the quiz
   private Long campaignid;
 
-  // All the variables below are aggregate statistics about the quiz.
-  // We update these using the QuizRepository.updateQuizCounts() call
+  // Whether to show this quizz on default on the Quizz landing page.
+  private Boolean showOnDefault;
 
+  // All the variables below are aggregate statistics about the quiz.
+  // We update these using the QuizService.updateQuizCounts() call
   // The number of users that arrived in a Quiz page
   private Integer totalUsers;
 
@@ -85,9 +86,6 @@ public class Quiz implements Serializable {
   // The number of questions for the quiz that have gold answers
   private Integer gold;
 
-  // Whether to show this quizz on default on the Quizz landing page.
-  private Boolean showOnDefault;
-  
   //for Objectify
   @SuppressWarnings("unused")
   private Quiz(){}
@@ -96,7 +94,25 @@ public class Quiz implements Serializable {
     this.name = name;
     this.quizID = quizID;
     this.kind = kind;
+    if (kind == QuizKind.MULTIPLE_CHOICE) {
+      this.numChoices = DEFAULT_NUM_CHOICES;
+    }
     this.showOnDefault = false;
+    this.campaignid = null;
+
+    this.totalUsers = 0;
+    this.contributingUsers = 0;
+    this.conversionRate = 0.0;
+    this.correctAnswers = 0;
+    this.totalAnswers = 0;
+    this.totalCalibrationAnswers = 0;
+    this.totalCollectionAnswers = 0;
+    this.submitted = 0;
+    this.avgUserCorrectness = 0.0;
+    this.avgAnswerCorrectness = 0.0;
+    this.capacity = 0.0;
+    this.questions = 0;
+    this.gold = 0;
   }
 
   public Double getAvgAnswerCorrectness() {

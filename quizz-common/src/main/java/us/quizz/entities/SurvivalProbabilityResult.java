@@ -1,12 +1,12 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Cache
@@ -46,7 +46,7 @@ public class SurvivalProbabilityResult implements Serializable {
     this.exploitFrom = c_from;
     this.correctTo = a_to;
     this.incorrectTo = b_to;
-    this.exploitTo = b_to;
+    this.exploitTo = c_to;
 
     this.usersFrom = users_from;
     this.usersTo = users_to;

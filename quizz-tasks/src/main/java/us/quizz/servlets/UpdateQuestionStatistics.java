@@ -32,7 +32,7 @@ public class UpdateQuestionStatistics extends HttpServlet {
     logger.log(Level.FINEST, "QuestionID:" + questionID + "\n");
     logger.log(Level.FINEST, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");
     logger.log(Level.FINEST, "Number of correct user answers:" + 
-        question.getNumberOfCorrentUserAnswers() + "\n");
+        question.getNumberOfCorrectUserAnswers() + "\n");
     logger.log(Level.FINEST, "Kind:" + question.getKind() + "\n");
   }
 }

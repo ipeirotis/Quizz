@@ -1,17 +1,16 @@
 package us.quizz.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Badge;
 import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.User;
 import us.quizz.repository.BadgeRepository;
 
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BadgeService {
-
   private BadgeRepository badgeRepository;
   private BadgeAssignmentService badgeAssignmentService;
   
@@ -74,5 +73,4 @@ public class BadgeService {
   public void save(Badge badge){
     badgeRepository.save(badge);
   }
-
 }

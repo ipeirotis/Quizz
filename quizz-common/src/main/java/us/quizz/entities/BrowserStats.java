@@ -1,13 +1,13 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
-import nl.bitwalker.useragentutils.Browser;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import nl.bitwalker.useragentutils.Browser;
+
+import java.io.Serializable;
 
 @Entity
 @Cache

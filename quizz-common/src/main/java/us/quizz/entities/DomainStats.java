@@ -1,11 +1,11 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import java.io.Serializable;
 
 @Entity
 @Cache
@@ -17,7 +17,7 @@ public class DomainStats implements Serializable {
   private String domain;
   private long userCount = 0;
   private double userScores = 0.0;
-  
+
   //for Objectify
   @SuppressWarnings("unused")
   private DomainStats(){}

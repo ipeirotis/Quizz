@@ -1,11 +1,11 @@
 package us.quizz.service;
 
-import java.util.List;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Treatment;
 import us.quizz.repository.TreatmentRepository;
 
-import com.google.inject.Inject;
+import java.util.List;
 
 public class AnswerService {
 

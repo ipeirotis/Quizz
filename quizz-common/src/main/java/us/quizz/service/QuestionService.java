@@ -1,12 +1,6 @@
 package us.quizz.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.UserAnswer;
@@ -15,7 +9,13 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.CachePMF;
 import us.quizz.utils.MemcacheKey;
 
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 public class QuestionService {
   @SuppressWarnings("unused")
@@ -28,9 +28,6 @@ public class QuestionService {
   // Multiplier used to fetch more questions than being asked when choosing the next questions
   // to allow us to fetch enough candidate questions for each user.
   private static final int QUESTION_FETCHING_MULTIPLIER = 3;
-
-  // Default maximum questions to be fetched from the datastore.
-  //private static final int DEFAULT_QUESTIONS_MAX_FETCH_SIZE = 1000;
 
   private QuestionRepository questionRepository;
   private UserAnswerRepository userAnswerRepository;
@@ -71,7 +68,7 @@ public class QuestionService {
   }
 
   private Set<String> getQuestionClientIDs(Set<Long> questionIDs) {
-    // Pre-empt fast because getQuizQuestionsByKeys doesn't work for empty container.
+    // Pre-empt fast because listByIds doesn't work for empty container.
     if (questionIDs.isEmpty()) {
       return new HashSet<String>();
     }

@@ -1,14 +1,14 @@
 package us.quizz.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.Treatment;
 import us.quizz.repository.ExperimentRepository;
 
-import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExperimentService {
 

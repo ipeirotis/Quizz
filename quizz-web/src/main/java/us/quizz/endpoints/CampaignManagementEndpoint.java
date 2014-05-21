@@ -52,8 +52,8 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Quiz;
 import us.quizz.service.QuizService;
-import us.quizz.utils.ServletUtils;
 import us.quizz.utils.QueueUtils;
+import us.quizz.utils.ServletUtils;
 
 import java.net.URLEncoder;
 import java.rmi.RemoteException;

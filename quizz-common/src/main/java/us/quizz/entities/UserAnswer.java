@@ -1,14 +1,15 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
-import us.quizz.enums.AnswerChallengeStatus;
-
 import com.google.appengine.api.datastore.Text;
+
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import us.quizz.enums.AnswerChallengeStatus;
+
+import java.io.Serializable;
 
 @Entity
 @Cache

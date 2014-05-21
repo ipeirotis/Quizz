@@ -1,8 +1,10 @@
 package us.quizz.endpoints;
 
-import java.util.List;
-
-import javax.inject.Named;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.appengine.api.datastore.Text;
+import com.google.inject.Inject;
 
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.User;
@@ -13,11 +15,9 @@ import us.quizz.service.QuestionService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.appengine.api.datastore.Text;
-import com.google.inject.Inject;
+import java.util.List;
+
+import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserAnswerEndpoint {

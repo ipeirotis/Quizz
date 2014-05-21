@@ -1,14 +1,14 @@
 package us.quizz.endpoints;
 
-import javax.inject.Named;
-
-import us.quizz.entities.Treatment;
-import us.quizz.service.TreatmentService;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.inject.Inject;
+
+import us.quizz.entities.Treatment;
+import us.quizz.service.TreatmentService;
+
+import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class TreatmentEndpoint {

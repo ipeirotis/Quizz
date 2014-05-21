@@ -1,15 +1,15 @@
 package us.quizz.endpoints;
 
-import javax.annotation.Nullable;
-import javax.inject.Named;
-
-import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.service.UserAnswerFeedbackService;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
+
+import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.service.UserAnswerFeedbackService;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class UserAnswerFeedbackEndpoint {

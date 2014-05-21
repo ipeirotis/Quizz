@@ -1,13 +1,12 @@
 package us.quizz.service;
 
-import us.quizz.entities.DomainStats;
-import us.quizz.repository.DomainStatsRepository;
-
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
 
-public class DomainStatsService {
+import us.quizz.entities.DomainStats;
+import us.quizz.repository.DomainStatsRepository;
 
+public class DomainStatsService {
   private DomainStatsRepository domainStatsRepository;
   
   @Inject

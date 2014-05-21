@@ -1,18 +1,18 @@
 package us.quizz.servlets;
 
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import us.quizz.entities.Quiz;
+import us.quizz.service.QuizService;
+
 import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import us.quizz.entities.Quiz;
-import us.quizz.service.QuizService;
-
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
 @Singleton
