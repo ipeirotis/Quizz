@@ -43,28 +43,30 @@ public class QuizPerformanceTest extends QuizBaseTest {
     // 5 incorrect answers.
     userAnswers.addAll(getFakeMultipleChoiceUserAnswers(
         6  /* start */, 10  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 2  /* wrong answerID */));
-    // 10 correct answers.
+    // 5 correct answers for collection questions.
     userAnswers.addAll(getFakeMultipleChoiceUserAnswers(
-        11  /* start */, 20  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 0  /* correct answerID */));
+        11  /* start */, 15  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 0  /* correct answerID */));
+    // 5 incorrect answers for collection questions.
+    userAnswers.addAll(getFakeMultipleChoiceUserAnswers(
+        16  /* start */, 20  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 1  /* incorrect answerID */));
 
     QuizPerformance quiz_performance = new QuizPerformance(TEST_QUIZ_ID, TEST_USER_ID);
     quiz_performance.computeCorrect(userAnswers, questions);
 
     assertEquals((Integer)20, quiz_performance.getTotalanswers());
-    assertEquals((Integer)5, quiz_performance.getCorrectanswers());
+    assertEquals((Integer)10, quiz_performance.getCorrectanswers());
     assertEquals((Integer)10, quiz_performance.getTotalCalibrationAnswers());
-    assertEquals((Integer)5, quiz_performance.getIncorrectanswers());
+    assertEquals((Integer)10, quiz_performance.getIncorrectanswers());
 
-    // 20 * Helper.getInformationGain(0.25, NUM_CHOICES).
-    assertEquals(0, quiz_performance.getFreqInfoGain(), 0.01);
+    // 20 * Helper.getInformationGain(0.5, NUM_CHOICES).
+    assertEquals(4.15037, quiz_performance.getFreqInfoGain(), 0.01);
 
-    // 20 * Helper.getBayesianMeanInformationGain(5, 15, NUM_CHOICES).
-    assertEquals(0.48201, quiz_performance.getBayesInfoGain(), 0.01);
+    // 20 * Helper.getBayesianMeanInformationGain(10, 20, NUM_CHOICES).
+    assertEquals(3.36433, quiz_performance.getBayesInfoGain(), 0.01);
 
-    // 20 * (Helper.getBayesianMeanInformationGain(5, 15, NUM_CHOICES) -
-    //       Math.sqrt(Helper.getBayesianVarianceInformationGain(5, 15, NUM_CHOICES)))
-    // is < 0, so make it 0.0 instead.
-    assertEquals(0.0, quiz_performance.getLcbInfoGain(), 0.01);
+    // 20 * (Helper.getBayesianMeanInformationGain(10, 20, NUM_CHOICES) -
+    //       Math.sqrt(Helper.getBayesianVarianceInformationGain(10, 20, NUM_CHOICES))).
+    assertEquals(0.8786, quiz_performance.getLcbInfoGain(), 0.01);
   }
 
   @Test
@@ -84,6 +86,12 @@ public class QuizPerformanceTest extends QuizBaseTest {
 
     quiz_performance.computeCorrect(userAnswers, questions);
     assertEquals("50%", quiz_performance.displayPercentageCorrect());
+
+    // 10 correct answers for collection questions and they still count.
+    userAnswers.addAll(getFakeMultipleChoiceUserAnswers(
+        11  /* start */, 20  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 0  /* correct answerID */));
+    quiz_performance.computeCorrect(userAnswers, questions);
+    assertEquals("75%", quiz_performance.displayPercentageCorrect());
   }
 
   @Test

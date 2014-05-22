@@ -282,8 +282,11 @@ public class QuizPerformance implements Serializable {
     for (UserAnswer ua : results) {
       if (ua.getAction().equals("Submit")) {
         ++numAnswers;
-        // TODO(chunhowt): Shouldn't we be skipping this UserAnswer here?
+      } else {
+        // This is a "I don't know answer". Skip.
+        continue;
       }
+      // If we cannot find the original question for this answer, skip.
       if (!questionsMap.containsKey(ua.getQuestionID())) {
         continue;
       }
@@ -292,12 +295,7 @@ public class QuizPerformance implements Serializable {
       // TODO(chunhowt): Have a better way to take into account of answers to the same question.
       Question question = questionsMap.remove(ua.getQuestionID());
 
-      if (!question.getHasGoldAnswer()) {
-        // If the question is not a gold question, ignore.
-        continue;
-      }
-
-      if (ua.getAction().equals("Submit")) {
+      if (question.getHasGoldAnswer()) {
         numCalibrationAnswers++;
       }
 
@@ -308,7 +306,7 @@ public class QuizPerformance implements Serializable {
     setTotalanswers(numAnswers);
     setCorrectanswers(numCorrectAnswers);
     setTotalCalibrationAnswers(numCalibrationAnswers);
-    setIncorrectanswers(numCalibrationAnswers - numCorrectAnswers);
+    setIncorrectanswers(numAnswers - numCorrectAnswers);
 
     // TODO(chunhowt): Derive this from the question/quiz itself.
     int numberOfMultipleChoiceOptions = 4;
@@ -316,17 +314,16 @@ public class QuizPerformance implements Serializable {
     double meanInfoGainFrequentist = 0;
     double meanInfoGainBayes = 0;
     double varInfoGainBayes = 0;
-    // TODO(chunhowt): The calculation here seems to use the wrong totalanswers?
     try {
       meanInfoGainFrequentist = Helper.getInformationGain(
           getPercentageCorrect(), numberOfMultipleChoiceOptions);
       meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
           getCorrectanswers(),
-          getTotalanswers() - getCorrectanswers(),
+          getIncorrectanswers(),
           numberOfMultipleChoiceOptions);
       varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
           getCorrectanswers(),
-          getTotalanswers() - getCorrectanswers(),
+          getIncorrectanswers(),
           numberOfMultipleChoiceOptions);
     } catch (Exception e) {
       e.printStackTrace();
