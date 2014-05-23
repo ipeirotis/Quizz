@@ -7,10 +7,12 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyFilter;
 import com.googlecode.objectify.cmd.Query;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -89,6 +91,10 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz).id(id).now();
   }
 
+  public T getNoCache(String id) {
+    return ofy().cache(false).load().type(clazz).id(id).now();
+  }
+
   public T safeGet(String id) {
     return ofy().load().type(clazz).id(id).safe();
   }
@@ -137,6 +143,9 @@ public class OfyBaseRepository<T> {
     return listAll(null);
   }
 
+  // Note(chunhowt): Cursor doesn't work with certain filtering such as "!=" operator
+  // and thus will only return the first 1000 results. More information at:
+  // https://developers.google.com/appengine/docs/java/datastore/queries#Java_Limitations_of_cursors
   public List<T> listAll(Map<String, Object> params){
     List<T> list = new ArrayList<T>();
     Query<T> q = ofy().load().type(clazz).limit(1000);
@@ -207,7 +216,9 @@ public class OfyBaseRepository<T> {
   }
 
   public List<T> listByProperty(String propName, Object propValue) {
-    return ofy().load().type(clazz).filter(propName, propValue).list();
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(propName, propValue);
+    return listAll(params);
   }
 
   public Query<T> query(int limit, String sortOrder) {
@@ -218,4 +229,7 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz);
   }
 
+  public void flush() {
+    ObjectifyFilter.complete();
+  }
 }

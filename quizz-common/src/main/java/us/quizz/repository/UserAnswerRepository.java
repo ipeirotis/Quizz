@@ -14,12 +14,6 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
     super(UserAnswer.class);
   }
 
-  public List<UserAnswer> listByQuizId(String quizID) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizID", quizID);
-    return listAll(params);
-  }
-
   public List<UserAnswer> getUserAnswers(String quiz, String userid) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizID", quiz);
@@ -55,7 +49,7 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
   }
 
   public Set<String> getUserIDs(String quizID) {
-    List<UserAnswer> results = listByQuizId(quizID);
+    List<UserAnswer> results = getUserAnswersForQuiz(quizID);
     Set<String> answers = new TreeSet<String>();
     for (UserAnswer ua : results) {
       answers.add(ua.getUserid());
