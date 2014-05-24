@@ -15,6 +15,6 @@ public class DomainStatsService {
   }
 
   public CollectionResponse<DomainStats> listWithCursor(String cursor, Integer limit){
-    return domainStatsRepository.listWithCursor(cursor, limit);
+    return domainStatsRepository.listByCursor(cursor, limit);
   }
 }

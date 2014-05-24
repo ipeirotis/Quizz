@@ -1,4 +1,4 @@
-package us.quizz.repository;
+package us.quizz.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,14 +10,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import us.quizz.entities.Question;
-import us.quizz.service.QuestionService;
 import us.quizz.utils.QuizBaseTest;
 
 import java.util.Map;
 import java.util.Set;
 
 @RunWith(JUnit4.class)
-public class QuizQuestionRepositoryTest extends QuizBaseTest {
+public class QuestionServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();

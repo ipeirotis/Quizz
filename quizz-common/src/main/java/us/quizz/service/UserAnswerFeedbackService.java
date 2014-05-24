@@ -20,12 +20,12 @@ public class UserAnswerFeedbackService {
     return userAnswerFeedbackRepository.saveAndGet(userAnswerFeedback);
   }
 
-  public List<UserAnswerFeedback> list(){
-    return userAnswerFeedbackRepository.list();
+  public List<UserAnswerFeedback> listAll() {
+    return userAnswerFeedbackRepository.listAllByCursor();
   }
 
   public CollectionResponse<UserAnswerFeedback> listWithCursor(String cursor, Integer limit){
-    return userAnswerFeedbackRepository.listWithCursor(cursor, limit);
+    return userAnswerFeedbackRepository.listByCursor(cursor, limit);
   }
 
   public UserAnswerFeedback get(String id){

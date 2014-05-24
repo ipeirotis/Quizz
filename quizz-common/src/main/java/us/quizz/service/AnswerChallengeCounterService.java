@@ -28,10 +28,10 @@ public class AnswerChallengeCounterService {
   }
 
   public CollectionResponse<AnswerChallengeCounter> list(String cursorString, Integer limit){
-    return answerChallengeCounterRepository.listWithCursor(cursorString, limit);
+    return answerChallengeCounterRepository.listByCursor(cursorString, limit);
   }
 
   public List<AnswerChallengeCounter> listAll(){
-      return answerChallengeCounterRepository.listAll();
+      return answerChallengeCounterRepository.listAllByCursor();
   }
 }

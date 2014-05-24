@@ -2,6 +2,8 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
+import com.googlecode.objectify.cmd.Query;
+
 import us.quizz.entities.Question;
 import us.quizz.entities.UserAnswer;
 import us.quizz.repository.QuestionRepository;
@@ -31,7 +33,7 @@ public class QuestionService {
 
   private QuestionRepository questionRepository;
   private UserAnswerRepository userAnswerRepository;
-  
+
   @Inject
   public QuestionService(QuestionRepository questionRepository, 
       UserAnswerRepository userAnswerRepository){
@@ -39,32 +41,38 @@ public class QuestionService {
     this.userAnswerRepository = userAnswerRepository;
   }
 
-  public Question get(Long id) {
-    return questionRepository.get(id);
+  public Question get(Long questionId) {
+    return questionRepository.get(questionId);
   }
 
-  public List<Question> list() {
-    return questionRepository.listAll();
+  public List<Question> listAll() {
+    return questionRepository.listAllByCursor();
   }
 
-  private List<Question> list(Map<String, Object> params) {
-      return questionRepository.listAll(params);
+  private List<Question> listAll(Map<String, Object> params) {
+    return questionRepository.listAllByCursor(params);
   }
 
   public Question save(Question question){
     return questionRepository.saveAndGet(question);
   }
-  
-  public void delete(Long id){
-    questionRepository.delete(id);
+
+  public void delete(Long questionId){
+    questionRepository.delete(questionId);
   }
-  
-  public void delete(List<Question> questions){
+
+  public void deleteAll(List<Question> questions) {
     questionRepository.delete(questions);
   }
-  
-  public List<Question> listByIds(List<Long> ids) {
-    return questionRepository.listByIds(ids);
+
+  public List<Question> listByIds(Iterable<Long> questionIDs) {
+    return questionRepository.listByIds(questionIDs);
+  }
+
+  public List<Question> getQuizQuestions(String quizid) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("quizID", quizid);
+    return questionRepository.listAllByCursor(params);
   }
 
   private Set<String> getQuestionClientIDs(Set<Long> questionIDs) {
@@ -73,8 +81,7 @@ public class QuestionService {
       return new HashSet<String>();
     }
 
-    List<Question> questions = questionRepository.listByIds(questionIDs);
-
+    List<Question> questions = listByIds(questionIDs);
     Set<String> questionClientIDs = new HashSet<String>();
     for (Question question : questions) {
       if (question.getClientID() != null) {
@@ -110,26 +117,18 @@ public class QuestionService {
     return result;
   }
 
-  public List<Question> getQuizQuestions(String quizid) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizID", quizid);
-    return list(params);
-  }
-
   // Returns a list of calibration questions that is at least size min_amount
   // if feasible (eg. enough candidate questions).
   private List<Question> getSomeQuizQuestionsWithGold(
-      String quizID, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {   
-    List<Question> result =
+      String quizID, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {
+    Query<Question> query =
         questionRepository
-        .query()
+        .query(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER, "totalUserScore")
         .filter("quizID", quizID)
-        .filter("hasGoldAnswer", Boolean.TRUE)
-        .order("totalUserScore")
-        .limit(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER)
-        .list();
+        .filter("hasGoldAnswer", Boolean.TRUE);
 
-    return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
+    List<Question> result = questionRepository.listAllByChunkForQuery(query);
+    return pickQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
         false  /* don't repeat if not enough questions. */);
   }
 
@@ -137,47 +136,57 @@ public class QuestionService {
   // if feasible (eg. enough candidate questions).
   private List<Question> getSomeQuizQuestionsWithSilver(
       String quizId, int min_amount, Set<Long> questionIDs, Set<String> questionClientIDs) {
-    List<Question> result =
+    Query<Question> query =
         questionRepository
-        .query()
+        .query(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER, "totalUserScore")
         .filter("quizID", quizId)
-        .filter("hasSilverAnswers", Boolean.TRUE)
-        .order("totalUserScore")
-        .limit(min_amount + questionIDs.size() * QUESTION_FETCHING_MULTIPLIER)
-        .list();
+        .filter("hasSilverAnswers", Boolean.TRUE);
 
-    return diversifyQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
+    List<Question> result = questionRepository.listAllByChunkForQuery(query);
+    return pickQuestionsAsked(result, questionIDs, questionClientIDs, min_amount,
         true  /* repeat if not enough questions. */);
   }
 
   // Filters questions to prefer choosing n questions that are not contained in the set.
   // If repeatQuestions is true, allows duplicate questions when there is not enough candidate
   // questions that have never been answered before.
+  // Params:
+  //   questions: Candidate questions to choose from.
+  //   questionIDs: List of questions ids that had been answered by the users.
+  //   questionClientIDs: Contains client ids of the questions that had been answered by the user
+  //                      or that will be shown to the user. Thus, here, we modify it to
+  //                      include those client ids chosen in this method.
+  //   numQuestions: Number of questions attempted to be picked.
+  //   repeatQuestions: Repeat question already asked if not enough candidate questions to reach
+  //                    the numQuestions questions desired.
   // TODO(chunhowt): This is essentially an attempt to do a join query of Question and
   // UserAnswer entities but it seems like datastore doesn't allow such a join query. This
   // works for now, but there should be a better solution.
-  private List<Question> diversifyQuestionsAsked(
+  private List<Question> pickQuestionsAsked(
       List<Question> questions, Set<Long> questionIDs, Set<String> questionClientIDs,
-      int n, boolean repeatQuestions) {
-    List<Question> results = new ArrayList<Question>();
-    List<Question> filtered = new ArrayList<Question>();
+      int numQuestions, boolean repeatQuestions) {
+    List<Question> kept = new ArrayList<Question>();
+    List<Question> discarded = new ArrayList<Question>();
     for (Question question : questions) {
       // Question not asked before (not the same questionID and not the same clientID)
       // is selected first.
-      if (!questionIDs.contains(question.getId()) &&
-          (question.getClientID() == null ||  // If no client id, ask.
-           question.getClientID().isEmpty() ||  // If client id is empty, ask.
-           !questionClientIDs.contains(question.getClientID()))) {
-        results.add(question);
+      if (questionIDs.contains(question.getId())) {
+        discarded.add(question);
+        continue;
+      }
+      if (question.getClientID() == null ||
+          question.getClientID().isEmpty() ||
+          !questionClientIDs.contains(question.getClientID())) {
+        kept.add(question);
         // Now that we selected this question, we need to blacklist the client id for the question.
-        if (question.getClientID() != null) {
+        if (question.getClientID() != null && !question.getClientID().isEmpty()) {
           questionClientIDs.add(question.getClientID());
         }
-        if (results.size() == n) {
+        if (kept.size() == numQuestions) {
           break;
         }
       } else {
-        filtered.add(question);
+        discarded.add(question);
       }
     }
 
@@ -185,13 +194,13 @@ public class QuestionService {
     // we will just randomly choose some questions users answered before.
     // TODO(chunhowt): Instead of doing this, we can send a message to user to redirect him
     // to another quizz.
-    if (results.size() < n && repeatQuestions) {
-      int numToChoose = Math.min(n - results.size(), filtered.size());
-      results.addAll(filtered.subList(0, numToChoose));
+    if (kept.size() < numQuestions && repeatQuestions) {
+      int numToChoose = Math.min(numQuestions - kept.size(), discarded.size());
+      kept.addAll(discarded.subList(0, numToChoose));
     }
-    return results;
+    return kept;
   }
-  
+
   public Integer getNumberOfGoldQuestions(String quizID, boolean useCache) {
     String key = MemcacheKey.getNumGoldQuestions(quizID);
     if (useCache) {
@@ -204,11 +213,11 @@ public class QuestionService {
     params.put("quizID", quizID); 
     params.put("hasGoldAnswer", Boolean.TRUE);
 
-    Integer count = questionRepository.listAll(params).size();
+    Integer count = questionRepository.countByProperties(params);
     CachePMF.put(key, count);
     return count;
   }
-  
+
   public Integer getNumberOfQuizQuestions(String quizID, boolean useCache) {
     String key = MemcacheKey.getNumQuizQuestions(quizID);
     if (useCache) {
@@ -216,12 +225,9 @@ public class QuestionService {
       if (result != null)
         return result;
     }
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("quizID", quizID);
 
-    Integer count = questionRepository.listAll(params).size();
+    Integer count = questionRepository.countByProperty("quizID", quizID);
     CachePMF.put(key, count);
     return count;
   }
-
 }

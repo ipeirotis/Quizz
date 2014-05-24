@@ -46,7 +46,7 @@ public class QuizEndpoint {
   public CollectionResponse<Quiz> listQuiz(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-    List<Quiz> list = quizService.list();
+    List<Quiz> list = quizService.listAll();
     return CollectionResponse.<Quiz> builder().setItems(list)
         .setNextPageToken(cursorString).build();
   }

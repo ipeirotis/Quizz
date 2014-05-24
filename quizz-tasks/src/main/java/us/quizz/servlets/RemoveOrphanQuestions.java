@@ -63,19 +63,19 @@ public class RemoveOrphanQuestions extends HttpServlet {
     if (quizId != null) {
       List<Question> questions = this.questionService.getQuizQuestions(quizId);
       logger.log(Level.INFO, "Removing " + questions.size() + " questions...");
-      this.questionService.delete(questions);
+      this.questionService.deleteAll(questions);
       //List<Answer> quesansawerstions = this.answersRepository.
       return;
     }
   
 
-    List<Quiz> quizzes = quizService.list();
+    List<Quiz> quizzes = quizService.listAll();
     Set<String> quizIds = new TreeSet<String>();
     for (Quiz q : quizzes) {
       quizIds.add(q.getQuizID());
     }
 
-    List<Question> questions = this.questionService.list();
+    List<Question> questions = this.questionService.listAll();
     logger.log(Level.INFO, "Fetched " + questions.size() + " questions...");
     for (Question question : questions) {
       String qquiz = question.getQuizID();

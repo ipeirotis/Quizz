@@ -135,8 +135,8 @@ public class MigrateToObjectify extends HttpServlet {
 
   private void fixQuestions() {
     //add answers to questions
-    List<Answer> answers = answerRepository.listAll();
-    List<Question> questions = questionRepository.listAll();
+    List<Answer> answers = answerRepository.listAllByCursor();
+    List<Question> questions = questionRepository.listAllByCursor();
 
     Map<Long, ArrayList<Answer>> map = new HashMap<Long, ArrayList<Answer>>();
     for (Answer answer : answers) {

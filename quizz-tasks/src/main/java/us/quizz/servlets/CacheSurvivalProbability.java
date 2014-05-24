@@ -52,7 +52,7 @@ public class CacheSurvivalProbability extends HttpServlet {
     }
 
     if ("all".equals(quizId)) {
-      List<Quiz> quizzes = quizService.list();
+      List<Quiz> quizzes = quizService.listAll();
       for (Quiz q : quizzes) {
         executeInQueue(q.getQuizID());
       }

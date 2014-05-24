@@ -31,7 +31,7 @@ public class UpdateCountStatistics extends HttpServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
     Queue queue = QueueUtils.getDefaultQueue();
-    List<Quiz> list = quizService.list();
+    List<Quiz> list = quizService.listAll();
 
     for (Quiz quiz : list) {
       resp.getWriter().println("Updating quiz: " + quiz.getName());

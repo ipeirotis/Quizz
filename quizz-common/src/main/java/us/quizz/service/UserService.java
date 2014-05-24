@@ -24,12 +24,12 @@ public class UserService {
     this.experimentService = experimentService;
   }
 
-  public List<User> list(){
-    return userRepository.list();
+  public List<User> listAll(){
+    return userRepository.listAllByCursor();
   }
 
   public CollectionResponse<User> listWithCursor(String cursor, Integer limit){
-    return userRepository.listWithCursor(cursor, limit);
+    return userRepository.listByCursor(cursor, limit);
   }
 
   public User get(String id) {

@@ -17,7 +17,7 @@ public class UtilEndpoint {
 
   @ApiMethod(name = "util.resaveUserReferals", path = "util/resaveUserReferals")
   public void resaveUserReferals() {
-    List<UserReferal> list = userReferralRepository.list();
+    List<UserReferal> list = userReferralRepository.listAllByCursor();
     for (UserReferal ref : list) {
       if (ref.getReferer() != null) {
         ref.setDomain(UrlUtils.extractDomain(ref.getReferer().getValue()));

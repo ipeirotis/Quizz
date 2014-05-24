@@ -72,7 +72,7 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
   }
 
   private Set<String> getQuizIds() {
-    List<Quiz> quizzes = quizService.list();
+    List<Quiz> quizzes = quizService.listAll();
     Set<String> quizIds = new TreeSet<String>();
     for (Quiz q : quizzes) {
       quizIds.add(q.getQuizID());

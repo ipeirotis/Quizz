@@ -38,7 +38,7 @@ public class ExperimentService {
     // treatments according to their probabilities.
 
     // At this point, we do not use/support the blocking functionality
-    List<Treatment> allTreatments = treatmentService.list();
+    List<Treatment> allTreatments = treatmentService.listAll();
 
     Map<String, Boolean> treatments = new HashMap<String, Boolean>();
     for (Treatment t : allTreatments) {

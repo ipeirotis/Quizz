@@ -26,7 +26,7 @@ public class BrowserStatsService {
   }
   
   public List<BrowserStats> list(){
-    return browserStatsRepository.list();
+    return browserStatsRepository.listAllByCursor();
   }
 
   public void updateStatistics(String browser) {

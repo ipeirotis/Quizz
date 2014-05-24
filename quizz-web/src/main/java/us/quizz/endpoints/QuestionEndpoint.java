@@ -43,7 +43,7 @@ public class QuestionEndpoint {
   @ApiMethod(name = "listQuestions", path = "listQuestions", httpMethod = HttpMethod.GET)
   public CollectionResponse<Question> listQuestions(
       @Nullable @Named("cursor") String cursor) {
-    List<Question> questions = questionService.list();
+    List<Question> questions = questionService.listAll();
     return CollectionResponse.<Question> builder().setItems(questions)
         .setNextPageToken(cursor).build();
   }

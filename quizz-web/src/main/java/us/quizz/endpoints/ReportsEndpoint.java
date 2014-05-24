@@ -66,7 +66,7 @@ public class ReportsEndpoint {
   @ApiMethod(name = "reports.contributionQuality", path = "reports/contributionQuality")
   public List<Map<String, Object>> getContributionQualityReport() {
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-    List<Quiz> quizzes = quizService.list();
+    List<Quiz> quizzes = quizService.listAll();
 
     for (Quiz quiz : quizzes) {
       Map<String, Object> item = new HashMap<String, Object>();

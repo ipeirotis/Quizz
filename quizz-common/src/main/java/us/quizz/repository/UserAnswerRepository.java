@@ -18,26 +18,26 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizID", quiz);
     params.put("userid", userid);
-    return listAll(params);
+    return listAllByCursor(params);
   }
 
   public List<UserAnswer> getUserAnswersForQuestion(Long questionID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("questionID", questionID);
-    return listAll(params);
+    return listAllByCursor(params);
   }
   
   public List<UserAnswer> getUserAnswersForQuiz(String quizID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizID", quizID);
-    return listAll(params);
+    return listAllByCursor(params);
   }
 
   public int getNumberOfUserAnswersExcludingIDK(Long questionID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("questionID", questionID);
     params.put("action", "Submit");
-    return listAll(params).size();
+    return countByProperties(params);
   }
 
   public int getNumberOfCorrectUserAnswers(Long questionID) {
@@ -45,7 +45,7 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
     params.put("questionID", questionID);
     params.put("action", "Submit");
     params.put("isCorrect", Boolean.TRUE);
-    return listAll(params).size();
+    return countByProperties(params);
   }
 
   public Set<String> getUserIDs(String quizID) {
@@ -60,6 +60,6 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
   public Integer getNumberOfUserAnswers(String quizID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizID", quizID);
-    return listAll(params).size();
+    return countByProperties(params);
   }
 }

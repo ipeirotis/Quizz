@@ -2,25 +2,24 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
-import us.quizz.entities.Treatment;
-import us.quizz.repository.TreatmentRepository;
+import us.quizz.entities.Answer;
+import us.quizz.repository.AnswersRepository;
 
 import java.util.List;
 
 public class AnswerService {
-
-  private TreatmentRepository treatmentRepository;
+  private AnswersRepository answerRepository;
   
   @Inject
-  public AnswerService(TreatmentRepository treatmentRepository){
-    this.treatmentRepository = treatmentRepository;
-  }
-  
-  public Treatment save(Treatment treatment){
-    return treatmentRepository.saveAndGet(treatment);
+  public AnswerService(AnswersRepository answerRepository) {
+    this.answerRepository = answerRepository;
   }
 
-  public List<Treatment> list(){
-    return treatmentRepository.list();
+  public Answer save(Answer answer){
+    return answerRepository.saveAndGet(answer);
+  }
+
+  public List<Answer> list() {
+    return answerRepository.listAllByCursor();
   }
 }

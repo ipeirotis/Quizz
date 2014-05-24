@@ -88,6 +88,6 @@ public class UserReferalEndpoint {
 
   @ApiMethod(name = "listDomains", path = "listDomains")
   public List<DomainStats> listDomains() {
-    return domainStatsRepository.list();
+    return domainStatsRepository.listAllByCursor();
   }
 }

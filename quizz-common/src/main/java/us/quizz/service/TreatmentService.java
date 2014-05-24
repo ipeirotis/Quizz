@@ -19,7 +19,7 @@ public class TreatmentService {
     return treatmentRepository.saveAndGet(treatment);
   }
 
-  public List<Treatment> list(){
-    return treatmentRepository.list();
+  public List<Treatment> listAll(){
+    return treatmentRepository.listAllByCursor();
   }
 }

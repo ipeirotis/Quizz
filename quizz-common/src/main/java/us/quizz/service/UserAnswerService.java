@@ -17,7 +17,7 @@ public class UserAnswerService {
   }
 
   public List<UserAnswer> list(String quizID) {
-    return userAnswerRepository.list(quizID);
+    return userAnswerRepository.listAllByProperty("quizID", quizID);
   }
 
   public UserAnswer save(UserAnswer userAnswer) {

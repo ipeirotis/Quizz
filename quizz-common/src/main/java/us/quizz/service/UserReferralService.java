@@ -32,12 +32,12 @@ public class UserReferralService {
     this.domainStatsRepository = domainStatsRepository;
   }
 
-  public List<UserReferal> list(){
-    return userReferralRepository.list();
+  public List<UserReferal> listAll(){
+    return userReferralRepository.listAllByCursor();
   }
 
   public CollectionResponse<UserReferal> listWithCursor(String cursor, Integer limit){
-    return userReferralRepository.listWithCursor(cursor, limit);
+    return userReferralRepository.listByCursor(cursor, limit);
   }
 
   public UserReferal get(Long id){
@@ -57,7 +57,7 @@ public class UserReferralService {
     params.put("quiz", quizID);
 
     TreeSet<String> userids = new TreeSet<String>();
-    List<UserReferal> results = userReferralRepository.listAll(params);
+    List<UserReferal> results = userReferralRepository.listAllByCursor(params);
     for (UserReferal ur : results) {
       userids.add(ur.getUserid());
     }
@@ -89,7 +89,7 @@ public class UserReferralService {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("browserParam", browser);
 
-    List<UserReferal> list = userReferralRepository.listAll(params);
+    List<UserReferal> list = userReferralRepository.listAllByCursor(params);
     long count = list.size();
     for (UserReferal ref : list) {
       users.add(QuizPerformance.generateId(ref.getQuiz(), ref.getUserid()));

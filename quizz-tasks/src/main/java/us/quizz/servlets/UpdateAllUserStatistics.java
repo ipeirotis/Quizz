@@ -35,7 +35,7 @@ public class UpdateAllUserStatistics extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    List<Quiz> quizzes = quizService.list();
+    List<Quiz> quizzes = quizService.listAll();
     for (Quiz q : quizzes) {
       Set<String> userids = userAnswerService.getUserIDs(q.getQuizID());
       Queue queue = QueueUtils.getUserStatisticsQueue();

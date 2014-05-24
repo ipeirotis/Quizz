@@ -38,7 +38,7 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
     Queue queue = QueueUtils.getQuestionStatisticsQueue();
     String quizID = req.getParameter("quizID");
     if (quizID == null) {
-      List<Quiz> quizzes = quizService.list();
+      List<Quiz> quizzes = quizService.listAll();
       for (Quiz q : quizzes) {
         queue.add(Builder
             .withUrl("/api/updateAllQuestionStatistics")

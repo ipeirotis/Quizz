@@ -27,8 +27,8 @@ public class QuizService {
     this.userAnswerService = userAnswerService;
   }
   
-  public List<Quiz> list(){
-    return quizRepository.list();
+  public List<Quiz> listAll() {
+    return quizRepository.listAllByCursor();
   }
   
   public Quiz get(String quizID){

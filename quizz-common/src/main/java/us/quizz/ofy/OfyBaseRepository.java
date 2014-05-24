@@ -24,11 +24,21 @@ public class OfyBaseRepository<T> {
   }
 
   public int count() {
-    return ofy().load().type(clazz).count();
+    return query().count();
   }
 
   public int countByProperty(String propName, Object propValue) {
-    return ofy().load().type(clazz).filter(propName, propValue).count();
+    return query().filter(propName, propValue).count();
+  }
+
+  public int countByProperties(Map<String, Object> params) {
+    Query<T> q = query();
+    if (params != null) {
+      for (Map.Entry<String, Object> entry : params.entrySet()) {
+        q = q.filter(entry.getKey(), entry.getValue());
+      }
+    }
+    return q.count();
   }
 
   // All the save operations here are synchronous (now()).
@@ -108,7 +118,7 @@ public class OfyBaseRepository<T> {
   }
 
   public T getByProperty(String propName, Object propValue) {
-    return ofy().load().type(clazz).filter(propName, propValue).first().now();
+    return query().filter(propName, propValue).first().now();
   }
 
   public List<T> listByIds(Iterable<Long> ids) {
@@ -131,31 +141,33 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz).ids(ids);
   }
 
-  public List<T> list() {
-    return ofy().cache(true).load().type(clazz).chunk(1000).list();
+  public List<T> listAllByChunkForQuery(Query<T> q) {
+    return q.chunk(1000).list();
   }
 
-  public List<T> list(String sortOrder) {
-    return ofy().load().type(clazz).order(sortOrder).list();
+  public List<T> listAllByChunk() {
+    return listAllByChunkForQuery(ofy().cache(true).load().type(clazz));
   }
 
-  public List<T> listAll(){
-    return listAll(null);
+  public List<T> listAllByChunk(String sortOrder) {
+    return listAllByChunkForQuery(query().order(sortOrder));
+  }
+
+  public List<T> listAllByChunk(Map<String, Object> params) {
+    return listAllByChunkForQuery(query(params));
+  }
+
+  public List<T> listAllByCursor(){
+    return listAllByCursor(null);
   }
 
   // Note(chunhowt): Cursor doesn't work with certain filtering such as "!=" operator
   // and thus will only return the first 1000 results. More information at:
   // https://developers.google.com/appengine/docs/java/datastore/queries#Java_Limitations_of_cursors
-  public List<T> listAll(Map<String, Object> params){
+  // Use listAllByChunkForQuery() instead.
+  public List<T> listAllByCursorForQuery(Query<T> q) {
     List<T> list = new ArrayList<T>();
-    Query<T> q = ofy().load().type(clazz).limit(1000);
     Cursor cursor = null;
-    
-    if (params != null) {
-      for (Map.Entry<String, Object> entry : params.entrySet()) {
-        q = q.filter(entry.getKey(), entry.getValue());
-      }
-    }
 
     while (true) {
       if (cursor != null) {
@@ -167,7 +179,7 @@ public class OfyBaseRepository<T> {
       cursor = iterator.getCursor();
 
       while (iterator.hasNext()) {
-        T t = iterator.next(); 
+        T t = iterator.next();
         list.add(t);
         continu = true;
       }
@@ -181,13 +193,16 @@ public class OfyBaseRepository<T> {
         break;
       }
     }
-
     return list;
   }
 
-  public CollectionResponse<T> listWithCursor(String cursorString, Integer limit) {
+  public List<T> listAllByCursor(Map<String, Object> params) {
+    return listAllByCursorForQuery(query(params).limit(1000));
+  }
+
+  public CollectionResponse<T> listByCursor(String cursorString, Integer limit) {
     List<T> result = new ArrayList<T>();
-    Query<T> query = ofy().load().type(clazz);
+    Query<T> query = query();
 
     if (cursorString != null) {
       query = query.startAt(Cursor.fromWebSafeString(cursorString));
@@ -215,18 +230,28 @@ public class OfyBaseRepository<T> {
     }
   }
 
-  public List<T> listByProperty(String propName, Object propValue) {
+  public List<T> listAllByProperty(String propName, Object propValue) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(propName, propValue);
-    return listAll(params);
-  }
-
-  public Query<T> query(int limit, String sortOrder) {
-    return ofy().load().type(clazz).order(sortOrder).limit(limit);
+    return listAllByCursor(params);
   }
 
   public Query<T> query() {
     return ofy().load().type(clazz);
+  }
+
+  public Query<T> query(int limit, String sortOrder) {
+    return query().order(sortOrder).limit(limit);
+  }
+
+  public Query<T> query(Map<String, Object> params) {
+    Query<T> q = query();
+    if (params != null) {
+      for (Map.Entry<String, Object> entry : params.entrySet()) {
+        q = q.filter(entry.getKey(), entry.getValue());
+      }
+    }
+    return q;
   }
 
   public void flush() {

@@ -100,7 +100,8 @@ public class SurvivalProbabilityService {
     if (result == null) {
       result = CachePMF.get(key, HashMap.class);
       if (result == null){
-        List<SurvivalProbabilityResult> list = survivalProbabilityResultRepository.list();
+        List<SurvivalProbabilityResult> list =
+            survivalProbabilityResultRepository.listAllByCursor();
         //TODO: convert list to map
         CachePMF.put(key, result, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
       }

@@ -210,7 +210,7 @@ public class OfyBaseRepositoryTest {
 
   @Test
   public void testCountByProperty() {
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 100; ++i) {
       Quiz quiz = new Quiz("Test quiz " + i,
                            "test_quiz_" + i,
                            i % 2 == 0 ? QuizKind.MULTIPLE_CHOICE : QuizKind.FREE_TEXT);
@@ -221,47 +221,47 @@ public class OfyBaseRepositoryTest {
       quizRepository.save(quiz);
     }
 
-    assertEquals(500, quizRepository.countByProperty("kind", QuizKind.FREE_TEXT));
-    assertEquals(500, quizRepository.countByProperty("kind", QuizKind.MULTIPLE_CHOICE));
+    assertEquals(50, quizRepository.countByProperty("kind", QuizKind.FREE_TEXT));
+    assertEquals(50, quizRepository.countByProperty("kind", QuizKind.MULTIPLE_CHOICE));
 
-    assertEquals(250, quizRepository.countByProperty("numChoices", 4));
-    assertEquals(250, quizRepository.countByProperty("numChoices", 2));
-    assertEquals(500, quizRepository.countByProperty("numChoices", null));
+    assertEquals(25, quizRepository.countByProperty("numChoices", 4));
+    assertEquals(25, quizRepository.countByProperty("numChoices", 2));
+    assertEquals(50, quizRepository.countByProperty("numChoices", null));
 
-    assertEquals(112, quizRepository.countByProperty("showOnDefault", true));
-    assertEquals(888, quizRepository.countByProperty("showOnDefault", false));
+    assertEquals(12, quizRepository.countByProperty("showOnDefault", true));
+    assertEquals(88, quizRepository.countByProperty("showOnDefault", false));
   }
 
   @Test
   public void testListByIds() {
-    saveAllQuizzes(2500);
+    saveAllQuizzes(25);
     List<String> ids = new ArrayList<String>();
-    for (int i = 0; i < 2000; ++i) {
+    for (int i = 0; i < 20; ++i) {
       ids.add("test_quiz_" + i);
       ids.add("fake_quiz_" + i);
     }
 
     List<Quiz> quizzes = quizRepository.listByStringIds(ids);
-    assertEquals(2000, quizzes.size());
+    assertEquals(20, quizzes.size());
   }
 
   @Test
-  public void testList() {
-    saveAllQuizzes(2500);
-    List<Quiz> quizzes = quizRepository.list();
+  public void testListAllByChunk() {
+    saveAllQuizzes(1200);
+    List<Quiz> quizzes = quizRepository.listAllByChunk();
     // Note(chunhowt): .chunk(size) doesn't limit the # results returned.
-    assertEquals(2500, quizzes.size());
+    assertEquals(1200, quizzes.size());
   }
 
   @Test
-  public void testListAll() {
-    saveAllQuizzes(2500);
-    List<Quiz> quizzes = quizRepository.listAll();
-    assertEquals(2500, quizzes.size());
+  public void testListAllByCursor() {
+    saveAllQuizzes(1200);
+    List<Quiz> quizzes = quizRepository.listAllByCursor();
+    assertEquals(1200, quizzes.size());
   }
 
   @Test
-  public void testListAllWithParams() {
+  public void testListAllByCursorWithParams() {
     for (int i = 0; i < 5000; ++i) {
       Quiz quiz = new Quiz("Test quiz " + i,
                            "test_quiz_" + i,
@@ -277,7 +277,7 @@ public class OfyBaseRepositoryTest {
     params.put("showOnDefault", true);
     params.put("numChoices", 2);
 
-    List<Quiz> quizzes = quizRepository.listAll(params);
+    List<Quiz> quizzes = quizRepository.listAllByCursor(params);
     assertEquals(1250, quizzes.size());
     for (Quiz quiz : quizzes) {
       assertEquals((Integer)2, quiz.getNumChoices());
@@ -286,33 +286,44 @@ public class OfyBaseRepositoryTest {
   }
 
   @Test
-  public void testListAllWithNotEqualParams() {
-    saveAllQuizzes(2500);
+  public void testListAllByCursorWithNotEqualParams() {
+    saveAllQuizzes(1200);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("showOnDefault !=", true);
 
-    List<Quiz> quizzes = quizRepository.listAll(params);
+    List<Quiz> quizzes = quizRepository.listAllByCursor(params);
     // Note(chunhowt): For filter with "not equal" operator, cursor doesn't work
     // and thus we only fetch the first 1000 results.
     assertEquals(1000, quizzes.size());
   }
 
   @Test
-  public void testListWithCursor() {
-    saveAllQuizzes(2500);
+  public void testListAllByChunkWithNotEqualParams() {
+    saveAllQuizzes(1200);
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("showOnDefault !=", true);
+
+    List<Quiz> quizzes = quizRepository.listAllByChunk(params);
+    // For filter with "not equal" operator, list by chunking will work and get all the results.
+    assertEquals(1200, quizzes.size());
+  }
+
+  @Test
+  public void testListByCursor() {
+    saveAllQuizzes(1200);
     String cursor = null;
     Integer limit = 1000;
     List<Quiz> results = new ArrayList<Quiz>();
 
     while (true) {
-      CollectionResponse<Quiz> response = quizRepository.listWithCursor(cursor, limit);
+      CollectionResponse<Quiz> response = quizRepository.listByCursor(cursor, limit);
       results.addAll(response.getItems());
       cursor = response.getNextPageToken();
       if (cursor == null) {
         break;
       }
     }
-    assertEquals(2500, results.size());
+    assertEquals(1200, results.size());
   }
 
   @Test
@@ -324,7 +335,7 @@ public class OfyBaseRepositoryTest {
       quiz.setShowOnDefault(i % 2 == 0 ? true : false);
       quizRepository.save(quiz);
     }
-    List<Quiz> quizzes = quizRepository.listByProperty("showOnDefault", true);
+    List<Quiz> quizzes = quizRepository.listAllByProperty("showOnDefault", true);
     assertEquals(1250, quizzes.size());
     for (Quiz quiz : quizzes) {
       assertTrue(quiz.getShowOnDefault());

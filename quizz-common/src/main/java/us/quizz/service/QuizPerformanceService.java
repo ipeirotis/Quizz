@@ -35,17 +35,17 @@ public class QuizPerformanceService {
   public List<QuizPerformance> getQuizPerformancesByQuiz(String quizid) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quiz", quizid);
-    return quizPerformanceRepository.listAll(params);
+    return quizPerformanceRepository.listAllByCursor(params);
   }
 
   public List<QuizPerformance> getQuizPerformancesByUser(String userid) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("userid", userid);
-    return quizPerformanceRepository.listAll(params);
+    return quizPerformanceRepository.listAllByCursor(params);
   }
 
   public CollectionResponse<QuizPerformance> listWithCursor(String cursor, Integer limit){
-    return quizPerformanceRepository.listWithCursor(cursor, limit);
+    return quizPerformanceRepository.listByCursor(cursor, limit);
   }
   /** 
    * We are calculating the number of users that have at least "a" correct answers
