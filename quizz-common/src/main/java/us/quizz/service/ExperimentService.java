@@ -4,41 +4,36 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.Treatment;
+import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.ExperimentRepository;
+import us.quizz.repository.TreatmentRepository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExperimentService {
+// TODO(chunhowt): Write unit tests for this class by injecting the random generator.
+public class ExperimentService extends OfyBaseService<Experiment> {
+  private TreatmentRepository treatmentRepository;
 
-  private ExperimentRepository experimentRepository;
-  private TreatmentService treatmentService;
-  
   @Inject
   public ExperimentService(ExperimentRepository experimentRepository, 
-      TreatmentService treatmentService){
-    this.experimentRepository = experimentRepository;
-    this.treatmentService = treatmentService;
+      TreatmentRepository treatmentRepository){
+    super(experimentRepository);
+    this.treatmentRepository = treatmentRepository;
   }
 
-  public Experiment get(Long id) {
-    return experimentRepository.get(id);
-  }
-  
   public Experiment save(Experiment experiment) {
-    if(experiment.getTreatments() == null){
+    if (experiment.getTreatments() == null){
       assignTreatments(experiment);
     }
-    return experimentRepository.saveAndGet(experiment);
+    return baseRepository.saveAndGet(experiment);
   }
-  
-  public void assignTreatments(Experiment experiment) {
-    // Going over all the active treatments in the datastore and assign
-    // treatments according to their probabilities.
 
-    // At this point, we do not use/support the blocking functionality
-    List<Treatment> allTreatments = treatmentService.listAll();
+  // Going over all the active treatments in the datastore and assign
+  // treatments according to their probabilities.
+  private void assignTreatments(Experiment experiment) {
+    List<Treatment> allTreatments = treatmentRepository.listAllByCursor();
 
     Map<String, Boolean> treatments = new HashMap<String, Boolean>();
     for (Treatment t : allTreatments) {

@@ -3,23 +3,12 @@ package us.quizz.service;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Treatment;
+import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.TreatmentRepository;
 
-import java.util.List;
-
-public class TreatmentService {
-  private TreatmentRepository treatmentRepository;
-
+public class TreatmentService extends OfyBaseService<Treatment> {
   @Inject
   public TreatmentService(TreatmentRepository treatmentRepository){
-    this.treatmentRepository = treatmentRepository;
-  }
-
-  public Treatment save(Treatment treatment){
-    return treatmentRepository.saveAndGet(treatment);
-  }
-
-  public List<Treatment> listAll(){
-    return treatmentRepository.listAllByCursor();
+    super(treatmentRepository);
   }
 }

@@ -152,10 +152,9 @@ public class QuizzTest {
 
   @Before
   public void setUp() {
-
     helper.setUp();
     gson = new GsonBuilder().setPrettyPrinting().create();
-    
+
     answerChallengeCounterRepository = new AnswerChallengeCounterRepository();
     userAnswerRepository = new UserAnswerRepository();
     userAnswerFeedbackRepository = new UserAnswerFeedbackRepository();
@@ -176,7 +175,7 @@ public class QuizzTest {
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
     questionService = new QuestionService(questionRepository, userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
-    experimentService = new ExperimentService(experimentRepository, treatmentService);
+    experimentService = new ExperimentService(experimentRepository, treatmentRepository);
     userService = new UserService(userRepository, experimentService);
     quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);

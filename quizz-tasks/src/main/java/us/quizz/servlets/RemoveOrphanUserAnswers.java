@@ -67,7 +67,7 @@ public class RemoveOrphanUserAnswers extends HttpServlet {
       List<UserAnswer> answers = this.userAnswerService.getUserAnswersForQuiz(quizId);
       logger.log(Level.INFO, "Removing " + answers.size() + " answers...");
 
-      this.userAnswerService.remove(answers);
+      this.userAnswerService.deleteAll(answers);
     }
   }
 

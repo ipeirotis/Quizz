@@ -3,60 +3,53 @@ package us.quizz.service;
 import com.google.inject.Inject;
 
 import us.quizz.entities.UserAnswer;
+import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.UserAnswerRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class UserAnswerService {
-  private UserAnswerRepository userAnswerRepository;
-
+public class UserAnswerService extends OfyBaseService<UserAnswer> {
   @Inject
   public UserAnswerService(UserAnswerRepository userAnswerRepository){
-    this.userAnswerRepository = userAnswerRepository;
+    super(userAnswerRepository);
   }
 
   public List<UserAnswer> list(String quizID) {
-    return userAnswerRepository.listAllByProperty("quizID", quizID);
-  }
-
-  public UserAnswer save(UserAnswer userAnswer) {
-    return userAnswerRepository.saveAndGet(userAnswer);
-  }
-
-  public UserAnswer get(Long id) {
-    return userAnswerRepository.get(id);
-  }
-
-  public void remove(List<UserAnswer> answers){
-    userAnswerRepository.delete(answers);
+    Map<String, Object> params = new HashMap<String, Object>();
+    if (quizID != null) {
+      params.put("quizID", quizID);
+    }
+    return listAll(params);
   }
 
   public List<UserAnswer> getUserAnswers(String quiz, String userid) {
-    return userAnswerRepository.getUserAnswers(quiz, userid);
+    return ((UserAnswerRepository) baseRepository).getUserAnswers(quiz, userid);
   }
 
   public List<UserAnswer> getUserAnswersForQuestion(Long questionID) {
-    return userAnswerRepository.getUserAnswersForQuestion(questionID);
+    return ((UserAnswerRepository) baseRepository).getUserAnswersForQuestion(questionID);
   }
 
   public List<UserAnswer> getUserAnswersForQuiz(String quizID) {
-    return userAnswerRepository.getUserAnswersForQuiz(quizID);
+    return ((UserAnswerRepository) baseRepository).getUserAnswersForQuiz(quizID);
   }
 
   public int getNumberOfUserAnswersExcludingIDK(Long questionID) {
-    return userAnswerRepository.getNumberOfUserAnswersExcludingIDK(questionID);
+    return ((UserAnswerRepository) baseRepository).getNumberOfUserAnswersExcludingIDK(questionID);
   }
 
   public int getNumberOfCorrectUserAnswers(Long questionID) {
-    return userAnswerRepository.getNumberOfCorrectUserAnswers(questionID);
+    return ((UserAnswerRepository) baseRepository).getNumberOfCorrectUserAnswers(questionID);
   }
 
   public Set<String> getUserIDs(String quizID) {
-    return userAnswerRepository.getUserIDs(quizID);
+    return ((UserAnswerRepository) baseRepository).getUserIDs(quizID);
   }
 
   public Integer getNumberOfUserAnswers(String quizID) {
-    return userAnswerRepository.getNumberOfUserAnswers(quizID);
+    return ((UserAnswerRepository) baseRepository).getNumberOfUserAnswers(quizID);
   }
 }
