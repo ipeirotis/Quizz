@@ -91,7 +91,7 @@ public class Question implements Serializable {
   // explicitly.
   // TODO(chunhowt): Makes this a private/protected method only visible for testing.
   public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
-                  Boolean hasGoldAnswer, Boolean hasSilverAnswers) {
+                  Boolean hasGoldAnswer, Boolean hasSilverAnswers, Double totalUserScore) {
     this(quizID, text, kind);
     logger.warning("This Question constructor should only be used for testing.");
     // Note: We are setting the entity id here explicitly so that we can control it for unit
@@ -100,6 +100,7 @@ public class Question implements Serializable {
     this.clientID = clientID;
     this.hasGoldAnswer = hasGoldAnswer;
     this.hasSilverAnswers = hasSilverAnswers;
+    this.totalUserScore = totalUserScore;
   }
 
   public String getQuizID() {

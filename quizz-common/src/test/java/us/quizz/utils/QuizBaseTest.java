@@ -143,34 +143,34 @@ public class QuizBaseTest {
     // Question 1 and 4 have the same client id.
     questionService.save(
         new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
-                     QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */));
+                     QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */, 1.5));
     questionService.save(
         new Question(QUIZ_ID1, "test2", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
-                     QUESTION_CLIENT_ID2, false, true));
+                     QUESTION_CLIENT_ID2, false, true, 0.9));
     questionService.save(
         new Question(QUIZ_ID1, "test3", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
-                     QUESTION_CLIENT_ID3, false, true));
+                     QUESTION_CLIENT_ID3, false, true, 0.3));
     questionService.save(
         new Question(QUIZ_ID1, "test4", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
-                     QUESTION_CLIENT_ID1, true, false));
+                     QUESTION_CLIENT_ID1, true, false, 1.1));
     questionService.save(
         new Question(QUIZ_ID1, "test5", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
-                     QUESTION_CLIENT_ID4, false, true));
+                     QUESTION_CLIENT_ID4, false, true, 0.45));
 
     // Quiz 2 has 4 questions, 1 is calibration, 3 are collections.
     // All the questions have null or empty client id.
     questionService.save(
         new Question(QUIZ_ID2, "test6", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
-                     true, false));
+                     true, false, 1.5));
     questionService.save(
         new Question(QUIZ_ID2, "test7", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
-                     false, true));
+                     false, true, 0.7));
     questionService.save(
         new Question(QUIZ_ID2, "test8", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8, null,
-                     false, true));
+                     false, true, 0.3));
     questionService.save(
         new Question(QUIZ_ID2, "test9", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9, null,
-                     false, true));
+                     false, true, 0.2));
   }
 
   // Returns a list of Question of num * 2 size, each with numChoices answers for the given quizID.
@@ -186,7 +186,7 @@ public class QuizBaseTest {
       Long questionID = (long) i;
       Question question = new Question(
           quizID, "Calibration Question " + i, QuestionKind.MULTIPLE_CHOICE_CALIBRATION,
-          questionID, "client_gold_" + i, true  /* is Gold */, false  /* Not silver */);
+          questionID, "client_gold_" + i, true  /* is Gold */, false  /* Not silver */, 0.0);
       for (int j = 0; j < numChoices; ++j) {
         question.addAnswer(new Answer(questionID, quizID, "Answer " + j,
                                       j == 0 ? AnswerKind.GOLD : AnswerKind.INCORRECT, j));
@@ -197,7 +197,7 @@ public class QuizBaseTest {
       Long questionID = (long) (i + num);
       Question question = new Question(
           quizID, "Collection Question " + i, QuestionKind.MULTIPLE_CHOICE_COLLECTION,
-          questionID, "client_silver_" + i, false, true);
+          questionID, "client_silver_" + i, false, true, 0.0);
       for (int j = 0; j < numChoices; ++j) { 
         question.addAnswer(new Answer(questionID, quizID, "Answer " + j,
                                       AnswerKind.SILVER, j));

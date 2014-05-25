@@ -12,6 +12,7 @@ import org.junit.runners.JUnit4;
 import us.quizz.entities.Question;
 import us.quizz.utils.QuizBaseTest;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +25,41 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testDuplicateAnsweredClientID() throws Exception {
+  public void testGetQuizQuestions() {
+    assertEquals(5, questionService.getQuizQuestions(QUIZ_ID1).size());
+    assertEquals(4, questionService.getQuizQuestions(QUIZ_ID2).size());
+    assertEquals(0, questionService.getQuizQuestions("fake_quiz").size());
+  }
+
+  @Test
+  public void testGetQuestionClientIDs() {
+    Set<Long> questionIDs = new HashSet<Long>();
+    questionIDs.add(QUESTION_ID1);
+    questionIDs.add(QUESTION_ID2);
+    questionIDs.add(QUESTION_ID3);
+    questionIDs.add(QUESTION_ID4);  // same client id as QUESTION_ID1.
+
+    Set<String> clientIDs = questionService.getQuestionClientIDs(questionIDs);
+    assertEquals(3, clientIDs.size());
+    assertTrue(clientIDs.contains(QUESTION_CLIENT_ID1));
+    assertTrue(clientIDs.contains(QUESTION_CLIENT_ID2));
+    assertTrue(clientIDs.contains(QUESTION_CLIENT_ID3));
+  }
+
+  @Test
+  public void testGetQuestionClientIDsForNullOrEmptyClientID() {
+    Set<Long> questionIDs = new HashSet<Long>();
+    questionIDs.add(QUESTION_ID6);
+    questionIDs.add(QUESTION_ID7);
+    questionIDs.add(QUESTION_ID8);
+    questionIDs.add(QUESTION_ID9);
+
+    Set<String> clientIDs = questionService.getQuestionClientIDs(questionIDs);
+    assertEquals(0, clientIDs.size());
+  }
+
+  @Test
+  public void testNextQuestionsDuplicateAnsweredClientID() throws Exception {
     Map<String, Set<Question>> results = questionService.getNextQuizQuestions(QUIZ_ID1, 1, USER_ID1);
     assertEquals(2, results.size());
 
@@ -36,7 +71,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testDuplicateUnansweredClientID() throws Exception {
+  public void testNextQuestionsDuplicateUnansweredClientID() throws Exception {
     Map<String, Set<Question>> results =
         questionService.getNextQuizQuestions(QUIZ_ID1, 5, USER_ID2);
     assertEquals(2, results.size());
@@ -49,7 +84,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testDuplicateCollectionQuestion() throws Exception {
+  public void testNextQuestionsDuplicateCollectionQuestion() throws Exception {
     Map<String, Set<Question>> results =
         questionService.getNextQuizQuestions(QUIZ_ID1, 5, USER_ID1);
     assertEquals(2, results.size());
@@ -60,7 +95,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testNullOrEmptyClientID() throws Exception {
+  public void testNextQuestionsNullOrEmptyClientID() throws Exception {
     Map<String, Set<Question>> results =
         questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
     assertEquals(2, results.size());
@@ -74,7 +109,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testCollectionQuestion() throws Exception {
+  public void testNextQuestionsCollectionQuestion() throws Exception {
     Map<String, Set<Question>> results =
         questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
     assertEquals(2, results.size());
@@ -88,7 +123,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testCalibrationQuestion() throws Exception {
+  public void testNextQuestionsCalibrationQuestion() throws Exception {
     Map<String, Set<Question>> results =
         questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
     assertEquals(2, results.size());
@@ -98,5 +133,35 @@ public class QuestionServiceTest extends QuizBaseTest {
     Question question = (Question) results.get(QuestionService.CALIBRATION_KEY).toArray()[0];
     assertFalse(question.getHasSilverAnswers());
     assertTrue(question.getHasGoldAnswer());
+  }
+
+  @Test
+  public void testNextQuestionsSortedByUserScore() throws Exception {
+    Map<String, Set<Question>> results =
+        questionService.getNextQuizQuestions(QUIZ_ID1, 1, USER_ID2);
+    assertEquals(2, results.size());
+
+    // Makes sure the sole question selected has the lowest totalUserScore.
+    assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
+    assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
+    Question question = (Question) results.get(QuestionService.CALIBRATION_KEY).toArray()[0];
+    assertEquals(QUESTION_ID4, question.getId());
+
+    assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
+    assertEquals(1, results.get(QuestionService.COLLECTION_KEY).size());
+    question = (Question) results.get(QuestionService.COLLECTION_KEY).toArray()[0];
+    assertEquals(QUESTION_ID3, question.getId());
+  }
+
+  @Test
+  public void testGetNumberOfQuizQuestions() {
+    assertEquals((Integer)5, questionService.getNumberOfQuizQuestions(QUIZ_ID1, false));
+    assertEquals((Integer)0, questionService.getNumberOfQuizQuestions("fake_quiz", false));
+  }
+
+  @Test
+  public void testGetNumberOfGoldQuestions() {
+    assertEquals((Integer)2, questionService.getNumberOfGoldQuestions(QUIZ_ID1, false));
+    assertEquals((Integer)0, questionService.getNumberOfGoldQuestions("fake_quiz", false));
   }
 }
