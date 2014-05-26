@@ -8,6 +8,8 @@ import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestCo
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
+import nl.bitwalker.useragentutils.Browser;
+
 import org.junit.After;
 import org.junit.Before;
 
@@ -17,11 +19,14 @@ import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.entities.UserReferal;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.BadgeAssignmentRepository;
 import us.quizz.repository.BadgeRepository;
+import us.quizz.repository.BrowserStatsRepository;
+import us.quizz.repository.DomainStatsRepository;
 import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizRepository;
@@ -30,8 +35,10 @@ import us.quizz.repository.UserReferralRepository;
 import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
+import us.quizz.service.BrowserStatsService;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizPerformanceService;
+import us.quizz.service.UserReferralService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +69,7 @@ public class QuizBaseTest {
   protected static final int ANSWER_ID2 = 2;
   protected static final String BADGE_NAME1 = "5 Correct";
   protected static final String BADGE_SHORTNAME1 = "5C";
+  protected static final String BROWSER_STRING = "CHROME";
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(
@@ -72,6 +80,8 @@ public class QuizBaseTest {
   protected AnswerChallengeCounterRepository answerChallengeCounterRepository = null;
   protected BadgeAssignmentRepository badgeAssignmentRepository = null;
   protected BadgeRepository badgeRepository = null;
+  protected BrowserStatsRepository browserStatsRepository = null;
+  protected DomainStatsRepository domainStatsRepository = null;
   protected QuestionRepository questionRepository = null;
   protected QuizPerformanceRepository quizPerformanceRepository = null;
   protected QuizRepository quizRepository = null;
@@ -81,8 +91,10 @@ public class QuizBaseTest {
   protected AnswerChallengeCounterService answerChallengeCounterService = null;
   protected BadgeAssignmentService badgeAssignmentService = null;
   protected BadgeService badgeService = null;
+  protected BrowserStatsService browserStatsService = null;
   protected QuestionService questionService = null;
   protected QuizPerformanceService quizPerformanceService = null;
+  protected UserReferralService userReferralService = null;
 
   @Before
   public void setUp() {
@@ -90,6 +102,8 @@ public class QuizBaseTest {
     answerChallengeCounterRepository = null;
     badgeAssignmentRepository = null;
     badgeRepository = null;
+    browserStatsRepository = null;
+    domainStatsRepository = null;
     questionRepository = null;
     quizPerformanceRepository = null;
     quizRepository = null;
@@ -99,8 +113,10 @@ public class QuizBaseTest {
     answerChallengeCounterService = null;
     badgeAssignmentService = null;
     badgeService = null;
+    browserStatsService = null;
     questionService = null;
     quizPerformanceService = null;
+    userReferralService = null;
   }
 
   @After
@@ -127,6 +143,20 @@ public class QuizBaseTest {
       badgeRepository = new BadgeRepository();
     }
     return badgeRepository;
+  }
+
+  protected BrowserStatsRepository getBrowserStatsRepository() {
+    if (browserStatsRepository == null) {
+      browserStatsRepository = new BrowserStatsRepository();
+    }
+    return browserStatsRepository;
+  }
+
+  protected DomainStatsRepository getDomainStatsRepository() {
+    if (domainStatsRepository == null) {
+      domainStatsRepository = new DomainStatsRepository();
+    }
+    return domainStatsRepository;
   }
 
   protected UserAnswerRepository getUserAnswerRepository() {
@@ -186,6 +216,16 @@ public class QuizBaseTest {
     return badgeService;
   }
 
+  protected BrowserStatsService getBrowserStatsService() {
+    if (browserStatsService == null) {
+      browserStatsService = new BrowserStatsService(
+          getQuizPerformanceService(),
+          getUserReferralService(),
+          getBrowserStatsRepository());
+    }
+    return browserStatsService;
+  }
+
   protected QuestionService getQuestionService() {    
     if (questionService == null) {
       questionService = new QuestionService(getQuestionRepository(), getUserAnswerRepository());
@@ -198,6 +238,14 @@ public class QuizBaseTest {
       quizPerformanceService = new QuizPerformanceService(getQuizPerformanceRepository());
     }
     return quizPerformanceService;
+  }
+
+  protected UserReferralService getUserReferralService() {
+    if (userReferralService == null) {
+      userReferralService = new UserReferralService(
+          getUserReferralRepository(), getDomainStatsRepository());
+    }
+    return userReferralService;
   }
 
   protected void initAnswerChallengeCounterService() {
@@ -220,6 +268,12 @@ public class QuizBaseTest {
 
   protected void initBadgeService() {
     assertNotNull(getBadgeService());
+  }
+
+  protected void initBrowserStatsService() {
+    assertNotNull(getBrowserStatsService());
+    initUserReferralService();
+    initQuizPerformanceService();
   }
 
   protected void initUserAnswerRepository() {
@@ -290,6 +344,25 @@ public class QuizBaseTest {
     quizPerformance.setCorrectanswers(1);
     quizPerformance.setIncorrectanswers(1);
     quizPerformanceService.save(quizPerformance);
+  }
+
+  protected void initUserReferralService() {
+    assertNotNull(getUserReferralService());
+    Browser browser = Browser.valueOf(BROWSER_STRING);
+    UserReferal userReferal = new UserReferal(USER_ID1);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID1);
+    userReferal.setQuiz(QUIZ_ID2);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID2);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
   }
 
   // Returns a list of Question of num * 2 size, each with numChoices answers for the given quizID.

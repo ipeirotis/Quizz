@@ -53,7 +53,7 @@ public class ReportsEndpoint {
 
   @ApiMethod(name = "reports.scoreByBrowser", path = "reports/scoreByBrowser")
   public List<BrowserStats> getScoreByBrowserReport() {
-    return browserStatsService.list();
+    return browserStatsService.listAll();
   }
 
   @ApiMethod(name = "reports.scoreByDomain", path = "reports/scoreByDomain")

@@ -87,7 +87,7 @@ public class UserReferralService {
   public Result getCountByBrowser(Browser browser) {
     Set<String> users = new HashSet<String>();
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("browserParam", browser);
+    params.put("browser", browser);
 
     List<UserReferal> list = userReferralRepository.listAllByCursor(params);
     long count = list.size();
