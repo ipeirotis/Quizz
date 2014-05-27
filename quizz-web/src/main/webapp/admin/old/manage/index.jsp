@@ -22,7 +22,7 @@
 				<%
 					Injector i = Guice.createInjector(new CommonModule());
 					QuizService quizService = i.getInstance(QuizService.class);
-					List<Quiz> quizzes = quizService.list();
+					List<Quiz> quizzes = quizService.listAll();
 					if (quizzes.isEmpty()) {
 						;
 					} else {
