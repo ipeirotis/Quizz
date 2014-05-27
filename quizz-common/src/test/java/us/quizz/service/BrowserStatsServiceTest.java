@@ -27,7 +27,7 @@ public class BrowserStatsServiceTest extends QuizBaseTest {
     assertNotNull(browserStatsService.get(BROWSER_STRING));
 
     BrowserStats browserStats = browserStatsService.get(BROWSER_STRING);
-    assertEquals(3L, browserStats.getUserCount());
+    assertEquals(4L, browserStats.getUserCount());
     assertEquals(2.92, browserStats.getUserScores(), 0.01);
   }
 }

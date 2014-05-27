@@ -146,6 +146,6 @@ public class QuizEndpoint {
   @ApiMethod(name = "removeQuizRecursively", path = "removeQuizRecursively",
              httpMethod = HttpMethod.DELETE)
   public void removeQuizRecursively(@Named("id") String id) {
-    quizService.deleteAll(id);
+    quizService.deleteRecursively(id);
   }
 }

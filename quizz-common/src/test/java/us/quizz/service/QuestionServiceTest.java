@@ -73,7 +73,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   @Test
   public void testNextQuestionsDuplicateUnansweredClientID() throws Exception {
     Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID1, 5, USER_ID2);
+        questionService.getNextQuizQuestions(QUIZ_ID1, 5, USER_ID3);
     assertEquals(2, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
@@ -97,7 +97,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   @Test
   public void testNextQuestionsNullOrEmptyClientID() throws Exception {
     Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
+        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID2);
     assertEquals(2, results.size());
 
     // Make sure all the questions are selected even though there are "repeated" empty
@@ -125,7 +125,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   @Test
   public void testNextQuestionsCalibrationQuestion() throws Exception {
     Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
+        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID2);
     assertEquals(2, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
@@ -138,7 +138,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   @Test
   public void testNextQuestionsSortedByUserScore() throws Exception {
     Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID1, 1, USER_ID2);
+        questionService.getNextQuizQuestions(QUIZ_ID1, 1, USER_ID3);
     assertEquals(2, results.size());
 
     // Makes sure the sole question selected has the lowest totalUserScore.

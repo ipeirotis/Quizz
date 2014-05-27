@@ -54,6 +54,12 @@ public class UserAnswer implements Serializable {
     this.quizID = quizID;
   }
 
+  public UserAnswer(String userID, Long questionID, Integer answerID, String quizID,
+      Boolean isCorrect) {
+    this(userID, questionID, answerID, quizID);
+    this.isCorrect = isCorrect;
+  }
+
   public String getAction() {
     return action;
   }

@@ -181,8 +181,8 @@ public class QuizzTest {
     userAnswerService = new UserAnswerService(userAnswerRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
-    quizService = new QuizService(userReferralService, quizPerformanceService, quizRepository, 
-        questionService, userAnswerService);
+    quizService = new QuizService(userReferralService, answersRepository,
+        quizPerformanceService, quizRepository, questionService, userAnswerService);
     survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceService,
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,

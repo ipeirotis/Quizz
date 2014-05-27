@@ -4,86 +4,71 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
-import us.quizz.repository.QuestionRepository;
+import us.quizz.ofy.OfyBaseService;
+import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.QuizRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class QuizService {
+public class QuizService extends OfyBaseService<Quiz> {
+  private AnswersRepository answersRepository;
   private UserReferralService userReferralService;
   private QuizPerformanceService quizPerformanceService;
-  private QuizRepository quizRepository;
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
-  
+
   @Inject
-  public QuizService(UserReferralService userReferralService, 
+  public QuizService(UserReferralService userReferralService, AnswersRepository answersRepository,
       QuizPerformanceService quizPerformanceService, QuizRepository quizRepository,
       QuestionService questionService, UserAnswerService userAnswerService) {
+    super(quizRepository);
     this.userReferralService = userReferralService;
+    this.answersRepository = answersRepository;
     this.quizPerformanceService = quizPerformanceService;
-    this.quizRepository = quizRepository;
     this.questionService = questionService;
     this.userAnswerService = userAnswerService;
   }
-  
-  public List<Quiz> listAll() {
-    return quizRepository.listAllByCursor();
-  }
-  
-  public Quiz get(String quizID){
-    return quizRepository.get(quizID);
-  }
-  
-  public Quiz save(Quiz quiz){
-    return quizRepository.saveAndGet(quiz);
-  }
-  
-  public void delete(String quizID) {
-    quizRepository.delete(quizID);
-  }
 
   // Deletes all entities associated with the given quizID.
-  public void deleteAll(String quizID) {
+  public void deleteRecursively(String quizID) {
     delete(quizID);
-
-    /* TODO(chunhowt): Implement this.
-    Class<?>[] itemsClasses = new Class<?>[] { UserAnswer.class, Answer.class, Question.class };
-    for (Class<?> cls : itemsClasses) {
-      deleteAll(pm, quizID, cls);
-    }
-    */
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("quizID", quizID);
+    userAnswerService.deleteAll(userAnswerService.listAll(params));
+    // TODO(chunhowt): Remove this once all answers entities are embedded in questions entities.
+    answersRepository.delete(answersRepository.listAllByCursor(params));
+    questionService.deleteAll(questionService.listAll(params));
   }
 
   public Quiz updateQuizCounts(String quizID) {
-    Quiz quiz = quizRepository.get(quizID);
+    Quiz quiz = get(quizID);
     Integer count = questionService.getNumberOfQuizQuestions(quizID, false);
     quiz.setQuestions(count);
 
+    // Number of UserAnswers for the given quizID, including "skip" answers.
     count = userAnswerService.getNumberOfUserAnswers(quizID);
     quiz.setSubmitted(count);
 
     count = questionService.getNumberOfGoldQuestions(quizID, false);
     quiz.setGold(count);
 
+    // Number of total users for the given quizID, whether they contribute or not.
     // TODO(chunhowt): UserReferral is broken now, so this will always return 0.
     count = userReferralService.getUserIDsByQuiz(quizID).size();
-    quiz.setTotalUsers(count + 1);  // +1 for smoothing, ensuring no division by 0
+    quiz.setTotalUsers(count);
 
     List<QuizPerformance> perf = quizPerformanceService.getQuizPerformancesByQuiz(quizID);
-
-    int contributingUsers = perf.size();
-    // +1 for smoothing, ensuring no division by 0
-    quiz.setContributingUsers(contributingUsers + 1);
-    quiz.setConversionRate(1.0 * quiz.getContributingUsers() / quiz.getTotalUsers());
- 
-    // +1 for smoothing, ensuring no division by 0
-    int totalCorrect = 1;
-    int totalAnswers = 1;
-    int totalCalibrationAnswers = 1;
+    quiz.setContributingUsers(perf.size());
+    if (quiz.getTotalUsers() > 0) {
+      quiz.setConversionRate(1.0 * quiz.getContributingUsers() / quiz.getTotalUsers());
+    }
+    int totalCorrect = 0;
+    int totalAnswers = 0;
+    int totalCalibrationAnswers = 0;
     double bits = 0;
     double avgCorrectness = 0;
-
     for (QuizPerformance qp : perf) {
       Integer t = qp.getCorrectanswers();
       totalCorrect += (t == null) ? 0 : t;
@@ -100,10 +85,14 @@ public class QuizService {
     quiz.setTotalAnswers(totalAnswers);
     quiz.setTotalCalibrationAnswers(totalCalibrationAnswers);
     quiz.setTotalCollectionAnswers(totalAnswers - totalCalibrationAnswers);
-    quiz.setCapacity(bits / quiz.getContributingUsers());
-    quiz.setAvgUserCorrectness(avgCorrectness / quiz.getContributingUsers());
-    quiz.setAvgAnswerCorrectness(
-        1.0 * quiz.getCorrectAnswers() / quiz.getTotalCalibrationAnswers());
-    return quizRepository.saveAndGet(quiz);
+    if (quiz.getContributingUsers() > 0) {
+      quiz.setCapacity(bits / quiz.getContributingUsers());
+      quiz.setAvgUserCorrectness(avgCorrectness / quiz.getContributingUsers());
+    }
+    if (quiz.getTotalAnswers() > 0) {
+      quiz.setAvgAnswerCorrectness(
+          1.0 * quiz.getCorrectAnswers() / quiz.getTotalAnswers());
+    }
+    return save(quiz);
   }
 }
