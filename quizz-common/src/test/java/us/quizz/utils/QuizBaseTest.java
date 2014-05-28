@@ -20,6 +20,7 @@ import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserReferal;
 import us.quizz.enums.AnswerKind;
@@ -31,12 +32,14 @@ import us.quizz.repository.BadgeAssignmentRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.BrowserStatsRepository;
 import us.quizz.repository.DomainStatsRepository;
+import us.quizz.repository.ExperimentRepository;
 import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
+import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.AnswerService;
 import us.quizz.service.BadgeAssignmentService;
@@ -48,6 +51,7 @@ import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserReferralService;
+import us.quizz.service.UserService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,12 +98,14 @@ public class QuizBaseTest {
   protected BadgeRepository badgeRepository = null;
   protected BrowserStatsRepository browserStatsRepository = null;
   protected DomainStatsRepository domainStatsRepository = null;
+  protected ExperimentRepository experimentRepository = null;
   protected QuestionRepository questionRepository = null;
   protected QuizPerformanceRepository quizPerformanceRepository = null;
   protected QuizRepository quizRepository = null;
   protected SurvivalProbabilityResultRepository survivalProbabilityResultRepository = null;
   protected UserAnswerRepository userAnswerRepository = null;
   protected UserReferralRepository userReferralRepository = null;
+  protected UserRepository userRepository = null;
 
   protected AnswerChallengeCounterService answerChallengeCounterService = null;
   protected AnswerService answerService = null;
@@ -112,6 +118,7 @@ public class QuizBaseTest {
   protected SurvivalProbabilityService survivalProbabilityService = null;
   protected UserAnswerService userAnswerService = null;
   protected UserReferralService userReferralService = null;
+  protected UserService userService = null;
 
   private boolean isInitAnswerChallengeCounterService = false;
   private boolean isInitAnswerService = false;
@@ -124,6 +131,7 @@ public class QuizBaseTest {
   private boolean isInitSurvivalProbabilityService = false;
   private boolean isInitUserAnswerService = false;
   private boolean isInitUserReferralService = false;
+  private boolean isInitUserService = false;
 
   @Before
   public void setUp() {
@@ -164,6 +172,7 @@ public class QuizBaseTest {
     isInitSurvivalProbabilityService = false;
     isInitUserAnswerService = false;
     isInitUserReferralService = false;
+    isInitUserService = false;
   }
 
   @After
@@ -213,6 +222,13 @@ public class QuizBaseTest {
     return domainStatsRepository;
   }
 
+  protected ExperimentRepository getExperimentRepository() {
+    if (experimentRepository == null) {
+      experimentRepository = new ExperimentRepository();
+    }
+    return experimentRepository;
+  }
+
   protected QuizPerformanceRepository getQuizPerformanceRepository() {
     if (quizPerformanceRepository == null) {
       quizPerformanceRepository = new QuizPerformanceRepository();
@@ -253,6 +269,13 @@ public class QuizBaseTest {
       userReferralRepository = new UserReferralRepository();
     } 
     return userReferralRepository;
+  }
+
+  protected UserRepository getUserRepository() {
+    if (userRepository == null) {
+      userRepository = new UserRepository();
+    }
+    return userRepository;
   }
 
   protected AnswerChallengeCounterService getAnswerChallengeCounterService() {
@@ -343,6 +366,13 @@ public class QuizBaseTest {
           getUserReferralRepository(), getDomainStatsRepository());
     }
     return userReferralService;
+  }
+
+  protected UserService getUserService() {
+    if (userService == null) {
+      userService = new UserService(getUserRepository(), getExperimentRepository());
+    }
+    return userService;
   }
 
   protected void initAnswerChallengeCounterService() {
@@ -587,6 +617,16 @@ public class QuizBaseTest {
     userReferal.setQuiz(QUIZ_ID1);
     userReferal.setBrowser(browser);
     userReferralService.save(userReferal);
+  }
+
+  protected void initUserService() {
+    if (isInitUserService) {
+      return;
+    }
+    isInitUserService = true;
+
+    assertNotNull(getUserService());
+    userService.save(new User(USER_ID1));
   }
 
   // Returns a list of Question of num * 2 size, each with numChoices answers for the given quizID.

@@ -1,6 +1,5 @@
 package us.quizz.service;
 
-import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
 
 import nl.bitwalker.useragentutils.Browser;
@@ -8,6 +7,7 @@ import nl.bitwalker.useragentutils.Browser;
 import us.quizz.entities.DomainStats;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserReferal;
+import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.DomainStatsRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.utils.UrlUtils;
@@ -21,58 +21,40 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class UserReferralService {
-  private UserReferralRepository userReferralRepository;
+public class UserReferralService extends OfyBaseService<UserReferal> {
   private DomainStatsRepository domainStatsRepository;
 
   @Inject
   public UserReferralService(UserReferralRepository userReferralRepository,
       DomainStatsRepository domainStatsRepository){
-    this.userReferralRepository = userReferralRepository;
+    super(userReferralRepository);
     this.domainStatsRepository = domainStatsRepository;
   }
 
-  public List<UserReferal> listAll(){
-    return userReferralRepository.listAllByCursor();
-  }
-
-  public CollectionResponse<UserReferal> listWithCursor(String cursor, Integer limit){
-    return userReferralRepository.listByCursor(cursor, limit);
-  }
-
-  public UserReferal get(Long id){
-    return userReferralRepository.get(id);
-  }
-
-  public UserReferal save(UserReferal userReferal){
-    return userReferralRepository.saveAndGet(userReferal);
-  }
-
-  public void delete(Long id) {
-    userReferralRepository.delete(id);
-  }
-
+  // Get a list of userids participating for the given quizID.
   public Set<String> getUserIDsByQuiz(String quizID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quiz", quizID);
 
     TreeSet<String> userids = new TreeSet<String>();
-    List<UserReferal> results = userReferralRepository.listAllByCursor(params);
+    List<UserReferal> results = listAll(params);
     for (UserReferal ur : results) {
       userids.add(ur.getUserid());
     }
     return userids;
   }
 
+  // Creates and stores a new UserReferal for the request and userid given.
   public void createAndStoreUserReferal(HttpServletRequest req, String userid) {
     UserReferal ur = new UserReferal(userid);
     ur.setQuiz(req.getParameter("quizID"));
     ur.setIpaddress(req.getRemoteAddr());
     ur.setBrowser(Browser.parseUserAgentString(req.getHeader("User-Agent")));
+
     String referer = UrlUtils.extractUrl(req.getHeader("Referer"));
     ur.setReferer(referer);
     ur.setDomain(UrlUtils.extractDomain(referer));
-    userReferralRepository.save(ur);
+    save(ur);
 
     if (ur.getDomain() != null) {
       DomainStats domainStats = domainStatsRepository.get(ur.getDomain());
@@ -84,35 +66,39 @@ public class UserReferralService {
     }
   }
 
+  // Returns UserReferralService.Result for the given browser.
   public Result getCountByBrowser(Browser browser) {
-    Set<String> users = new HashSet<String>();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("browser", browser);
-
-    List<UserReferal> list = userReferralRepository.listAllByCursor(params);
+    List<UserReferal> list = listAll(params);
     long count = list.size();
-    for (UserReferal ref : list) {
-      users.add(QuizPerformance.generateId(ref.getQuiz(), ref.getUserid()));
-    }
 
-    return new Result(count, users);
+    Set<String> quizPerformanceIds = new HashSet<String>();
+    for (UserReferal userReferal : list) {
+      quizPerformanceIds.add(
+          QuizPerformance.generateId(userReferal.getQuiz(), userReferal.getUserid()));
+    }
+    return new Result(count, quizPerformanceIds);
   }
 
   public class Result {
+    // Number of UserReferal that comes to Quizz on this browser. This counts multiple visits from
+    // the same userids.
     private long count;
-    private Set<String> users;
+    // Set of quiz performance ids representing (user, quiz) pairs for the browser given.
+    private Set<String> quizPerformanceIds;
 
-    public Result(long count, Set<String> users) {
+    public Result(long count, Set<String> quizPerformanceIds) {
       this.count = count;
-      this.users = users;
+      this.quizPerformanceIds = quizPerformanceIds;
     }
 
     public long getCount() {
       return count;
     }
 
-    public Set<String> getUsers() {
-      return users;
+    public Set<String> getQuizPerformanceIds() {
+      return quizPerformanceIds;
     }
   }
 }

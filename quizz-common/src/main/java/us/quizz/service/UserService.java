@@ -1,10 +1,11 @@
 package us.quizz.service;
 
-import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Experiment;
 import us.quizz.entities.User;
+import us.quizz.ofy.OfyBaseService;
+import us.quizz.repository.ExperimentRepository;
 import us.quizz.repository.UserRepository;
 
 import java.util.List;
@@ -14,44 +15,25 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class UserService {
-  private UserRepository userRepository;
-  private ExperimentService experimentService;
+public class UserService extends OfyBaseService<User> {
+  protected static final String COOKIE_NAME = "username";
+  protected static final int COOKIE_MAX_AGE = 60 * 24 * 3600;  // 60 days.
+  private ExperimentRepository experimentRepository;
 
   @Inject
-  public UserService(UserRepository userRepository, ExperimentService experimentService){
-    this.userRepository = userRepository;
-    this.experimentService = experimentService;
-  }
-
-  public List<User> listAll(){
-    return userRepository.listAllByCursor();
-  }
-
-  public CollectionResponse<User> listWithCursor(String cursor, Integer limit){
-    return userRepository.listByCursor(cursor, limit);
-  }
-
-  public User get(String id) {
-    return userRepository.get(id);
-  }
-
-  public User save(User user) {
-    return userRepository.saveAndGet(user);
-  }
-
-  public void delete(String id) {
-    userRepository.delete(id);
+  public UserService(UserRepository userRepository, ExperimentRepository experimentRepository) {
+    super(userRepository);
+    this.experimentRepository = experimentRepository;
   }
 
   public User getOrCreateUser(String userid) {
-    User user = userRepository.get(userid);
+    User user = get(userid);
     if (user == null) {
       user = new User(userid);
       Experiment exp = new Experiment();
-      exp = experimentService.save(exp);
+      exp = experimentRepository.saveAndGet(exp);
       user.setExperimentId(exp.getId());
-      userRepository.save(user);
+      save(user);
     }
     return user;
   }
@@ -66,7 +48,7 @@ public class UserService {
     Cookie[] cookies = req.getCookies();
     if (cookies != null) {
       for (Cookie c : cookies) {
-        if (c.getName().equals("username")) {
+        if (c.getName().equals(COOKIE_NAME)) {
           userid = c.getValue();
           break;
         }
@@ -77,9 +59,9 @@ public class UserService {
       userid = UUID.randomUUID().toString();
     }
 
-    if(resp != null) {
-      Cookie username = new Cookie("username", userid);
-      username.setMaxAge(60 * 24 * 3600);
+    if (resp != null) {
+      Cookie username = new Cookie(COOKIE_NAME, userid);
+      username.setMaxAge(COOKIE_MAX_AGE);
       username.setPath("/");
       resp.addCookie(username);
     }

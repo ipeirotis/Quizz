@@ -176,7 +176,7 @@ public class QuizzTest {
     questionService = new QuestionService(questionRepository, userAnswerRepository);
     treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentRepository);
-    userService = new UserService(userRepository, experimentService);
+    userService = new UserService(userRepository, experimentRepository);
     quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);

@@ -29,7 +29,7 @@ public class BrowserStatsService extends OfyBaseService<BrowserStats> {
     Browser b = Browser.valueOf(browser);
     Result res = userReferralService.getCountByBrowser(b);
     if (res.getCount() > 0) {
-      Double userScores = quizPerformanceService.getScoreSumByIds(res.getUsers());
+      Double userScores = quizPerformanceService.getScoreSumByIds(res.getQuizPerformanceIds());
       save(new BrowserStats(b, res.getCount(), userScores));
     }
   }
