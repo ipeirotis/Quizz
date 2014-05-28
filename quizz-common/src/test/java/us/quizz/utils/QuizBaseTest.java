@@ -1,5 +1,6 @@
 package us.quizz.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,6 +34,7 @@ import us.quizz.repository.DomainStatsRepository;
 import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizRepository;
+import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.service.AnswerChallengeCounterService;
@@ -43,6 +45,7 @@ import us.quizz.service.BrowserStatsService;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
+import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserReferralService;
 
@@ -94,6 +97,7 @@ public class QuizBaseTest {
   protected QuestionRepository questionRepository = null;
   protected QuizPerformanceRepository quizPerformanceRepository = null;
   protected QuizRepository quizRepository = null;
+  protected SurvivalProbabilityResultRepository survivalProbabilityResultRepository = null;
   protected UserAnswerRepository userAnswerRepository = null;
   protected UserReferralRepository userReferralRepository = null;
 
@@ -105,6 +109,7 @@ public class QuizBaseTest {
   protected QuestionService questionService = null;
   protected QuizPerformanceService quizPerformanceService = null;
   protected QuizService quizService = null;
+  protected SurvivalProbabilityService survivalProbabilityService = null;
   protected UserAnswerService userAnswerService = null;
   protected UserReferralService userReferralService = null;
 
@@ -116,6 +121,7 @@ public class QuizBaseTest {
   private boolean isInitQuestionService = false;
   private boolean isInitQuizPerformanceService = false;
   private boolean isInitQuizService = false;
+  private boolean isInitSurvivalProbabilityService = false;
   private boolean isInitUserAnswerService = false;
   private boolean isInitUserReferralService = false;
 
@@ -131,6 +137,7 @@ public class QuizBaseTest {
     questionRepository = null;
     quizPerformanceRepository = null;
     quizRepository = null;
+    survivalProbabilityResultRepository = null;
     userAnswerRepository = null;
     userReferralRepository = null;
 
@@ -142,6 +149,7 @@ public class QuizBaseTest {
     questionService = null;
     quizPerformanceService = null;
     quizService = null;
+    survivalProbabilityService = null;
     userAnswerService = null;
     userReferralService = null;
 
@@ -153,6 +161,7 @@ public class QuizBaseTest {
     isInitQuestionService = false;
     isInitQuizPerformanceService = false;
     isInitQuizService = false;
+    isInitSurvivalProbabilityService = false;
     isInitUserAnswerService = false;
     isInitUserReferralService = false;
   }
@@ -204,20 +213,6 @@ public class QuizBaseTest {
     return domainStatsRepository;
   }
 
-  protected UserAnswerRepository getUserAnswerRepository() {
-    if (userAnswerRepository == null) {
-      userAnswerRepository = new UserAnswerRepository();
-    }
-    return userAnswerRepository;
-  }
-
-  protected UserReferralRepository getUserReferralRepository() {
-    if (userReferralRepository == null) {
-      userReferralRepository = new UserReferralRepository();
-    }
-    return userReferralRepository;
-  }
-
   protected QuizPerformanceRepository getQuizPerformanceRepository() {
     if (quizPerformanceRepository == null) {
       quizPerformanceRepository = new QuizPerformanceRepository();
@@ -237,6 +232,27 @@ public class QuizBaseTest {
       questionRepository = new QuestionRepository();
     }
     return questionRepository;
+  }
+
+  protected SurvivalProbabilityResultRepository getSurvivalProbabilityResultRepository() {
+    if (survivalProbabilityResultRepository == null) {
+      survivalProbabilityResultRepository = new SurvivalProbabilityResultRepository();
+    }
+    return survivalProbabilityResultRepository;
+  }
+
+  protected UserAnswerRepository getUserAnswerRepository() {
+    if (userAnswerRepository == null) {
+      userAnswerRepository = new UserAnswerRepository();
+    } 
+    return userAnswerRepository;
+  } 
+
+  protected UserReferralRepository getUserReferralRepository() {
+    if (userReferralRepository == null) {
+      userReferralRepository = new UserReferralRepository();
+    } 
+    return userReferralRepository;
   }
 
   protected AnswerChallengeCounterService getAnswerChallengeCounterService() {
@@ -303,6 +319,15 @@ public class QuizBaseTest {
           getUserAnswerService());
     }
     return quizService;
+  }
+
+  protected SurvivalProbabilityService getSurvivalProbabilityService() {
+    if (survivalProbabilityService == null) {
+      survivalProbabilityService = new SurvivalProbabilityService(
+          getQuizPerformanceService(),
+          getSurvivalProbabilityResultRepository());
+    }
+    return survivalProbabilityService;
   }
 
   protected UserAnswerService getUserAnswerService() {
@@ -520,6 +545,19 @@ public class QuizBaseTest {
 
     quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
     quizService.save(new Quiz("Quiz 2", QUIZ_ID2, QuizKind.MULTIPLE_CHOICE));
+  }
+
+  protected void initSurvivalProbabilityService() {
+    if (isInitSurvivalProbabilityService) {
+      return;
+    }
+    isInitSurvivalProbabilityService = true;
+    assertNotNull(getSurvivalProbabilityService());    
+
+    initQuizPerformanceService();
+    survivalProbabilityService.cacheValuesInMemcache(QUIZ_ID1);
+    survivalProbabilityService.saveValuesInDatastore(QUIZ_ID1);
+    assertEquals(10, survivalProbabilityService.listAll().size());
   }
 
   protected void initUserReferralService() {
