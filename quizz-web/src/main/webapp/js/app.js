@@ -18,6 +18,10 @@ angular.module('quizz', ['ngRoute', 'ngSanitize'])
                 templateUrl: templates.summary,
                 controller: 'SummaryController'
             })
+      .when('/leaderboard', {
+                templateUrl: templates.leaderboard,
+                controller: 'LeaderboardController'
+            })
       .otherwise({redirectTo: '/list'});
 }])
 

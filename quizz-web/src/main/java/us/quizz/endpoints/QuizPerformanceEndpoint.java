@@ -103,4 +103,19 @@ public class QuizPerformanceEndpoint {
       @Named("userid") String userid) {
     quizPerformanceService.delete(quiz, userid);
   }
+
+  /**
+   * This method lists the top X QuizPerformances inserted in datastore. It uses HTTP
+   * GET method and paging support.
+   *
+   * @return A CollectionResponse class containing the list of all entities
+   *         persisted and a cursor to the next page.
+   */
+  @ApiMethod(name = "listTopQuizPerformance", path = "listTopQuizPerformance")
+  public CollectionResponse<QuizPerformance> listTopQuizPerformance(
+      @Named("quiz") String quiz,
+      @Nullable @Named("limit") Integer limit) {
+    List<QuizPerformance> results = quizPerformanceService.getTopQuizPerformance(quiz, limit);
+    return CollectionResponse.<QuizPerformance> builder().setItems(results).build();
+  }
 }

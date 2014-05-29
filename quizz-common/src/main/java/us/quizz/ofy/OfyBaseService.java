@@ -49,11 +49,15 @@ public class OfyBaseService<T> {
   }
 
   public List<T> listAll() {
-    return baseRepository.listAllByCursor();
+    return baseRepository.listAllByCursor(null);
   }
 
   public List<T> listAll(Map<String, Object> params) {
     return baseRepository.listAllByCursor(params);
+  }
+
+  public List<T> listAll(Map<String, Object> params, String sortOrder, Integer limit) {
+    return baseRepository.listAllByCursor(params, sortOrder, limit);
   }
 
   public CollectionResponse<T> listWithCursor(String cursorString, Integer limit) {

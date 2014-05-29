@@ -59,6 +59,14 @@ angular.module('quizz').factory('quizService',
         result.push(cache.get(value));
       });
       return {data:{items: result}};
+    },
+    getTopQuizPerformance: function(quiz, limit, success, error) {
+      var url = Config.api + '/listTopQuizPerformance';
+      // var url = 'https://jason-testing-dot-crowd-power.appspot.com/_ah/api/quizz/v1/listTopQuizPerformance';
+      url += '?quiz=' + encodeURIComponent(quiz);
+      url += '&limit=' + encodeURIComponent(limit);
+
+      $http.get(url).success(success).error(error);
     }
   };
 }]);

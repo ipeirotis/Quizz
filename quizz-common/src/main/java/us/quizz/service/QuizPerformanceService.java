@@ -98,4 +98,15 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     }
     return result;
   }
+
+  public List<QuizPerformance> getTopQuizPerformance(String quizid, Integer limit) {
+    if(limit == null) {
+      limit = 10;
+    }
+
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("quiz", quizid);
+    List<QuizPerformance> results = listAll(params, "score desc", limit);
+    return results;
+  }
 }

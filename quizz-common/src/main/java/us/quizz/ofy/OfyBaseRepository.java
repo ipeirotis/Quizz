@@ -157,6 +157,10 @@ public class OfyBaseRepository<T> {
     return listAllByChunkForQuery(query(params));
   }
 
+  public List<T> listAllByCursor(Map<String, Object> params){
+    return listAllByCursor(params, null, null);
+  }
+
   public List<T> listAllByCursor(){
     return listAllByCursor(null);
   }
@@ -165,8 +169,19 @@ public class OfyBaseRepository<T> {
   // and thus will only return the first 1000 results. More information at:
   // https://developers.google.com/appengine/docs/java/datastore/queries#Java_Limitations_of_cursors
   // Use listAllByChunkForQuery() instead.
-  public List<T> listAllByCursorForQuery(Query<T> q) {
+  public List<T> listAllByCursorForQuery(Query<T> q, String sortOrder, Integer limit){
     List<T> list = new ArrayList<T>();
+
+    if(sortOrder != null) {
+      q = q.order(sortOrder);
+    }
+
+    if(limit != null) {
+      q = q.limit(limit);
+    } else {
+      q = q.limit(1000);
+    }
+
     Cursor cursor = null;
 
     while (true) {
@@ -196,8 +211,8 @@ public class OfyBaseRepository<T> {
     return list;
   }
 
-  public List<T> listAllByCursor(Map<String, Object> params) {
-    return listAllByCursorForQuery(query(params).limit(1000));
+  public List<T> listAllByCursor(Map<String, Object> params, String sortOrder, Integer limit) {
+    return listAllByCursorForQuery(query(params).limit(1000), sortOrder, limit);
   }
 
   public CollectionResponse<T> listByCursor(String cursorString, Integer limit) {
