@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Index
 public class UserAnswer implements Serializable {
   private static final long serialVersionUID = 1L;
+  public static final String SUBMIT = "Submit";
+  public static final String SKIP = "I don't know";
 
   @Id
   private Long id;
@@ -54,10 +56,13 @@ public class UserAnswer implements Serializable {
     this.quizID = quizID;
   }
 
+  // Note: this is used by unit tests only.
   public UserAnswer(String userID, Long questionID, Integer answerID, String quizID,
-      Boolean isCorrect) {
+      Boolean isCorrect, Long timestamp, String action) {
     this(userID, questionID, answerID, quizID);
     this.isCorrect = isCorrect;
+    this.timestamp = timestamp;
+    this.action = action;
   }
 
   public String getAction() {

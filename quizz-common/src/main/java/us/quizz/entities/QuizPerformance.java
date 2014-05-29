@@ -7,6 +7,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
+import us.quizz.entities.UserAnswer;
 import us.quizz.utils.Helper;
 
 import java.io.Serializable;
@@ -280,14 +281,14 @@ public class QuizPerformance implements Serializable {
     int numCorrectAnswers = 0;
     int numAnswers = 0;
     for (UserAnswer ua : results) {
-      if (ua.getAction().equals("Submit")) {
+      // If we cannot find the original question for this answer, skip.
+      if (!questionsMap.containsKey(ua.getQuestionID())) {
+        continue;
+      }
+      if (ua.getAction().equals(UserAnswer.SUBMIT)) {
         ++numAnswers;
       } else {
         // This is a "I don't know answer". Skip.
-        continue;
-      }
-      // If we cannot find the original question for this answer, skip.
-      if (!questionsMap.containsKey(ua.getQuestionID())) {
         continue;
       }
 

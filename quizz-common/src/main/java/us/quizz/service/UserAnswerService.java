@@ -33,6 +33,10 @@ public class UserAnswerService extends OfyBaseService<UserAnswer> {
     return ((UserAnswerRepository) baseRepository).getUserAnswersForQuestion(questionID);
   }
 
+  public List<UserAnswer> getSubmittedUserAnswersForQuestion(Long questionID) {
+    return ((UserAnswerRepository) baseRepository).getSubmittedUserAnswersForQuestion(questionID);
+  }
+
   public List<UserAnswer> getUserAnswersForQuiz(String quizID) {
     return ((UserAnswerRepository) baseRepository).getUserAnswersForQuiz(quizID);
   }

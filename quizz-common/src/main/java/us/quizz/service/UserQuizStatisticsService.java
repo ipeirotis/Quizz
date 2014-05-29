@@ -23,6 +23,8 @@ public class UserQuizStatisticsService {
     this.questionService = questionService;
   }
 
+  // Updates the QuizPerformance statistics of the given userId in the given quizId.
+  // This includes the correctness statistics and user rank statistics.`
   public void updateStatistics(String quizId, String userId) {
     QuizPerformance qp = new QuizPerformance(quizId, userId);
 
@@ -33,7 +35,6 @@ public class UserQuizStatisticsService {
       ids.add(userAnswer.getQuestionID());
     }
     List<Question> questionList = questionService.listByIds(ids);
-
     qp.computeCorrect(userAnswerList, questionList);
 
     List<QuizPerformance> quizPerformanceList = quizPerformanceService

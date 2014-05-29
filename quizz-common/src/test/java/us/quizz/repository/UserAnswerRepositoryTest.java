@@ -42,13 +42,13 @@ public class UserAnswerRepositoryTest {
     for (int i = 1; i <= 100; ++i) {
       UserAnswer userAnswer = new UserAnswer(USERID1, (long) i, i % 4,
           i % 2 == 0 ? QUIZ_ID1 : QUIZ_ID2);
-      userAnswer.setAction(i % 5 == 0 ? "I don't know" : "Submit");
+      userAnswer.setAction(i % 5 == 0 ? "I don't know" : UserAnswer.SUBMIT);
       userAnswer.setIsCorrect(i % 5 == 1 || i % 5 == 0 ? false : true);
       userAnswerRepository.save(userAnswer);
 
       userAnswer = new UserAnswer(USERID2, (long) i, i % 2,
           i % 2 == 0 ? QUIZ_ID1 : QUIZ_ID2);
-      userAnswer.setAction(i % 5 == 0 ? "I don't know" : "Submit");
+      userAnswer.setAction(i % 5 == 0 ? "I don't know" : UserAnswer.SUBMIT);
       userAnswer.setIsCorrect(i % 5 == 2 || i % 5 == 0 ? false : true);
       userAnswerRepository.save(userAnswer);
     }
@@ -86,6 +86,17 @@ public class UserAnswerRepositoryTest {
     assertEquals((Long)10L, results.get(1).getQuestionID());
 
     results = userAnswerRepository.getUserAnswersForQuestion(102L);
+    assertEquals(0, results.size());
+  }
+
+  @Test
+  public void testGetSubmittedUserAnswersForQuestion() {
+    List<UserAnswer> results = userAnswerRepository.getSubmittedUserAnswersForQuestion(3L);
+    assertEquals(2, results.size());
+    assertEquals((Long)3L, results.get(0).getQuestionID());
+    assertEquals((Long)3L, results.get(1).getQuestionID());
+    
+    results = userAnswerRepository.getSubmittedUserAnswersForQuestion(5L);
     assertEquals(0, results.size());
   }
 

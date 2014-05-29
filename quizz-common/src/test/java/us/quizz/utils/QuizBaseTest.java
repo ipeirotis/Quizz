@@ -435,16 +435,23 @@ public class QuizBaseTest {
     assertNotNull(getUserAnswerService());
 
     // User 1 answers 3 questions from quiz 1, 2 of which are duplicate questions.
-    userAnswerRepository.save(new UserAnswer(USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true));
-    userAnswerRepository.save(new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID1, QUIZ_ID1, false));
-    userAnswerRepository.save(new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true));
-    userAnswerRepository.save(new UserAnswer(USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true, 1L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID1, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 3L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
     // User 1 also answers 2 questions from quiz 2.
-    userAnswerRepository.save(new UserAnswer(USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true));
-    userAnswerRepository.save(new UserAnswer(USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true, 5L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false, 6L, UserAnswer.SUBMIT));
 
     // User 2 answers 1 question from quiz 1.
-    userAnswerRepository.save(new UserAnswer(USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 7L, UserAnswer.SUBMIT));
 
     // User 3 answers 0 questions.
   }
@@ -673,7 +680,7 @@ public class QuizBaseTest {
     for (int i = startNum; i <= endNum; ++i) {
       UserAnswer userAnswer = new UserAnswer(userid, (long) i, answerID, quizID);
       userAnswer.setCorrect(answerID == 0);
-      userAnswer.setAction("Submit");
+      userAnswer.setAction(UserAnswer.SUBMIT);
       userAnswer.setTimestamp((long) i);
       userAnswers.add(userAnswer);
     }

@@ -50,6 +50,10 @@ public class QuizPerformanceTest extends QuizBaseTest {
     userAnswers.addAll(getFakeMultipleChoiceUserAnswers(
         16  /* start */, 20  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 1  /* incorrect answerID */));
 
+    // This should be ignored from the stats.
+    userAnswers.add(new UserAnswer(
+        TEST_USER_ID, 21L, -1, TEST_QUIZ_ID, false, 1234L, UserAnswer.SKIP));
+
     QuizPerformance quiz_performance = new QuizPerformance(TEST_QUIZ_ID, TEST_USER_ID);
     quiz_performance.computeCorrect(userAnswers, questions);
 

@@ -26,7 +26,14 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
     params.put("questionID", questionID);
     return listAllByCursor(params);
   }
-  
+
+  public List<UserAnswer> getSubmittedUserAnswersForQuestion(Long questionID) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("questionID", questionID);
+    params.put("action", UserAnswer.SUBMIT);
+    return listAllByCursor(params);
+  }
+
   public List<UserAnswer> getUserAnswersForQuiz(String quizID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizID", quizID);
@@ -36,14 +43,14 @@ public class UserAnswerRepository extends OfyBaseRepository<UserAnswer> {
   public int getNumberOfUserAnswersExcludingIDK(Long questionID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("questionID", questionID);
-    params.put("action", "Submit");
+    params.put("action", UserAnswer.SUBMIT);
     return countByProperties(params);
   }
 
   public int getNumberOfCorrectUserAnswers(Long questionID) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("questionID", questionID);
-    params.put("action", "Submit");
+    params.put("action", UserAnswer.SUBMIT);
     params.put("isCorrect", Boolean.TRUE);
     return countByProperties(params);
   }
