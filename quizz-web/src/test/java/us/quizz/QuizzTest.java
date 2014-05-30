@@ -89,7 +89,6 @@ public class QuizzTest {
   private static final String IP_ADDRESS = "192.168.0.1";
   private static final String REFERER = "http://www.google.com";
   private static final String QUIZ_ID = "testQuizId";
-  private static final String USER_ID = "testUserId";
   private static final int NUMBER_OF_QUESTIONS = 10;
 
   private final LocalServiceTestHelper helper =
@@ -356,10 +355,13 @@ public class QuizzTest {
     when(req.getParameter("quizID")).thenReturn(QUIZ_ID);
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
-    Map<String, Object> map = userEndpoint.getUser(req, USER_ID);
-    User user = (User)map.get("user");
-    logResponse("get user", user);
-    return user;
+    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads");
+    String userid = (String) map.get("userid");
+    logResponse("get user", userid);
+
+    // Needs to flush here to make sure the user is saved to datastore.
+    userService.flush();
+    return userService.get(userid);
   }
 
   private void getQuizPerformance(String quizId, String userId, Double expectedScore) {

@@ -2,6 +2,7 @@ package us.quizz.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.inject.Inject;
 
@@ -47,28 +48,14 @@ public class UserEndpoint {
     return userService.listWithCursor(cursorString, limit);
   }
 
-  /**
-   * This method gets the entity having primary key id. It uses HTTP GET
-   * method.
-   *
-   * @param id the primary key of the java bean.
-   * @return The entity with primary key id.
-   */
-  @ApiMethod(name = "getUser", path = "user")
-  public Map<String, Object> getUser(HttpServletRequest req, @Named("userid") String userid) {
-    User user = userService.getOrCreateUser(userid);
-
-    userReferralService.createAndStoreUserReferal(req, userid);
-
-    Experiment e = experimentService.get(user.getExperimentId());
-    if (e != null && e.getTreatments() != null) {
-      for (String s : e.getTreatments().keySet()) {
-        e.getTreatments().get(s);
-      }
-    }
+  // Gets the User from the request, or create the new one, if there is no cookie.
+  @ApiMethod(name = "getUser", path = "getUser", httpMethod = HttpMethod.POST)
+  public Map<String, Object> getUser(HttpServletRequest req, @Named("referer") String referer) {
+    String userid = userService.getUseridFromCookie(req);
+    userReferralService.asyncCreateAndStoreUserReferal(req, userid, referer);
 
     Map<String, Object> result = new HashMap<String, Object>();
-    result.put("user", user);
+    result.put("userid", userid);
     result.put("token", ChannelHelpers.createChannel(userid));
     return result;
   }

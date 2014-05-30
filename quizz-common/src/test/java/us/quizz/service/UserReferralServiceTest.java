@@ -61,9 +61,10 @@ public class UserReferralServiceTest extends QuizBaseTest {
         "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) " +
         "Chrome/30.0.1599.66 Safari/537.36";
     request.addHeader("User-Agent", userAgentString);
-    request.addHeader("Referer", "http://www.google.com/some_ads");
 
-    userReferralService.createAndStoreUserReferal(request, USER_ID3);
+    String refererUrl = "http://www.google.com/some_ads";
+    userReferralService.asyncCreateAndStoreUserReferal(request, USER_ID3, refererUrl);
+    userReferralService.flush();
     referals = userReferralService.listAll(params);
     assertEquals(1, referals.size());
 
@@ -71,7 +72,7 @@ public class UserReferralServiceTest extends QuizBaseTest {
     assertEquals(QUIZ_ID2, referal.getQuiz());
     assertEquals("175.0XXXX", referal.getIpaddress());
     assertEquals(Browser.valueOf(BROWSER_STRING), referal.getBrowser());
-    assertEquals(new Text("http://www.google.com/some_ads"), referal.getReferer());
+    assertEquals(new Text(refererUrl), referal.getReferer());
     assertEquals("google.com", referal.getDomain());
   }
 }

@@ -41,6 +41,10 @@ public class OfyBaseRepository<T> {
     return q.count();
   }
 
+  public void asyncSave(T entity) {
+    ofy().save().entity(entity);
+  }
+
   // All the save operations here are synchronous (now()).
   public Key<T> save(T entity) {
     return ofy().save().entity(entity).now();

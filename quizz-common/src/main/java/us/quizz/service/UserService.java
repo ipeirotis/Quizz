@@ -26,23 +26,16 @@ public class UserService extends OfyBaseService<User> {
     this.experimentRepository = experimentRepository;
   }
 
-  public User getOrCreateUser(String userid) {
-    User user = get(userid);
-    if (user == null) {
-      user = new User(userid);
-      Experiment exp = new Experiment();
-      exp = experimentRepository.saveAndGet(exp);
-      user.setExperimentId(exp.getId());
-      save(user);
-    }
-    return user;
-  }
-
-  public User getUseridFromCookie(HttpServletRequest req) {
+  public String getUseridFromCookie(HttpServletRequest req) {
     return getUseridFromCookie(req, null);
   }
 
-  public User getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
+  // Gets the userid stored in the cookie of HttpServletRequest, if any. If there is no
+  // corresponding cookie, generate a random userid and returns it. This will also adds a cookie
+  // with the corresponding userid in the HttpServletResponse if it is not null.
+  // If we generate a new random userid, we will also ASYNCHRONOUSLY save a new User entity for
+  // that.
+  public String getUseridFromCookie(HttpServletRequest req, HttpServletResponse resp) {
     // Get an array of Cookies associated with this domain
     String userid = null;
     Cookie[] cookies = req.getCookies();
@@ -57,6 +50,7 @@ public class UserService extends OfyBaseService<User> {
 
     if (userid == null) {
       userid = UUID.randomUUID().toString();
+      asyncSave(new User(userid));
     }
 
     if (resp != null) {
@@ -65,7 +59,24 @@ public class UserService extends OfyBaseService<User> {
       username.setPath("/");
       resp.addCookie(username);
     }
+    return userid;
+  }
 
+  // Gets a new User entity for the given userid, or if it does not exist, create a new one
+  // and store it in datastore.
+  public User getOrCreateUser(String userid) {
+    User user = get(userid);
+    if (user == null) {
+      user = new User(userid);
+      save(user);
+    }
+    return user;
+  }
+
+  // Same as getUseridFromCookie, but returns the User entity instead of just the userid.
+  public User getUserFromCookie(HttpServletRequest req, HttpServletResponse resp) {
+    String userid = getUseridFromCookie(req, resp);
+    flush();
     return getOrCreateUser(userid);
   }
 }

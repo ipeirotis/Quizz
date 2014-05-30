@@ -44,17 +44,18 @@ public class UserReferralService extends OfyBaseService<UserReferal> {
     return userids;
   }
 
-  // Creates and stores a new UserReferal for the request and userid given.
-  public void createAndStoreUserReferal(HttpServletRequest req, String userid) {
+  // Creates and stores a new UserReferal for the request, userid and url referer given.
+  // This will generate a UserReferal object and potentially a DomainStats object, and then
+  // they are saved asynchronously.
+  public void asyncCreateAndStoreUserReferal(
+      HttpServletRequest req, String userid, String referer) {
     UserReferal ur = new UserReferal(userid);
     ur.setQuiz(req.getParameter("quizID"));
     ur.setIpaddress(req.getRemoteAddr());
     ur.setBrowser(Browser.parseUserAgentString(req.getHeader("User-Agent")));
-
-    String referer = UrlUtils.extractUrl(req.getHeader("Referer"));
     ur.setReferer(referer);
     ur.setDomain(UrlUtils.extractDomain(referer));
-    save(ur);
+    asyncSave(ur);
 
     if (ur.getDomain() != null) {
       DomainStats domainStats = domainStatsRepository.get(ur.getDomain());
@@ -62,7 +63,7 @@ public class UserReferralService extends OfyBaseService<UserReferal> {
         domainStats = new DomainStats(ur.getDomain(), 0, 0);
       }
       domainStats.incUserCount();
-      domainStatsRepository.save(domainStats);
+      domainStatsRepository.asyncSave(domainStats);
     }
   }
 

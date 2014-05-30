@@ -3,17 +3,22 @@ angular.module('quizz').controller('QuizController',
    'quizService', 'workflowService', 'userService',
    function ($scope, $rootScope, $routeParams, $location, questionService,
              quizService, workflowService, userService) {
+     $scope.setupChannel = function(token) {
+       var channel = new goog.appengine.Channel(token);
+       var socket = channel.open();
+       socket.onmessage = function(data) {
+         $rootScope.$broadcast('event:channel', data);
+       };
+       socket.onerror = function () {
+         console.log("Error in channel gathering updates in performance");
+       };
+     };
+
      $scope.currentQuestionIndex = workflowService.getCurrentQuestionIndex() + 1;
      $scope.numOfQuestions = workflowService.getNumOfQuestions();
      $rootScope.$on("event:channel", function (event, data) {
        $scope.performance = data;
      });
-
-     // Gets or creates a new user id if user directly arrives at the question
-     // page.
-     userService.getUser(
-       function(response) {},
-       function(error) {});
 
      $scope.fetchQuestions = function() {
        // If we don't have questions set in the workflowService OR
@@ -41,8 +46,6 @@ angular.module('quizz').controller('QuizController',
        }
      };
 
-     $scope.fetchQuestions();
-
      $scope.fetchUserQuizPerformance = function() {
        quizService.getUserQuizPerformance($routeParams.quizId, userService.getUsername(),
          function(response) {
@@ -50,8 +53,6 @@ angular.module('quizz').controller('QuizController',
            $scope.showPerformance = true;
          });
      };
-
-     $scope.fetchUserQuizPerformance();
 
      $scope.answerQuestion = function(answerID, gaType, userInput) {
        var params = {
@@ -118,7 +119,8 @@ angular.module('quizz').controller('QuizController',
        var sufix = "---";
        if ($scope.isNormalNumber(userValue) && $scope.isNormalNumber(totalValue)) {
          var position = userValue / totalValue;
-         sufix = "" + userValue + "/" + totalValue + " (Top " + $scope.toPercentage(position) + ")";
+         sufix = "" + userValue + "/" + totalValue + " (Top " +
+             $scope.toPercentage(position) + ")";
        }
        return prefix + sufix;
      };
@@ -130,4 +132,23 @@ angular.module('quizz').controller('QuizController',
      $scope.toPercentage = function(fValue) {
        return (100. * fValue).toFixed(0) + "%";
      };
+
+     // Gets or creates a new user id if user directly arrives at the question
+     // page.
+     userService.maybeCreateUser(
+       function(response) {
+         if (response) {
+           if (response.userid) {
+             $.cookie("username", response.userid, { expires: 365, path: "/" });
+           }
+           if (response.token) {
+             workflowService.setChannelToken(response.token);
+             $scope.setupChannel(response.token);
+           }
+         }
+         $scope.fetchQuestions();
+         $scope.fetchUserQuizPerformance();
+       },
+       function(error) {}
+     );
 }]);

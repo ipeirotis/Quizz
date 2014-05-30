@@ -12,22 +12,6 @@ angular.module('quizz').controller('ListController',
       });
   };
 
-  $scope.fetchQuizes();
-
-  $scope.fetchUser = function() {
-    userService.getUser(
-      function(response) {
-        if(response.token){
-          workflowService.setChannelToken(response.token);
-          $scope.setupChannel(response.token);
-        }
-      },
-      function(error) {
-      });
-  };
-
-  $scope.fetchUser();
-
   $scope.setupChannel = function(token) {
     var channel = new goog.appengine.Channel(token);
     var socket = channel.open();
@@ -42,4 +26,21 @@ angular.module('quizz').controller('ListController',
   $scope.filterVisible = function(quiz) {
     return quiz.showOnDefault;
   };
+
+  // Gets or creates a new user id.
+  userService.maybeCreateUser(
+    function(response) {
+      if (response) {
+        if (response.userid) {
+          $.cookie("username", response.userid, { expires: 365, path: "/" });
+        }
+        if (response.token) {
+          workflowService.setChannelToken(response.token);
+          $scope.setupChannel(response.token);
+        }
+      }
+      $scope.fetchQuizes();
+    },
+    function(error) {}
+  );
 }]);

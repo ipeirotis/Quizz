@@ -27,7 +27,7 @@ describe('full test', function() {
     $httpBackend.when('GET', '/listQuiz').respond({"items": [TEST_QUIZ]});
     $httpBackend.when('GET', new RegExp('/quizperformance/user/.*')).respond("ok");
     $httpBackend.when('GET', new RegExp('/quizperformance/quiz/testQuizId/user/.*')).respond("ok");
-    $httpBackend.when('GET', new RegExp('/user\\?userid=.*')).respond("ok");
+    $httpBackend.when('POST', '/getUser').respond("ok");
     $httpBackend.when('POST', '/listNextQuestions').respond({"calibration": questions });
     $httpBackend.when('POST', '/processUserAnswer').respond(RESPONSE_ON_ANSWER);
 

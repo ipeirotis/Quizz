@@ -39,12 +39,12 @@ public class UserServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testGetUseridFromCookie() {
+  public void testGetUserFromCookie() {
     MockHttpServletRequest request = new MockHttpServletRequest();
     MockHttpServletResponse response = new MockHttpServletResponse();
 
     // First, get a new cookie if there is no cookie in the request.
-    User user = userService.getUseridFromCookie(request, response);
+    User user = userService.getUserFromCookie(request, response);
     assertNotNull(user);
     assertNotEquals(USER_ID1, user.getUserid());
     assertNotNull(response.getCookie(UserService.COOKIE_NAME));
@@ -57,6 +57,6 @@ public class UserServiceTest extends QuizBaseTest {
     cookie = new Cookie(UserService.COOKIE_NAME, USER_ID1);
     cookies[0] = cookie;
     request.setCookies(cookies);
-    assertEquals(USER_ID1, userService.getUseridFromCookie(request, response).getUserid());
+    assertEquals(USER_ID1, userService.getUserFromCookie(request, response).getUserid());
   }
 }

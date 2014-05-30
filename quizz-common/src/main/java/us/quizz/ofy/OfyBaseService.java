@@ -20,6 +20,10 @@ public class OfyBaseService<T> {
     return baseRepository.get(id);
   }
 
+  public void asyncSave(T entity) {
+    baseRepository.asyncSave(entity);
+  }
+
   public T save(T entity) {
     return baseRepository.saveAndGet(entity);
   }
