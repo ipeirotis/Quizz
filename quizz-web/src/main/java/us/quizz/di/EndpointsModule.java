@@ -32,17 +32,17 @@ public class EndpointsModule extends GuiceSystemServiceServletModule {
     serviceClasses.add(CampaignManagementEndpoint.class);
     serviceClasses.add(ExplorationExploitationEndpoint.class);
     serviceClasses.add(ProcessUserAnswerEndpoint.class);
-    serviceClasses.add(ReportsEndpoint.class);
-    serviceClasses.add(TreatmentEndpoint.class);
     serviceClasses.add(QuestionEndpoint.class);
     serviceClasses.add(QuizEndpoint.class);
     serviceClasses.add(QuizPerformanceEndpoint.class);
+    serviceClasses.add(ReportsEndpoint.class);
     serviceClasses.add(SurvivalProbabilityEndpoint.class);
+    serviceClasses.add(TreatmentEndpoint.class);
+    serviceClasses.add(UpdateQuizCountsEndpoint.class);
     serviceClasses.add(UserAnswerEndpoint.class);
     serviceClasses.add(UserAnswerFeedbackEndpoint.class);
     serviceClasses.add(UserEndpoint.class);
     serviceClasses.add(UserReferalEndpoint.class);
-    serviceClasses.add(UpdateQuizCountsEndpoint.class);
     serviceClasses.add(UtilEndpoint.class);
     this.serveGuiceSystemServiceServlet("/_ah/spi/*", serviceClasses);
   }
