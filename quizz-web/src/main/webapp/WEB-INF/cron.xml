@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
   <cron>
-    <url>/api/updateCountStatistics</url>
-    <description>Update the counters that display number of questions, answers, etc in the admin interface</description>
-    <schedule>every 5 minutes</schedule>
+    <url>/api/cacheExploreExploit?maxCorrect=20&amp;maxIncorrect=20&amp;maxExploit=10&amp;numChoices=4</url>
+    <description>Cache explore/exploit decisions</description>
+    <schedule>every day 02:00</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>
-    <url>/api/cacheSurvivalProbability?now=true</url>
+    <url>/api/cacheSurvivalProbability</url>
     <description>Cache Survival Probability</description>
     <schedule>every day 00:00</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>
-    <url>/api/cacheExploreExploit?a=20&amp;b=20&amp;c=10&amp;N=4</url>
-    <description>Cache explore/exploit decisions</description>
-    <schedule>every day 00:10</schedule>
-    <target>quizz-tasks</target>
-  </cron>
-  <cron>
     <url>/api/updateAllQuestionStatistics</url>
-    <description>Update the gold, silver, user counts for all questions</description>
-    <schedule>every day 15:45</schedule>
+    <description>Update the correctness and count statistics for all questions</description>
+    <schedule>every 540 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>
     <url>/api/updateAllUserStatistics</url>
     <description>Update QuizPerformance statistics for all users</description>
-    <schedule>every 720 minutes</schedule>
+    <schedule>every 360 minutes</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>
-    <url>/api/updateBrowsersStatistics?all=true</url>
+    <url>/api/updateBrowsersStatistics?browser=all</url>
     <description>Update browser statistics</description>
     <schedule>every day 00:30</schedule>
     <target>quizz-tasks</target>
   </cron>
   <cron>
+    <url>/api/updateCountStatistics</url>
+    <description>Update the quiz statistics</description>
+    <schedule>every 10 minutes</schedule>
+    <target>quizz-tasks</target>
+  </cron>
+  <cron>
     <description>Backup Entities</description>
-    <url>/_ah/datastore_admin/backup.create?name=BackupEntities&amp;kind=Answer&amp;kind=AnswerChallengeCounter&amp;kind=Badge&amp;kind=BrowserStats&amp;kind=DomainStats&amp;kind=Experiment&amp;kind=ExplorationExploitationResult&amp;kind=Question&amp;kind=Quiz&amp;kind=QuizPerformance&amp;kind=SurvivalProbabilityResult&amp;kind=User&amp;kind=UserAnswer&amp;kind=UserAnswerFeedback&amp;kind=UserReferal&amp;filesystem=gs&amp;gs_bucket_name=crowd-power.appspot.com</url>
+    <url>/_ah/datastore_admin/backup.create?name=BackupEntities&amp;kind=Answer&amp;kind=AnswerChallengeCounter&amp;kind=Badge&amp;kind=BrowserStats&amp;kind=DomainStats&amp;kind=Experiment&amp;kind=ExplorationExploitationResult&amp;kind=Question&amp;kind=Quiz&amp;kind=QuizPerformance&amp;kind=SurvivalProbabilityResult&amp;kind=User&amp;kind=UserAnswer&amp;kind=UserAnswerFeedback&amp;kind=UserReferal&amp;filesystem=gs&amp;gs_bucket_name=quizz-us.appspot.com</url>
     <schedule>every day 06:10</schedule>
     <target>ah-builtin-python-bundle</target>
   </cron>

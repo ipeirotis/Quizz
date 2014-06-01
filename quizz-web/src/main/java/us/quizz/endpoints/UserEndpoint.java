@@ -49,10 +49,12 @@ public class UserEndpoint {
   }
 
   // Gets the User from the request, or create the new one, if there is no cookie.
+  // quizID can be null if the user comes directly to the Quizz homepage.
   @ApiMethod(name = "getUser", path = "getUser", httpMethod = HttpMethod.POST)
-  public Map<String, Object> getUser(HttpServletRequest req, @Named("referer") String referer) {
+  public Map<String, Object> getUser(HttpServletRequest req,
+      @Named("referer") String referer, @Nullable @Named("quizID") String quizID) {
     String userid = userService.getUseridFromCookie(req);
-    userReferralService.asyncCreateAndStoreUserReferal(req, userid, referer);
+    userReferralService.asyncCreateAndStoreUserReferal(req, userid, referer, quizID);
 
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userid", userid);

@@ -27,11 +27,6 @@ public final class QueueUtils {
     return QueueFactory.getQueue("survival");
   }
 
-  // Queue to check for consistency such as RemoveOrphanQuestions and RemoveOrphanUserAnswers.
-  public static Queue getConsistencyQueue() {
-    return QueueFactory.getQueue("consistency");
-  }
-
   // Queue to update QuizPerformance entity for a user in a quiz when user contributes a new answer.
   // and during UpdateAllUserStatistics cron job.
   public static Queue getUserStatisticsQueue() {

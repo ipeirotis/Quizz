@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class UpdateAllQuestionStatistics extends HttpServlet {
+  private static final String QUIZ_ID_PARAM = "quizID";
+
   private QuizService quizService;
   private QuestionService questionService;
 
@@ -33,24 +35,23 @@ public class UpdateAllQuestionStatistics extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     Queue queue = QueueUtils.getQuestionStatisticsQueue();
-    String quizID = req.getParameter("quizID");
+    String quizID = req.getParameter(QUIZ_ID_PARAM);
     if (quizID == null) {
       List<Quiz> quizzes = quizService.listAll();
       for (Quiz q : quizzes) {
         queue.add(Builder
             .withUrl("/api/updateAllQuestionStatistics")
-            .param("quizID", q.getQuizID())
+            .param(QUIZ_ID_PARAM, q.getQuizID())
             .method(TaskOptions.Method.GET));
       }
     } else {
       List<Question> questions = questionService.getQuizQuestions(quizID);
-       for (Question question : questions) {
+      for (Question question : questions) {
         queue.add(Builder
             .withUrl("/api/updateQuestionStatistics")
-            .param("questionID", String.valueOf(question.getId()))
+            .param(UpdateQuestionStatistics.QUESTION_ID_PARAM, String.valueOf(question.getId()))
             .method(TaskOptions.Method.GET));
       }
     }

@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class GetQuizCounts extends HttpServlet {
+  protected static final String QUIZ_ID_PARAM = "quizID";
+  protected static final String CACHE_PARAM = "cache";
+  protected static final String CACHE_NO = "no";
+
   private QuizService quizService;
 
   @Inject
@@ -24,12 +28,15 @@ public class GetQuizCounts extends HttpServlet {
     this.quizService = quizService;
   }
 
+  // Given the HttpServletRequest, extracts the quizId param and cache param, then prints
+  // the quiz counts as json results.
+  // If cache = CACHE_NO, updates the quiz counts before printing..
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    String quiz = req.getParameter("quizID");
-    String cache = req.getParameter("cache");
-    if (cache != null && cache.equals("no")) {
+    String quiz = req.getParameter(QUIZ_ID_PARAM);
+    String cache = req.getParameter(CACHE_PARAM);
+    if (cache != null && cache.equals(CACHE_NO)) {
       quizService.updateQuizCounts(quiz);
     }
 
@@ -38,8 +45,7 @@ public class GetQuizCounts extends HttpServlet {
 
     resp.setContentType("application/json;charset=utf-8");
     Gson gson = new Gson();
-    Response result = new Response(quiz, q.getQuestions(), q.getGold(),
-        q.getSubmitted());
+    Response result = new Response(quiz, q.getQuestions(), q.getGold(), q.getSubmitted());
     String json = gson.toJson(result);
     resp.getWriter().println(json);
   }
@@ -54,7 +60,6 @@ public class GetQuizCounts extends HttpServlet {
       this.quiz = quiz;
       this.questions = questions;
       this.gold = gold;
-
       this.submitted = submitted;
     }
   }

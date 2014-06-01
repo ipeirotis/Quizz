@@ -136,6 +136,7 @@ angular.module('quizz').controller('QuizController',
      // Gets or creates a new user id if user directly arrives at the question
      // page.
      userService.maybeCreateUser(
+       $routeParams.quizId,
        function(response) {
          if (response) {
            if (response.userid) {

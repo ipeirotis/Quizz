@@ -55,7 +55,6 @@ public class UserReferralServiceTest extends QuizBaseTest {
     assertEquals(0, referals.size());
 
     MockHttpServletRequest request = new MockHttpServletRequest();
-    request.setParameter("quizID", QUIZ_ID2);
     request.setRemoteAddr("175.0.0.0");
     String userAgentString =
         "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) " +
@@ -63,7 +62,7 @@ public class UserReferralServiceTest extends QuizBaseTest {
     request.addHeader("User-Agent", userAgentString);
 
     String refererUrl = "http://www.google.com/some_ads";
-    userReferralService.asyncCreateAndStoreUserReferal(request, USER_ID3, refererUrl);
+    userReferralService.asyncCreateAndStoreUserReferal(request, USER_ID3, refererUrl, QUIZ_ID2);
     userReferralService.flush();
     referals = userReferralService.listAll(params);
     assertEquals(1, referals.size());

@@ -22,6 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class CacheSurvivalProbability extends HttpServlet {
+  private static final String QUIZ_ID_PARAM = "quizId";
+  private static final String EXECUTE_PARAM = "now";
+  private static final String QUIZ_ID_ALL = "all";
+  private static final String EXECUTE_NOW = "true";
+
   private SurvivalProbabilityService survivalProbabilityService;
   private QuizService quizService;
 
@@ -32,41 +37,54 @@ public class CacheSurvivalProbability extends HttpServlet {
     this.quizService = quizService;
   }
 
+  // Extracts the params from the request and schedule tasks correspondingly.
+  // If QUIZ_ID_PARAM = QUIZ_ID_ALL, schedules new tasks in survival queue to compute the survival
+  // probability for all the quizId in the datastore, along with a task to compute global survival
+  // probability.
+  // Else, schedules a task to compute the survival probability for the corresponding quizId.
+  // If EXECUTE_PARAM = EXECUTE_NOW, computes the survival probability in this job, else adds it
+  // into the queue.
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    // If we ever need to cache synchronously
-    // In general, this risks generating a DeadlineException error
-    String executeNow = req.getParameter("now");
+    // In general, this risks generating a DeadlineException error because a task started from url
+    // only has max 1 min execution time unless it is started from task queue (which will have
+    // 10 mins deadline).
+    String executeNow = req.getParameter(EXECUTE_PARAM);
 
     // The quizId value can be:
     // null: compute statistics across all quizzes
     // quizid: compute statistics for a given quiz
-    // all: compute statistics for all individual quizzes
-    String quizId = req.getParameter("quizId");
+    // QUIZ_ID_ALL: compute statistics for all individual quizzes
+    String quizId = req.getParameter(QUIZ_ID_PARAM);
 
-    if ("true".equals(executeNow)) {
+    if (EXECUTE_NOW.equals(executeNow) && !QUIZ_ID_ALL.equals(quizId)) {
       survivalProbabilityService.cacheValuesInMemcache(quizId);
       survivalProbabilityService.saveValuesInDatastore(quizId);
       return;
     }
 
-    if ("all".equals(quizId)) {
+    if (QUIZ_ID_ALL.equals(quizId)) {
       List<Quiz> quizzes = quizService.listAll();
       for (Quiz q : quizzes) {
         executeInQueue(q.getQuizID());
       }
-      executeInQueue(null); // to also cache the overall statistics
+      executeInQueue(null);  // Also cache the overall statistics
     } else {
       executeInQueue(quizId);
     }
   }
 
+  // Schedules a new task in the survival queue to compute the survival probability for the quizId
+  // given.
   private void executeInQueue(String quizId) {
     Queue queue = QueueUtils.getSurvivalQueue();
-    queue.add(Builder.withUrl("/api/cacheSurvivalProbability")
+    TaskOptions taskOptions = Builder.withUrl("/api/cacheSurvivalProbability")
         .method(TaskOptions.Method.GET)
-        .param("quizId", quizId)
-        .param("now", "true"));
+        .param(EXECUTE_PARAM, EXECUTE_NOW);
+    if (quizId != null) {
+      taskOptions.param(QUIZ_ID_PARAM, quizId);
+    }
+    queue.add(taskOptions);
   }
 }

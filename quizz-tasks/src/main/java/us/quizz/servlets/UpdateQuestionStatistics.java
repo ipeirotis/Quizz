@@ -17,17 +17,19 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class UpdateQuestionStatistics extends HttpServlet {
+  protected static final String QUESTION_ID_PARAM = "questionID";
+
   private QuestionStatisticsService questionStatisticsService;
   private static final Logger logger = Logger.getLogger(UpdateQuestionStatistics.class.getName());
+
   @Inject
   public UpdateQuestionStatistics(QuestionStatisticsService questionStatisticsService) {
     this.questionStatisticsService = questionStatisticsService;
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-    String questionID = req.getParameter("questionID");
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    String questionID = req.getParameter(QUESTION_ID_PARAM);
     Question question = questionStatisticsService.updateStatistics(questionID);
     logger.log(Level.FINEST, "QuestionID:" + questionID + "\n");
     logger.log(Level.FINEST, "Number of user answers:" + question.getNumberOfUserAnswers() + "\n");

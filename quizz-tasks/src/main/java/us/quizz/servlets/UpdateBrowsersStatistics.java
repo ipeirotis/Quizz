@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 @Singleton
 public class UpdateBrowsersStatistics extends HttpServlet {
+  private static final String BROWSER_PARAM = "browser";
+  private static final String BROWSER_ALL = "all";
+
   private BrowserStatsService browserStatisticsService;
 
   @Inject
@@ -31,11 +34,9 @@ public class UpdateBrowsersStatistics extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
-    if ("true".equals(request.getParameter("all"))) {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    if (BROWSER_ALL.equals(request.getParameter(BROWSER_PARAM))) {
       Queue queue = QueueUtils.getDefaultQueue();
-
       Set<Browser> browsers = new HashSet<Browser>();
       for (Browser browser : Browser.values()) {
         browsers.add(browser.getGroup());
@@ -44,12 +45,12 @@ public class UpdateBrowsersStatistics extends HttpServlet {
       for (Browser browser : browsers) {
         queue.add(Builder
             .withUrl("/api/updateBrowsersStatistics")
-            .param("browser", browser.getGroup().toString())
+            .param(BROWSER_PARAM, browser.getGroup().toString())
             .retryOptions(RetryOptions.Builder.withTaskRetryLimit(0))
             .method(TaskOptions.Method.GET));
       }
     } else {
-      browserStatisticsService.updateStatistics(request.getParameter("browser"));
+      browserStatisticsService.updateStatistics(request.getParameter(BROWSER_PARAM));
     }
   }
 }

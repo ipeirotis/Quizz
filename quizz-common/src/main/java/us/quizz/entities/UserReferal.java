@@ -16,11 +16,15 @@ import java.util.Date;
 @Cache
 @Index
 public class UserReferal implements Serializable {
+  public static final String QUIZ_LANDING_PAGE = "HOMEPAGE";
   private static final long serialVersionUID = 1L;
 
   @Id
   private Long id;
   private String userid;
+  // Quiz id of the page when the user first visits on quizz.us. If user comes directly to the
+  // homepage of Quizz (i.e. organic visit, not through referal from Ads etc), the value will be
+  // QUIZ_LANDING_PAGE.
   private String quiz;
   private Long timestamp;
   private String ipaddress;

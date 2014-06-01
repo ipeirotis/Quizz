@@ -352,10 +352,9 @@ public class QuizzTest {
   private User getUser() {
     HttpServletRequest req = mock(HttpServletRequest.class);
     when(req.getRemoteAddr()).thenReturn(IP_ADDRESS);
-    when(req.getParameter("quizID")).thenReturn(QUIZ_ID);
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
-    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads");
+    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads", QUIZ_ID);
     String userid = (String) map.get("userid");
     logResponse("get user", userid);
 

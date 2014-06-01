@@ -29,6 +29,7 @@ angular.module('quizz').controller('ListController',
 
   // Gets or creates a new user id.
   userService.maybeCreateUser(
+    null,
     function(response) {
       if (response) {
         if (response.userid) {

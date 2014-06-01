@@ -47,10 +47,12 @@ public class UserReferralService extends OfyBaseService<UserReferal> {
   // Creates and stores a new UserReferal for the request, userid and url referer given.
   // This will generate a UserReferal object and potentially a DomainStats object, and then
   // they are saved asynchronously.
+  // If quizID is null, then the user comes straight to the Quizz homepage, so we store a special
+  // value for such cases.
   public void asyncCreateAndStoreUserReferal(
-      HttpServletRequest req, String userid, String referer) {
+      HttpServletRequest req, String userid, String referer, String quizID) {
     UserReferal ur = new UserReferal(userid);
-    ur.setQuiz(req.getParameter("quizID"));
+    ur.setQuiz(quizID != null ? quizID : UserReferal.QUIZ_LANDING_PAGE);
     ur.setIpaddress(req.getRemoteAddr());
     ur.setBrowser(Browser.parseUserAgentString(req.getHeader("User-Agent")));
     ur.setReferer(referer);

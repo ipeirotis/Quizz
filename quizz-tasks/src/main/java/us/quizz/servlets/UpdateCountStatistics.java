@@ -31,13 +31,12 @@ public class UpdateCountStatistics extends HttpServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
     Queue queue = QueueUtils.getDefaultQueue();
-    List<Quiz> list = quizService.listAll();
-
-    for (Quiz quiz : list) {
+    List<Quiz> quizzes = quizService.listAll();
+    for (Quiz quiz : quizzes) {
       resp.getWriter().println("Updating quiz: " + quiz.getName());
-
       queue.add(Builder.withUrl("/api/getQuizCounts")
-          .param("quizID", quiz.getQuizID()).param("cache", "no")
+          .param(GetQuizCounts.QUIZ_ID_PARAM, quiz.getQuizID())
+          .param(GetQuizCounts.CACHE_PARAM, GetQuizCounts.CACHE_NO)
           .method(TaskOptions.Method.GET));
     }
   }

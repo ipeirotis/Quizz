@@ -26,15 +26,13 @@ public class UpdateAllUserStatistics extends HttpServlet {
   private UserAnswerService userAnswerService;
 
   @Inject
-  public UpdateAllUserStatistics(QuizService quizService,
-      UserAnswerService userAnswerService) {
+  public UpdateAllUserStatistics(QuizService quizService, UserAnswerService userAnswerService) {
     this.quizService = quizService;
     this.userAnswerService = userAnswerService;
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     List<Quiz> quizzes = quizService.listAll();
     for (Quiz q : quizzes) {
       Set<String> userids = userAnswerService.getUserIDs(q.getQuizID());
@@ -42,7 +40,8 @@ public class UpdateAllUserStatistics extends HttpServlet {
       for (String userid : userids) {
         queue.add(Builder
             .withUrl("/api/updateUserQuizStatistics")
-            .param("userid", userid).param("quizID", q.getQuizID())
+            .param(UpdateUserQuizStatistics.USER_ID_PARAM, userid)
+            .param(UpdateUserQuizStatistics.QUIZ_ID_PARAM, q.getQuizID())
             .method(TaskOptions.Method.POST));
       }
     }
