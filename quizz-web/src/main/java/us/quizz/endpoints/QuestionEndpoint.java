@@ -4,17 +4,14 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
-import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
-import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
@@ -28,63 +25,22 @@ import javax.inject.Named;
 public class QuestionEndpoint {
   private QuizService quizService;
   private QuestionService questionService;
-  private AnswerChallengeCounterService answerChallengeCounterService;
 
   @Inject
-  public QuestionEndpoint(
-      QuizService quizService,
-      QuestionService questionService,
-      AnswerChallengeCounterService answerChallengeCounterService) {
+  public QuestionEndpoint(QuizService quizService, QuestionService questionService) {
     this.quizService = quizService;
     this.questionService = questionService;
-    this.answerChallengeCounterService = answerChallengeCounterService;
   }
 
-  @ApiMethod(name = "listQuestions", path = "listQuestions", httpMethod = HttpMethod.GET)
-  public CollectionResponse<Question> listQuestions(
-      @Nullable @Named("cursor") String cursor) {
-    List<Question> questions = questionService.listAll();
-    return CollectionResponse.<Question> builder().setItems(questions)
-        .setNextPageToken(cursor).build();
-  }
-
+  // Lists all the questions in the quizID.
   @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.POST)
   public List<Question> listAllQuestions(@Named("quizID") String quizID) {
     return this.questionService.getQuizQuestions(quizID);
   }
 
-  @ApiMethod(name = "listQuestionsWithChallenges", path = "/listQuestionsWithChallenges")
-  public CollectionResponse<QuestionWithChallenges> listQuestionsWithChallenges(
-      @Nullable @Named("cursor") String cursor,
-      @Nullable @Named("limit") Integer limit) {
-    List<AnswerChallengeCounter> challenges = answerChallengeCounterService.listAll();
-
-    List<Long> ids = new ArrayList<Long>();
-    for (AnswerChallengeCounter c : challenges) {
-      ids.add(c.getQuestionID());
-    }
-
-    List<QuestionWithChallenges> result = new ArrayList<QuestionWithChallenges>();
-    if (ids.size() != 0) {
-      List<Question> questions = questionService.listByIds(ids);
-      int i = 0;
-      for (Question question : questions) {
-        result.add(new QuestionWithChallenges(question, challenges.get(i).getCount()));
-        i++;
-      }
-    }
-
-    return CollectionResponse.<QuestionWithChallenges> builder().setItems(result)
-        .setNextPageToken(cursor).build();
-  }
-
-  @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.GET)
-  public Question getQuestion(@Named("questionID") Long questionID) {
-    return questionService.get(questionID);
-  }
-
+  // Inserts the question given into the datastore.
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
-  public Question insertQuestion(final Question question) throws BadRequestException {
+  public Question insertQuestion(Question question) throws BadRequestException {
     Quiz quiz = quizService.get(question.getQuizID());
     QuizKind quizKind = quiz.getKind();
     if (quizKind == QuizKind.MULTIPLE_CHOICE &&
@@ -104,6 +60,8 @@ public class QuestionEndpoint {
         question.getQuizID(), question.getQuestionText(), question.getKind());
     newQuestion.setClientID(question.getClientID());
 
+    // TODO(chunhowt): We might not need this anymore since Answer is embedded in Question entity
+    // in objectify now.
     // We save the object, because we need to get the questionID assigned by datastore.
     newQuestion = questionService.save(newQuestion);
 
@@ -136,42 +94,6 @@ public class QuestionEndpoint {
       return questionService.save(newQuestion);
     } else {
       return newQuestion;
-    }
-  }
-
-  @ApiMethod(name = "updateQuestion", path = "updateQuestion", httpMethod = HttpMethod.PUT)
-  public Question updateQuestion(Question newQuestion) {
-    return questionService.save(newQuestion);
-  }
-
-  @ApiMethod(name = "removeQuestion", path="removeQuestion", httpMethod = HttpMethod.DELETE)
-  public void removeQuestion(@Named("questionID") Long questionID) {
-    questionService.delete(questionID);
-  }
-
-  class QuestionWithChallenges {
-    private Question question;
-    private Long challenges;
-
-    public QuestionWithChallenges(Question question, Long challenges) {
-      this.question = question;
-      this.challenges = challenges;
-    }
-
-    public Question getQuestion() {
-      return question;
-    }
-
-    public void setQuestion(Question question) {
-      this.question = question;
-    }
-
-    public Long getChallenges() {
-      return challenges;
-    }
-
-    public void setChallenges(Long challenges) {
-      this.challenges = challenges;
     }
   }
 }

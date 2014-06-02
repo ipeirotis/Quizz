@@ -24,13 +24,11 @@ import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
 import us.quizz.endpoints.QuizEndpoint;
 import us.quizz.endpoints.QuizPerformanceEndpoint;
-import us.quizz.endpoints.TreatmentEndpoint;
 import us.quizz.endpoints.UserEndpoint;
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
-import us.quizz.entities.Treatment;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
@@ -139,12 +137,10 @@ public class QuizzTest {
   private QuizEndpoint quizEndpoint;
   private QuestionEndpoint questionEndpoint;
   private ProcessUserAnswerEndpoint processUserAnswerEndpoint;
-  private TreatmentEndpoint treatmentEndpoint;
   private UserEndpoint userEndpoint;
   private QuizPerformanceEndpoint quizPerformanceEndpoint;
 
   private Map<String, Question> questionsToCreate;
-  private List<String> treatments;
   private Gson gson;
 
   private int numberOfCorrectAnswers = 0;
@@ -190,13 +186,11 @@ public class QuizzTest {
         userAnswerService, quizPerformanceService, questionService);
 
     quizEndpoint = new QuizEndpoint(quizService, questionService);
-    questionEndpoint = new QuestionEndpoint(quizService, questionService,
-        answerChallengeCounterService);
+    questionEndpoint = new QuestionEndpoint(quizService, questionService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
         answersRepository, questionService, badgeRepository, quizPerformanceService,
         userAnswerService, userAnswerFeedbackService, explorationExploitationService);
-    treatmentEndpoint = new TreatmentEndpoint(treatmentService);
-    userEndpoint = new UserEndpoint(userService, userReferralService, experimentService);
+    userEndpoint = new UserEndpoint(userService, userReferralService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceService);
 
     questionsToCreate = new HashMap<String, Question>();
@@ -211,9 +205,6 @@ public class QuizzTest {
       }
       questionsToCreate.put("question_" + i, question);
     }
-
-    treatments = Arrays.asList("Correct", "CrowdAnswers", "Difficulty", "Message",
-        "PercentageCorrect", "percentageRank", "Score", "TotalCorrect", "TotalCorrectRank");
   }
 
   @After
@@ -238,11 +229,6 @@ public class QuizzTest {
     //should throw an exception BadRequestException
     createFreeTextQuestionInMultichoiceQuiz(
         new Question(QUIZ_ID, "Question", QuestionKind.FREETEXT_CALIBRATION));
-
-    // create treatments
-    for (String treatment : treatments) {
-      createTreatment(treatment);
-    }
 
     // update quiz questions count
     updateQuizCounts(quiz, 10);
@@ -307,13 +293,7 @@ public class QuizzTest {
   }
 
   private void listQuestions(int expectedQuestionsCount) {
-    CollectionResponse<Question> resp = questionEndpoint.listQuestions(null);
-    Assert.assertEquals(resp.getItems().size(), expectedQuestionsCount);
-  }
-
-  private void createTreatment(String name) {
-    Treatment treatment = treatmentEndpoint.addTreatment(name, 1.0);
-    Assert.assertNotNull(treatment.getName());
+    Assert.assertEquals(questionEndpoint.listAllQuestions(QUIZ_ID).size(), expectedQuestionsCount);
   }
 
   private Set<Question> startQuiz(String quizId) {

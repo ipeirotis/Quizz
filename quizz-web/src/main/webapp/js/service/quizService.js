@@ -1,15 +1,20 @@
 angular.module('quizz').factory('quizService',
   ['$http', '$q', '$rootScope', '$cacheFactory',
    function($http, $q, $rootScope, $cacheFactory) {
-
+  var options = {headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}};
   var keys = [];
   var cache = $cacheFactory('quizCache');
 
   return {
     list: function(user, success, error) {
       var self = this;
-      var userQuizPerformancesRequest = 
-          $http.get(Config.api + '/quizperformance/user/' + encodeURIComponent(user));
+      var params = {
+        userid : user
+      };
+      var userQuizPerformancesRequest =
+          $http.post(Config.api + '/listQuizPerformanceByUser', $.param(params),
+                     options);
 
       var quizRequest;
 
@@ -40,11 +45,12 @@ angular.module('quizz').factory('quizService',
         });
     },
     getUserQuizPerformance: function(quiz, user, success, error) {
-      var url = Config.api + '/quizperformance';
-      url += '/quiz/' + encodeURIComponent(quiz);
-      url += '/user/' + encodeURIComponent(user);
-
-      $http.get(url).success(success).error(error);
+      var url = Config.api + '/getQuizPerformance';
+      var params = {
+        quizID : quiz,
+        userID : user
+      };
+      $http.post(url, $.param(params), options).success(success).error(error);
     },
     cacheQuizes: function(quizes) {
       keys = [];

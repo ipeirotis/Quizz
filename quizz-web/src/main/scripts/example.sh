@@ -2,19 +2,12 @@
 
 # Please list below the appspot URLs for your app
 # even if you have created an alias
-WEB_URL="crowd-power.appspot.com/" # without trailing /
-API_URL="https://crowd-power.appspot.com/_ah/api/quizz/v1" # without trailing /
+WEB_URL="quizz-us.appspot.com/" # without trailing /
+API_URL="https://quizz-us.appspot.com/_ah/api/quizz/v1" # without trailing /
 QUIZ_ID="NYTimesPopQuiz"
 
 echo "Creating the quiz"
 curl $API_URL/insertQuiz --header 'Content-Type: application/json' --data  '{ "quizID": "'$QUIZ_ID'", "name": "Steven Pinker’s Mind Games", "kind": "MULTIPLE_CHOICE", "numChoices": "4"}'
-
-#TODO: Check that the quiz was properly created
-# That is is in the list of returned quizzes
-# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/listQuiz
-# and that we can get back the quiz
-# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/getQuiz?id=testQuizId
-
 
 curl $API_URL/insertQuestion --header 'Content-Type: application/json' --data '{ "quizID": "'$QUIZ_ID'", "questionText": {"value": "According to Leon Festinger’s theory of cognitive dissonance, why do the office workers in the comic strip think they have learned something? <br> <img src=\"http://i1.nyt.com/images/2014/04/13/education/QUIZ-2/QUIZ-2-articleLarge-v2.jpg\">"}, "feedback": "Cognitive dissonance theory holds that when people hold contradictory beliefs (“I’m a rational, autonomous person” yet “I just did something pointless”), they experience an unpleasant state, cognitive dissonance, which they mitigate by bringing one of the beliefs into consistency with the other.", "kind": "MULTIPLE_CHOICE_CALIBRATION", "weight": 1, "answers": [{ "text": "People who have been manipulated into a pointless task will rationalize their behavior and conclude that it must have been worthwhile.", "kind": "GOLD" }, { "text": "The team-building exercise forces them to cooperate, and they realize they cannot accomplish a task if they bicker and fight.", "kind": "INCORRECT" }, { "text": "Teams of people learn more after they have set aside their differences and shown signs of solidarity (hugging) and shared emotion (crying).", "kind": "INCORRECT" }, { "text": "People who succeed with one difficult task will be more confident in taking on new ones.", "kind": "INCORRECT" }] }'
 
@@ -55,32 +48,8 @@ echo "Updating the statistics for the Quiz"
 curl $API_URL/updateQuizCounts?quizID=$QUIZ_ID
 echo "Done..."
 
-#TODO: Check that the updated numbers are ok
-# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/getQuiz?id=$QUIZ_ID
-
-# Check that we get back calibration and collection questions
-# GET https://crowd-power.appspot.com/_ah/api/quizz/v1/quizquestions/$QUIZ_ID
-
-# Caching the survival probabilities to make the values available 
-# We use the background tasks module, just in case it needs more time
-# but this seems fast enough and often finishes within 20 secs or so.
-echo "Computing survival probabilities..."
-curl quizz-tasks.$WEB_URL/api/cacheSurvivalProbability?now=true
-echo "Done..."
-
-# Caching the explore-exploit values for all combinations of values
-# from a=0..10, b=0..10, c=0..5 (a=correct, b=incorrect, c=exploit)
-# and for multiple choice quizzes with N=4 multiple choice options.
-# This call generates a large number of individual calls (a*b*c calls)
-# that are placed in an execution queue
-# The results are then being used by the ProcessAnswer endpoint
-# to return whether the next action is explore of exploit
-echo "Computing exploration/exploitation values..."
-curl quizz-tasks.$WEB_URL/api/cacheExploreExploit?'a=10&b=10&c=5&N=4'
-echo "Done..."
-
 echo "We are now ready to serve the quiz..."
 
 read -p "Press [Enter] key to remove the quiz..."
 echo "Removing the test quiz"
-curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuizRecursively?id=$QUIZ_ID
+curl -i -H "Accept: application/json" -X DELETE $API_URL/removeQuizRecursively?quizID=$QUIZ_ID

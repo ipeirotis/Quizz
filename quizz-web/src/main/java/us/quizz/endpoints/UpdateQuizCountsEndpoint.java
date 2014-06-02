@@ -2,6 +2,7 @@ package us.quizz.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.inject.Inject;
 
 import us.quizz.service.QuizService;
@@ -17,8 +18,8 @@ public class UpdateQuizCountsEndpoint {
     this.quizService = quizService;
   }
 
-  @ApiMethod(name = "updateQuizCounts", path="updateQuizCounts")
-  public void getQuizCounts(@Named("quizID") String quizID) {
+  @ApiMethod(name = "updateQuizCounts", path="updateQuizCounts", httpMethod = HttpMethod.GET)
+  public void updateQuizCounts(@Named("quizID") String quizID) {
     quizService.updateQuizCounts(quizID);
   }
 }

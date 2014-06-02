@@ -64,20 +64,12 @@
       <param-value>
         us.quizz.endpoints.UpdateQuizCountsEndpoint,
         us.quizz.endpoints.ReportsEndpoint,
-        us.quizz.endpoints.ExplorationExploitationEndpoint,
-        us.quizz.endpoints.CampaignManagementEndpoint,
-        us.quizz.endpoints.BadgeEndpoint,
         us.quizz.endpoints.ProcessUserAnswerEndpoint,
-        us.quizz.endpoints.TreatmentEndpoint,
-        us.quizz.endpoints.SurvivalProbabilityEndpoint,
-        us.quizz.endpoints.UtilEndpoint,
         us.quizz.endpoints.QuizEndpoint,
         us.quizz.endpoints.QuestionEndpoint,
         us.quizz.endpoints.QuizPerformanceEndpoint,
         us.quizz.endpoints.UserAnswerEndpoint,
-        us.quizz.endpoints.UserAnswerFeedbackEndpoint,
-        us.quizz.endpoints.UserEndpoint,
-        us.quizz.endpoints.UserReferalEndpoint
+        us.quizz.endpoints.UserEndpoint
       </param-value>
     </init-param>
   </servlet>

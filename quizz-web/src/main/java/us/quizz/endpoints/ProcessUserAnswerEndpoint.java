@@ -198,7 +198,6 @@ public class ProcessUserAnswerEndpoint {
     return result;
   }
 
-
   private boolean isExploit(int a, int b, int c, int N) throws Exception {
     explorationExploitationService.setN(N);
     return explorationExploitationService.getAction(a, b, c).getActionExploit();
@@ -208,19 +207,18 @@ public class ProcessUserAnswerEndpoint {
       Long questionID, Integer useranswerID, String userInput,
       Boolean isCorrect, Integer correctanswers,
       Integer totalanswers, String message) {
-    
     UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
         user.getUserid(), useranswerID, isCorrect);
     uaf.setNumCorrectAnswers(correctanswers);
     uaf.setNumTotalAnswers(totalanswers);
     Question question = questionService.get(questionID);
-    
+
     String answerText = "";
     if (useranswerID != -1) {
       Answer a = question.getAnswer(useranswerID);
       if (a != null) answerText = a.userAnswerText(userInput);
     }
-        
+
     uaf.setUserAnswerText(answerText);
     uaf.setMessage(message);
     uaf.computeDifficulty();
@@ -235,7 +233,7 @@ public class ProcessUserAnswerEndpoint {
     queueUserStats
         .add(Builder.withUrl("/api/updateUserQuizStatistics")
             .param("quizID", quizID)
-            .param("userid", user.getUserid())
+            .param("userID", user.getUserid())
             .param("channelNotify", "true")
             .method(TaskOptions.Method.POST));
   }
@@ -248,18 +246,6 @@ public class ProcessUserAnswerEndpoint {
         .method(TaskOptions.Method.POST));
   }
 
-  /**
-   * @param user
-   * @param quizID
-   * @param mid
-   * @param action
-   * @param useranswer
-   * @param ipAddress
-   * @param browser
-   * @param referer
-   * @param timestamp
-   * @param isCorrect
-   */
   private UserAnswer storeUserAnswer(User user, String quizID, Long questionID,
       String action, Integer useranswerID, String userInput,
       String ipAddress, String browser, String referer, Long timestamp,
@@ -275,5 +261,4 @@ public class ProcessUserAnswerEndpoint {
     ue.setUserInput(userInput);
     return userAnswerService.save(ue);
   }
-
 }

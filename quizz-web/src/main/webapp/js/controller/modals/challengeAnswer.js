@@ -6,7 +6,7 @@ angular.module('quizz').controller('ChallengeAnswerController',
     var params = {
         quizID: $routeParams.quizId,
         questionID: workflowService.getCurrentQuestion().id,
-        userAnswerID: workflowService.getLastAnswer().key.id,
+        userAnswerID: workflowService.getLastAnswer().id,
         userid: workflowService.getLastFeedback().userid,
         message: $scope.challengeAnswerMessage
     };

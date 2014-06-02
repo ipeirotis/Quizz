@@ -19,11 +19,13 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
            .success(success).error(error);
     },
     markConversion: function(type, quizId, username) {
-      var url = Config.api + '/quizperformance';
-      url += '/quiz/' + quizId;
-      url += '/user/' + username;
+      var url = Config.api + '/getQuizPerformance';
+      var params = {
+        quizID : quizId,
+        userID : username
+      };
 
-      $http.get(url).success(function(response) {
+      $http.post(url, $.param(params), options).success(function(response) {
         if (typeof(ga) != 'undefined') {
           ga('send', {
                  'hitType': 'event',

@@ -11,20 +11,15 @@ import us.quizz.entities.Quiz;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class QuizEndpoint {
-  @SuppressWarnings("unused")
-  private static final Logger logger = Logger.getLogger(QuizEndpoint.class.getName());
-  
-  protected static int QUESTION_PACKAGE_SIZE = 10;
+  protected static final int QUESTION_PACKAGE_SIZE = 10;
 
   private QuizService quizService;
   private QuestionService questionService;
@@ -35,33 +30,14 @@ public class QuizEndpoint {
     this.questionService = questionService;
   }
 
-  /**
-   * This method lists all the entities inserted in datastore. It uses HTTP
-   * GET method and paging support.
-   *
-   * @return A CollectionResponse class containing the list of all entities
-   *         persisted and a cursor to the next page.
-   */
+  // Lists the quiz in datastore using paging.
+  // @return A CollectionResponse class containing the list of all entities
+  //         persisted and a cursor to the next page.
   @ApiMethod(name = "listQuiz", path = "listQuiz", httpMethod = HttpMethod.GET)
   public CollectionResponse<Quiz> listQuiz(
       @Nullable @Named("cursor") String cursorString,
       @Nullable @Named("limit") Integer limit) {
-    List<Quiz> list = quizService.listAll();
-    return CollectionResponse.<Quiz> builder().setItems(list)
-        .setNextPageToken(cursorString).build();
-  }
-
-  /**
-   * This method gets the entity having primary key id. It uses HTTP GET
-   * method.
-   * 
-   * @param id
-   *            the primary key of the java bean.
-   * @return The entity with primary key id.
-   */
-  @ApiMethod(name = "getQuiz", path = "getQuiz", httpMethod = HttpMethod.GET)
-  public Quiz getQuiz(@Named("id") String id) {
-    return quizService.get(id);
+    return quizService.listWithCursor(cursorString, limit);
   }
 
   // Sets the quiz for the quizID given to be shown on landing page by default.
@@ -80,9 +56,8 @@ public class QuizEndpoint {
     return quizService.save(quiz);
   }
 
-  /**
-   * This method generates questions for quiz.
-   */
+  // Generates num number of calibration and collection questions for the given userID and quizID.
+  // If num is null, it will be set to QUESTION_PACKAGE_SIZE.
   @ApiMethod(name = "listNextQuestions", path = "listNextQuestions",
              httpMethod = HttpMethod.POST)
   public Map<String, Set<Question>> getNextQuestions(
@@ -95,15 +70,8 @@ public class QuizEndpoint {
     return questionService.getNextQuizQuestions(quizID, num, userID);
   }
 
-  /**
-   * This inserts a new entity into App Engine datastore. If the entity
-   * already exists in the datastore, an exception is thrown. It uses HTTP
-   * POST method.
-   * 
-   * @param quiz
-   *            the entity to be inserted.
-   * @return The inserted entity.
-   */
+  // Inserts a new entity into Datastore. If the entity already exists, an exception will be thrown.
+  // If the showOnDefault field is not filled, it will be set to false.
   @ApiMethod(name = "insertQuiz", path = "insertQuiz", httpMethod = HttpMethod.POST)
   public Quiz insertQuiz(Quiz quiz) {
     if (quiz.getShowOnDefault() == null) {
@@ -112,40 +80,11 @@ public class QuizEndpoint {
     return quizService.save(quiz);
   }
 
-  /**
-   * This method is used for updating an existing entity. If the entity does
-   * not exist in the datastore, an exception is thrown. It uses HTTP PUT
-   * method.
-   * 
-   * @param quiz
-   *            the entity to be updated.
-   * @return The updated entity.
-   */
-  @ApiMethod(name = "updateQuiz", path = "updateQuiz", httpMethod = HttpMethod.PUT)
-  public Quiz updateQuiz(Quiz quiz) {
-    return quizService.save(quiz);
-  }
-
-  /**
-   * This method removes the entity with primary key id. It uses HTTP DELETE
-   * method.
-   * 
-   * @param id the primary key of the entity to be deleted.
-   */
-  @ApiMethod(name = "removeQuiz", path = "removeQuiz", httpMethod = HttpMethod.DELETE)
-  public void removeQuiz(@Named("id") String id) {
-    quizService.delete(id);
-  }
-
-  /**
-   * This method removes Quiz with the given quizID and all other entities associated with this
-   * quiz. It uses HTTP DELETE method.
-   *
-   * @param id the primary key of the entity to be deleted.
-   */
+  // Removes Quiz with the given quizID and all other entities associated with this quiz
+  // such as Question, Answer, and UserAnswer.
   @ApiMethod(name = "removeQuizRecursively", path = "removeQuizRecursively",
              httpMethod = HttpMethod.DELETE)
-  public void removeQuizRecursively(@Named("id") String id) {
-    quizService.deleteRecursively(id);
+  public void removeQuizRecursively(@Named("quizID") String quizID) {
+    quizService.deleteRecursively(quizID);
   }
 }

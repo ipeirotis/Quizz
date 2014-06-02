@@ -32,7 +32,7 @@
         <tr ng-repeat='answer in question.answers'>
           <td rowspan="{{question.answers.length}}"
               ng-show="$first"
-              ng-bind-html="question.text">
+              ng-bind-html="question.questionText.value">
           </td>
           <td>{{answer.text}}</td>
           <td>{{!answer.numberOfPicks? 0:answer.numberOfPicks}}</td>
