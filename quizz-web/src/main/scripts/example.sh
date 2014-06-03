@@ -2,8 +2,8 @@
 
 # Please list below the appspot URLs for your app
 # even if you have created an alias
-WEB_URL="quizz-us.appspot.com/" # without trailing /
-API_URL="https://quizz-us.appspot.com/_ah/api/quizz/v1" # without trailing /
+WEB_URL="crowd-power.appspot.com/" # without trailing /
+API_URL="https://crowd-power.appspot.com/_ah/api/quizz/v1" # without trailing /
 QUIZ_ID="NYTimesPopQuiz"
 
 echo "Creating the quiz"

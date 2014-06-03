@@ -89,6 +89,13 @@
 
     <!-- Test Dependencies -->
     <dependency>
+      <groupId>us.quizz</groupId>
+      <artifactId>quizz-common</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-testing</artifactId>
       <version>${appengine.target.version}</version>

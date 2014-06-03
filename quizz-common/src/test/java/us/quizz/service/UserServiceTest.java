@@ -29,13 +29,13 @@ public class UserServiceTest extends QuizBaseTest {
   @Test
   public void testGetOrCreateUser() {
     // test the get.
-    assertEquals(1, userService.listAll().size());
+    assertEquals(2, userService.listAll().size());
     assertNotNull(userService.getOrCreateUser(USER_ID1));
-    assertEquals(1, userService.listAll().size());
+    assertEquals(2, userService.listAll().size());
 
     // test the create.
     assertNotNull(userService.getOrCreateUser(USER_ID2));
-    assertEquals(2, userService.listAll().size());
+    assertEquals(3, userService.listAll().size());
   }
 
   @Test
@@ -47,6 +47,7 @@ public class UserServiceTest extends QuizBaseTest {
     User user = userService.getUserFromCookie(request, response);
     assertNotNull(user);
     assertNotEquals(USER_ID1, user.getUserid());
+    assertNotEquals(USER_ID3, user.getUserid());
     assertNotNull(response.getCookie(UserService.COOKIE_NAME));
     Cookie cookie = response.getCookie(UserService.COOKIE_NAME);
     assertEquals(UserService.COOKIE_MAX_AGE, cookie.getMaxAge());

@@ -14,11 +14,8 @@ import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.enums.AnswerKind;
-import us.quizz.repository.AnswersRepository;
-import us.quizz.repository.BadgeRepository;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionService;
-import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
@@ -42,10 +39,7 @@ public class ProcessUserAnswerEndpoint {
 
   private QuizService quizService;
   private UserService userService;
-  private AnswersRepository answersRepository;
   private QuestionService questionService;
-  private BadgeRepository badgeRepository;
-  private QuizPerformanceService quizPerformanceService;
   private UserAnswerService userAnswerService;
   private UserAnswerFeedbackService userAnswerFeedbackService;
   private ExplorationExploitationService explorationExploitationService;
@@ -54,35 +48,16 @@ public class ProcessUserAnswerEndpoint {
   public ProcessUserAnswerEndpoint(
       QuizService quizService,
       UserService userService,
-      AnswersRepository answersRepository,
       QuestionService questionService,
-      BadgeRepository badgeRepository,
-      QuizPerformanceService quizPerformanceService,
       UserAnswerService userAnswerService,
       UserAnswerFeedbackService userAnswerFeedbackService,
       ExplorationExploitationService explorationExploitationService) {
     this.quizService = quizService;
     this.userService = userService;
     this.userAnswerFeedbackService = userAnswerFeedbackService;
-    this.answersRepository = answersRepository;
     this.questionService = questionService;
-    this.badgeRepository = badgeRepository;
-    this.quizPerformanceService = quizPerformanceService;
     this.userAnswerService = userAnswerService;
     this.explorationExploitationService = explorationExploitationService;
-  }
-
-  private String constructCollectionFeedback(
-      String bestAnswerText, double probability, boolean isCorrect) {
-    String feedback = "";
-    long roundedProbability = Math.round(probability * 100);
-    boolean isFirst = roundedProbability == 0;
-    feedback += (isCorrect || isFirst) ? "Great! " : "Sorry! ";
-    feedback += "We are not 100% sure about the correct answer ";
-    feedback += (isFirst) ? "and you are the first user to answer!" :
-        "but we believe " + bestAnswerText + " to be correct and " +
-        roundedProbability + "% of the users agree.";
-    return feedback;
   }
 
   @ApiMethod(name = "processUserAnswer", path = "processUserAnswer", httpMethod = HttpMethod.POST)
@@ -98,120 +73,58 @@ public class ProcessUserAnswerEndpoint {
       @Named("a") Integer a,
       @Named("b") Integer b,
       @Named("c") Integer c) throws Exception {
+    // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
     User user = userService.get(userID);
-    String action;
+    Question question = questionService.get(questionID);
+    // TODO(chunhowt): Don't need this for free-text question.
+    Integer numChoices = quizService.get(quizID).getNumChoices();
+    if (numChoices == null) {
+      numChoices = 4;
+    }
 
-    Boolean isCorrect = false;
-    String message = "";
-    if (answerID == -1) {
-      action = "I don't know";
-    } else {
-      action = "Submit";
+    // TODO(chunhowt): totalanswers and correctanswers here are the one for user, but what we need
+    // is actually the statistics for the corresponding question across user.
+    String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
+    if (answerID != -1) {
       totalanswers++;
     }
-
-    // TODO(chunhowt): Moves this logic to some other place.
-    // TODO(chunhowt): Deal with I don't know action.
-    Question question = questionService.get(questionID);
-    Answer bestAnswer = null;
-    switch (question.getKind()) {
-      case MULTIPLE_CHOICE_CALIBRATION:
-        for (final Answer answer : question.getAnswers()) {
-          if (answer.getKind()  == AnswerKind.GOLD) {
-            bestAnswer = answer;
-            break;
-          }
-        }
-        if (bestAnswer.getInternalID() == answerID) {
-          isCorrect = true;
-          correctanswers++;
-          message = "Correct! The correct answer is " + bestAnswer.getText();
-        } else {
-          isCorrect = false;
-          message = "Sorry! The correct answer is " + bestAnswer.getText();
-        }
-        break;
-      case MULTIPLE_CHOICE_COLLECTION:
-        double maxProbability = -1;
-        for (final Answer answer : question.getAnswers()) {
-          Double prob = answer.getProbCorrect();
-          if (prob == null) prob = 0.0;
-          if (prob > maxProbability) {
-            maxProbability = prob;
-            bestAnswer = answer;
-          }
-        }
-        isCorrect = bestAnswer.getInternalID() == answerID;
-        correctanswers += isCorrect ? 1 : 0;
-        message = constructCollectionFeedback(bestAnswer.getText(), maxProbability, isCorrect);
-        break;
-      case FREETEXT_CALIBRATION:
-        // TODO: We need to work further on free text quizzes
-        List<Answer> answers = question.getAnswers();
-        for (Answer ans : answers) {
-          AnswerKind ak = ans.getKind();
-          if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
-            if (ans.getText().equalsIgnoreCase(userInput)) {
-              isCorrect = true;
-              break;
-            } 
-            int editDistance = LevenshteinAlgorithm
-                .getLevenshteinDistance(userInput, ans.getText());
-            if (editDistance <= 1) {
-              isCorrect = true;
-              break;
-            }
-          }
-        }
-        break;
-      case FREETEXT_COLLECTION:
-        // TODO: We need to work further on free text quizzes
-        break;
+    QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
+    if (qResult.getIsCorrect()) {
+      correctanswers++;
     }
 
+    // TODO(chunhowt): Have a cron task to anonymize IP after 9 months.
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
-    String referer = req.getHeader("Referer");
-    if (referer == null) {
-      referer = "";
-    }
     Long timestamp = (new Date()).getTime();
 
-    UserAnswerFeedback uaf = createUserAnswerFeedback(user, questionID,
-        answerID, userInput, isCorrect, correctanswers, totalanswers, message);
-    
-    UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
-        userInput, ipAddress, browser, referer, timestamp, isCorrect);
-    updateQuizPerformance(user, questionID);
-    updateQuestionStatistics(questionID);
+    UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
+        userInput, qResult.getIsCorrect(), correctanswers, totalanswers, qResult.getMessage());
+    UserAnswer ua = asyncStoreUserAnswer(user, quizID, questionID, action, answerID,
+        userInput, ipAddress, browser, timestamp, qResult.getIsCorrect());
 
-    // Get the number of multiple choices for the quiz
-    Integer N = quizService.get(quizID).getNumChoices();
-    if (N == null) {
-      N = 4;
-    }
+    updateQuizPerformance(user, quizID);
+    updateQuestionStatistics(questionID);
 
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userAnswer", ua);
     result.put("userAnswerFeedback", uaf);
-    result.put("exploit", isExploit(a, b, c, N));
+    result.put("exploit", isExploit(a, b, c, numChoices));
     return result;
   }
 
-  private boolean isExploit(int a, int b, int c, int N) throws Exception {
-    explorationExploitationService.setN(N);
+  private boolean isExploit(int a, int b, int c, int numChoices) throws Exception {
+    explorationExploitationService.setN(numChoices);
     return explorationExploitationService.getAction(a, b, c).getActionExploit();
   }
 
-  protected UserAnswerFeedback createUserAnswerFeedback(User user,
-      Long questionID, Integer useranswerID, String userInput,
-      Boolean isCorrect, Integer correctanswers,
-      Integer totalanswers, String message) {
-    UserAnswerFeedback uaf = new UserAnswerFeedback(questionID,
-        user.getUserid(), useranswerID, isCorrect);
+  protected UserAnswerFeedback asyncStoreUserAnswerFeedback(Question question, User user,
+      Long questionID, Integer useranswerID, String userInput, Boolean isCorrect,
+      Integer correctanswers, Integer totalanswers, String message) {
+    UserAnswerFeedback uaf = new UserAnswerFeedback(
+        questionID, user.getUserid(), useranswerID, isCorrect);
     uaf.setNumCorrectAnswers(correctanswers);
     uaf.setNumTotalAnswers(totalanswers);
-    Question question = questionService.get(questionID);
 
     String answerText = "";
     if (useranswerID != -1) {
@@ -221,15 +134,31 @@ public class ProcessUserAnswerEndpoint {
 
     uaf.setUserAnswerText(answerText);
     uaf.setMessage(message);
+    // TODO(chunhowt): This doesn't make sense, this is computing the "quality" of user, not
+    // difficulty of the question.
     uaf.computeDifficulty();
-    userAnswerFeedbackService.save(uaf);
+    userAnswerFeedbackService.asyncSave(uaf);
     return uaf;
   }
 
-  private void updateQuizPerformance(User user, Long questionID) {
+  private UserAnswer asyncStoreUserAnswer(User user, String quizID, Long questionID,
+      String action, Integer useranswerID, String userInput, String ipAddress,
+      String browser, Long timestamp, Boolean isCorrect) {
+    UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
+    ue.setBrowser(browser);
+    ue.setIpaddress(ipAddress);
+    ue.setTimestamp(timestamp);
+    ue.setAction(action);
+    ue.setIsCorrect(isCorrect);
+    ue.setQuizID(quizID);
+    ue.setUserInput(userInput);
+    userAnswerService.asyncSave(ue);
+    return ue;
+  } 
+
+  // Schedules a task to update the quiz performance for the given user and quiz.
+  private void updateQuizPerformance(User user, String quizID) {
     Queue queueUserStats = QueueUtils.getUserStatisticsQueue();
-    String quizID = questionService.get(questionID)
-        .getQuizID();
     queueUserStats
         .add(Builder.withUrl("/api/updateUserQuizStatistics")
             .param("quizID", quizID)
@@ -238,27 +167,13 @@ public class ProcessUserAnswerEndpoint {
             .method(TaskOptions.Method.POST));
   }
 
+  // Schedules a task to update the question statistics for the given questionID since we have
+  // a new answer for the question.
   private void updateQuestionStatistics(Long questionID) {
     Queue queue = QueueUtils.getQuestionStatisticsQueue();
     queue.add(Builder
         .withUrl("/api/updateQuestionStatistics")
         .param("questionID", questionID.toString())
         .method(TaskOptions.Method.POST));
-  }
-
-  private UserAnswer storeUserAnswer(User user, String quizID, Long questionID,
-      String action, Integer useranswerID, String userInput,
-      String ipAddress, String browser, String referer, Long timestamp,
-      Boolean isCorrect) {
-    UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
-    ue.setReferer(referer);
-    ue.setBrowser(browser);
-    ue.setIpaddress(ipAddress);
-    ue.setTimestamp(timestamp);
-    ue.setAction(action);
-    ue.setIsCorrect(isCorrect);
-    ue.setQuizID(quizID);
-    ue.setUserInput(userInput);
-    return userAnswerService.save(ue);
   }
 }

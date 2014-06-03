@@ -4,12 +4,16 @@ import com.google.inject.Inject;
 
 import com.googlecode.objectify.cmd.Query;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
 import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.utils.CachePMF;
+import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.MemcacheKey;
 
 import java.util.ArrayList;
@@ -186,5 +190,142 @@ public class QuestionService extends OfyBaseService<Question> {
     Integer count = baseRepository.countByProperty("quizID", quizID);
     CachePMF.put(key, count);
     return count;
+  }
+
+  // There is no bestAnswer (this question was never answered before) if bestAnswer is null
+  // or probability is negative.
+  private String constructCollectionFeedback(
+      Answer bestAnswer, double probability, boolean isCorrect, Integer answerID) {
+    // There is no best answer, the user is the first user.
+    if (bestAnswer == null) {
+      if (answerID == -1) {
+        return "We are not 100% sure about the correct answer either and you are the " +
+            "first user to see this question!";
+      } else {
+        return "Great! We are not 100% sure about the correct answer and you are the " +
+            "first user to answer!";
+      }
+    }
+
+    String feedback = "";
+    long roundedProbability = Math.round(probability * 100);
+
+    if (answerID != -1) {
+      // If the user is correct, gives encouraging message.
+      feedback += isCorrect ? "Great! " : "Sorry! ";
+    } else {
+      // If the user skips, he will learn something new today.
+      feedback += "Learn something new today! ";
+    }
+
+    feedback += "We are not 100% sure about the correct answer " +
+        "but we believe " + bestAnswer.getText() + " to be correct and " +
+        roundedProbability + "% of the users agree.";
+    return feedback;
+  }
+
+  // Checks whether the answer given is the best answer for the given question and returns
+  // the Result.
+  // The answer given is either the answerID if it is a multiple choice question or the
+  // userInput if it is a free text question.
+  public Result verifyAnswer(Question question, Integer answerID, String userInput) {
+    Answer bestAnswer = null;
+    Boolean isCorrect = false;
+    String message = "";
+
+    switch (question.getKind()) {
+      case MULTIPLE_CHOICE_CALIBRATION:
+        for (Answer answer : question.getAnswers()) {
+          if (answer.getKind()  == AnswerKind.GOLD) {
+            bestAnswer = answer;
+            break;
+          }
+        }
+        if (answerID == -1) {
+          // User skips.
+          isCorrect = false;
+          message = "Learn something new today! The correct answer is " + bestAnswer.getText();
+        } else if (bestAnswer.getInternalID() == answerID) {
+          isCorrect = true;
+          message = "Great! The correct answer is " + bestAnswer.getText();
+        } else {
+          isCorrect = false;
+          message = "Sorry! The correct answer is " + bestAnswer.getText();
+        }
+        break;
+      case MULTIPLE_CHOICE_COLLECTION:
+        double maxProbability = -1;
+        for (Answer answer : question.getAnswers()) {
+          // Skip this answer, if it is never picked.
+          if (answer.getNumberOfPicks() == null || answer.getNumberOfPicks() == 0) {
+            continue;
+          }
+          Double prob = answer.getProbCorrect();
+          if (prob == null) prob = 0.0;
+          if (prob > maxProbability) {
+            maxProbability = prob;
+            bestAnswer = answer;
+          }
+        }
+
+        // If user answers, and it is the first answer, or it agrees with the best answer,
+        // then the answer is correct. Else it is not.
+        isCorrect = answerID != -1 &&
+            (bestAnswer == null || bestAnswer.getInternalID() == answerID);
+        message = constructCollectionFeedback(
+            bestAnswer, maxProbability, isCorrect, answerID);
+        break;
+      case FREETEXT_CALIBRATION:
+        // TODO(chunhowt): We need to work further on free text quizzes
+        List<Answer> answers = question.getAnswers();
+        for (Answer ans : answers) {
+          AnswerKind ak = ans.getKind();
+          if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
+            if (ans.getText().equalsIgnoreCase(userInput)) {
+              isCorrect = true;
+              break;
+            } 
+            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+              isCorrect = true;
+              break;
+            }
+          }
+        }
+        break;
+      case FREETEXT_COLLECTION: 
+        // TODO(chunhowt): We need to work further on free text quizzes
+        break;
+      default:
+        break;
+    }
+
+    return new Result(bestAnswer, isCorrect, message);
+  }
+
+  public class Result {
+    // The best answer for the question asked.
+    private Answer bestAnswer;
+    // Whether the user's answer is correct for the question asked.
+    private Boolean isCorrect;
+    // The feedback message to be given to the user.
+    private String message;
+
+    public Result(Answer bestAnswer, Boolean isCorrect, String message) {
+      this.bestAnswer = bestAnswer;
+      this.isCorrect = isCorrect;
+      this.message = message;
+    }
+
+    public Answer getBestAnswer() {
+      return bestAnswer;
+    }
+
+    public Boolean getIsCorrect() {
+      return isCorrect;
+    }
+
+    public String getMessage() {
+      return message;
+    }
   }
 }

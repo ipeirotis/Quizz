@@ -2,6 +2,7 @@ package us.quizz.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -9,7 +10,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
+import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
 import us.quizz.utils.QuizBaseTest;
 
 import java.util.HashSet;
@@ -163,5 +167,106 @@ public class QuestionServiceTest extends QuizBaseTest {
   public void testGetNumberOfGoldQuestions() {
     assertEquals((Integer)2, questionService.getNumberOfGoldQuestions(QUIZ_ID1, false));
     assertEquals((Integer)0, questionService.getNumberOfGoldQuestions("fake_quiz", false));
+  }
+
+  @Test
+  public void testVerifyAnswerCalibrationCorrect() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID1), 0, "");
+    assertTrue(result.getIsCorrect());
+    assertEquals((Integer)0, result.getBestAnswer().getInternalID());
+    assertEquals("Great! The correct answer is Answer 0", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCalibrationInCorrect() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID1), 3, "");
+    assertFalse(result.getIsCorrect());
+    assertEquals((Integer)0, result.getBestAnswer().getInternalID());
+    assertEquals("Sorry! The correct answer is Answer 0", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCollectionCorrect() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID2), 0, "");
+    assertTrue(result.getIsCorrect());
+    assertEquals((Integer)0, result.getBestAnswer().getInternalID());
+    assertEquals("Great! We are not 100% sure about the correct answer " +
+                 "but we believe Answer 0 to be correct and 70% of the users agree.",
+                 result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCollectionIncorrect() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID2), 2, "");
+    assertFalse(result.getIsCorrect());
+    assertEquals((Integer)0, result.getBestAnswer().getInternalID());
+    assertEquals("Sorry! We are not 100% sure about the correct answer " +
+                 "but we believe Answer 0 to be correct and 70% of the users agree.",
+                 result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCollectionFirstAnswer() {
+    // Creates a new question that was never answered before.
+    Question question =
+        new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
+                     QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
+    for (int j = 0; j < 4; ++j) {
+      question.addAnswer(new Answer(12345L, QUIZ_ID1, "Answer " + j, AnswerKind.SILVER, j));
+    }
+    questionService.save(question);
+
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(12345L), 2, "");
+    assertTrue(result.getIsCorrect());
+    assertNull(result.getBestAnswer());
+    assertEquals("Great! We are not 100% sure about the correct answer " +
+                 "and you are the first user to answer!",
+                 result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCollectionSkip() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID2), -1, "");
+    assertFalse(result.getIsCorrect());
+    assertEquals((Integer)0, result.getBestAnswer().getInternalID());
+    assertEquals("Learn something new today! We are not 100% sure about the correct answer " +
+                 "but we believe Answer 0 to be correct and 70% of the users agree.",
+                 result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCalibrationSkip() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID1), -1, "");
+    assertFalse(result.getIsCorrect());
+    assertEquals((Integer)0, result.getBestAnswer().getInternalID());
+    assertEquals("Learn something new today! The correct answer is Answer 0", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerCollectionFirstAnswerSkip() {
+    // First, create a new question that has no probability correct in any of the answer.
+    Question question =
+        new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
+                     QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
+    for (int j = 0; j < 4; ++j) {
+      question.addAnswer(new Answer(12345L, QUIZ_ID1, "Answer " + j, AnswerKind.SILVER, j));
+    }
+    questionService.save(question);
+
+    // Then, skips this question.
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(12345L), -1, "");
+    assertFalse(result.getIsCorrect());
+    assertNull(result.getBestAnswer());
+    assertEquals("We are not 100% sure about the correct answer either " +
+                 "and you are the first user to see this question!",
+                 result.getMessage());
   }
 }

@@ -7,6 +7,9 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import us.quizz.enums.AnswerChallengeStatus;
 
 import java.io.Serializable;
@@ -199,5 +202,48 @@ public class UserAnswer implements Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public int hashCode() {
+    return new HashCodeBuilder(17, 31)
+        .append(this.getBrowser())
+        .append(this.getIpaddress())
+        .append(this.getAction())
+        .append(this.getIsCorrect())
+        .append(this.getQuizID())
+        .append(this.getUserInput())
+        .append(this.getUserid())
+        .append(this.getQuestionID())
+        .append(this.getAnswerID())
+        .append(this.getId())
+        .append(this.getReferer())
+        .append(this.getTimestamp())
+        .append(this.getScore())
+        .toHashCode();
+  }
+
+  public boolean equals(Object obj) {
+    if (!(obj instanceof UserAnswer)) {
+      return false;
+    }
+    if (obj == this) {
+      return true;
+    }
+    UserAnswer rhs = (UserAnswer) obj;
+    return new EqualsBuilder()
+           .append(rhs.getBrowser(), this.getBrowser())
+           .append(rhs.getIpaddress(), this.getIpaddress())
+           .append(rhs.getAction(), this.getAction())
+           .append(rhs.getIsCorrect(), this.getIsCorrect())
+           .append(rhs.getQuizID(), this.getQuizID())
+           .append(rhs.getUserInput(), this.getUserInput())
+           .append(rhs.getUserid(), this.getUserid())
+           .append(rhs.getQuestionID(), this.getQuestionID())
+           .append(rhs.getAnswerID(), this.getAnswerID())
+           .append(rhs.getId(), this.getId())
+           .append(rhs.getReferer(), this.getReferer())
+           .append(rhs.getTimestamp(), this.getTimestamp())
+           .append(rhs.getScore(), this.getScore())
+           .isEquals();
   }
 }

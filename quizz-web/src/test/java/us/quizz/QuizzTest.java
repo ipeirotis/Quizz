@@ -188,8 +188,8 @@ public class QuizzTest {
     quizEndpoint = new QuizEndpoint(quizService, questionService);
     questionEndpoint = new QuestionEndpoint(quizService, questionService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
-        answersRepository, questionService, badgeRepository, quizPerformanceService,
-        userAnswerService, userAnswerFeedbackService, explorationExploitationService);
+        questionService, userAnswerService, userAnswerFeedbackService,
+        explorationExploitationService);
     userEndpoint = new UserEndpoint(userService, userReferralService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceService);
 

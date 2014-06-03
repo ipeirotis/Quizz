@@ -5,6 +5,9 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.List;
@@ -28,6 +31,10 @@ public class UserAnswerFeedback implements Serializable {
   private Integer numCorrectAnswers;
   private Integer numTotalAnswers;
   private String difficulty;
+
+  //for Objectify
+  @SuppressWarnings("unused")
+  private UserAnswerFeedback(){}
 
   public UserAnswerFeedback(Long questionID, String userid,
       Integer userAnswerID, Boolean isCorrect) {
@@ -156,4 +163,42 @@ public class UserAnswerFeedback implements Serializable {
     this.difficulty = percentFormat.format(d);
   }
 
+  public int hashCode() {
+    return new HashCodeBuilder(17, 31)
+        .append(this.getId())
+        .append(this.getQuestionID())
+        .append(this.getUserid())
+        .append(this.getUserAnswerID())
+        .append(this.getUserAnswerText())
+        .append(this.getIsCorrect())
+        .append(this.getCorrectAnswerText())
+        .append(this.getNumCorrectAnswers())
+        .append(this.getNumTotalAnswers())
+        .append(this.getMessage())
+        .append(this.getDifficulty())
+        .toHashCode();
+  }
+
+  public boolean equals(Object obj) {
+    if (!(obj instanceof UserAnswerFeedback)) {
+      return false;
+    }
+    if (obj == this) {
+      return true;
+    }
+    UserAnswerFeedback rhs = (UserAnswerFeedback) obj;
+    return new EqualsBuilder()
+        .append(rhs.getId(), this.getId())
+        .append(rhs.getQuestionID(), this.getQuestionID())
+        .append(rhs.getUserid(), this.getUserid())
+        .append(rhs.getUserAnswerID(), this.getUserAnswerID())
+        .append(rhs.getUserAnswerText(), this.getUserAnswerText())
+        .append(rhs.getIsCorrect(), this.getIsCorrect())
+        .append(rhs.getCorrectAnswerText(), this.getCorrectAnswerText())
+        .append(rhs.getNumCorrectAnswers(), this.getNumCorrectAnswers())
+        .append(rhs.getNumTotalAnswers(), this.getNumTotalAnswers())
+        .append(rhs.getMessage(), this.getMessage())
+        .append(rhs.getDifficulty(), this.getDifficulty())
+        .isEquals();
+  }
 }
