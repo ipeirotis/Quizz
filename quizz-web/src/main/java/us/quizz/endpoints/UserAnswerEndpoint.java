@@ -34,6 +34,8 @@ public class UserAnswerEndpoint {
     this.answerChallengeCounterService = answerChallengeCounterService;
   }
 
+  // Adds user's answer challenge text to the corresponding UserAnswer identified by the
+  // userAnswerID.
   @ApiMethod(name = "addAnswerFeedback", httpMethod = HttpMethod.POST, path = "addAnswerFeedback")
   public UserAnswer addAnswerFeedback(
       @Named("quizID") String quizID,
@@ -52,25 +54,8 @@ public class UserAnswerEndpoint {
 
     UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeText(new Text(message));
-
-    List<UserAnswer> userAnswers = userAnswerService.getUserAnswers(quizID, userid);
-    if (userAnswers.size() != 0) {
-      boolean exist = false;
-      for (UserAnswer ua : userAnswers) {
-        if (ua.getAnswerChallengeText() != null && ua.getAnswerChallengeText().equals(message)) {
-          userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.APPROVED);
-
-          User user = userService.get(userAnswer.getUserid());
-          user.incChallengeBudget();
-          userService.save(user);
-          exist = true;
-          break;
-        }
-      }
-      if (!exist) {
-        userAnswer.setAnswerChallengeStatus(AnswerChallengeStatus.REJECTED);
-      }
-    }
+    // TODO(chunhowt): Check whether user answer text is valid by comparing against other user
+    // input.
     return userAnswerService.save(userAnswer);
   }
 }

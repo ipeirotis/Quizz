@@ -74,4 +74,10 @@ public class UserReferralServiceTest extends QuizBaseTest {
     assertEquals(new Text(refererUrl), referal.getReferer());
     assertEquals("google.com", referal.getDomain());
   }
+
+  @Test
+  public void testGetUserQuizReferal() {
+    assertEquals(1, userReferralService.getUserQuizReferal(USER_ID1, QUIZ_ID1).size());
+    assertEquals(0, userReferralService.getUserQuizReferal(USER_ID3, QUIZ_ID2).size());
+  }
 }

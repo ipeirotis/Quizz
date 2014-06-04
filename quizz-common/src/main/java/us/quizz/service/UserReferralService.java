@@ -69,6 +69,13 @@ public class UserReferralService extends OfyBaseService<UserReferal> {
     }
   }
 
+  public List<UserReferal> getUserQuizReferal(String userID, String quizID) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("userid", userID);
+    params.put("quiz", quizID);
+    return listAll(params);
+  }
+
   // Returns UserReferralService.Result for the given browser.
   public Result getCountByBrowser(Browser browser) {
     Map<String, Object> params = new HashMap<String, Object>();

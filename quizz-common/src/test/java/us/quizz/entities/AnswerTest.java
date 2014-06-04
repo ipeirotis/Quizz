@@ -13,14 +13,6 @@ import us.quizz.enums.AnswerKind;
 @RunWith(JUnit4.class)
 public class AnswerTest {
   @Test
-  public void testGenerateKeyID() {
-    Long questionID = 123L;
-    Integer internalID = 456;
-    String id = Answer.generateId(questionID, internalID);
-    assertEquals("id_123_456", id);
-  }
-
-  @Test
   public void testConstructor() {
     Long questionID = 123L;
     String quizID = "test_quiz";
@@ -34,6 +26,5 @@ public class AnswerTest {
     assertEquals(text, answer.getText());
     assertEquals(kind, answer.getKind());
     assertEquals(internalID, answer.getInternalID());
-    assertEquals("id_123_3", answer.getId());
   }
 }

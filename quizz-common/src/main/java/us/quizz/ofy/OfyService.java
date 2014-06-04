@@ -4,7 +4,6 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
-import us.quizz.entities.Answer;
 import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.Badge;
 import us.quizz.entities.BadgeAssignment;
@@ -24,7 +23,6 @@ import us.quizz.entities.UserReferal;
 
 public class OfyService {
   static {
-    register(Answer.class);
     register(AnswerChallengeCounter.class);
     register(Badge.class);
     register(BadgeAssignment.class);

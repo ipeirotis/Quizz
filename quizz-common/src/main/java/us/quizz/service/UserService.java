@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class UserService extends OfyBaseService<User> {
-  protected static final String COOKIE_NAME = "username";
+  public static final String COOKIE_NAME = "username";
   protected static final int COOKIE_MAX_AGE = 60 * 24 * 3600;  // 60 days.
   private ExperimentRepository experimentRepository;
 

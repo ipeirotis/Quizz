@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.ofy.OfyBaseService;
-import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.QuizRepository;
 
 import java.util.HashMap;
@@ -13,19 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 public class QuizService extends OfyBaseService<Quiz> {
-  private AnswersRepository answersRepository;
   private UserReferralService userReferralService;
   private QuizPerformanceService quizPerformanceService;
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
 
   @Inject
-  public QuizService(UserReferralService userReferralService, AnswersRepository answersRepository,
+  public QuizService(UserReferralService userReferralService,
       QuizPerformanceService quizPerformanceService, QuizRepository quizRepository,
       QuestionService questionService, UserAnswerService userAnswerService) {
     super(quizRepository);
     this.userReferralService = userReferralService;
-    this.answersRepository = answersRepository;
     this.quizPerformanceService = quizPerformanceService;
     this.questionService = questionService;
     this.userAnswerService = userAnswerService;
@@ -37,8 +34,6 @@ public class QuizService extends OfyBaseService<Quiz> {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("quizID", quizID);
     userAnswerService.deleteAll(userAnswerService.listAll(params));
-    // TODO(chunhowt): Remove this once all answers entities are embedded in questions entities.
-    answersRepository.delete(answersRepository.listAllByCursor(params));
     questionService.deleteAll(questionService.listAll(params));
   }
 

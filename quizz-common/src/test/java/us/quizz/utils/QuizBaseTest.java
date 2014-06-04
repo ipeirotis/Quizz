@@ -27,7 +27,6 @@ import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
-import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeAssignmentRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.BrowserStatsRepository;
@@ -43,7 +42,6 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
-import us.quizz.service.AnswerService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
@@ -97,7 +95,6 @@ public class QuizBaseTest {
           new LocalMemcacheServiceTestConfig());
 
   protected AnswerChallengeCounterRepository answerChallengeCounterRepository = null;
-  protected AnswersRepository answerRepository = null;
   protected BadgeAssignmentRepository badgeAssignmentRepository = null;
   protected BadgeRepository badgeRepository = null;
   protected BrowserStatsRepository browserStatsRepository = null;
@@ -114,7 +111,6 @@ public class QuizBaseTest {
   protected UserRepository userRepository = null;
 
   protected AnswerChallengeCounterService answerChallengeCounterService = null;
-  protected AnswerService answerService = null;
   protected BadgeAssignmentService badgeAssignmentService = null;
   protected BadgeService badgeService = null;
   protected BrowserStatsService browserStatsService = null;
@@ -129,7 +125,6 @@ public class QuizBaseTest {
   protected UserService userService = null;
 
   private boolean isInitAnswerChallengeCounterService = false;
-  private boolean isInitAnswerService = false;
   private boolean isInitBadgeAssignmentService = false;
   private boolean isInitBadgeService = false;
   private boolean isInitBrowserStatsService = false;
@@ -147,7 +142,6 @@ public class QuizBaseTest {
   public void setUp() {
     helper.setUp();
     answerChallengeCounterRepository = null;
-    answerRepository = null;
     badgeAssignmentRepository = null;
     badgeRepository = null;
     browserStatsRepository = null;
@@ -162,7 +156,6 @@ public class QuizBaseTest {
     userReferralRepository = null;
 
     answerChallengeCounterService = null;
-    answerService = null;
     badgeAssignmentService = null;
     badgeService = null;
     browserStatsService = null;
@@ -176,7 +169,6 @@ public class QuizBaseTest {
     userReferralService = null;
 
     isInitAnswerChallengeCounterService = false;
-    isInitAnswerService = false;
     isInitBadgeAssignmentService = false;
     isInitBadgeService = false;
     isInitBrowserStatsService = false;
@@ -201,13 +193,6 @@ public class QuizBaseTest {
       answerChallengeCounterRepository = new AnswerChallengeCounterRepository();
     }
     return answerChallengeCounterRepository;
-  }
-
-  protected AnswersRepository getAnswerRepository() {
-    if (answerRepository == null) {
-      answerRepository = new AnswersRepository();
-    }
-    return answerRepository;
   }
 
   protected BadgeAssignmentRepository getBadgeAssignmentRepository() {
@@ -316,13 +301,6 @@ public class QuizBaseTest {
     return answerChallengeCounterService;
   }
 
-  protected AnswerService getAnswerService() {
-    if (answerService == null) {
-      answerService = new AnswerService(getAnswerRepository());
-    }
-    return answerService;
-  }
-
   protected BadgeAssignmentService getBadgeAssignmentService() {
     if (badgeAssignmentService == null) {
       badgeAssignmentService = new BadgeAssignmentService(getBadgeAssignmentRepository());
@@ -373,7 +351,6 @@ public class QuizBaseTest {
     if (quizService == null) {
       quizService = new QuizService(
           getUserReferralService(),
-          getAnswerRepository(),
           getQuizPerformanceService(),
           getQuizRepository(),
           getQuestionService(),
@@ -436,14 +413,6 @@ public class QuizBaseTest {
     answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID8));
     answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID9));
   } 
-
-  protected void initAnswerService() {
-    if (isInitAnswerService) {
-      return;
-    }
-    isInitAnswerService = true;
-    assertNotNull(getAnswerService());
-  }
 
   protected void initBadgeAssignmentService() {
     if (isInitBadgeAssignmentService) {
@@ -638,7 +607,6 @@ public class QuizBaseTest {
     }
     isInitQuizService = true;
     assertNotNull(getQuizService());
-    initAnswerService();
     initQuestionService();
     initQuizPerformanceService();
     initUserAnswerService();

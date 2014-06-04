@@ -4,25 +4,15 @@ import com.google.appengine.api.datastore.Key;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Parent;
 
 import us.quizz.enums.AnswerKind;
 
 import java.io.Serializable;
 
-//TODO: remove all annotations after migration on all servers, because Answer is embedded entity
-@Entity
-@Cache
-@Index
 public class Answer implements Serializable{
   private static final long serialVersionUID = 1L;
 
-  @Id
-  private String id;
   @Parent
   private Key parent;
   private Integer internalID;
@@ -54,11 +44,11 @@ public class Answer implements Serializable{
     this.text = text;
     this.kind = kind;
     this.internalID = internalID;
-    this.id = generateId(questionID, internalID);
   }
-  
-  public static String generateId(Long questionID, Integer internalID) {
-    return "id_" + questionID + "_" + internalID;
+
+  public Answer(String text, AnswerKind kind) {
+    this.text = text;
+    this.kind = kind;
   }
 
   public Integer getInternalID() {
@@ -174,14 +164,6 @@ public class Answer implements Serializable{
 
   public void setProbCorrect(Double probCorrect) {
     this.probCorrect = probCorrect;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public Key getParent() {

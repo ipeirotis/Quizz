@@ -36,7 +36,6 @@ import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
-import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.DomainStatsRepository;
 import us.quizz.repository.ExperimentRepository;
@@ -110,7 +109,6 @@ public class QuizzTest {
   private UserAnswerFeedbackRepository userAnswerFeedbackRepository;
   private QuizPerformanceRepository quizPerformanceRepository;
   private BadgeRepository badgeRepository;
-  private AnswersRepository answersRepository;
   private UserRepository userRepository;
   private TreatmentRepository treatmentRepository;
   private UserReferralRepository userReferralRepository;
@@ -161,7 +159,6 @@ public class QuizzTest {
     quizRepository = new QuizRepository();
     domainStatsRepository = new DomainStatsRepository();
     questionRepository = new QuestionRepository();
-    answersRepository = new AnswersRepository();
     survivalProbabilityResultRepository = new SurvivalProbabilityResultRepository();
     explorationExploitationResultRepository = new ExplorationExploitationResultRepository();
     experimentRepository = new ExperimentRepository();
@@ -176,7 +173,7 @@ public class QuizzTest {
     userAnswerService = new UserAnswerService(userAnswerRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
-    quizService = new QuizService(userReferralService, answersRepository,
+    quizService = new QuizService(userReferralService,
         quizPerformanceService, quizRepository, questionService, userAnswerService);
     survivalProbabilityService = new SurvivalProbabilityService(quizPerformanceService,
         survivalProbabilityResultRepository);

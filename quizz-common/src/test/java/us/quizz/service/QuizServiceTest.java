@@ -30,8 +30,6 @@ public class QuizServiceTest extends QuizBaseTest {
 
     assertNotNull(quizService.get(QUIZ_ID1));
     assertEquals(5, questionService.listAll(params).size());
-    // Note: In Objectify, embedded entities are no longer store separately.
-    assertEquals(0, answerService.listAll(params).size());
     assertEquals(5, userAnswerService.listAll(params).size());
 
     quizService.deleteRecursively(QUIZ_ID1);
@@ -39,7 +37,6 @@ public class QuizServiceTest extends QuizBaseTest {
 
     assertNull(quizService.get(QUIZ_ID1));
     assertEquals(0, questionService.listAll(params).size());
-    assertEquals(0, answerService.listAll(params).size());
     assertEquals(0, userAnswerService.listAll(params).size());
   }
 

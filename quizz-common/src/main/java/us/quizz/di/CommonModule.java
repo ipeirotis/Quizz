@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
 import us.quizz.repository.AnswerChallengeCounterRepository;
-import us.quizz.repository.AnswersRepository;
 import us.quizz.repository.BadgeAssignmentRepository;
 import us.quizz.repository.BadgeRepository;
 import us.quizz.repository.BrowserStatsRepository;
@@ -21,7 +20,6 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
-import us.quizz.service.AnswerService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
@@ -44,7 +42,6 @@ public class CommonModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(AnswerChallengeCounterRepository.class).in(Singleton.class);
-    bind(AnswersRepository.class).in(Singleton.class);
     bind(BadgeAssignmentRepository.class).in(Singleton.class);
     bind(BadgeRepository.class).in(Singleton.class);
     bind(BrowserStatsRepository.class).in(Singleton.class);
@@ -62,7 +59,6 @@ public class CommonModule extends AbstractModule {
     bind(TreatmentRepository.class).in(Singleton.class);
 
     bind(AnswerChallengeCounterService.class).in(Singleton.class);
-    bind(AnswerService.class).in(Singleton.class);
     bind(QuestionService.class).in(Singleton.class);
     bind(ExperimentService.class).in(Singleton.class);
     bind(UserService.class).in(Singleton.class);
