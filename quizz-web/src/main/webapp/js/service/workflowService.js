@@ -12,6 +12,9 @@ angular.module('quizz').factory('workflowService', [function() {
   var numCollectionQuestions = 0;
   var numCorrectAnswers = 0;
   var numSubmittedUserAnswers = 0;
+  // TODO(chunhowt): Seems like we always choose the first question to be
+  // explore even though the user might already have answered questions in
+  // the same quizzes before.
   var isNextQuestionGold = true;
   var channelToken = '';
   var isCurrentQuestionGold = true;

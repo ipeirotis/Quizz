@@ -37,6 +37,7 @@ describe('full test', function() {
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
+    delete $.cookie['username'];
   });
 
   it('Quizz test', inject(['$rootScope', '$controller', 'workflowService',

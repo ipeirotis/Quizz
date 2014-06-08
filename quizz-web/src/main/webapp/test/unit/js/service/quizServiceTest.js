@@ -1,6 +1,4 @@
 describe('QuizService test', function() {
-  var options = {headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}};
   var $httpBackend = {};
   var quizzes = {};
   var quizPerformance = {};

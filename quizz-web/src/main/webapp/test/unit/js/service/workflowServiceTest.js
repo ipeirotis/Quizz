@@ -1,6 +1,4 @@
 describe('WorkflowService test', function() {
-  var options = {headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}};
   var QUIZ_ID = 'test_quiz';
 
   beforeEach(module('quizz'));
