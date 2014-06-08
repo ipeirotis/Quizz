@@ -3,15 +3,12 @@ angular.module('quizz').controller('ChallengeAnswerController',
    function ($scope, $routeParams, questionService, workflowService) {
 
   $scope.send = function() {
-    var params = {
-        quizID: $routeParams.quizId,
-        questionID: workflowService.getCurrentQuestion().id,
-        userAnswerID: workflowService.getLastAnswer().id,
-        userid: workflowService.getLastFeedback().userid,
-        message: $scope.challengeAnswerMessage
-    };
     questionService.challengeAnswer(
-      params,
+      $routeParams.quizId,
+      workflowService.getCurrentQuestion().id,
+      workflowService.getLastAnswer().id,
+      workflowService.getLastFeedback().userid,
+      $scope.challengeAnswerMessage,
       function(response) {
         $scope.hide();
       },

@@ -1,5 +1,5 @@
-module.exports = function(config){
-    config.set({
+module.exports = function(config) {
+  config.set({
     basePath : '../../',
 
     files : [
@@ -22,14 +22,15 @@ module.exports = function(config){
     browsers : ['Chrome'],
 
     plugins : [
-            'karma-junit-reporter',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
-            'karma-jasmine'
-            ],
+      'karma-junit-reporter',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      'karma-jasmine'
+    ],
 
     junitReporter : {
       outputFile: 'test_out/unit.xml',
       suite: 'unit'
     }
-})}
+  })
+}

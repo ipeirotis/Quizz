@@ -5,7 +5,10 @@ angular.module('quizz').controller('FeedbackController',
                questionService, workflowService, templates) {
   $scope.feedback = workflowService.getLastFeedback();
   $scope.currentQuestionIndex = workflowService.getCurrentQuestionIndex() + 1;
-  $scope.numOfQuestions = workflowService.getNumOfQuestions();
+  $scope.numQuestions = workflowService.getNumQuestions();
+  $scope.currentQuestion = workflowService.getCurrentQuestion();
+  $scope.bestAnswerID = workflowService.getBestAnswerId();
+  $scope.userAnswerID = workflowService.getUserAnswerId();
 
   $scope.challengeAnswer = function() {
     var modalPromise = $modal({
@@ -25,12 +28,16 @@ angular.module('quizz').controller('FeedbackController',
     workflowService.incCurrentQuestionIndex();
 
     if (workflowService.getCurrentQuestionIndex() <
-        workflowService.getNumOfQuestions()) {
+        workflowService.getNumQuestions()) {
       $location.path('/quiz');
     } else {
       $location.path('/summary');
     }
   };
 
-  $scope.feedbackMessage = $scope.feedback.message;
+  $scope.filterSelectable = function(answer) {
+    return answer.kind == 'GOLD' ||
+           answer.kind == 'INCORRECT' ||
+           answer.kind == 'SILVER';
+  };
 }]);

@@ -2,43 +2,75 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
   var options = {
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      }};
+      }
+  };
 
   return {
-    list: function(numOfQuestions, quizId, userid, success, error) {
+    // Lists the next numQuestions of calibration and collection questions for
+    // the given userid and quizid.
+    // If successful, the success callback will be called with the response,
+    // which is a map containing two values:
+    //   - calibration - Set of calibration questions.
+    //   - collection - Set of collection questions.
+    list: function(numQuestions, quizId, userid, success, error) {
       var params = {
-        num: numOfQuestions,
+        num: numQuestions,
         quizID: quizId,
         userID: userid
       };
       var url = Config.api + '/listNextQuestions';
       $http.post(url, $.param(params), options).success(success).error(error);
     },
-    sendAnswer: function(params, success, error) {
+    // Sends the user answer to the appengine server for processing and getting
+    // answer feedback.
+    // If successful, the success callback will be called with the response,
+    // which is a map containing four values:
+    //   - userAnswer: UserAnswer entity.
+    //   - userAnswerFeedback: UserAnswerFeedback entity.
+    //   - exploit: Whether the next question should be an exploit.
+    //   - bestAnswer: Best answer for the given question.
+    sendAnswer: function(quizID, questionID, answerID, userID, userInput,
+        totalAnswers, correctAnswers, currCorrectAnswers, currIncorrectAnswers,
+        success, error) {
+      var params = {
+        quizID: quizID,
+        questionID: questionID,
+        answerID: answerID,
+        userID: userID,
+        userInput: userInput,
+        totalAnswers: totalAnswers,
+        correctAnswers: correctAnswers,
+        numCorrect: currCorrectAnswers,
+        numIncorrect: currIncorrectAnswers,
+        numExploit: 0
+      };
       $http.post(Config.api + '/processUserAnswer', $.param(params), options)
            .success(success).error(error);
     },
-    markConversion: function(type, quizId, username) {
+    // Gets the quiz performance of the given username in the quizId.
+    // If successful, the success callback will be called with the response,
+    // which is a QuizPerformance entity.
+    markConversion: function(quizId, username, success, error) {
       var url = Config.api + '/getQuizPerformance';
       var params = {
         quizID : quizId,
         userID : username
       };
-
-      $http.post(url, $.param(params), options).success(function(response) {
-        if (typeof(ga) != 'undefined') {
-          ga('send', {
-                 'hitType': 'event',
-                 'hitCallback': function(){ },
-                 'eventCategory': 'quiz-submission',
-                 'eventAction': type,
-                 'eventLabel': quizId,
-                 'eventValue': Math.round(100. * response.score / response.totalanswers),
-             });
-        }
-      });
+      $http.post(url, $.param(params), options).success(success).error(error);
     },
-    challengeAnswer: function(params, success, error) {
+    // Adds the given message as the answer challenge text for the given
+    // user answer.
+    // If successful, the success callback will be called with the response,
+    // which is a UserAnswer entity.
+    challengeAnswer: function(quizID, questionID, userAnswerID, userID, message,
+        success, error) {
+      var params = {
+        quizID: quizID,
+        questionID: questionID,
+        userAnswerID: userAnswerID,
+        userid: userID,
+        message: message
+      };
       $http.post(Config.api + '/addAnswerFeedback', $.param(params), options)
            .success(success).error(error);
     }

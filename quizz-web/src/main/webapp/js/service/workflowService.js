@@ -1,19 +1,22 @@
 angular.module('quizz').factory('workflowService', [function() {
   var questions = {};
+  var quizID = '';
   var userAnswers = [];
   var userFeedbacks = [];
   var currentQuestion = null;
   var currentQuestionIndex = 0;
   var currentGoldQuestionIndex = 0;
   var currentSilverQuestionIndex = 0;
-  var numOfQuestions = 10;
-  var numOfCalibrationQuestions = 0;
-  var numOfCollectionQuestions = 0;
-  var numOfCorrectAnswers = 0;
+  var numQuestions = 10;
+  var numCalibrationQuestions = 0;
+  var numCollectionQuestions = 0;
+  var numCorrectAnswers = 0;
+  var numSubmittedUserAnswers = 0;
   var isNextQuestionGold = true;
   var channelToken = '';
   var isCurrentQuestionGold = true;
-  var quizID = '';
+  var bestAnswer = null;
+  var userAnswerID = -1;
 
   return {
     clear: function(){
@@ -21,21 +24,31 @@ angular.module('quizz').factory('workflowService', [function() {
       quizID = '';
       userAnswers = [];
       userFeedbacks = [];
+      currentQuestion = null;
       currentQuestionIndex = 0;
       currentGoldQuestionIndex = 0;
       currentSilverQuestionIndex = 0;
-      numOfCorrectAnswers = 0;
-      numOfCalibrationQuestions = 0;
-      numOfCollectionQuestions = 0;
+      numCalibrationQuestions = 0;
+      numCollectionQuestions = 0;
+      numCorrectAnswers = 0;
+      numSubmittedUserAnswers = 0;
+      bestAnswer = null;
+      userAnswerID = -1;
     },
-    setQuestions: function(q, newQuizID) {
+    // Updates the workflow service with the new questions for the given quiz
+    // id and reset the number of calibration and collection questions. The
+    // newQuestionsMap is a map with length 2 and have the following
+    // keys:
+    // - calibration: Calibration questions.
+    // - collection: Collection questions.
+    setQuestions: function(newQuestionsMap, newQuizID) {
       quizID = newQuizID;
-      questions = q;
-      if (q.calibration) {
-        numOfCalibrationQuestions = q.calibration.length;
+      questions = newQuestionsMap;
+      if (newQuestionsMap.calibration) {
+        numCalibrationQuestions = newQuestionsMap.calibration.length;
       }
-      if (q.collection) {
-        numOfCollectionQuestions = q.collection.length;
+      if (newQuestionsMap.collection) {
+        numCollectionQuestions = newQuestionsMap.collection.length;
       }
     },
     getCurrentQuizID: function() {
@@ -50,20 +63,28 @@ angular.module('quizz').factory('workflowService', [function() {
     getIsCurrentQuestionGold: function() {
       return isCurrentQuestionGold;
     },
+    // Picks the next question based on whether we are asking collection
+    // or calibration questions (isNextQuestionGold).
     getNewCurrentQuestion: function() {
-      if (numOfCalibrationQuestions == 0) {
+      // First, flip the bit of asking gold/silver question if one of them
+      // is empty.
+      if (numCalibrationQuestions == 0) {
         isNextQuestionGold = false;
-      } else if (numOfCollectionQuestions == 0) {
+      } else if (numCollectionQuestions == 0) {
         isNextQuestionGold = true;
       }
-      if (isNextQuestionGold) {
-        var index = currentGoldQuestionIndex % numOfCalibrationQuestions;
-        currentQuestion = questions.calibration[index];
-        isCurrentQuestionGold = true;
-      } else {
-        var index = currentSilverQuestionIndex % numOfCollectionQuestions;
-        currentQuestion = questions.collection[index];
+      // if we exhaust the number of calibration question, check whether
+      // we can ask collection question instead.
+      if (!isNextQuestionGold ||
+          (currentGoldQuestionIndex >= numCalibrationQuestions &&
+           numCollectionQuestions > 0)) {
+        var index = currentSilverQuestionIndex % numCollectionQuestions;
         isCurrentQuestionGold = false;
+        currentQuestion = questions.collection[index];
+      } else {
+        var index = currentGoldQuestionIndex % numCalibrationQuestions;
+        isCurrentQuestionGold = true;
+        currentQuestion = questions.calibration[index];
       }
       return currentQuestion;
     },
@@ -73,23 +94,26 @@ angular.module('quizz').factory('workflowService', [function() {
     getCurrentQuestionIndex: function() {
       return currentQuestionIndex;
     },
-    getNumOfQuestions: function() {
-      return numOfQuestions;
+    getNumQuestions: function() {
+      return numQuestions;
     },
-    getNumOfCorrectAnswers: function() {
-      return numOfCorrectAnswers;
+    getNumCorrectAnswers: function() {
+      return numCorrectAnswers;
+    },
+    getNumSubmittedUserAnswers : function() {
+      return numSubmittedUserAnswers;
     },
     addUserAnswer: function(answer) {
       userAnswers.push(answer);
     },
     getLastAnswer: function() {
-      return userAnswers[userAnswers.length-1];
+      return userAnswers[userAnswers.length - 1];
     },
     addUserFeedback: function(feedback) {
       userFeedbacks.push(feedback);
     },
     getLastFeedback: function() {
-      return userFeedbacks[userFeedbacks.length-1];
+      return userFeedbacks[userFeedbacks.length - 1];
     },
     getUserFeedbacks: function() {
       return userFeedbacks;
@@ -102,17 +126,35 @@ angular.module('quizz').factory('workflowService', [function() {
         currentSilverQuestionIndex++;
       }
     },
-    incNumOfCorrectAnswers: function() {
-      numOfCorrectAnswers++;
+    incNumCorrectAnswers: function() {
+      numCorrectAnswers++;
+    },
+    incNumSubmittedUserAnswers: function() {
+      numSubmittedUserAnswers++;
     },
     setChannelToken: function(t) {
       channelToken = t;
     },
-    getChannelToken: function(){
+    getChannelToken: function() {
       return channelToken;
     },
-    setNextQuestionGold: function(g){
+    setNextQuestionGold: function(g) {
       isNextQuestionGold = g;
+    },
+    updateBestAnswer: function(newBestAnswer) {
+      bestAnswer = newBestAnswer;
+    },
+    getBestAnswerId: function() {
+      if (!bestAnswer) {
+        return -1;
+      }
+      return bestAnswer.internalID;
+    },
+    getUserAnswerId: function() {
+      return userAnswerID;
+    },
+    setUserAnswerId: function(newUserAnswerID) {
+      userAnswerID = newUserAnswerID;
     }
   };
 }]);

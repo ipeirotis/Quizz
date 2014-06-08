@@ -67,12 +67,12 @@ public class ProcessUserAnswerEndpoint {
       @Named("questionID") Long questionID,
       @Named("answerID") Integer answerID,
       @Named("userID") String userID,
-      @Named("correctanswers") Integer correctanswers,
-      @Named("totalanswers") Integer totalanswers,
+      @Named("correctAnswers") Integer correctAnswers,
+      @Named("totalAnswers") Integer totalAnswers,
       @Named("userInput") String userInput,
-      @Named("a") Integer a,
-      @Named("b") Integer b,
-      @Named("c") Integer c) throws Exception {
+      @Named("numCorrect") Integer numCorrect,
+      @Named("numIncorrect") Integer numIncorrect,
+      @Named("numExploit") Integer numExploit) throws Exception {
     // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
     User user = userService.get(userID);
     Question question = questionService.get(questionID);
@@ -82,15 +82,15 @@ public class ProcessUserAnswerEndpoint {
       numChoices = 4;
     }
 
-    // TODO(chunhowt): totalanswers and correctanswers here are the one for user, but what we need
+    // TODO(chunhowt): totalAnswers and correctAnswers here are the one for user, but what we need
     // is actually the statistics for the corresponding question across user.
     String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
     if (answerID != -1) {
-      totalanswers++;
+      totalAnswers++;
     }
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
     if (qResult.getIsCorrect()) {
-      correctanswers++;
+      correctAnswers++;
     }
 
     // TODO(chunhowt): Have a cron task to anonymize IP after 9 months.
@@ -99,7 +99,7 @@ public class ProcessUserAnswerEndpoint {
     Long timestamp = (new Date()).getTime();
 
     UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
-        userInput, qResult.getIsCorrect(), correctanswers, totalanswers, qResult.getMessage());
+        userInput, qResult.getIsCorrect(), correctAnswers, totalAnswers, qResult.getMessage());
     UserAnswer ua = asyncStoreUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, timestamp, qResult.getIsCorrect());
 
@@ -109,13 +109,16 @@ public class ProcessUserAnswerEndpoint {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userAnswer", ua);
     result.put("userAnswerFeedback", uaf);
-    result.put("exploit", isExploit(a, b, c, numChoices));
+    result.put("exploit", isExploit(numCorrect, numIncorrect, numExploit, numChoices));
+    result.put("bestAnswer", qResult.getBestAnswer());
     return result;
   }
 
-  private boolean isExploit(int a, int b, int c, int numChoices) throws Exception {
+  private boolean isExploit(int numCorrect, int numIncorrect, int numExploit, int numChoices)
+      throws Exception {
     explorationExploitationService.setN(numChoices);
-    return explorationExploitationService.getAction(a, b, c).getActionExploit();
+    return explorationExploitationService
+        .getAction(numCorrect, numIncorrect, numExploit).getActionExploit();
   }
 
   protected UserAnswerFeedback asyncStoreUserAnswerFeedback(Question question, User user,

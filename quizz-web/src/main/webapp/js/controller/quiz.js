@@ -3,6 +3,13 @@ angular.module('quizz').controller('QuizController',
    'quizService', 'workflowService', 'userService',
    function ($scope, $rootScope, $routeParams, $location, questionService,
              quizService, workflowService, userService) {
+     // Variables used in this controller and the html template.
+     // The index in workflowService is 0-based but we need a 1-based number
+     // to show to the user.
+     $scope.currentQuestionIndex =
+         workflowService.getCurrentQuestionIndex() + 1;
+     $scope.numQuestions = workflowService.getNumQuestions();
+
      $scope.setupChannel = function(token) {
        var channel = new goog.appengine.Channel(token);
        var socket = channel.open();
@@ -13,13 +20,13 @@ angular.module('quizz').controller('QuizController',
          console.log("Error in channel gathering updates in performance");
        };
      };
-
-     $scope.currentQuestionIndex = workflowService.getCurrentQuestionIndex() + 1;
-     $scope.numOfQuestions = workflowService.getNumOfQuestions();
      $rootScope.$on("event:channel", function (event, data) {
        $scope.performance = data;
      });
 
+     // Fetches the list of questions for the associated quiz and stores them
+     // in the workflow service, if necessary, then picks the next question
+     // to be displayed.
      $scope.fetchQuestions = function() {
        // If we don't have questions set in the workflowService OR
        // the requested quizId is different from the quizId in the workflow
@@ -29,7 +36,7 @@ angular.module('quizz').controller('QuizController',
          workflowService.clear();
          $scope.currentQuestionIndex = 1;
          questionService.list(
-           $scope.numOfQuestions,
+           $scope.numQuestions,
            $routeParams.quizId,
            userService.getUsername(),
            function(response) {
@@ -38,7 +45,7 @@ angular.module('quizz').controller('QuizController',
              $scope.readyToShow = true;
            },
            function(error) {
-         });
+           });
        } else {
          // Else, reuse the existing questions.
          $scope.currentQuestion = workflowService.getNewCurrentQuestion();
@@ -46,62 +53,97 @@ angular.module('quizz').controller('QuizController',
        }
      };
 
+     // Fetches the user quiz performance and stores them in the scope.
      $scope.fetchUserQuizPerformance = function() {
-       quizService.getUserQuizPerformance($routeParams.quizId, userService.getUsername(),
-         function(response) {
-           $scope.performance = response;
-           $scope.showPerformance = true;
-         });
+       quizService.getUserQuizPerformance(
+           $routeParams.quizId,
+           userService.getUsername(),
+           function(response) {
+             $scope.performance = response;
+             $scope.showPerformance = true;
+           });
      };
 
-     $scope.answerQuestion = function(answerID, gaType, userInput) {
-       var params = {
-         quizID: $routeParams.quizId,
-         questionID: workflowService.getCurrentQuestion().id,
-         answerID: answerID,
-         userID: userService.getUsername(),
-         userInput: userInput || '',
-         totalanswers: $scope.performance.totalanswers,
-         correctanswers: $scope.performance.correctanswers,
-         a: workflowService.getNumOfCorrectAnswers(),
-         b: workflowService.getNumOfQuestions()-workflowService.getNumOfCorrectAnswers(),
-         c: 0
-       };
-       questionService.sendAnswer(params,
-         function(response) {
-           workflowService.addUserAnswer(response.userAnswer);
-           workflowService.addUserFeedback(response.userAnswerFeedback);
-           workflowService.setNextQuestionGold(response.exploit);
-           if (response.userAnswerFeedback.isCorrect == true) {
-             workflowService.incNumOfCorrectAnswers();
-           }
-           $scope.showFeedback();
-         },
-         function(error) {
-         });
+     // Marks conversion of the given user in the quiz for the given gaType.
+     // The gaType consists of quizz type (multi-choice / input-text) and
+     // correctness (correct / incorrect / skip). The conversion value is
+     // the average # bits of the user per answer, multiplied by 100.
+     $scope.markConversion = function(quizID, username, gaType) {
+       questionService.markConversion(
+           quizID,
+           username,
+           function(response) {
+             if (response && typeof(ga) != 'undefined') {
+               ga('send', {
+                   'hitType': 'event',
+                   'hitCallback': function(){},
+                   'eventCategory': 'quiz-submission',
+                   'eventAction': gaType,
+                   'eventLabel': quizID,
+                   'eventValue': Math.round(
+                       100. * response.score / response.totalanswers)
+               });
+             }
+           },
+           function(error) {
+           });
+     };
 
-       questionService.markConversion(gaType, $routeParams.quizId,
-           userService.getUsername());
+     // Answers the question with the given answerID or userInput if it is a
+     // free text question. If the answerID == -1 and userInput is null, then
+     // the user skips answering this question.
+     $scope.answerQuestion = function(answerID, userInput) {
+       questionService.sendAnswer(
+           $routeParams.quizId,
+           workflowService.getCurrentQuestion().id,
+           answerID,
+           userService.getUsername(),
+           userInput || '',
+           $scope.performance.totalanswers,
+           $scope.performance.correctanswers,
+           workflowService.getNumCorrectAnswers(),
+           workflowService.getNumQuestions() -
+               workflowService.getNumCorrectAnswers(),
+           function(response) {
+             if (response) {
+               var gaType = '';
+               if (userInput) {
+                 gaType = 'input-text-';
+               } else {
+                 gaType = 'multiple-choice-';
+               }
+
+               workflowService.addUserAnswer(response.userAnswer);
+               workflowService.addUserFeedback(response.userAnswerFeedback);
+               workflowService.setNextQuestionGold(response.exploit);
+               workflowService.updateBestAnswer(response.bestAnswer);
+               workflowService.setUserAnswerId(answerID);
+
+               if (response.userAnswerFeedback.isCorrect == true) {
+                 workflowService.incNumCorrectAnswers();
+                 gaType += 'correct';
+               } else if (answerID == -1 && !userInput) {
+                 gaType += 'skip';
+               } else {
+                 gaType += 'incorrect';
+               }
+
+               if (answerID != -1 || userInput) {
+                 workflowService.incNumSubmittedUserAnswers();
+               }
+               $scope.markConversion(
+                   $routeParams.quizId,
+                   userService.getUsername(),
+                   gaType);
+             }
+             $scope.showFeedback();
+           },
+           function(error) {
+           });
      };
 
      $scope.showFeedback = function() {
        $location.path('/feedback');
-     };
-
-     $scope.getGaType = function(answer) {
-       if (answer.kind == 'GOLD') {
-         return 'multiple-choice-correct';
-       } else if (answer.kind == 'SILVER') {
-         if (answer.probability >= 0.5) {
-           return 'multiple-choice-correct';
-         } else {
-           return 'multiple-choice-incorrect';
-         }
-       } else if (answer.kind == 'INCORRECT') {
-         return 'multiple-choice-incorrect';
-       } else if (answer.kind == 'USER_SUBMITTED') {
-         return 'input-text-correct';
-       }
      };
 
      $scope.filterSelectable = function(answer) {
