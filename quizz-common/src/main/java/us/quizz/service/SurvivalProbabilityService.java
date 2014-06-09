@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 
+import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.SurvivalProbabilityResult;
 import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
@@ -183,8 +184,7 @@ public class SurvivalProbabilityService extends OfyBaseService<SurvivalProbabili
 
   // Caches all the survival probability counts into the memcache.
   public void cacheValuesInMemcache(String quizId) {
-    Map<Integer, Map<Integer, Integer>> values =
-        quizPerformanceService.getCountsForSurvivalProbability(quizId);
+    Map<Integer, Map<Integer, Integer>> values = getCountsForSurvivalProbability(quizId);
     String key = MemcacheKey.getSurvivalProbabilities(quizId);
     CachePMF.put(key, values, SURVIVAL_PROBABILITIES_CACHED_TIME_MINS * 60);
   }
@@ -200,4 +200,45 @@ public class SurvivalProbabilityService extends OfyBaseService<SurvivalProbabili
     }
     saveAll(valuesToResults(quizId, values));
   }
+  
+  // Calculates the number of users that have at least "a" correct answers and "b" incorrect
+  // answers for a given quiz (or calculate the stats across all quizzes if quizID == null).
+  // Returns a map from (# correct -> (# incorrect -> count)).
+  public Map<Integer, Map<Integer, Integer>> getCountsForSurvivalProbability(String quizID) {
+    List<QuizPerformance> list = quizPerformanceService.getQuizPerformancesByQuiz(quizID);
+    // # correct -> (# incorrect -> count)
+    Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
+
+    for (QuizPerformance quizPerformance : list) {
+      Integer correct = quizPerformance.getCorrectanswers();
+      Integer incorrect = quizPerformance.getIncorrectanswers();
+      if (correct == null || incorrect == null) continue;
+      increaseCounts(result, correct, incorrect);
+    }
+    return result;
+  }
+
+  // Increments the count in result for all pairs of [0, correct] and [0, incorrect].
+  // Params:
+  //   result: (# correct -> (# incorrect -> count)).
+  private void increaseCounts(Map<Integer, Map<Integer, Integer>> result,
+      Integer correct, Integer incorrect) {
+    for (int a = 0; a <= correct; ++a)  {
+      Map<Integer, Integer> cntA = result.get(a);
+      if (cntA == null) {
+        cntA = new HashMap<Integer, Integer>();
+        result.put(a, cntA);
+      }
+
+      for (int b = 0; b <= incorrect; ++b)  {
+        Integer cntAB = cntA.get(b);
+        if (cntAB == null) {
+          cntAB = 0;
+        }
+        cntA.put(b, cntAB + 1);
+      }
+      result.put(a, cntA);
+    }
+  }
+
 }

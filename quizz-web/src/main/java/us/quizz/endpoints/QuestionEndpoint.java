@@ -15,10 +15,8 @@ import us.quizz.enums.QuizKind;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")

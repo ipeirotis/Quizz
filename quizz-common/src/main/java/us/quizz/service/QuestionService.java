@@ -289,6 +289,8 @@ public class QuestionService extends OfyBaseService<Question> {
               isCorrect = true;
               break;
             }
+          } else if (ak == AnswerKind.USER_SUBMITTED) {
+        	  // Check if some other user submitted the same 
           }
         }
         break;

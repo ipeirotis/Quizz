@@ -60,7 +60,6 @@ import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.TreatmentService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
-import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
 
@@ -130,8 +129,6 @@ public class QuizzTest {
   private QuizService quizService;
   private SurvivalProbabilityService survivalProbabilityService;
   private ExplorationExploitationService explorationExploitationService;
-  private UserQuizStatisticsService userQuizStatisticsService;
-
   private QuizEndpoint quizEndpoint;
   private QuestionEndpoint questionEndpoint;
   private ProcessUserAnswerEndpoint processUserAnswerEndpoint;
@@ -169,7 +166,7 @@ public class QuizzTest {
     treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentRepository);
     userService = new UserService(userRepository, experimentRepository);
-    quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository);
+    quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository, userAnswerService, questionService, quizService);
     userAnswerService = new UserAnswerService(userAnswerRepository);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
@@ -179,8 +176,7 @@ public class QuizzTest {
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
-    userQuizStatisticsService = new UserQuizStatisticsService(
-        userAnswerService, quizPerformanceService, questionService);
+    
 
     quizEndpoint = new QuizEndpoint(quizService, questionService);
     questionEndpoint = new QuestionEndpoint(quizService, questionService);
@@ -193,7 +189,7 @@ public class QuizzTest {
     questionsToCreate = new HashMap<String, Question>();
 
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-      Question question = new Question(QUIZ_ID, "Question_" + i, QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
+      Question question = new Question(QUIZ_ID, new Text("Question_" + i), QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
       for (int j = 1; j <= 4; j++) {
         AnswerKind ak = (j == 1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
         Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, ak, j);
@@ -225,7 +221,7 @@ public class QuizzTest {
     //add FREE_TEXT question to MULTIPLE_CHOICE quiz.
     //should throw an exception BadRequestException
     createFreeTextQuestionInMultichoiceQuiz(
-        new Question(QUIZ_ID, "Question", QuestionKind.FREETEXT_CALIBRATION));
+        new Question(QUIZ_ID, new Text("Question"), QuestionKind.FREETEXT_CALIBRATION));
 
     // update quiz questions count
     updateQuizCounts(quiz, 10);
@@ -321,7 +317,7 @@ public class QuizzTest {
       numberOfCorrectAnswers++;
     }
 
-    userQuizStatisticsService.updateStatistics(quiz.getQuizID(), user.getUserid());
+    quizPerformanceService.updateStatistics(quiz.getQuizID(), user.getUserid());
 
     logResponse("process user answer", resp);
   }

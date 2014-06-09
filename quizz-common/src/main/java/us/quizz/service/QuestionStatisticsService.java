@@ -115,24 +115,25 @@ public class QuestionStatisticsService {
       Double userProb;
       QuizPerformance qp = quizPerformanceService.get(quizID, userId);
       if (qp != null) {
-        Integer correct = qp.getCorrectanswers();
+        Double correct = qp.getCorrectScore();
         if (correct == null) {
-          correct = 0;
+          correct = 0d;
         }
-        Integer incorrect = qp.getIncorrectanswers();
-        if (incorrect == null) {
-          incorrect = 0;
+        Double total = qp.getTotalScore();
+        if (total == null) {
+          total = 0d;
         }
 
         // Here, we do not count the current question as correct answer & incorrect answer.
         if (selectedAnswer.getKind() == AnswerKind.GOLD && correct > 0) {
           correct--;
-        } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT && incorrect > 0) {
-          incorrect--;
+        } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT && total > 0) {
+          total--;
         }
 
-        // TODO(chunhowt): Figure out the computation of userProb here.
-        userProb = 1.0 * (correct + 1) / (correct + incorrect + numAnswers);
+        // The probability that the user is correct. We use Laplacean smoothing
+        // with 1 being added in the nominator and N in the denominator
+        userProb = 1.0 * (correct + 1) / (total + numAnswers);
         try {
           userBits = Helper.getInformationGain(userProb, numAnswers);
         } catch (Exception e) {

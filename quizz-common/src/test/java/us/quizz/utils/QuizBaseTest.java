@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -342,7 +343,7 @@ public class QuizBaseTest {
 
   protected QuizPerformanceService getQuizPerformanceService() {
     if (quizPerformanceService == null) {
-      quizPerformanceService = new QuizPerformanceService(getQuizPerformanceRepository());
+      quizPerformanceService = new QuizPerformanceService(getQuizPerformanceRepository(), userAnswerService, questionService, quizService);
     }
     return quizPerformanceService;
   }
@@ -515,31 +516,31 @@ public class QuizBaseTest {
     // Quiz 1 has 5 questions, 2 are calibration, 3 are collections.
     // Question 1 and 4 have the same client id.
     Question question =
-        new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
+        new Question(QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
                      QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */, 1.5);
     addAnswers(question, QUESTION_ID1, 4, QUIZ_ID1, true);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID1, "test2", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
+        new Question(QUIZ_ID1, new Text("test2"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
                      QUESTION_CLIENT_ID2, false, true, 0.9);
     addAnswers(question, QUESTION_ID2, 4, QUIZ_ID1, false);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID1, "test3", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
+        new Question(QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
                      QUESTION_CLIENT_ID3, false, true, 0.3);
     addAnswers(question, QUESTION_ID3, 4, QUIZ_ID1, false);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID1, "test4", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
+        new Question(QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
                      QUESTION_CLIENT_ID1, true, false, 1.1);
     addAnswers(question, QUESTION_ID4, 4, QUIZ_ID1, true);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID1, "test5", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
+        new Question(QUIZ_ID1, new Text("test5"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
                      QUESTION_CLIENT_ID4, false, true, 0.45);
     addAnswers(question, QUESTION_ID5, 4, QUIZ_ID1, false);
     questionService.save(question);
@@ -547,25 +548,25 @@ public class QuizBaseTest {
     // Quiz 2 has 4 questions, 1 is calibration, 3 are collections.
     // All the questions have null or empty client id.
     question =
-        new Question(QUIZ_ID2, "test6", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
+        new Question(QUIZ_ID2, new Text("test6"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
                      true, false, 1.5);
     addAnswers(question, QUESTION_ID6, 4, QUIZ_ID2, true);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID2, "test7", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
+        new Question(QUIZ_ID2, new Text("test7"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
                      false, true, 0.7);
     addAnswers(question, QUESTION_ID7, 4, QUIZ_ID2, false);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID2, "test8", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8, null,
+        new Question(QUIZ_ID2, new Text("test8"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8, null,
                      false, true, 0.3);
     addAnswers(question, QUESTION_ID8, 4, QUIZ_ID2, false);
     questionService.save(question);
 
     question =
-        new Question(QUIZ_ID2, "test9", QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9, null,
+        new Question(QUIZ_ID2, new Text("test9"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9, null,
                      false, true, 0.2);
     addAnswers(question, QUESTION_ID9, 4, QUIZ_ID2, false);
     questionService.save(question);
@@ -681,7 +682,7 @@ public class QuizBaseTest {
     for (int i = 1; i <= num; ++i) {
       Long questionID = (long) i;
       Question question = new Question(
-          quizID, "Calibration Question " + i, QuestionKind.MULTIPLE_CHOICE_CALIBRATION,
+          quizID, new Text("Calibration Question " + i), QuestionKind.MULTIPLE_CHOICE_CALIBRATION,
           questionID, "client_gold_" + i, true  /* is Gold */, false  /* Not silver */, 0.0);
       for (int j = 0; j < numChoices; ++j) {
         question.addAnswer(new Answer(questionID, quizID, "Answer " + j,
@@ -692,7 +693,7 @@ public class QuizBaseTest {
     for (int i = 1; i <= num; ++i) {
       Long questionID = (long) (i + num);
       Question question = new Question(
-          quizID, "Collection Question " + i, QuestionKind.MULTIPLE_CHOICE_COLLECTION,
+          quizID, new Text("Collection Question " + i), QuestionKind.MULTIPLE_CHOICE_COLLECTION,
           questionID, "client_silver_" + i, false, true, 0.0);
       for (int j = 0; j < numChoices; ++j) { 
         question.addAnswer(new Answer(questionID, quizID, "Answer " + j,

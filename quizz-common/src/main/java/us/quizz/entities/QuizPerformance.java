@@ -1,13 +1,14 @@
 package us.quizz.entities;
 
 import com.google.common.base.Preconditions;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.QuestionKind;
+import us.quizz.service.QuizService;
 import us.quizz.utils.Helper;
 
 import java.io.Serializable;
@@ -72,6 +73,15 @@ public class QuizPerformance implements Serializable {
   private Integer rankScore;
   // The number of other users that participated in the same quiz
   private Integer totalUsers;
+  //The total "correctness score" for the user, when evaluated against "reliable" questions
+  private Double correctScore;
+  //The total "score" for the user, when evaluated against "reliable" questions
+  private Double totalScore;
+
+ 
+
+
+  
 
   //for Objectify
   @SuppressWarnings("unused")
@@ -94,6 +104,22 @@ public class QuizPerformance implements Serializable {
     this.totalUsers = 0;
   }
 
+  public Double getCorrectScore() {
+	return correctScore;
+  }
+
+  public void setCorrectScore(Double correctScore) {
+    this.correctScore = correctScore;
+  }
+	
+  public Double getTotalScore() {
+    return totalScore;
+  }
+	
+  public void setTotalScore(Double totalScore) {
+    this.totalScore = totalScore;
+  }
+  
   public static String generateId(String quiz, String userid) {
     return userid + "_" + quiz;
   }
@@ -263,96 +289,5 @@ public class QuizPerformance implements Serializable {
     this.id = id;
   }
 
-  public void computeCorrect(List<UserAnswer> results, List<Question> questions) {
-    // questionID -> Question.
-    Map<Long, Question> questionsMap = new HashMap<Long, Question>();
-    for (final Question question : questions) {
-      questionsMap.put(question.getId(), question);
-    }
-
-    // Sort UserAnswer result by increasing timestamp. This modifies results.
-    Collections.sort(results, new Comparator<UserAnswer>() {
-      public int compare(UserAnswer userAnswer1, UserAnswer userAnswer2) {
-        return (int) (userAnswer1.getTimestamp() - userAnswer2.getTimestamp());
-      }
-    });
-
-    int numCalibrationAnswers = 0;
-    int numCorrectAnswers = 0;
-    int numAnswers = 0;
-    for (UserAnswer ua : results) {
-      // If we cannot find the original question for this answer, skip.
-      if (!questionsMap.containsKey(ua.getQuestionID())) {
-        continue;
-      }
-      if (ua.getAction().equals(UserAnswer.SUBMIT)) {
-        ++numAnswers;
-      } else {
-        // This is a "I don't know answer". Skip.
-        continue;
-      }
-
-      // Only counts each question once, based on user's first answer.
-      // TODO(chunhowt): Have a better way to take into account of answers to the same question.
-      Question question = questionsMap.remove(ua.getQuestionID());
-
-      if (question.getHasGoldAnswer()) {
-        numCalibrationAnswers++;
-      }
-
-      if (ua.getIsCorrect()) {
-        numCorrectAnswers++;
-      }
-    }
-    setTotalanswers(numAnswers);
-    setCorrectanswers(numCorrectAnswers);
-    setTotalCalibrationAnswers(numCalibrationAnswers);
-    setIncorrectanswers(numAnswers - numCorrectAnswers);
-
-    // TODO(chunhowt): Derive this from the question/quiz itself.
-    int numberOfMultipleChoiceOptions = 4;
-
-    double meanInfoGainFrequentist = 0;
-    double meanInfoGainBayes = 0;
-    double varInfoGainBayes = 0;
-    try {
-      meanInfoGainFrequentist = Helper.getInformationGain(
-          getPercentageCorrect(), numberOfMultipleChoiceOptions);
-      meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
-          getCorrectanswers(),
-          getIncorrectanswers(),
-          numberOfMultipleChoiceOptions);
-      varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
-          getCorrectanswers(),
-          getIncorrectanswers(),
-          numberOfMultipleChoiceOptions);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    setFreqInfoGain(getTotalanswers() * meanInfoGainFrequentist);
-    setScore(getFreqInfoGain());
-    setBayesInfoGain(getTotalanswers() * meanInfoGainBayes);
-    double lcbInfoGain =
-        getTotalanswers() * (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
-    if (Double.isNaN(lcbInfoGain) || lcbInfoGain < 0) {
-      setLcbInfoGain(0.0);
-    } else {
-      setLcbInfoGain(lcbInfoGain);
-    }
-  }
-
-  public void computeRank(List<QuizPerformance> results) {
-    this.totalUsers = results.size();
-    int higherScore = 0;
-    for (QuizPerformance qp : results) {
-      if (qp.userid.equals(this.userid)) {
-        continue;
-      }
-      if (qp.getScore() > this.getScore()) {
-        higherScore++;
-      }
-    }
-    this.rankScore = higherScore + 1;
-  }
+ 
 }

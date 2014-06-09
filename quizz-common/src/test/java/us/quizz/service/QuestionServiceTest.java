@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.google.appengine.api.datastore.Text;
+
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.enums.AnswerKind;
@@ -213,7 +215,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   public void testVerifyAnswerCollectionFirstAnswer() {
     // Creates a new question that was never answered before.
     Question question =
-        new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
+        new Question(QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
                      QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
     for (int j = 0; j < 4; ++j) {
       question.addAnswer(new Answer(12345L, QUIZ_ID1, "Answer " + j, AnswerKind.SILVER, j));
@@ -253,7 +255,7 @@ public class QuestionServiceTest extends QuizBaseTest {
   public void testVerifyAnswerCollectionFirstAnswerSkip() {
     // First, create a new question that has no probability correct in any of the answer.
     Question question =
-        new Question(QUIZ_ID1, "test1", QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
+        new Question(QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
                      QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
     for (int j = 0; j < 4; ++j) {
       question.addAnswer(new Answer(12345L, QUIZ_ID1, "Answer " + j, AnswerKind.SILVER, j));

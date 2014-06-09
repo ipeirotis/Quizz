@@ -7,14 +7,10 @@ import com.google.appengine.api.datastore.Text;
 import com.google.inject.Inject;
 
 import us.quizz.entities.AnswerChallengeCounter;
-import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
-import us.quizz.enums.AnswerChallengeStatus;
 import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
-
-import java.util.List;
 
 import javax.inject.Named;
 

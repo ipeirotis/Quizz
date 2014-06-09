@@ -13,19 +13,16 @@ import us.quizz.entities.Question;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
-import us.quizz.enums.AnswerKind;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
-import us.quizz.utils.LevenshteinAlgorithm;
 import us.quizz.utils.QueueUtils;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 

@@ -37,21 +37,24 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
 
   @Test
   public void testInsertQuestion() throws Exception {
-    assertNull(questionService.get(12345L));
+	  
+	Long questionID = 12345L;
+    assertNull(questionService.get(questionID));
 
     Question question =
-        new Question(QUIZ_ID1, "New question", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, 12345L,
+        new Question(QUIZ_ID1, new Text("New question"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, questionID,
                      "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
     Question returnedQuestion = questionEndpoint.insertQuestion(question);
 
     // Make sure questionID is reused if provided.
-    assertNotNull(questionService.get(12345L));
+    assertNotNull(questionService.get(questionID));
+    assertTrue(returnedQuestion.getId()==questionID);
   }
 
   @Test
   public void testInsertQuestionAndAnswers() throws Exception {
     Question question =
-        new Question(QUIZ_ID1, "New question", QuestionKind.MULTIPLE_CHOICE_COLLECTION);
+        new Question(QUIZ_ID1, new Text("New question"), QuestionKind.MULTIPLE_CHOICE_COLLECTION);
     for (int i = 0; i < 4; ++i) {
       question.addAnswer(new Answer("Answer " + i, AnswerKind.SILVER));
     }
@@ -67,7 +70,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
   @Test(expected = BadRequestException.class)
   public void testInsertQuestionWrongKindFreeTextCalibration() throws Exception {
     Question question =
-        new Question(QUIZ_ID1, "New question", QuestionKind.FREETEXT_CALIBRATION, 12345L,
+        new Question(QUIZ_ID1, new Text("New question"), QuestionKind.FREETEXT_CALIBRATION, 12345L,
                      "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
     questionEndpoint.insertQuestion(question);
   }
@@ -75,7 +78,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
   @Test(expected = BadRequestException.class)
   public void testInsertQuestionWrongKindFreeTextCollection() throws Exception {
     Question question =
-        new Question(QUIZ_ID1, "New question", QuestionKind.FREETEXT_COLLECTION, 12345L,
+        new Question(QUIZ_ID1, new Text("New question"), QuestionKind.FREETEXT_COLLECTION, 12345L,
                      "some_client_id", false, true, 1.2);
     questionEndpoint.insertQuestion(question);
   }
@@ -84,7 +87,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
   public void testInsertQuestionWrongKindMultipleChoiceCalibration() throws Exception {
     quizService.save(new Quiz("Quiz 123", "test_quiz", QuizKind.FREE_TEXT));
     Question question =
-        new Question("test_quiz", "New question", QuestionKind.MULTIPLE_CHOICE_CALIBRATION, 12345L,
+        new Question("test_quiz", new Text("New question"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, 12345L,
                      "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
     questionEndpoint.insertQuestion(question);
   }
@@ -93,7 +96,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
   public void testInsertQuestionWrongKindMultipleChoiceCollection() throws Exception {
     quizService.save(new Quiz("Quiz 123", "test_quiz", QuizKind.FREE_TEXT));
     Question question =
-        new Question("test_quiz", "New question", QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
+        new Question("test_quiz", new Text("New question"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
                      "some_client_id", false, true, 1.2);
     questionEndpoint.insertQuestion(question);
   }

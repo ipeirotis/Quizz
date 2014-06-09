@@ -83,14 +83,16 @@ public class Question implements Serializable {
     this.answers = new ArrayList<Answer>();
   }
 
+  /*
   public Question(String quizID, String text, QuestionKind kind) {
     this(quizID, new Text(text), kind); 
   }
+  */
 
   // Note: This function should ONLY be used for test purpose because it sets the questionID
   // explicitly.
   // TODO(chunhowt): Makes this a private/protected method only visible for testing.
-  public Question(String quizID, String text, QuestionKind kind, Long questionID, String clientID,
+  public Question(String quizID, Text text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers, Double totalUserScore) {
     this(quizID, text, kind);
     logger.warning("This Question constructor should only be used for testing.");

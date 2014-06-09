@@ -2,20 +2,35 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
+import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.UserAnswer;
+import us.quizz.enums.QuestionKind;
 import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.QuizPerformanceRepository;
+import us.quizz.utils.Helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
+	
+  private UserAnswerService userAnswerService;
+  private QuestionService questionService;
+  private QuizService quizService;
+
   @Inject
-  public QuizPerformanceService(QuizPerformanceRepository quizPerformanceRepository){
+  public QuizPerformanceService(QuizPerformanceRepository quizPerformanceRepository, UserAnswerService userAnswerService, 
+		  QuestionService questionService, QuizService quizService){
     super(quizPerformanceRepository);
+    this.userAnswerService = userAnswerService;
+    this.questionService = questionService;
+    this.quizService = quizService;
   }
 
   public QuizPerformance get(String quizid, String userid) {
@@ -42,45 +57,6 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     return listAll(params);
   }
 
-  // Calculates the number of users that have at least "a" correct answers and "b" incorrect
-  // answers for a given quiz (or calculate the stats across all quizzes if quizID == null).
-  // Returns a map from (# correct -> (# incorrect -> count)).
-  public Map<Integer, Map<Integer, Integer>> getCountsForSurvivalProbability(String quizID) {
-    List<QuizPerformance> list = getQuizPerformancesByQuiz(quizID);
-    // # correct -> (# incorrect -> count)
-    Map<Integer, Map<Integer, Integer>> result = new HashMap<Integer, Map<Integer, Integer>>();
-
-    for (QuizPerformance quizPerformance : list) {
-      Integer correct = quizPerformance.getCorrectanswers();
-      Integer incorrect = quizPerformance.getIncorrectanswers();
-      if (correct == null || incorrect == null) continue;
-      increaseCounts(result, correct, incorrect);
-    }
-    return result;
-  }
-
-  // Increments the count in result for all pairs of [0, correct] and [0, incorrect].
-  // Params:
-  //   result: (# correct -> (# incorrect -> count)).
-  private void increaseCounts(Map<Integer, Map<Integer, Integer>> result,
-      Integer correct, Integer incorrect) {
-    for (int a = 0; a <= correct; ++a)  {
-      Map<Integer, Integer> cntA = result.get(a);
-      if (cntA == null) {
-        cntA = new HashMap<Integer, Integer>();
-        result.put(a, cntA);
-      }
-
-      for (int b = 0; b <= incorrect; ++b)  {
-        Integer cntAB = cntA.get(b);
-        if (cntAB == null) {
-          cntAB = 0;
-        }
-        cntA.put(b, cntAB + 1);
-      }
-      result.put(a, cntA);
-    }
-  }
 
   // Returns the sum of quiz performance score for the set of ids given.
   public double getScoreSumByIds(Set<String> ids) {
@@ -98,4 +74,163 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     }
     return result;
   }
+  
+  // Updates the QuizPerformance statistics of the given userId in the given quizId.
+  // This includes the correctness statistics and user rank statistics.`
+  public void updateStatistics(String quizId, String userId) {
+    QuizPerformance qp = new QuizPerformance(quizId, userId);
+
+    List<UserAnswer> userAnswerList = userAnswerService.getUserAnswers(quizId, userId);
+    // This is used to get a set of unique questions answered by user.
+    List<Long> ids = new ArrayList<Long>();
+    for (UserAnswer userAnswer : userAnswerList) {
+      ids.add(userAnswer.getQuestionID());
+    }
+    List<Question> questionList = questionService.listByIds(ids);
+    qp = computeCorrect(qp, userAnswerList, questionList);
+
+    List<QuizPerformance> quizPerformanceList = this.getQuizPerformancesByQuiz(quizId);
+    qp = computeRank(qp, quizPerformanceList);
+    this.save(qp);
+  }
+  
+  public QuizPerformance computeCorrect(QuizPerformance qp, List<UserAnswer> results, List<Question> questions) {
+	  	
+	    // We first compute the current quality of the user, and we use this value
+		// when handling collection questions
+		if (qp.getCorrectScore()==null) {
+			qp.setCorrectScore(0d);
+		}
+		if (qp.getTotalScore()==null) {
+			qp.setTotalScore(0d);
+		}
+		
+		//TODO(panos): Check if the quiz is a multiple choice one
+		int numberOfMultipleChoiceOptions = this.quizService.get(qp.getQuiz()).getNumChoices();
+	    // The calculation below used Laplacean smoothing, to avoid division by 0 and big fluctuations
+		// early on in the calculations
+		double userProb = 1.0 * (qp.getCorrectScore() + 1) / (qp.getTotalScore() + numberOfMultipleChoiceOptions);
+		  
+	    // questionID -> Question.
+	    Map<Long, Question> questionsMap = new HashMap<Long, Question>();
+	    for (final Question question : questions) {
+	      questionsMap.put(question.getId(), question);
+	    }
+
+	    // Sort UserAnswer result by increasing timestamp. This modifies results.
+	    Collections.sort(results, new Comparator<UserAnswer>() {
+	      public int compare(UserAnswer userAnswer1, UserAnswer userAnswer2) {
+	        return (int) (userAnswer1.getTimestamp() - userAnswer2.getTimestamp());
+	      }
+	    });
+	    
+
+
+	    int numCalibrationAnswers = 0;
+	    int numCorrectAnswers = 0;
+	    int numAnswers = 0;
+	    double scoreCorrect = 0;
+	    double scoreTotal = 0;
+	    for (UserAnswer ua : results) {
+	      // If we cannot find the original question for this answer, skip.
+	      if (!questionsMap.containsKey(ua.getQuestionID())) {
+	        continue;
+	      }
+	      if (ua.getAction().equals(UserAnswer.SUBMIT)) {
+	        numAnswers++;
+	      } else {
+	        // This is a "I don't know answer". Skip.
+	        continue;
+	      }
+
+	      // Only counts each question once, based on user's first answer.
+	      // TODO(chunhowt): Have a better way to take into account of answers to the same question.
+	      Question question = questionsMap.remove(ua.getQuestionID());
+
+	      // TODO (panos): For now, we leave that statement outside of the 
+	      // if statements below, because the numberCorrectAnswers is what
+	      // we display to the user.
+	      if (ua.getIsCorrect()) {
+		    numCorrectAnswers++;
+		  }
+
+	      
+	      if (question.getKind()==QuestionKind.MULTIPLE_CHOICE_CALIBRATION ||
+	    	  question.getKind()==QuestionKind.FREETEXT_CALIBRATION) {
+	    	  numCalibrationAnswers++;
+	    	  scoreTotal++;
+		      if (ua.getIsCorrect()) {
+			    scoreCorrect++;
+			  }
+	      } else if (question.getKind()==QuestionKind.MULTIPLE_CHOICE_COLLECTION 
+	    		  || question.getKind()==QuestionKind.FREETEXT_COLLECTION) {
+	    	  // We only update the estimate for the user quality when
+	    	  // the confidence about the question quality is higher than
+	    	  // the user quality. Otherwise, the collection questions are
+	    	  // going to bring down (on expectation) the quality of the users
+	    	  // because we are still not confident about which answer is correct
+	    	  // (notice that eventually all collection questions will get high
+	    	  // enough confidence and will contribute in the estimation of user
+	    	  // quality
+	    	  if (userProb < question.getConfidence()) {
+	    		  scoreTotal++;
+	    		  scoreCorrect += question.getAnswer(ua.getAnswerID()).getProbCorrect();
+	    	  }
+	    	  
+	      } 
+	    }
+	    qp.setTotalanswers(numAnswers);
+	    qp.setCorrectanswers(numCorrectAnswers);
+	    qp.setTotalCalibrationAnswers(numCalibrationAnswers);
+	    qp.setIncorrectanswers(numAnswers - numCorrectAnswers);
+	    qp.setCorrectScore(scoreCorrect);
+	    qp.setTotalScore(scoreTotal);
+
+	    double meanInfoGainFrequentist = 0;
+	    double meanInfoGainBayes = 0;
+	    double varInfoGainBayes = 0;
+	    try {
+	      meanInfoGainFrequentist = Helper.getInformationGain(
+	    		  qp.getPercentageCorrect(), numberOfMultipleChoiceOptions);
+	      meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
+	    		  qp.getCorrectanswers(),
+	    		  qp.getIncorrectanswers(),
+	          numberOfMultipleChoiceOptions);
+	      varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
+	    		  qp.getCorrectanswers(),
+	    		  qp.getIncorrectanswers(),
+	          numberOfMultipleChoiceOptions);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+
+	    qp.setFreqInfoGain(qp.getTotalanswers() * meanInfoGainFrequentist);
+	    qp.setScore(qp.getFreqInfoGain());
+	    qp.setBayesInfoGain(qp.getTotalanswers() * meanInfoGainBayes);
+	    double lcbInfoGain =
+	    		qp.getTotalanswers() * (meanInfoGainBayes - Math.sqrt(varInfoGainBayes));
+	    if (Double.isNaN(lcbInfoGain) || lcbInfoGain < 0) {
+	    	qp.setLcbInfoGain(0.0);
+	    } else {
+	    	qp.setLcbInfoGain(lcbInfoGain);
+	    }
+	    
+	    return qp;
+	  }
+
+	  public QuizPerformance computeRank(QuizPerformance qp, List<QuizPerformance> results) {
+		  qp.setTotalUsers(results.size());
+	    int higherScore = 0;
+	    for (QuizPerformance r : results) {
+	      if (r.getUserid().equals(qp.getUserid())) {
+	        continue;
+	      }
+	      if (r.getScore() > qp.getScore()) {
+	        higherScore++;
+	      }
+	    }
+	    qp.setRankScore(higherScore + 1);
+	    return qp;
+	  }
+
 }

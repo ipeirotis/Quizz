@@ -23,6 +23,26 @@ public class SurvivalProbabilityServiceTest extends QuizBaseTest {
     initSurvivalProbabilityService();
   }
 
+
+  @Test
+  public void testGetCountsForSurvivalProbability() {
+    Map<Integer, Map<Integer, Integer>> results =
+        survivalProbabilityService.getCountsForSurvivalProbability(QUIZ_ID1);
+    assertEquals(4, results.size());
+    assertEquals(2, results.get(0).size());
+    assertEquals(2, results.get(1).size());
+    assertEquals(2, results.get(2).size());
+    assertEquals(2, results.get(3).size());
+    assertEquals((Integer)2, results.get(0).get(0));
+    assertEquals((Integer)2, results.get(1).get(0));
+    assertEquals((Integer)1, results.get(2).get(0));
+    assertEquals((Integer)1, results.get(3).get(0));
+    assertEquals((Integer)1, results.get(0).get(1));
+    assertEquals((Integer)1, results.get(1).get(1));
+    assertEquals((Integer)1, results.get(2).get(1));
+    assertEquals((Integer)1, results.get(3).get(1));
+  }
+  
   @Test
   public void testGetSurvivalProbability() {
     // Both users survive at this stage.

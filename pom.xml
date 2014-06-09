@@ -9,7 +9,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <appengine.target.version>1.9.4</appengine.target.version>
+    <appengine.target.version>1.9.6</appengine.target.version>
     <appspot.app.id>crowd-power</appspot.app.id>
     <appspot.app.version>1</appspot.app.version>
     <google.analytics.id>UA-42553914-1</google.analytics.id>

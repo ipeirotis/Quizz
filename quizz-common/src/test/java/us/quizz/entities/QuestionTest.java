@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.google.appengine.api.datastore.Text;
+
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.utils.QuizBaseTest;
@@ -19,7 +21,7 @@ public class QuestionTest extends QuizBaseTest {
     QuestionKind kind = QuestionKind.MULTIPLE_CHOICE_CALIBRATION;
     String text = "test question";
     String quizID = "test_quiz";
-    Question question = new Question(quizID, text, kind);
+    Question question = new Question(quizID, new Text(text), kind);
     assertEquals(quizID, question.getQuizID());
     assertEquals(kind, question.getKind());
     assertEquals(text, question.getQuestionText().getValue());
@@ -36,7 +38,7 @@ public class QuestionTest extends QuizBaseTest {
 
   @Test
   public void testGetAnswer() {
-    Question question = new Question("test_quiz", "Test question",
+    Question question = new Question("test_quiz", new Text("Test question"),
         QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
     Answer expected = new Answer(100L, "test_quiz", "Expected answer",
                                  AnswerKind.GOLD, 0);

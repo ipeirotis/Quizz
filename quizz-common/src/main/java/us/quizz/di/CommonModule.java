@@ -34,7 +34,6 @@ import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.TreatmentService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
-import us.quizz.service.UserQuizStatisticsService;
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
 
@@ -67,7 +66,6 @@ public class CommonModule extends AbstractModule {
     bind(QuizPerformanceService.class).in(Singleton.class);
     bind(UserAnswerFeedbackService.class).in(Singleton.class);
     bind(ExplorationExploitationService.class).in(Singleton.class);
-    bind(UserQuizStatisticsService.class).in(Singleton.class);
     bind(SurvivalProbabilityService.class).in(Singleton.class);
     bind(QuestionStatisticsService.class).in(Singleton.class);
     bind(BrowserStatsService.class).in(Singleton.class);

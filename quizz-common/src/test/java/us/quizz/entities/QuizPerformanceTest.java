@@ -55,7 +55,7 @@ public class QuizPerformanceTest extends QuizBaseTest {
         TEST_USER_ID, 21L, -1, TEST_QUIZ_ID, false, 1234L, UserAnswer.SKIP));
 
     QuizPerformance quiz_performance = new QuizPerformance(TEST_QUIZ_ID, TEST_USER_ID);
-    quiz_performance.computeCorrect(userAnswers, questions);
+    quiz_performance = quizPerformanceService.computeCorrect(quiz_performance, userAnswers, questions);
 
     assertEquals((Integer)20, quiz_performance.getTotalanswers());
     assertEquals((Integer)10, quiz_performance.getCorrectanswers());
@@ -88,13 +88,13 @@ public class QuizPerformanceTest extends QuizBaseTest {
     QuizPerformance quiz_performance = new QuizPerformance(TEST_QUIZ_ID, TEST_USER_ID);
     assertEquals("0%", quiz_performance.displayPercentageCorrect());
 
-    quiz_performance.computeCorrect(userAnswers, questions);
+    quiz_performance = quizPerformanceService.computeCorrect(quiz_performance, userAnswers, questions);
     assertEquals("50%", quiz_performance.displayPercentageCorrect());
 
     // 10 correct answers for collection questions and they still count.
     userAnswers.addAll(getFakeMultipleChoiceUserAnswers(
         11  /* start */, 20  /* end */, TEST_USER_ID, TEST_QUIZ_ID, 0  /* correct answerID */));
-    quiz_performance.computeCorrect(userAnswers, questions);
+    quiz_performance = quizPerformanceService.computeCorrect(quiz_performance, userAnswers, questions);
     assertEquals("75%", quiz_performance.displayPercentageCorrect());
   }
 
@@ -115,7 +115,7 @@ public class QuizPerformanceTest extends QuizBaseTest {
 
     // Else, the score is the frequentist information gain.
     // 10 * Helper.getInformationGain(0.5, NUM_CHOICES).
-    quiz_performance.computeCorrect(userAnswers, questions);
+    quiz_performance = quizPerformanceService.computeCorrect(quiz_performance, userAnswers, questions);
     assertEquals(2.07519, quiz_performance.getScore(), 0.01);
   } 
 
@@ -126,12 +126,12 @@ public class QuizPerformanceTest extends QuizBaseTest {
     performancesList.addAll(quizPerformances.values());
 
     QuizPerformance worstPerformer = quizPerformances.get(1);
-    worstPerformer.computeRank(performancesList);
+    worstPerformer = quizPerformanceService.computeRank(worstPerformer, performancesList);
     assertEquals(10, worstPerformer.getRankScore(), 0.01);
     assertEquals((Integer)10, worstPerformer.getTotalUsers());
 
     QuizPerformance bestPerformer = quizPerformances.get(10);
-    bestPerformer.computeRank(performancesList);
+    bestPerformer = quizPerformanceService.computeRank(bestPerformer, performancesList);
     assertEquals(1, bestPerformer.getRankScore(), 0.01);
     assertEquals((Integer)10, bestPerformer.getTotalUsers());
   }
@@ -147,12 +147,12 @@ public class QuizPerformanceTest extends QuizBaseTest {
     testPerformer.setScore((double) 5);
 
     performancesList.add(testPerformer);
-    testPerformer.computeRank(performancesList);
+    testPerformer = quizPerformanceService.computeRank(testPerformer, performancesList);
     assertEquals(5, testPerformer.getRankScore(), 0.01);
     assertEquals((Integer)10, testPerformer.getTotalUsers());
 
     testPerformer = quizPerformances.get(4);
-    testPerformer.computeRank(performancesList);
+    testPerformer = quizPerformanceService.computeRank(testPerformer, performancesList);
     assertEquals(7, testPerformer.getRankScore(), 0.01);
     assertEquals((Integer)10, testPerformer.getTotalUsers());
   }
@@ -167,11 +167,11 @@ public class QuizPerformanceTest extends QuizBaseTest {
     assertEquals("--", testPerformance.displayRankScore());
 
     // Total users = 0.
-    testPerformance.computeRank(performancesList);
+    testPerformance = quizPerformanceService.computeRank(testPerformance, performancesList);
     assertEquals("--", testPerformance.displayRankScore());
 
     performancesList.addAll(quizPerformances.values());
-    testPerformance.computeRank(performancesList);
+    testPerformance = quizPerformanceService.computeRank(testPerformance, performancesList);
     assertEquals("60%", testPerformance.displayRankScore());
   }
 }

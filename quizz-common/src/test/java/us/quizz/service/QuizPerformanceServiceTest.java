@@ -33,6 +33,31 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
   }
 
   @Test
+  public void testUpdateStatistics() {
+    quizPerformanceService.updateStatistics(QUIZ_ID1, USER_ID1);
+    assertNotNull(quizPerformanceService.get(QUIZ_ID1, USER_ID1));
+
+    QuizPerformance quizPerformance = quizPerformanceService.get(QUIZ_ID1, USER_ID1);
+    assertEquals((Integer)2, quizPerformance.getCorrectanswers());
+    assertEquals((Integer)1, quizPerformance.getIncorrectanswers());
+    assertEquals((Integer)3, quizPerformance.getTotalanswers());
+    assertEquals((Integer)1, quizPerformance.getTotalCalibrationAnswers());
+
+    // 3 * Helper.getInformationGain(0.66, NUM_CHOICES).
+    assertEquals(1.6861, quizPerformance.getFreqInfoGain(), 0.01);
+
+    // 3 * Helper.getBayesianMeanInformationGain(1, 2, NUM_CHOICES).
+    assertEquals(1.56, quizPerformance.getBayesInfoGain(), 0.01);
+
+    // 3 * (Helper.getBayesianMeanInformationGain(1, 2, NUM_CHOICES) -
+    //      Math.sqrt(Helper.getBayesianVarianceInformationGain(1, 2, NUM_CHOICES))).
+    assertEquals(0.3487, quizPerformance.getLcbInfoGain(), 0.01);
+
+    assertEquals((Integer)2, quizPerformance.getTotalUsers());
+    assertEquals((Integer)1, quizPerformance.getRankScore());
+  }
+  
+  @Test
   public void testDelete() {
     assertNotNull(quizPerformanceService.get(QUIZ_ID1, USER_ID1));
     quizPerformanceService.delete(QUIZ_ID1, USER_ID1);
@@ -62,24 +87,6 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
     assertEquals(3, quizPerformances.size());
   }
 
-  @Test
-  public void testGetCountsForSurvivalProbability() {
-    Map<Integer, Map<Integer, Integer>> results =
-        quizPerformanceService.getCountsForSurvivalProbability(QUIZ_ID1);
-    assertEquals(4, results.size());
-    assertEquals(2, results.get(0).size());
-    assertEquals(2, results.get(1).size());
-    assertEquals(2, results.get(2).size());
-    assertEquals(2, results.get(3).size());
-    assertEquals((Integer)2, results.get(0).get(0));
-    assertEquals((Integer)2, results.get(1).get(0));
-    assertEquals((Integer)1, results.get(2).get(0));
-    assertEquals((Integer)1, results.get(3).get(0));
-    assertEquals((Integer)1, results.get(0).get(1));
-    assertEquals((Integer)1, results.get(1).get(1));
-    assertEquals((Integer)1, results.get(2).get(1));
-    assertEquals((Integer)1, results.get(3).get(1));
-  }
 
   @Test
   public void testGetScoreSumByIds() {
