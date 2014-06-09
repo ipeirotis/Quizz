@@ -23,13 +23,15 @@ angular.module('quizz').controller('ListController',
     };
   };
 
+  // Filter for the given quiz to return true only if quiz.showOnDefault is
+  // defined and true.
   $scope.filterVisible = function(quiz) {
     return quiz.showOnDefault;
   };
 
   // Gets or creates a new user id.
   userService.maybeCreateUser(
-    null,
+    null,  // null quiz id.
     function(response) {
       if (response) {
         if (response.userid) {
@@ -40,6 +42,8 @@ angular.module('quizz').controller('ListController',
           $scope.setupChannel(response.token);
         }
       }
+      // Calls fetchQuizes after creating user cookies as we need them to show
+      // user progress.
       $scope.fetchQuizes();
     },
     function(error) {}

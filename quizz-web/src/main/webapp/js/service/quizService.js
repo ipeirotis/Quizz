@@ -7,17 +7,19 @@ angular.module('quizz').factory('quizService',
   var cache = $cacheFactory('quizCache');
 
   return {
-    list: function(user, success, error) {
+    // Lists the quizzes.
+    // If successful, the success callback will be called with the response,
+    // which is a list of Quiz entities.
+    list: function(userID, success, error) {
       var self = this;
       var params = {
-        userid : user
+        userid : userID
       };
       var userQuizPerformancesRequest =
           $http.post(Config.api + '/listQuizPerformanceByUser', $.param(params),
                      options);
 
       var quizRequest;
-
       if (keys.length == 0) {
         quizRequest = $http.get(Config.api + '/listQuiz');
       } else {
@@ -32,26 +34,29 @@ angular.module('quizz').factory('quizService',
           angular.forEach(userQuizPerformances, function(userQuizPerformance) {
             angular.forEach(quizes, function(quiz) {
               if (quiz.quizID == userQuizPerformance.quiz) {
-                quiz['totalanswers'] = userQuizPerformance.totalanswers;
+                quiz['numUserAnswers'] = userQuizPerformance.totalanswers;
               }
             });
           });
 
           self.cacheQuizes(quizes);
-
           if (angular.isFunction(success)) {
             success(quizes);
           }
         });
     },
-    getUserQuizPerformance: function(quiz, user, success, error) {
+    // Returns the quiz performance of the given userID in the quizID.
+    // If successful, the success callback will be called with the response,
+    // which is a QuizPerformance entity.
+    getUserQuizPerformance: function(quizID, userID, success, error) {
       var url = Config.api + '/getQuizPerformance';
       var params = {
-        quizID : quiz,
-        userID : user
+        quizID : quizID,
+        userID : userID
       };
       $http.post(url, $.param(params), options).success(success).error(error);
     },
+    // Caches the given quizzes entities in the cache factory.
     cacheQuizes: function(quizes) {
       keys = [];
       angular.forEach(quizes, function(value, key) {
@@ -59,10 +64,14 @@ angular.module('quizz').factory('quizService',
         keys.push(value.quizID);
       });
     },
+    // Gets the list of quizzes entities from the cache factory in the form
+    // of the CollectionResponse<Quiz> form.
     getQuizesFromCache: function() {
       var result = [];
       angular.forEach(keys, function(value, key) {
-        result.push(cache.get(value));
+        var quiz = cache.get(value);
+        delete quiz['numUserAnswers'];
+        result.push(quiz);
       });
       return {data:{items: result}};
     }

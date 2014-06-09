@@ -33,9 +33,9 @@ It won't be versioned by git and deleted after restart.
 Deploy
 ~~~~~~
 
-To deploy the version onto the AppEngine as a dev version, use deploy_dev.sh:
+To deploy the version onto the AppEngine as a dev version, use deploy.sh:
 
-  $ ./deploy_dev.sh $VERSION_ID
+  $ ./deploy.sh $VERSION_ID
 
 where $VERSION_ID is a new version id (not existing in the AppEngine yet) to be
 used to identify the development version.

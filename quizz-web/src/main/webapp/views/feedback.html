@@ -1,22 +1,33 @@
 <div class="alert alert-success" ng-show="feedback.isCorrect == true">
-  <span class="label label-success">{{feedback.message}}</span>
+  <span class="label-success feedback-message">{{feedback.message}}</span>
 </div>
 <div class="alert alert-danger" ng-show="feedback.isCorrect == false">
-  <span class="label label-danger">{{feedback.message}}</span>
+  <span class="label-danger feedback-message">{{feedback.message}}</span>
 </div>
+
+<div class="lead text-center" ng-bind-html="currentQuestion.questionText.value"></div>
+
+<div class="answers">
+  <div class="answer-container" ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
+    <div class="correct-answer answer-feedback-blk"
+         ng-show="bestAnswerID == answer.internalID">
+      {{answer.text}}
+    </div>
+    <div class="user-answer answer-feedback-blk"
+         ng-show="userAnswerID == answer.internalID && userAnswerID != bestAnswerID">
+      {{answer.text}}
+    </div>
+    <div class="incorrect-answer answer-feedback-blk"
+         ng-show="bestAnswerID != answer.internalID && userAnswerID != answer.internalID">
+      {{answer.text}}
+    </div>
+  </div>
+</div>
+
 <div class="alert alert-success" ng-show="feedback.isCorrect == false">
   <button class="btn btn-default btn-xs" ng-click="challengeAnswer()">
     Challenge the answer
   </button>
-</div>
-
-<div class="alert alert-info">
-  Crowd performance:
-  <span class="label label-info">
-    {{feedback.numCorrectAnswers}} out of the
-    {{feedback.numTotalAnswers}} users
-    {{feedback.difficulty}} answered correctly.
-  </span>
 </div>
 
 <div class="text-center">
@@ -26,5 +37,5 @@
 </div>
 
 <div class="q-progress text-center">
-  Question {{currentQuestionIndex}} out of {{numOfQuestions}}
+  Question {{currentQuestionIndex}} out of {{numQuestions}}
 </div>

@@ -1,6 +1,6 @@
 <div ng-show="readyToShow == true">
   <div class="q-progress text-center">
-    Question {{currentQuestionIndex}} out of {{numOfQuestions}}
+    Question {{currentQuestionIndex}} out of {{numQuestions}}
   </div>
 
   <div class="alert alert-info text-center" ng-show="showPerformance">
@@ -14,7 +14,7 @@
 
   <div class="answers">
     <button type="button" class="btn btn-primary btn-lg btn-block"
-            ng-click="answerQuestion(answer.internalID, getGaType(answer))"
+            ng-click="answerQuestion(answer.internalID)"
             ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
       {{answer.text}}
     </button>
@@ -30,7 +30,7 @@
     </div>
 
     <button type="button" class="btn btn-danger btn-lg btn-block"
-            ng-click="answerQuestion(-1, 'multiple-choice-idk')">
+            ng-click="answerQuestion(-1)">
       Skip
     </button>
   </div>

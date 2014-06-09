@@ -59,10 +59,11 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
         request, QUIZ_ID1, QUESTION_ID3, answerID, USER_ID3,
         correctAnswers, totalAnswers, "", correctAnswers, incorrectAnswers, numExploit);
 
-    assertEquals(3, result.size());
+    assertEquals(4, result.size());
     assertTrue(result.containsKey("userAnswer"));
     assertTrue(result.containsKey("userAnswerFeedback"));
     assertTrue(result.containsKey("exploit"));
+    assertTrue(result.containsKey("bestAnswer"));
 
     UserAnswer userAnswer = (UserAnswer) result.get("userAnswer");
     assertEquals(userAgentString, userAnswer.getBrowser());

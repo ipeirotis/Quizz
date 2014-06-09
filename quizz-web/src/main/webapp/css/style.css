@@ -55,7 +55,56 @@ body {
   width: 100%;
 }
 
+.feedback-message {
+  border-radius: .25em;
+  color: #ffffff;
+  display: inline;
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 1.33;
+  padding: .2em .6em .3em;
+  text-align: center;
+  vertical-align: baseline;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
 .label {
   white-space: normal;
   word-wrap: break-word;
+}
+
+.answer-container {
+  padding: 2px 0;
+}
+
+.answer-feedback-blk {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  display: block;
+  font-size: 18px;
+  font-weight: normal;
+  line-height: 1.33;
+  outline: none;
+  padding: 10px 0;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+  word-wrap: break-word;
+  width: 100%;
+}
+
+.correct-answer {
+  background-color: #1CB841;
+  border-color: #1CB841;
+}
+
+.incorrect-answer {
+  background-color: #A9A9A9;
+  border-color: #A9A9A9;
+}
+
+.user-answer {
+  background-color: #d9534f;
+  border-color: #d9534f;
 }

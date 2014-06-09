@@ -1,3 +1,3 @@
 var Config = {
-		api : ''
-	};
+  api : ''
+};
