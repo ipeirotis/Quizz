@@ -57,7 +57,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
 
     Map<String, Object> result = processUserAnswerEndpoint.processUserAnswer(
         request, QUIZ_ID1, QUESTION_ID3, answerID, USER_ID3,
-        correctAnswers, totalAnswers, "", correctAnswers, incorrectAnswers, numExploit);
+        "", correctAnswers, incorrectAnswers, numExploit);
 
     assertEquals(4, result.size());
     assertTrue(result.containsKey("userAnswer"));
@@ -81,8 +81,6 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
     assertEquals(USER_ID3, userAnswerFeedback.getUserid());
     assertEquals(answerID, userAnswerFeedback.getUserAnswerID());
     assertTrue(userAnswerFeedback.getIsCorrect());
-    assertEquals((Integer) (correctAnswers + 1), userAnswerFeedback.getNumCorrectAnswers());
-    assertEquals((Integer) (totalAnswers + 1), userAnswerFeedback.getNumTotalAnswers());
     assertEquals("Answer 0", userAnswerFeedback.getUserAnswerText());
 
     // By default, the exploit is false.

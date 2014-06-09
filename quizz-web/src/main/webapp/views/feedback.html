@@ -5,7 +5,13 @@
   <span class="label-danger feedback-message">{{feedback.message}}</span>
 </div>
 
-<div class="lead text-center" ng-bind-html="currentQuestion.questionText.value"></div>
+<div class="instruction-text"
+     ng-bind-html="currentQuestion.instruction.value">
+</div>
+
+<div class="lead text-center"
+     ng-bind-html="currentQuestion.questionText.value">
+</div>
 
 <div class="answers">
   <div class="answer-container" ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">

@@ -99,8 +99,6 @@ angular.module('quizz').controller('QuizController',
            answerID,
            userService.getUsername(),
            userInput || '',
-           $scope.performance.totalanswers,
-           $scope.performance.correctanswers,
            workflowService.getNumCorrectAnswers(),
            workflowService.getNumQuestions() -
                workflowService.getNumCorrectAnswers(),

@@ -24,6 +24,8 @@ public class Question implements Serializable {
   private Long id;
   // The quizID of the parent quiz
   private String quizID;
+  // The instruction of the question. Can be any HTML-compliant code.
+  private Text instruction;
   // The text of the question. Can be any HTML-compliant code
   private Text questionText;
   // The id assigned by the client/source for this question to allow us to rejoin the
@@ -127,6 +129,14 @@ public class Question implements Serializable {
 
   public Boolean getHasSilverAnswers() {
     return hasSilverAnswers;
+  }
+
+  public Text getInstruction() {
+    return instruction;
+  }
+
+  public void setInstruction(Text instruction) {
+    this.instruction = instruction;
   }
 
   public Text getQuestionText() {

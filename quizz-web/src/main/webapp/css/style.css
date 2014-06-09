@@ -74,6 +74,12 @@ body {
   word-wrap: break-word;
 }
 
+.instruction-text {
+  font-size: 16px;
+  font-weight: bold;
+  padding-bottom: 16px;
+}
+
 .answer-container {
   padding: 2px 0;
 }

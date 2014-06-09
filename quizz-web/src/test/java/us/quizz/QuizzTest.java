@@ -304,13 +304,11 @@ public class QuizzTest {
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
     Map<String, Object> resp = processUserAnswerEndpoint.processUserAnswer(req,
-        quiz.getQuizID(), question.getId(), 0, user.getUserid(),
-        numberOfCorrectAnswers, NUMBER_OF_QUESTIONS, null,
+        quiz.getQuizID(), question.getId(), 0, user.getUserid(), null,
         numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0);
 
     UserAnswerFeedback userAnswerFeedback = (UserAnswerFeedback) resp.get("userAnswerFeedback");
-    Assert.assertEquals(userAnswerFeedback.getNumCorrectAnswers(), expectedNumOfCorrectAnswers);
-    
+
     UserAnswer ua = (UserAnswer) resp.get("userAnswer");
 
     if (ua.getIsCorrect()) {

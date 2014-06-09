@@ -64,8 +64,6 @@ public class ProcessUserAnswerEndpoint {
       @Named("questionID") Long questionID,
       @Named("answerID") Integer answerID,
       @Named("userID") String userID,
-      @Named("correctAnswers") Integer correctAnswers,
-      @Named("totalAnswers") Integer totalAnswers,
       @Named("userInput") String userInput,
       @Named("numCorrect") Integer numCorrect,
       @Named("numIncorrect") Integer numIncorrect,
@@ -79,16 +77,8 @@ public class ProcessUserAnswerEndpoint {
       numChoices = 4;
     }
 
-    // TODO(chunhowt): totalAnswers and correctAnswers here are the one for user, but what we need
-    // is actually the statistics for the corresponding question across user.
     String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
-    if (answerID != -1) {
-      totalAnswers++;
-    }
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
-    if (qResult.getIsCorrect()) {
-      correctAnswers++;
-    }
 
     // TODO(chunhowt): Have a cron task to anonymize IP after 9 months.
     String ipAddress = req.getRemoteAddr();
@@ -96,7 +86,7 @@ public class ProcessUserAnswerEndpoint {
     Long timestamp = (new Date()).getTime();
 
     UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
-        userInput, qResult.getIsCorrect(), correctAnswers, totalAnswers, qResult.getMessage());
+        userInput, qResult.getIsCorrect(), qResult.getMessage());
     UserAnswer ua = asyncStoreUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, timestamp, qResult.getIsCorrect());
 
@@ -119,12 +109,9 @@ public class ProcessUserAnswerEndpoint {
   }
 
   protected UserAnswerFeedback asyncStoreUserAnswerFeedback(Question question, User user,
-      Long questionID, Integer useranswerID, String userInput, Boolean isCorrect,
-      Integer correctanswers, Integer totalanswers, String message) {
+      Long questionID, Integer useranswerID, String userInput, Boolean isCorrect, String message) {
     UserAnswerFeedback uaf = new UserAnswerFeedback(
         questionID, user.getUserid(), useranswerID, isCorrect);
-    uaf.setNumCorrectAnswers(correctanswers);
-    uaf.setNumTotalAnswers(totalanswers);
 
     String answerText = "";
     if (useranswerID != -1) {
