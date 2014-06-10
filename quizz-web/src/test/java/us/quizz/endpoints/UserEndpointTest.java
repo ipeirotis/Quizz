@@ -47,9 +47,8 @@ public class UserEndpointTest extends QuizWebBaseTest {
 
     Map<String, Object> results = userEndpoint.getUser(
         request, "www.google.com/some_ads", QUIZ_ID1);
-    assertEquals(2, results.size());
+    assertEquals(1, results.size());
     assertTrue(results.containsKey("userid"));
-    assertTrue(results.containsKey("token"));
 
     String userid = (String) results.get("userid");
     assertNotEquals(USER_ID1, userid);
@@ -83,9 +82,8 @@ public class UserEndpointTest extends QuizWebBaseTest {
 
     Map<String, Object> results = userEndpoint.getUser(
         request, "www.google.com/some_ads", QUIZ_ID1);
-    assertEquals(2, results.size());
+    assertEquals(1, results.size());
     assertTrue(results.containsKey("userid"));
-    assertTrue(results.containsKey("token"));
 
     String userid = (String) results.get("userid");
     assertEquals(USER_ID1, userid);

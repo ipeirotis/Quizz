@@ -37,6 +37,10 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     return ((QuizPerformanceRepository) baseRepository).get(quizid, userid);
   }
 
+  public QuizPerformance getNoCache(String quizid, String userid) {
+    return ((QuizPerformanceRepository) baseRepository).getNoCache(quizid, userid);
+  }
+
   public void delete(String quizid, String userid) {
     delete(QuizPerformance.generateId(quizid, userid));
   }

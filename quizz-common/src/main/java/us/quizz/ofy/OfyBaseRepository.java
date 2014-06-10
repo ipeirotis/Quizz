@@ -8,6 +8,7 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyFilter;
+import com.googlecode.objectify.Work;
 import com.googlecode.objectify.cmd.Query;
 
 import java.util.ArrayList;
@@ -93,8 +94,13 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz).id(id).now();
   }
 
-  public T getNoCache(Long id) {
-    return ofy().cache(false).load().type(clazz).id(id).now();
+  // We need to use transaction here to bypass the objectify session cache.
+  public T getNoCache(final Long id) {
+    return ofy().transact(new Work<T>() {
+      public T run() {
+        return ofy().cache(false).load().type(clazz).id(id).now();
+      }
+    });
   }
 
   public T safeGet(Long id) {
@@ -105,8 +111,13 @@ public class OfyBaseRepository<T> {
     return ofy().load().type(clazz).id(id).now();
   }
 
-  public T getNoCache(String id) {
-    return ofy().cache(false).load().type(clazz).id(id).now();
+  // We need to use transaction here to bypass the objectify session cache.
+  public T getNoCache(final String id) {
+    return ofy().transact(new Work<T>() {
+      public T run() {
+        return ofy().cache(false).load().type(clazz).id(id).now();
+      }
+    });
   }
 
   public T safeGet(String id) {

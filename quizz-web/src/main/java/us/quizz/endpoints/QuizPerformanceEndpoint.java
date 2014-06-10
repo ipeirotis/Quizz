@@ -44,7 +44,7 @@ public class QuizPerformanceEndpoint {
   @ApiMethod(name = "getQuizPerformance", path = "getQuizPerformance", httpMethod = HttpMethod.POST)
   public QuizPerformance getQuizPerformance(
       @Named("quizID") String quizID, @Named("userID") String userID) {
-    QuizPerformance quizperformance = quizPerformanceService.get(quizID, userID);
+    QuizPerformance quizperformance = quizPerformanceService.getNoCache(quizID, userID);
     if (quizperformance == null) {
       quizperformance = new QuizPerformance(quizID, userID);
     }

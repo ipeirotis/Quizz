@@ -16,7 +16,6 @@ angular.module('quizz').factory('workflowService', [function() {
   // explore even though the user might already have answered questions in
   // the same quizzes before.
   var isNextQuestionGold = true;
-  var channelToken = '';
   var isCurrentQuestionGold = true;
   var bestAnswer = null;
   var userAnswerID = -1;
@@ -134,12 +133,6 @@ angular.module('quizz').factory('workflowService', [function() {
     },
     incNumSubmittedUserAnswers: function() {
       numSubmittedUserAnswers++;
-    },
-    setChannelToken: function(t) {
-      channelToken = t;
-    },
-    getChannelToken: function() {
-      return channelToken;
     },
     setNextQuestionGold: function(g) {
       isNextQuestionGold = g;

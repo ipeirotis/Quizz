@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
-import us.quizz.utils.ChannelHelpers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,6 @@ public class UserEndpoint {
 
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userid", userid);
-    result.put("token", ChannelHelpers.createChannel(userid));
     return result;
   }
 }

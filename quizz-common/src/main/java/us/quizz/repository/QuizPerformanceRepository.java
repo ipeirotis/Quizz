@@ -12,8 +12,11 @@ public class QuizPerformanceRepository extends OfyBaseRepository<QuizPerformance
     return get(QuizPerformance.generateId(quizid, userid));
   }
 
+  public QuizPerformance getNoCache(String quizid, String userid) {
+    return getNoCache(QuizPerformance.generateId(quizid, userid));
+  }
+
   public void delete(String quizid, String userid) {
     delete(QuizPerformance.generateId(quizid, userid));
   }
-
 }

@@ -10,20 +10,6 @@ angular.module('quizz').controller('QuizController',
          workflowService.getCurrentQuestionIndex() + 1;
      $scope.numQuestions = workflowService.getNumQuestions();
 
-     $scope.setupChannel = function(token) {
-       var channel = new goog.appengine.Channel(token);
-       var socket = channel.open();
-       socket.onmessage = function(data) {
-         $rootScope.$broadcast('event:channel', data);
-       };
-       socket.onerror = function () {
-         console.log("Error in channel gathering updates in performance");
-       };
-     };
-     $rootScope.$on("event:channel", function (event, data) {
-       $scope.performance = data;
-     });
-
      // Fetches the list of questions for the associated quiz and stores them
      // in the workflow service, if necessary, then picks the next question
      // to be displayed.
@@ -181,10 +167,6 @@ angular.module('quizz').controller('QuizController',
          if (response) {
            if (response.userid) {
              $.cookie("username", response.userid, { expires: 365, path: "/" });
-           }
-           if (response.token) {
-             workflowService.setChannelToken(response.token);
-             $scope.setupChannel(response.token);
            }
          }
          $scope.fetchQuestions();

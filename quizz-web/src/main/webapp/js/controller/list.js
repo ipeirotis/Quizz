@@ -12,17 +12,6 @@ angular.module('quizz').controller('ListController',
       });
   };
 
-  $scope.setupChannel = function(token) {
-    var channel = new goog.appengine.Channel(token);
-    var socket = channel.open();
-    socket.onmessage = function(data) {
-      $rootScope.$broadcast('event:channel', data);
-    };
-    socket.onerror = function () {
-      console.log("Error in channel gathering updates in performance");
-    };
-  };
-
   // Filter for the given quiz to return true only if quiz.showOnDefault is
   // defined and true.
   $scope.filterVisible = function(quiz) {
@@ -36,10 +25,6 @@ angular.module('quizz').controller('ListController',
       if (response) {
         if (response.userid) {
           $.cookie("username", response.userid, { expires: 365, path: "/" });
-        }
-        if (response.token) {
-          workflowService.setChannelToken(response.token);
-          $scope.setupChannel(response.token);
         }
       }
       // Calls fetchQuizes after creating user cookies as we need them to show
