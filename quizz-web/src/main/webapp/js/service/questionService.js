@@ -60,13 +60,16 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
     // If successful, the success callback will be called with the response,
     // which is a UserAnswer entity.
     challengeAnswer: function(quizID, questionID, userAnswerID, userID, message,
-        success, error) {
+        correctValue, urlSupport, challengeReason, success, error) {
       var params = {
         quizID: quizID,
         questionID: questionID,
         userAnswerID: userAnswerID,
         userid: userID,
-        message: message
+        message: message,
+        correctValue: correctValue,
+        urlSupport: urlSupport,
+        challengeReason: challengeReason
       };
       $http.post(Config.api + '/addAnswerFeedback', $.param(params), options)
            .success(success).error(error);

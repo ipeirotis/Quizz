@@ -38,7 +38,10 @@ public class UserAnswerEndpoint {
       @Named("questionID") Long questionID, 
       @Named("userAnswerID") Long userAnswerID,
       @Named("userid") String userid,
-      @Named("message") String message) {
+      @Named("message") String message,
+      @Named("correctValue") String correctValue,
+      @Named("urlSupport") String urlSupport,
+      @Named("challengeReason") String challengeReason) {
     AnswerChallengeCounter cc = answerChallengeCounterService.get(quizID, questionID);
     if (cc == null) {
       cc = new AnswerChallengeCounter(quizID, questionID);
@@ -50,6 +53,10 @@ public class UserAnswerEndpoint {
 
     UserAnswer userAnswer = userAnswerService.get(userAnswerID);
     userAnswer.setAnswerChallengeText(new Text(message));
+    userAnswer.setAnswerChallengeCorrectValue(new Text(correctValue));
+    userAnswer.setAnswerChallengeUrlSupport(new Text(urlSupport));
+    userAnswer.setAnswerChallengeReason(challengeReason);
+
     // TODO(chunhowt): Check whether user answer text is valid by comparing against other user
     // input.
     return userAnswerService.save(userAnswer);

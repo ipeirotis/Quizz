@@ -35,9 +35,13 @@ public class UserAnswerEndpointTest extends QuizWebBaseTest {
 
     Long userAnswerID = 6L;
     UserAnswer userAnswer = userAnswerEndpoint.addAnswerFeedback(
-        QUIZ_ID2, QUESTION_ID9, userAnswerID, USER_ID1, "new answer feedback");
+        QUIZ_ID2, QUESTION_ID9, userAnswerID, USER_ID1, "new answer feedback",
+        "correct value", "http://url_evidence", "WRONG_ANSWER");
 
     assertEquals(new Text("new answer feedback"), userAnswer.getAnswerChallengeText());
+    assertEquals(new Text("correct value"), userAnswer.getAnswerChallengeCorrectValue());
+    assertEquals(new Text("http://url_evidence"), userAnswer.getAnswerChallengeUrlSupport());
+    assertEquals("WRONG_ANSWER", userAnswer.getAnswerChallengeReason());
 
     assertNotNull(answerChallengeCounterService.get(QUIZ_ID2, QUESTION_ID9));
     assertEquals((Long) 1L, answerChallengeCounterService.get(QUIZ_ID2, QUESTION_ID9).getCount());

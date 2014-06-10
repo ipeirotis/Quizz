@@ -36,7 +36,14 @@ public class UserAnswer implements Serializable {
   private String browser;
   private String action;
   private Boolean isCorrect;
+  // Free text comment provided by user to justify her challenge.
   private Text answerChallengeText;
+  // Correct value user provided for the question.
+  private Text answerChallengeCorrectValue;
+  // Url evidence provided by user to support her challenge.
+  private Text answerChallengeUrlSupport;
+  // Reason code on why user challenges the answer.
+  private String answerChallengeReason;
   private AnswerChallengeStatus answerChallengeStatus;
   private Double answerChallengeWeight = 0.0d;
 
@@ -194,6 +201,30 @@ public class UserAnswer implements Serializable {
 
   public void setAnswerChallengeText(Text answerChallengeText) {
     this.answerChallengeText = answerChallengeText;
+  }
+
+  public Text getAnswerChallengeCorrectValue() {
+    return answerChallengeCorrectValue;
+  }
+
+  public void setAnswerChallengeCorrectValue(Text answerChallengeCorrectValue) {
+    this.answerChallengeCorrectValue = answerChallengeCorrectValue;
+  }
+
+  public Text getAnswerChallengeUrlSupport() {
+    return answerChallengeUrlSupport;
+  }
+
+  public void setAnswerChallengeUrlSupport(Text answerChallengeUrlSupport) {
+    this.answerChallengeUrlSupport = answerChallengeUrlSupport;
+  }
+
+  public String getAnswerChallengeReason() {
+    return answerChallengeReason;
+  }
+
+  public void setAnswerChallengeReason(String answerChallengeReason) {
+    this.answerChallengeReason = answerChallengeReason;
   }
 
   public Long getId() {

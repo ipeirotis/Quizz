@@ -87,7 +87,7 @@ public class ProcessUserAnswerEndpoint {
 
     UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
         userInput, qResult.getIsCorrect(), qResult.getMessage());
-    UserAnswer ua = asyncStoreUserAnswer(user, quizID, questionID, action, answerID,
+    UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
         userInput, ipAddress, browser, timestamp, qResult.getIsCorrect());
 
     updateQuizPerformance(user, quizID);
@@ -128,7 +128,7 @@ public class ProcessUserAnswerEndpoint {
     return uaf;
   }
 
-  private UserAnswer asyncStoreUserAnswer(User user, String quizID, Long questionID,
+  private UserAnswer storeUserAnswer(User user, String quizID, Long questionID,
       String action, Integer useranswerID, String userInput, String ipAddress,
       String browser, Long timestamp, Boolean isCorrect) {
     UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
@@ -139,8 +139,7 @@ public class ProcessUserAnswerEndpoint {
     ue.setIsCorrect(isCorrect);
     ue.setQuizID(quizID);
     ue.setUserInput(userInput);
-    userAnswerService.asyncSave(ue);
-    return ue;
+    return userAnswerService.save(ue);
   } 
 
   // Schedules a task to update the quiz performance for the given user and quiz.
