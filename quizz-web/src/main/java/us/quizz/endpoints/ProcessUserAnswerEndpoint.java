@@ -159,7 +159,7 @@ public class ProcessUserAnswerEndpoint {
     Queue queue = QueueUtils.getQuestionStatisticsQueue();
     queue.add(Builder
         .withUrl("/api/updateQuestionStatistics")
-        .param("questionID", questionID.toString())
-        .method(TaskOptions.Method.POST));
+        .param("questionID", String.valueOf(questionID))
+        .method(TaskOptions.Method.GET));
   }
 }
