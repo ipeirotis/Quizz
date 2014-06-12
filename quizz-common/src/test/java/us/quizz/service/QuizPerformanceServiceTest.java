@@ -22,6 +22,8 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();
+    initUserAnswerService();
+    initQuestionService();
     initQuizPerformanceService();
   }
 
@@ -54,7 +56,7 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
     assertEquals(0.3487, quizPerformance.getLcbInfoGain(), 0.01);
 
     assertEquals((Integer)2, quizPerformance.getTotalUsers());
-    assertEquals((Integer)1, quizPerformance.getRankScore());
+    assertEquals((Integer)2, quizPerformance.getRankScore());
   }
   
   @Test
@@ -93,7 +95,7 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
     Set<String> ids = new HashSet<String>();
     ids.add(QuizPerformance.generateId(QUIZ_ID1, USER_ID1));
     ids.add(QuizPerformance.generateId(QUIZ_ID1, USER_ID2));
-    assertEquals(2.12, quizPerformanceService.getScoreSumByIds(ids), 0.01);
+    assertEquals(8.0, quizPerformanceService.getScoreSumByIds(ids), 0.01);
   }
 
   @Test

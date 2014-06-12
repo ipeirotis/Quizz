@@ -2,10 +2,12 @@ package us.quizz.entities;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import us.quizz.service.QuestionStatisticsService;
 import us.quizz.utils.QuizBaseTest;
 
 import java.util.ArrayList;
@@ -18,6 +20,17 @@ public class QuizPerformanceTest extends QuizBaseTest {
   private static final String TEST_USER_ID = "test_userid";
   private static final int NUM_CHOICES = 4;
 
+  @Before
+  public void setUp() {
+    super.setUp();
+
+    initUserAnswerService();
+    initQuizPerformanceService();
+    initQuestionService();
+    
+  }
+
+  
   @Test
   public void testConstructor() {
     QuizPerformance quiz_performance = new QuizPerformance(TEST_QUIZ_ID, TEST_USER_ID);

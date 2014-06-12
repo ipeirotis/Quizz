@@ -343,7 +343,7 @@ public class QuizBaseTest {
 
   protected QuizPerformanceService getQuizPerformanceService() {
     if (quizPerformanceService == null) {
-      quizPerformanceService = new QuizPerformanceService(getQuizPerformanceRepository(), userAnswerService, questionService, quizService);
+      quizPerformanceService = new QuizPerformanceService(getQuizPerformanceRepository(), userAnswerService, questionService);
     }
     return quizPerformanceService;
   }
@@ -579,7 +579,9 @@ public class QuizBaseTest {
     isInitQuizPerformanceService = true;
     assertNotNull(getQuizPerformanceService());
     QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID1);
-    quizPerformance.setScore(1.6);
+    quizPerformance.setScore(4.0);
+    quizPerformance.setCorrectScore(0d);
+    quizPerformance.setTotalScore(1d);
     quizPerformance.setCorrectanswers(3);
     quizPerformance.setIncorrectanswers(1);
     quizPerformance.setTotalanswers(4);
@@ -587,7 +589,9 @@ public class QuizBaseTest {
     quizPerformanceService.save(quizPerformance);
 
     quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID2);
-    quizPerformance.setScore(0.52);
+    quizPerformance.setScore(4.0);
+    quizPerformance.setCorrectScore(1d);
+    quizPerformance.setTotalScore(1d);
     quizPerformance.setCorrectanswers(1);
     quizPerformance.setTotalanswers(1);
     quizPerformance.setTotalCalibrationAnswers(1);

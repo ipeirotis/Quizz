@@ -37,18 +37,18 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
 
   @Test
   public void testInsertQuestion() throws Exception {
-	  
-	Long questionID = 12345L;
+
+    Long questionID = 1256L;
     assertNull(questionService.get(questionID));
 
-    Question question =
-        new Question(QUIZ_ID1, new Text("New question"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, questionID,
-                     "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
-    Question returnedQuestion = questionEndpoint.insertQuestion(question);
+    Question question = new Question(QUIZ_ID1, new Text("New question"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, questionID,
+        "some_client_id", true /* is Gold */, false /* Not silver */, 1.2);
+    questionEndpoint.insertQuestion(question);
 
     // Make sure questionID is reused if provided.
-    assertNotNull(questionService.get(questionID));
-    assertTrue(returnedQuestion.getId()==questionID);
+    Question returnedQuestion = questionService.get(questionID);
+    assertNotNull(returnedQuestion);
+    
   }
 
   @Test

@@ -54,7 +54,7 @@ public class QuizServiceTest extends QuizBaseTest {
     assertEquals((Integer)5, quiz.getTotalAnswers());
     assertEquals((Integer)3, quiz.getTotalCalibrationAnswers());
     assertEquals((Integer)2, quiz.getTotalCollectionAnswers());
-    assertEquals(1.06, quiz.getCapacity(), 0.01);
+    assertEquals(4, quiz.getCapacity(), 0.01); //2 b
     assertEquals(0.875, quiz.getAvgUserCorrectness(), 0.01);
     assertEquals(0.8, quiz.getAvgAnswerCorrectness(), 0.01);
   }

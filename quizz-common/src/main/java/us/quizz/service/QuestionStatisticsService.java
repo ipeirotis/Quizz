@@ -125,11 +125,13 @@ public class QuestionStatisticsService {
         }
 
         // Here, we do not count the current question as correct answer & incorrect answer.
+        /*
         if (selectedAnswer.getKind() == AnswerKind.GOLD && correct > 0) {
           correct--;
         } else if (selectedAnswer.getKind() == AnswerKind.INCORRECT && total > 0) {
           total--;
         }
+        */
 
         // The probability that the user is correct. We use Laplacean smoothing
         // with 1 being added in the nominator and N in the denominator
