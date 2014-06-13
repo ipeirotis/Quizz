@@ -66,8 +66,10 @@ public class QuizBaseTest {
   protected static final String USER_ID1 = "1001";
   protected static final String USER_ID2 = "1002";
   protected static final String USER_ID3 = "1003";
+  protected static final String USER_ID4 = "1004";
   protected static final String QUIZ_ID1 = "quizid_1";
   protected static final String QUIZ_ID2 = "quizid_2";
+  protected static final String QUIZ_ID3 = "quizid_3";
   protected static final Long QUESTION_ID1 = 2001L;
   protected static final Long QUESTION_ID2 = 2002L;
   protected static final Long QUESTION_ID3 = 2003L;
@@ -77,6 +79,10 @@ public class QuizBaseTest {
   protected static final Long QUESTION_ID7 = 2007L;
   protected static final Long QUESTION_ID8 = 2008L;
   protected static final Long QUESTION_ID9 = 2009L;
+  protected static final Long QUESTION_ID10 = 2010L;
+  protected static final Long QUESTION_ID11 = 2011L;
+  protected static final Long QUESTION_ID12 = 2012L;
+  protected static final Long QUESTION_ID13 = 2013L;
   protected static final String QUESTION_CLIENT_ID1 = "qclient_1";
   protected static final String QUESTION_CLIENT_ID2 = "qclient_2";
   protected static final String QUESTION_CLIENT_ID3 = "qclient_3";
@@ -412,6 +418,10 @@ public class QuizBaseTest {
     answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID7));
     answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID8));
     answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID9));
+    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID10));
+    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID11));
+    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID12));
+    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID13));
   } 
 
   protected void initBadgeAssignmentService() {
@@ -468,28 +478,66 @@ public class QuizBaseTest {
     // 2 of which are duplicate questions.
     // Answers Q1 incorrectly first, then correctly (ignored for duplicate) and Q4 correctly.
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true, 1L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true, 1L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID1, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID1, QUESTION_ID1, ANSWER_ID1, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 3L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 3L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
         new UserAnswer(USER_ID1, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
     // User 1 also answers 2 questions from quiz 2.
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true, 5L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true, 5L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false, 6L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false, 6L, UserAnswer.SUBMIT));
+    // User 1 also answers 3 questions in quiz 3
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID10, ANSWER_ID0, QUIZ_ID3, true, 10L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID11, ANSWER_ID2, QUIZ_ID3, false, 11L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID12, ANSWER_ID1, QUIZ_ID3, false, 14L, UserAnswer.SUBMIT));
 
     // User 2 answers 2 (calibration) question from quiz 1, both correctly.
     userAnswerRepository.save(
-        new UserAnswer(USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 7L, UserAnswer.SUBMIT));
+        new UserAnswer(
+            USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 7L, UserAnswer.SUBMIT));
+    // User 2 also answers 3 questions in quiz 3
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID2, QUESTION_ID10, ANSWER_ID1, QUIZ_ID3, false, 12L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID2, QUESTION_ID11, ANSWER_ID2, QUIZ_ID3, false, 13L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID2, QUESTION_ID12, ANSWER_ID2, QUIZ_ID3, false, 15L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
         new UserAnswer(USER_ID2, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 8L, UserAnswer.SUBMIT));
 
     // User 3 answers 0 questions.
+
+    // User 4 answers 3 questions in quiz 3
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID4, QUESTION_ID10, ANSWER_ID0, QUIZ_ID3, true, 8L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID4, QUESTION_ID11, ANSWER_ID0, QUIZ_ID3, true, 9L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID4, QUESTION_ID12, ANSWER_ID2, QUIZ_ID3, false, 16L, UserAnswer.SUBMIT));
   }
 
   protected void addAnswers(Question question, Long questionID, int numChoices, String quizID,
@@ -584,6 +632,36 @@ public class QuizBaseTest {
             null, false, true, 0.2);
     addAnswers(question, QUESTION_ID9, 4, QUIZ_ID2, false);
     questionService.save(question);
+
+    // Quiz 3 has 4 questions, 2 are calibration, 2 are collection.
+    // All the questions have null or empty client id.
+    question =
+        new Question(
+            QUIZ_ID3, new Text("test10"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID10,
+            "", false, true, 1.5);
+    addAnswers(question, QUESTION_ID10, 4, QUIZ_ID3, false);
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID3, new Text("test11"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID11,
+            "", true, false, 0.7);
+    addAnswers(question, QUESTION_ID11, 4, QUIZ_ID3, true);
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID3, new Text("test12"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID12,
+            "", true, false, 0.7);
+    addAnswers(question, QUESTION_ID12, 4, QUIZ_ID3, true);
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID3, new Text("test13"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID13,
+            "", true, false, 0.7);
+    addAnswers(question, QUESTION_ID13, 4, QUIZ_ID3, true);
+    questionService.save(question);
   }
 
   protected void initQuizPerformanceService() {
@@ -622,6 +700,30 @@ public class QuizBaseTest {
     quizPerformance.setTotalanswers(2);
     quizPerformance.setTotalCalibrationAnswers(2);
     quizPerformanceService.save(quizPerformance);
+
+    quizPerformance = new QuizPerformance(QUIZ_ID3, USER_ID1);
+    quizPerformance.setScore(0.33);
+    quizPerformance.setCorrectanswers(1);
+    quizPerformance.setIncorrectanswers(2);
+    quizPerformance.setTotalanswers(3);
+    quizPerformance.setTotalCalibrationAnswers(2);
+    quizPerformanceService.save(quizPerformance);
+
+    quizPerformance = new QuizPerformance(QUIZ_ID3, USER_ID2);
+    quizPerformance.setScore(0.0);
+    quizPerformance.setCorrectanswers(0);
+    quizPerformance.setIncorrectanswers(3);
+    quizPerformance.setTotalanswers(3);
+    quizPerformance.setTotalCalibrationAnswers(2);
+    quizPerformanceService.save(quizPerformance);
+
+    quizPerformance = new QuizPerformance(QUIZ_ID3, USER_ID4);
+    quizPerformance.setScore(0.667);
+    quizPerformance.setCorrectanswers(2);
+    quizPerformance.setIncorrectanswers(1);
+    quizPerformance.setTotalanswers(3);
+    quizPerformance.setTotalCalibrationAnswers(2);
+    quizPerformanceService.save(quizPerformance);
   }
 
   protected void initQuizService() {
@@ -637,6 +739,7 @@ public class QuizBaseTest {
 
     quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
     quizService.save(new Quiz("Quiz 2", QUIZ_ID2, QuizKind.MULTIPLE_CHOICE));
+    quizService.save(new Quiz("Quiz 3", QUIZ_ID3, QuizKind.MULTIPLE_CHOICE));
   }
 
   protected void initUserReferralService() {

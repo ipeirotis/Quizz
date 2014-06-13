@@ -56,13 +56,19 @@ public class Question implements Serializable {
   // After computing the probability of correctness for each answer,
   // this is the answer with the highest probability 
   private String likelyAnswer;
+  // ID of most likely answer
+  private Integer likelyAnswerID;
   // If likelyAnswer matches a GOLD answer, we set this to true
   private Boolean isLikelyAnswerCorrect;
   // The feedback that we give to the user to explain why a particular answer 
   // was correct (or incorrect)
   private String feedback;
   private ArrayList<Answer> answers;
-  
+  // The prior difficulty of a question between [0, 1] (0 is easiest); this is computed offline
+  private Double difficultyPrior;
+  // The difficulty of this question between [0, 1] (0 is easiest); this is computed online
+  private Double difficulty;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Question(){}
@@ -81,6 +87,8 @@ public class Question implements Serializable {
     this.likelyAnswer = "";
     this.isLikelyAnswerCorrect = false;
     this.feedback = "";
+    this.difficultyPrior = 0.5;  // 0.5 is "half" difficult
+    this.difficulty = 0.0;
 
     this.answers = new ArrayList<Answer>();
   }
@@ -251,5 +259,29 @@ public class Question implements Serializable {
 
   public void setLikelyAnswer(String likelyAnswer) {
     this.likelyAnswer = likelyAnswer;
+  }
+
+  public Double getDifficultyPrior() {
+    return difficultyPrior;
+  }
+
+  public void setDifficultyPrior(Double difficultyPrior) {
+    this.difficultyPrior = difficultyPrior;
+  }
+
+  public Double getDifficulty() {
+    return difficulty;
+  }
+
+  public void setDifficulty(Double difficulty) {
+    this.difficulty = difficulty;
+  }
+
+  public Integer getLikelyAnswerID() {
+    return likelyAnswerID;
+  }
+
+  public void setLikelyAnswerID(Integer likelyAnswerID) {
+    this.likelyAnswerID = likelyAnswerID;
   }
 }

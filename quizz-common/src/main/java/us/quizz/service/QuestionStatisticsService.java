@@ -4,12 +4,10 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
-import us.quizz.enums.QuizKind;
 import us.quizz.utils.Helper;
 
 import java.lang.Math;
@@ -96,7 +94,7 @@ public class QuestionStatisticsService {
       if (userIds.contains(userId)) {
         continue;  // Skip duplicate answers from the same user, taking only the first answer.
       }
-      userIds.add(userId);
+
       Integer ansId = useranswer.getAnswerID();
 
       // Check that the ansId corresponds to an answer
@@ -110,6 +108,7 @@ public class QuestionStatisticsService {
       if (selectedAnswer == null) {
         continue;
       }
+      userIds.add(userId);
 
       Double userBits = 0.0;
       Double userProb;
@@ -198,13 +197,18 @@ public class QuestionStatisticsService {
     Double maxProb = 0.0;
     String likelyAnswer = "";
     Boolean isLikelyAnswerCorrect = null;
+    Integer likelyAnswerID = 0;
+    // Number of users that are correct, if it is a calibration question.
+    Integer numCorrect = 0;
     for (Answer a : question.getAnswers()) {
       Double aProb = Math.exp(answerLogProb.get(a.getInternalID()));
       if (maxProb < aProb) {
         maxProb = aProb;
         likelyAnswer = a.getText();
+        likelyAnswerID = a.getInternalID();
         if (a.getKind() == AnswerKind.GOLD) {
           isLikelyAnswerCorrect = true;
+          numCorrect = answerCounts.get(a.getInternalID());
         } else if (a.getKind() == AnswerKind.INCORRECT) {
           isLikelyAnswerCorrect = false;
         } else {
@@ -215,18 +219,34 @@ public class QuestionStatisticsService {
       sumProb += aProb;
       questionBits += answerBits.get(a.getInternalID());
     }
+
     question.setTotalUserScore(questionBits);
     question.setConfidence(maxProb / sumProb);
     question.setLikelyAnswer(likelyAnswer);
+    question.setLikelyAnswerID(likelyAnswerID);
     question.setIsLikelyAnswerCorrect(isLikelyAnswerCorrect);
 
+    Integer nonDuplicateAnswers = 0;   // we only count 1 answer per user
     for (Answer a : question.getAnswers()) {
+      nonDuplicateAnswers += answerCounts.get(a.getInternalID());
       Double aBits = answerBits.get(a.getInternalID());
       a.setBits(aBits);
       Integer aCount = answerCounts.get(a.getInternalID());
       a.setNumberOfPicks(aCount);
       Double aProbCorrect = Math.exp(answerLogProb.get(a.getInternalID())) / sumProb;
       a.setProbCorrect(aProbCorrect);
+    }
+
+    if (nonDuplicateAnswers == 0) {
+      // If this question has not been answered, its difficulty is the prior.
+      question.setDifficulty(question.getDifficultyPrior());
+    } else if (question.getHasGoldAnswer()) {
+      // If question is a gold question, we can compute the difficulty exactly.
+      question.setDifficulty(1.0 - numCorrect / new Double(nonDuplicateAnswers));
+    } else {
+      // If question is silver, we can only approximate it using the best answer.
+      question.setDifficulty(1.0 - answerCounts.get(likelyAnswerID)
+          / new Double(nonDuplicateAnswers));
     }
   }
 }

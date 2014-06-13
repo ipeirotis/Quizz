@@ -80,18 +80,18 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
 
     // null quizID means get everything.
     quizPerformances = quizPerformanceService.getQuizPerformancesByQuiz(null);
-    assertEquals(3, quizPerformances.size());
+    assertEquals(6, quizPerformances.size());
   }
 
   @Test
   public void testGetQuizPerformanceByUser() {
     List<QuizPerformance> quizPerformances =
         quizPerformanceService.getQuizPerformancesByUser(USER_ID1);
-    assertEquals(2, quizPerformances.size());
+    assertEquals(3, quizPerformances.size());
 
     // null userID means get everything.
     quizPerformances = quizPerformanceService.getQuizPerformancesByUser(null);
-    assertEquals(3, quizPerformances.size());
+    assertEquals(6, quizPerformances.size());
   }
 
   @Test

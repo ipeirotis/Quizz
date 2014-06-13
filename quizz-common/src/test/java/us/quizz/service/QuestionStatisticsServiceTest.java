@@ -191,4 +191,62 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     assertFalse(question.getIsLikelyAnswerCorrect());
     assertEquals("Answer 3", question.getLikelyAnswer());
   }
+
+  @Test
+  public void testUpdateStatisticsQuestionDifficultyDuplicate() throws Exception {
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID3, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 2L, UserAnswer.SUBMIT));
+    QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID3);
+    quizPerformance.setCorrectScore(4d);
+    quizPerformance.setTotalScore(2d);
+    quizPerformanceService.save(quizPerformance);
+
+    // Question 1 is a calibration question and has duplicate answers from USER_1, we take only
+    // its first answer, which is incorrect. USER_2 and USER_3 answers it correctly.
+    Question question1  = questionStatisticsService.updateStatistics("" + QUESTION_ID1);
+    assertEquals(0.333, question1.getDifficulty(), 0.01);
+  }
+
+  @Test
+  public void testUpdateStatisticsQuestionDifficultyPerfect() throws Exception {
+    // Question 2 is a collection question and only answered once by USER_1, correctly.
+    Question question2 = questionStatisticsService.updateStatistics("" + QUESTION_ID2);
+    assertEquals(0.0, question2.getDifficulty(), 0.0);
+  }
+
+  @Test
+  public void testUpdateStatisticsQuestionDifficultyPrior() throws Exception {
+    Question newQuestion = new Question(
+        QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID3,
+        QUESTION_CLIENT_ID3, true  /* is Gold */, false  /* Not silver */, 1.5);
+    addAnswers(newQuestion, QUESTION_ID3, 4, QUIZ_ID1, true);
+    questionService.save(newQuestion);
+
+    // Question 3 has not been answered by anyone, so we use the prior.
+    Question question3 = questionStatisticsService.updateStatistics("" + QUESTION_ID3);
+    assertEquals(question3.getDifficultyPrior(), question3.getDifficulty(), 0.01);
+  }
+
+  @Test
+  public void testUpdateStatisticsQuestionDifficultyHard() throws Exception {
+    QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID3); 
+    quizPerformance.setCorrectScore(4d);
+    quizPerformance.setTotalScore(2d);
+    quizPerformanceService.save(quizPerformance);
+
+    Question newQuestion = new Question(
+        QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID2,
+        QUESTION_CLIENT_ID4, true, false, 0.9);
+    addAnswers(newQuestion, QUESTION_ID4, 4, QUIZ_ID1, true);
+    questionService.save(newQuestion);
+
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID2, QUESTION_ID4, ANSWER_ID3, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID3, QUESTION_ID4, ANSWER_ID2, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
+
+    // Question 4 is answered incorrectly by everyone.
+    Question question4 = questionStatisticsService.updateStatistics("" + QUESTION_ID4);
+    assertEquals(1.0, question4.getDifficulty(), 0.00);
+  }
 }
