@@ -465,7 +465,8 @@ public class QuizBaseTest {
     isInitUserAnswerService = true;
     assertNotNull(getUserAnswerService());
 
-    // User 1 answers 3 questions from quiz 1, 2 of which are duplicate questions.
+    // User 1 answers 4 questions (2 collection, 2 calibration) from quiz 1, 2 of which are duplicate questions.
+    // Answers Q1 incorrectly first, then correctly (ignored) and Q4 correctly.
     userAnswerRepository.save(
         new UserAnswer(USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true, 1L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
@@ -474,15 +475,20 @@ public class QuizBaseTest {
         new UserAnswer(USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 3L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
         new UserAnswer(USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID1, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 5L, UserAnswer.SUBMIT));
+    
     // User 1 also answers 2 questions from quiz 2.
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true, 5L, UserAnswer.SUBMIT));
+        new UserAnswer(USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true, 6L, UserAnswer.SUBMIT));
     userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false, 6L, UserAnswer.SUBMIT));
+        new UserAnswer(USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false, 7L, UserAnswer.SUBMIT));
 
-    // User 2 answers 1 question from quiz 1.
+    // User 2 answers 2 (calibration) questions from quiz 1, both correctly.
     userAnswerRepository.save(
-        new UserAnswer(USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 7L, UserAnswer.SUBMIT));
+        new UserAnswer(USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 8L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(USER_ID2, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 9L, UserAnswer.SUBMIT));
 
     // User 3 answers 0 questions.
   }
@@ -580,9 +586,9 @@ public class QuizBaseTest {
     assertNotNull(getQuizPerformanceService());
     QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID1);
     quizPerformance.setScore(4.0);
-    quizPerformance.setCorrectScore(0d);
-    quizPerformance.setTotalScore(1d);
-    quizPerformance.setCorrectanswers(3);
+    quizPerformance.setCorrectScore(1d);
+    quizPerformance.setTotalScore(2d);
+    quizPerformance.setCorrectanswers(1);
     quizPerformance.setIncorrectanswers(1);
     quizPerformance.setTotalanswers(4);
     quizPerformance.setTotalCalibrationAnswers(2);
@@ -590,11 +596,12 @@ public class QuizBaseTest {
 
     quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID2);
     quizPerformance.setScore(4.0);
-    quizPerformance.setCorrectScore(1d);
-    quizPerformance.setTotalScore(1d);
-    quizPerformance.setCorrectanswers(1);
-    quizPerformance.setTotalanswers(1);
-    quizPerformance.setTotalCalibrationAnswers(1);
+    quizPerformance.setCorrectScore(2d);
+    quizPerformance.setTotalScore(2d);
+    quizPerformance.setCorrectanswers(2);
+    quizPerformance.setIncorrectanswers(0);
+    quizPerformance.setTotalanswers(2);
+    quizPerformance.setTotalCalibrationAnswers(2);
     quizPerformanceService.save(quizPerformance);
 
     quizPerformance = new QuizPerformance(QUIZ_ID2, USER_ID1);
@@ -631,7 +638,7 @@ public class QuizBaseTest {
     initQuizPerformanceService();
     survivalProbabilityService.cacheValuesInMemcache(QUIZ_ID1);
     survivalProbabilityService.saveValuesInDatastore(QUIZ_ID1);
-    assertEquals(10, survivalProbabilityService.listAll().size());
+    assertEquals(5, survivalProbabilityService.listAll().size());
   }
 
   protected void initUserReferralService() {
