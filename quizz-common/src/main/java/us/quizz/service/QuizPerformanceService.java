@@ -19,13 +19,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
-
   private UserAnswerService userAnswerService;
   private QuestionService questionService;
 
   @Inject
-  public QuizPerformanceService(QuizPerformanceRepository quizPerformanceRepository, UserAnswerService userAnswerService,
-      QuestionService questionService) {
+  public QuizPerformanceService(QuizPerformanceRepository quizPerformanceRepository,
+      UserAnswerService userAnswerService, QuestionService questionService) {
     super(quizPerformanceRepository);
     this.userAnswerService = userAnswerService;
     this.questionService = questionService;
@@ -78,7 +77,7 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
 
   // Updates the QuizPerformance statistics of the given userId in the given
   // quizId.
-  // This includes the correctness statistics and user rank statistics.`
+  // This includes the correctness statistics and user rank statistics.
   public void updateStatistics(String quizId, String userId) {
     QuizPerformance qp = new QuizPerformance(quizId, userId);
 
@@ -96,8 +95,8 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     this.save(qp);
   }
 
-  public QuizPerformance computeCorrect(QuizPerformance qp, List<UserAnswer> results, List<Question> questions) {
-
+  public QuizPerformance computeCorrect(QuizPerformance qp, List<UserAnswer> results,
+      List<Question> questions) {
     // We first compute the current quality of the user, and we use this value
     // when handling collection questions
     if (qp.getCorrectScore() == null) {
@@ -112,16 +111,16 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
 
     // questionID -> Question.
     Map<Long, Question> questionsMap = new HashMap<Long, Question>();
-    for (final Question question : questions) {
+    for (Question question : questions) {
       // TODO(panos): The task below is a hack. Should query QuizService.
       numberOfMultipleChoiceOptions = question.getAnswers().size();
       questionsMap.put(question.getId(), question);
     }
 
-    // The calculation below uses Laplacean smoothing, to avoid division by 0
-    // and big fluctuations
-    // early on in the calculations
-    double userProb = 1.0 * (qp.getCorrectScore() + 1) / (qp.getTotalScore() + numberOfMultipleChoiceOptions);
+    // The calculation below uses Laplacian smoothing, to avoid division by 0
+    // and big fluctuations early on in the calculations.
+    double userProb = 1.0 * (qp.getCorrectScore() + 1)
+        / (qp.getTotalScore() + numberOfMultipleChoiceOptions);
 
     // Sort UserAnswer result by increasing timestamp. This modifies results.
     Collections.sort(results, new Comparator<UserAnswer>() {
@@ -159,7 +158,8 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
         numCorrectAnswers++;
       }
 
-      if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_CALIBRATION || question.getKind() == QuestionKind.FREETEXT_CALIBRATION) {
+      if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_CALIBRATION
+          || question.getKind() == QuestionKind.FREETEXT_CALIBRATION) {
         numCalibrationAnswers++;
         scoreTotal++;
         if (ua.getIsCorrect()) {
@@ -167,19 +167,17 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
         }
       } else if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_COLLECTION
           || question.getKind() == QuestionKind.FREETEXT_COLLECTION) {
-        // We only update the estimate for the user quality when
-        // the confidence about the question quality is higher than
-        // the user quality. Otherwise, the collection questions are
-        // going to bring down (on expectation) the quality of the users
-        // because we are still not confident about which answer is correct
-        // (notice that eventually all collection questions will get high
-        // enough confidence and will contribute in the estimation of user
-        // quality
+        // We only update the estimate for the user quality when the
+        // confidence about the question quality is higher than the
+        // user quality. Otherwise, the collection questions are going
+        // to bring down (on expectation) the quality of the users because
+        // we are still not confident about which answer is correct.
+        // (notice that eventually all collection questions will get high enough
+        // confidence and will contribute in the estimation of user quality)
         if (userProb < question.getConfidence()) {
           scoreTotal++;
           scoreCorrect += question.getAnswer(ua.getAnswerID()).getProbCorrect();
         }
-
       }
     }
     qp.setTotalanswers(numAnswers);
@@ -193,11 +191,12 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     double meanInfoGainBayes = 0;
     double varInfoGainBayes = 0;
     try {
-      meanInfoGainFrequentist = Helper.getInformationGain(qp.getPercentageCorrect(), numberOfMultipleChoiceOptions);
-      meanInfoGainBayes = Helper.getBayesianMeanInformationGain(qp.getCorrectanswers(), qp.getIncorrectanswers(),
-          numberOfMultipleChoiceOptions);
-      varInfoGainBayes = Helper.getBayesianVarianceInformationGain(qp.getCorrectanswers(), qp.getIncorrectanswers(),
-          numberOfMultipleChoiceOptions);
+      meanInfoGainFrequentist = Helper.getInformationGain(
+          qp.getPercentageCorrect(), numberOfMultipleChoiceOptions);
+      meanInfoGainBayes = Helper.getBayesianMeanInformationGain(
+          qp.getCorrectanswers(), qp.getIncorrectanswers(), numberOfMultipleChoiceOptions);
+      varInfoGainBayes = Helper.getBayesianVarianceInformationGain(
+          qp.getCorrectanswers(), qp.getIncorrectanswers(), numberOfMultipleChoiceOptions);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -229,5 +228,4 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
     qp.setRankScore(higherScore + 1);
     return qp;
   }
-
 }

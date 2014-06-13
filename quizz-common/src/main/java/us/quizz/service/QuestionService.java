@@ -290,7 +290,7 @@ public class QuestionService extends OfyBaseService<Question> {
               break;
             }
           } else if (ak == AnswerKind.USER_SUBMITTED) {
-        	  // Check if some other user submitted the same 
+            // TODO(chunhowt): Check if some other user submitted the same answer.
           }
         }
         break;

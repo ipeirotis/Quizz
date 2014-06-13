@@ -129,6 +129,7 @@ public class QuizzTest {
   private QuizService quizService;
   private SurvivalProbabilityService survivalProbabilityService;
   private ExplorationExploitationService explorationExploitationService;
+
   private QuizEndpoint quizEndpoint;
   private QuestionEndpoint questionEndpoint;
   private ProcessUserAnswerEndpoint processUserAnswerEndpoint;
@@ -167,7 +168,8 @@ public class QuizzTest {
     experimentService = new ExperimentService(experimentRepository, treatmentRepository);
     userService = new UserService(userRepository, experimentRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
-    quizPerformanceService = new QuizPerformanceService(quizPerformanceRepository, userAnswerService, questionService);
+    quizPerformanceService = new QuizPerformanceService(
+        quizPerformanceRepository, userAnswerService, questionService);
     domainStatsService = new DomainStatsService(domainStatsRepository);
     userReferralService = new UserReferralService(userReferralRepository, domainStatsRepository);
     quizService = new QuizService(userReferralService,
@@ -176,7 +178,6 @@ public class QuizzTest {
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
-    
 
     quizEndpoint = new QuizEndpoint(quizService, questionService);
     questionEndpoint = new QuestionEndpoint(quizService, questionService);
@@ -189,7 +190,8 @@ public class QuizzTest {
     questionsToCreate = new HashMap<String, Question>();
 
     for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-      Question question = new Question(QUIZ_ID, new Text("Question_" + i), QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
+      Question question = new Question(
+          QUIZ_ID, new Text("Question_" + i), QuestionKind.MULTIPLE_CHOICE_CALIBRATION);
       for (int j = 1; j <= 4; j++) {
         AnswerKind ak = (j == 1)? AnswerKind.GOLD : AnswerKind.INCORRECT;
         Answer answer = new Answer(null, QUIZ_ID, "Answer_" + j, ak, j);

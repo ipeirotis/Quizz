@@ -12,6 +12,8 @@ import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
 
+import java.util.List;
+
 import javax.inject.Named;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
@@ -28,6 +30,12 @@ public class UserAnswerEndpoint {
     this.userAnswerService = userAnswerService;
     this.userService = userService;
     this.answerChallengeCounterService = answerChallengeCounterService;
+  }
+
+  @ApiMethod(name = "getUserAnswers", httpMethod = HttpMethod.POST,
+             path = "getUserAnswers")
+  public List<UserAnswer> getUserAnswers(@Named("quizID") String quizID) {
+    return userAnswerService.getUserAnswersForQuiz(quizID);
   }
 
   // Adds user's answer challenge text to the corresponding UserAnswer identified by the

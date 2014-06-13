@@ -5,12 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.appengine.api.datastore.Text;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import com.google.appengine.api.datastore.Text;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;

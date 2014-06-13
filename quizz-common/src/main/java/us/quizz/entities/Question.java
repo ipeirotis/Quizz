@@ -85,12 +85,6 @@ public class Question implements Serializable {
     this.answers = new ArrayList<Answer>();
   }
 
-  /*
-  public Question(String quizID, String text, QuestionKind kind) {
-    this(quizID, new Text(text), kind); 
-  }
-  */
-
   // Note: This function should ONLY be used for test purpose because it sets the questionID
   // explicitly.
   // TODO(chunhowt): Makes this a private/protected method only visible for testing.

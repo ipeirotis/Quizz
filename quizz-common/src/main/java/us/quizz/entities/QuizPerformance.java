@@ -1,14 +1,13 @@
 package us.quizz.entities;
 
 import com.google.common.base.Preconditions;
+
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
 import us.quizz.entities.UserAnswer;
-import us.quizz.enums.QuestionKind;
-import us.quizz.service.QuizService;
 import us.quizz.utils.Helper;
 
 import java.io.Serializable;
@@ -78,11 +77,6 @@ public class QuizPerformance implements Serializable {
   //The total "score" for the user, when evaluated against "reliable" questions
   private Double totalScore;
 
- 
-
-
-  
-
   //for Objectify
   @SuppressWarnings("unused")
   private QuizPerformance(){}
@@ -104,22 +98,6 @@ public class QuizPerformance implements Serializable {
     this.totalUsers = 0;
   }
 
-  public Double getCorrectScore() {
-	return correctScore;
-  }
-
-  public void setCorrectScore(Double correctScore) {
-    this.correctScore = correctScore;
-  }
-	
-  public Double getTotalScore() {
-    return totalScore;
-  }
-	
-  public void setTotalScore(Double totalScore) {
-    this.totalScore = totalScore;
-  }
-  
   public static String generateId(String quiz, String userid) {
     return userid + "_" + quiz;
   }
@@ -289,5 +267,19 @@ public class QuizPerformance implements Serializable {
     this.id = id;
   }
 
- 
+  public Double getCorrectScore() {
+      return correctScore;
+  }
+
+  public void setCorrectScore(Double correctScore) {
+    this.correctScore = correctScore;
+  }
+
+  public Double getTotalScore() {
+    return totalScore;
+  }
+
+  public void setTotalScore(Double totalScore) {
+    this.totalScore = totalScore;
+  }
 }

@@ -123,19 +123,19 @@ public class QuestionStatisticsService {
         if (total == null) {
           total = 0d;
         }
-        
-        // The probability that the user is correct. We use Laplacean smoothing
-        // with 1 being added in the nominator and N in the denominator
+
+        // The probability that the user is correct. We use Laplacian smoothing
+        // with 1 being added in the nominator and numAnswers in the denominator.
         userProb = 1.0 * (correct + 1) / (total + numAnswers);
 
         // Here, we do not count the current question as correct answer & incorrect answer.
-        if (question.getKind()==QuestionKind.MULTIPLE_CHOICE_CALIBRATION) {
+        if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_CALIBRATION) {
           if (useranswer.getIsCorrect()) {
             correct--;
           }
           total--;
-        } else if (question.getKind()==QuestionKind.MULTIPLE_CHOICE_COLLECTION) {
-          /*
+        } else if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_COLLECTION) {
+          /* TODO(panos)
           if (userProb > question.getConfidence()) {
             total--;
             correct -= selectedAnswer.getProbCorrect();
@@ -143,7 +143,7 @@ public class QuestionStatisticsService {
           */
         }
 
-        // Re-estimate userProb
+        // Re estimate userProb.
         userProb = 1.0 * (correct + 1) / (total + numAnswers);
         try {
           userBits = Helper.getInformationGain(userProb, numAnswers);

@@ -55,12 +55,14 @@ public class QuizServiceTest extends QuizBaseTest {
     assertEquals((Integer)4, quiz.getTotalCalibrationAnswers());
     assertEquals((Integer)2, quiz.getTotalCollectionAnswers());
     assertEquals(4, quiz.getCapacity(), 0.01);
- // 
-    // TODO(panos): Refactor QuizPerformance to separate the "display" variables (e.g. ,"displayCorrectAnswers" by the internal notion 
+    // TODO(panos): Refactor QuizPerformance to separate the "display" variables
+    // (e.g. ,"displayCorrectAnswers" by the internal notion 
     // of correctness of calibration answers, collection answers, etc. 
-    //(user2: 2/2 + user1: 1/4) /2  : For this metric, we use the correct *calibration* answers divided by the total answers (including collection)
-    assertEquals(0.625, quiz.getAvgUserCorrectness(), 0.01); 
-    // 3 correct calibration answers divided by 6 total answers 
+    // (user2: 2/2 + user1: 1/4) /2:
+    // For this metric, we use the correct calibration answers
+    // divided by the total answers (including collection)
+    assertEquals(0.625, quiz.getAvgUserCorrectness(), 0.01);
+    // 3 correct answers divided by 6 total answers.
     assertEquals(0.5, quiz.getAvgAnswerCorrectness(), 0.01);
   }
 }

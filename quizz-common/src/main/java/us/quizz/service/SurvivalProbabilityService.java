@@ -200,7 +200,7 @@ public class SurvivalProbabilityService extends OfyBaseService<SurvivalProbabili
     }
     saveAll(valuesToResults(quizId, values));
   }
-  
+
   // Calculates the number of users that have at least "a" correct answers and "b" incorrect
   // answers for a given quiz (or calculate the stats across all quizzes if quizID == null).
   // Returns a map from (# correct -> (# incorrect -> count)).
@@ -240,5 +240,4 @@ public class SurvivalProbabilityService extends OfyBaseService<SurvivalProbabili
       result.put(a, cntA);
     }
   }
-
 }
