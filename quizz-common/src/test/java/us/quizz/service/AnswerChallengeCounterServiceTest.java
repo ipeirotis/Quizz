@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.utils.QuizBaseTest;
 
 @RunWith(JUnit4.class)
@@ -15,7 +16,9 @@ public class AnswerChallengeCounterServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initAnswerChallengeCounterService();
+
+    assertNotNull(getAnswerChallengeCounterService());
+    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID1, QUESTION_ID4));
   }
 
   @Test

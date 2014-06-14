@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import com.google.appengine.api.datastore.Text;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +14,7 @@ import org.junit.runners.JUnit4;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.QuestionKind;
 import us.quizz.utils.QuizBaseTest;
 
 import java.util.ArrayList;
@@ -29,7 +32,88 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initQuizPerformanceService();
+    initQuizPerformanceServiceTest();
+  }
+
+  private void initQuizPerformanceServiceTest() {
+    assertNotNull(getQuizPerformanceService());
+    QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID1);
+    quizPerformance.setScore(4.0);
+    quizPerformance.setCorrectScore(1d);
+    quizPerformance.setTotalScore(2d);
+    quizPerformance.setCorrectanswers(1);
+    quizPerformance.setIncorrectanswers(1);
+    quizPerformance.setTotalanswers(4);
+    quizPerformance.setTotalCalibrationAnswers(2);
+    quizPerformanceService.save(quizPerformance);
+
+    quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID2);
+    quizPerformance.setScore(4.0);
+    quizPerformance.setCorrectScore(2d);
+    quizPerformance.setTotalScore(2d);
+    quizPerformance.setCorrectanswers(2);
+    quizPerformance.setIncorrectanswers(0);
+    quizPerformance.setTotalanswers(2);
+    quizPerformance.setTotalCalibrationAnswers(2);
+    quizPerformanceService.save(quizPerformance);
+
+    quizPerformance = new QuizPerformance(QUIZ_ID2, USER_ID1);
+    quizPerformance.setScore(0.8);
+    quizPerformance.setCorrectanswers(1);
+    quizPerformance.setIncorrectanswers(1);
+    quizPerformance.setTotalanswers(2);
+    quizPerformance.setTotalCalibrationAnswers(2);
+    quizPerformanceService.save(quizPerformance);
+
+    assertNotNull(getUserAnswerService());
+    // Initializes those UserAnswer needed, which are those submitted by USER_ID1 in QUIZ_ID1.
+    // These are used by the updateStatistics test.
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true, 1L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID1, ANSWER_ID1, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 3L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
+    userAnswerRepository.save(
+        new UserAnswer(
+            USER_ID1, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
+
+    assertNotNull(getQuestionService());
+    // Initializes those questions needed, which are QUESTION_ID1 to QUESTION_ID4 answered
+    // by USER_ID1. These are used by the updateStatistics test.
+    Question question =
+        new Question(
+            QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
+            QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */, 1.5);
+    addAnswers(question, QUESTION_ID1, 4, QUIZ_ID1, true);
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID1, new Text("test2"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
+            QUESTION_CLIENT_ID2, false, true, 0.9);
+    addAnswers(question, QUESTION_ID2, 4, QUIZ_ID1, false);
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
+            QUESTION_CLIENT_ID3, false, true, 0.3);
+    addAnswers(question, QUESTION_ID3, 4, QUIZ_ID1, false);
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
+            QUESTION_CLIENT_ID1, true, false, 1.1);
+    addAnswers(question, QUESTION_ID4, 4, QUIZ_ID1, true);
+    questionService.save(question);
   }
 
   @Test
@@ -75,23 +159,23 @@ public class QuizPerformanceServiceTest extends QuizBaseTest {
   @Test
   public void testGetQuizPerformanceByQuiz() {
     List<QuizPerformance> quizPerformances =
-        quizPerformanceService.getQuizPerformancesByQuiz(QUIZ_ID1);
-    assertEquals(2, quizPerformances.size());
+        quizPerformanceService.getQuizPerformancesByQuiz(QUIZ_ID2);
+    assertEquals(1, quizPerformances.size());
 
     // null quizID means get everything.
     quizPerformances = quizPerformanceService.getQuizPerformancesByQuiz(null);
-    assertEquals(6, quizPerformances.size());
+    assertEquals(3, quizPerformances.size());
   }
 
   @Test
   public void testGetQuizPerformanceByUser() {
     List<QuizPerformance> quizPerformances =
         quizPerformanceService.getQuizPerformancesByUser(USER_ID1);
-    assertEquals(3, quizPerformances.size());
+    assertEquals(2, quizPerformances.size());
 
     // null userID means get everything.
     quizPerformances = quizPerformanceService.getQuizPerformancesByUser(null);
-    assertEquals(6, quizPerformances.size());
+    assertEquals(3, quizPerformances.size());
   }
 
   @Test

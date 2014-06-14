@@ -235,7 +235,7 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     quizPerformanceService.save(quizPerformance);
 
     Question newQuestion = new Question(
-        QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID2,
+        QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
         QUESTION_CLIENT_ID4, true, false, 0.9);
     addAnswers(newQuestion, QUESTION_ID4, 4, QUIZ_ID1, true);
     questionService.save(newQuestion);

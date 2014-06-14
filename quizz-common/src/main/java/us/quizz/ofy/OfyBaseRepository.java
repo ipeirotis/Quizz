@@ -89,6 +89,11 @@ public class OfyBaseRepository<T> {
     ofy().delete().keys(keys);
   }
 
+  public void wipeClean() {
+    delete(listAllByCursor());
+    flush();
+  }
+
   // All the get operations here are synchronous.
   public T get(Long id) {
     return ofy().load().type(clazz).id(id).now();

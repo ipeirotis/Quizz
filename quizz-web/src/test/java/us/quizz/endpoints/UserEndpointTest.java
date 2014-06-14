@@ -14,6 +14,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import nl.bitwalker.useragentutils.Browser;
 
+import us.quizz.entities.User;
 import us.quizz.entities.UserReferal;
 import us.quizz.service.UserService;
 import us.quizz.utils.QuizWebBaseTest;
@@ -29,9 +30,29 @@ public class UserEndpointTest extends QuizWebBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initUserService();
-    initUserReferralService();
     userEndpoint = new UserEndpoint(getUserService(), getUserReferralService());
+    userService.save(new User(USER_ID1));
+
+    Browser browser = Browser.valueOf(BROWSER_STRING);
+    UserReferal userReferal = new UserReferal(USER_ID1);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID1);
+    userReferal.setQuiz(QUIZ_ID2);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID2);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID3);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
   }
 
   @Test

@@ -21,7 +21,7 @@ public class BadgeServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initBadgeService();
+    assertNotNull(getBadgeService());
   }
 
   @Test

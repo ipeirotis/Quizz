@@ -131,19 +131,6 @@ public class QuizBaseTest {
   protected UserReferralService userReferralService = null;
   protected UserService userService = null;
 
-  private boolean isInitAnswerChallengeCounterService = false;
-  private boolean isInitBadgeAssignmentService = false;
-  private boolean isInitBadgeService = false;
-  private boolean isInitBrowserStatsService = false;
-  private boolean isInitExplorationExploitationService = false;
-  private boolean isInitQuestionService = false;
-  private boolean isInitQuizPerformanceService = false;
-  private boolean isInitQuizService = false;
-  private boolean isInitUserAnswerFeedbackService = false;
-  private boolean isInitUserAnswerService = false;
-  private boolean isInitUserReferralService = false;
-  private boolean isInitUserService = false;
-
   @Before
   public void setUp() {
     helper.setUp();
@@ -173,23 +160,50 @@ public class QuizBaseTest {
     userAnswerFeedbackService = null;
     userAnswerService = null;
     userReferralService = null;
-
-    isInitAnswerChallengeCounterService = false;
-    isInitBadgeAssignmentService = false;
-    isInitBadgeService = false;
-    isInitBrowserStatsService = false;
-    isInitExplorationExploitationService = false;
-    isInitQuestionService = false;
-    isInitQuizPerformanceService = false;
-    isInitQuizService = false;
-    isInitUserAnswerFeedbackService = false;
-    isInitUserAnswerService = false;
-    isInitUserReferralService = false;
-    isInitUserService = false;
   }
 
   @After
   public void tearDown() {
+    if (answerChallengeCounterRepository != null) {
+      answerChallengeCounterRepository.wipeClean();
+    }
+    if (badgeAssignmentRepository != null) {
+      badgeAssignmentRepository.wipeClean();
+    }
+    if (badgeRepository != null) {
+      badgeRepository.wipeClean();
+    }
+    if (browserStatsRepository != null) {
+      browserStatsRepository.wipeClean();
+    }
+    if (domainStatsRepository != null) {
+      domainStatsRepository.wipeClean();
+    }
+    if (explorationExploitationResultRepository != null) {
+      explorationExploitationResultRepository.wipeClean();
+    }
+    if (questionRepository != null) {
+      questionRepository.wipeClean();
+    }
+    if (quizPerformanceRepository != null) {
+      quizPerformanceRepository.wipeClean();
+    }
+    if (quizRepository != null) {
+      quizRepository.wipeClean();
+    }
+    if (survivalProbabilityResultRepository != null) {
+      survivalProbabilityResultRepository.wipeClean();
+    }
+    if (userAnswerFeedbackRepository != null) {
+      userAnswerFeedbackRepository.wipeClean();
+    }
+    if (userAnswerRepository != null) {
+      userAnswerRepository.wipeClean();
+    }
+    if (userReferralRepository != null) {
+      userReferralRepository.wipeClean();
+    }
+
     helper.tearDown();
   }
 
@@ -403,143 +417,6 @@ public class QuizBaseTest {
     return userService;
   }
 
-  protected void initAnswerChallengeCounterService() {
-    if (isInitAnswerChallengeCounterService) {
-      return;
-    }
-    isInitAnswerChallengeCounterService = true;
-    assertNotNull(getAnswerChallengeCounterService());
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID1, QUESTION_ID1));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID1, QUESTION_ID2));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID1, QUESTION_ID3));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID1, QUESTION_ID4));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID1, QUESTION_ID5));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID6));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID7));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID8));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID9));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID10));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID11));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID12));
-    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID3, QUESTION_ID13));
-  } 
-
-  protected void initBadgeAssignmentService() {
-    if (isInitBadgeAssignmentService) {
-      return;
-    }
-    isInitBadgeAssignmentService = true;
-    assertNotNull(getBadgeAssignmentService());
-    badgeAssignmentService.save(new BadgeAssignment(USER_ID1, BADGE_NAME1));
-  } 
-
-  protected void initBadgeService() {
-    if (isInitBadgeService) {
-      return;
-    }
-    isInitBadgeService = true;
-    assertNotNull(getBadgeService());
-  }
-
-  protected void initBrowserStatsService() {
-    if (isInitBrowserStatsService) {
-      return;
-    }
-    isInitBrowserStatsService = true;
-    assertNotNull(getBrowserStatsService());
-    initUserReferralService();
-    initQuizPerformanceService();
-  }
-
-  protected void initExplorationExploitationService() {
-    if (isInitExplorationExploitationService) {
-      return;
-    }
-    isInitExplorationExploitationService = true;
-    assertNotNull(getExplorationExploitationService());
-  }
-
-  protected void initUserAnswerFeedbackService() {
-    if (isInitUserAnswerFeedbackService) {
-      return;
-    }
-    isInitUserAnswerFeedbackService = true;
-    assertNotNull(getUserAnswerFeedbackService());
-  }
-
-  protected void initUserAnswerService() {
-    if (isInitUserAnswerService) {
-      return;
-    }
-    isInitUserAnswerService = true;
-    assertNotNull(getUserAnswerService());
-
-    // User 1 answers 4 questions (2 collection, 2 calibration) from quiz 1,
-    // 2 of which are duplicate questions.
-    // Answers Q1 incorrectly first, then correctly (ignored for duplicate) and Q4 correctly.
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID2, ANSWER_ID0, QUIZ_ID1, true, 1L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID1, ANSWER_ID1, QUIZ_ID1, false, 2L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 3L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID3, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(USER_ID1, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 4L, UserAnswer.SUBMIT));
-    // User 1 also answers 2 questions from quiz 2.
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID6, ANSWER_ID0, QUIZ_ID2, true, 5L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID9, ANSWER_ID2, QUIZ_ID2, false, 6L, UserAnswer.SUBMIT));
-    // User 1 also answers 3 questions in quiz 3
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID10, ANSWER_ID0, QUIZ_ID3, true, 10L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID11, ANSWER_ID2, QUIZ_ID3, false, 11L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID1, QUESTION_ID12, ANSWER_ID1, QUIZ_ID3, false, 14L, UserAnswer.SUBMIT));
-
-    // User 2 answers 2 (calibration) question from quiz 1, both correctly.
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 7L, UserAnswer.SUBMIT));
-    // User 2 also answers 3 questions in quiz 3
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID2, QUESTION_ID10, ANSWER_ID1, QUIZ_ID3, false, 12L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID2, QUESTION_ID11, ANSWER_ID2, QUIZ_ID3, false, 13L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID2, QUESTION_ID12, ANSWER_ID2, QUIZ_ID3, false, 15L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(USER_ID2, QUESTION_ID4, ANSWER_ID0, QUIZ_ID1, true, 8L, UserAnswer.SUBMIT));
-
-    // User 3 answers 0 questions.
-
-    // User 4 answers 3 questions in quiz 3
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID4, QUESTION_ID10, ANSWER_ID0, QUIZ_ID3, true, 8L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID4, QUESTION_ID11, ANSWER_ID0, QUIZ_ID3, true, 9L, UserAnswer.SUBMIT));
-    userAnswerRepository.save(
-        new UserAnswer(
-            USER_ID4, QUESTION_ID12, ANSWER_ID2, QUIZ_ID3, false, 16L, UserAnswer.SUBMIT));
-  }
-
   protected void addAnswers(Question question, Long questionID, int numChoices, String quizID,
       boolean isGold) {
     for (int j = 0; j < numChoices; ++j) {
@@ -556,230 +433,6 @@ public class QuizBaseTest {
       answer.setNumberOfPicks(j == 0 ? 1 : 0);
       question.addAnswer(answer);
     }
-  }
-
-  protected void initQuestionService() {
-    if (isInitQuestionService) {
-      return;
-    }
-    isInitQuestionService = true;
-    assertNotNull(getQuestionService());
-    initUserAnswerService();
-
-    // Quiz 1 has 5 questions, 2 are calibration, 3 are collections.
-    // Question 1 and 4 have the same client id.
-    Question question =
-        new Question(
-            QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
-            QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */, 1.5);
-    addAnswers(question, QUESTION_ID1, 4, QUIZ_ID1, true);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID1, new Text("test2"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
-            QUESTION_CLIENT_ID2, false, true, 0.9);
-    addAnswers(question, QUESTION_ID2, 4, QUIZ_ID1, false);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
-            QUESTION_CLIENT_ID3, false, true, 0.3);
-    addAnswers(question, QUESTION_ID3, 4, QUIZ_ID1, false);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID1, new Text("test4"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID4,
-            QUESTION_CLIENT_ID1, true, false, 1.1);
-    addAnswers(question, QUESTION_ID4, 4, QUIZ_ID1, true);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID1, new Text("test5"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID5,
-            QUESTION_CLIENT_ID4, false, true, 0.45);
-    addAnswers(question, QUESTION_ID5, 4, QUIZ_ID1, false);
-    questionService.save(question);
-
-    // Quiz 2 has 4 questions, 1 is calibration, 3 are collections.
-    // All the questions have null or empty client id.
-    question =
-        new Question(
-            QUIZ_ID2, new Text("test6"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID6, "",
-            true, false, 1.5);
-    addAnswers(question, QUESTION_ID6, 4, QUIZ_ID2, true);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID2, new Text("test7"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID7, "",
-            false, true, 0.7);
-    addAnswers(question, QUESTION_ID7, 4, QUIZ_ID2, false);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID2, new Text("test8"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID8,
-            null, false, true, 0.3);
-    addAnswers(question, QUESTION_ID8, 4, QUIZ_ID2, false);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID2, new Text("test9"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9,
-            null, false, true, 0.2);
-    addAnswers(question, QUESTION_ID9, 4, QUIZ_ID2, false);
-    questionService.save(question);
-
-    // Quiz 3 has 4 questions, 2 are calibration, 2 are collection.
-    // All the questions have null or empty client id.
-    question =
-        new Question(
-            QUIZ_ID3, new Text("test10"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID10,
-            "", false, true, 1.5);
-    addAnswers(question, QUESTION_ID10, 4, QUIZ_ID3, false);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID3, new Text("test11"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID11,
-            "", true, false, 0.7);
-    addAnswers(question, QUESTION_ID11, 4, QUIZ_ID3, true);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID3, new Text("test12"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID12,
-            "", true, false, 0.7);
-    addAnswers(question, QUESTION_ID12, 4, QUIZ_ID3, true);
-    questionService.save(question);
-
-    question =
-        new Question(
-            QUIZ_ID3, new Text("test13"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID13,
-            "", true, false, 0.7);
-    addAnswers(question, QUESTION_ID13, 4, QUIZ_ID3, true);
-    questionService.save(question);
-  }
-
-  protected void initQuizPerformanceService() {
-    if (isInitQuizPerformanceService) {
-      return;
-    }
-    isInitQuizPerformanceService = true;
-    assertNotNull(getQuizPerformanceService());
-    initUserAnswerService();
-    initQuestionService();
-
-    QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID1);
-    quizPerformance.setScore(4.0);
-    quizPerformance.setCorrectScore(1d);
-    quizPerformance.setTotalScore(2d);
-    quizPerformance.setCorrectanswers(1);
-    quizPerformance.setIncorrectanswers(1);
-    quizPerformance.setTotalanswers(4);
-    quizPerformance.setTotalCalibrationAnswers(2);
-    quizPerformanceService.save(quizPerformance);
-
-    quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID2);
-    quizPerformance.setScore(4.0);
-    quizPerformance.setCorrectScore(2d);
-    quizPerformance.setTotalScore(2d);
-    quizPerformance.setCorrectanswers(2);
-    quizPerformance.setIncorrectanswers(0);
-    quizPerformance.setTotalanswers(2);
-    quizPerformance.setTotalCalibrationAnswers(2);
-    quizPerformanceService.save(quizPerformance);
-
-    quizPerformance = new QuizPerformance(QUIZ_ID2, USER_ID1);
-    quizPerformance.setScore(0.8);
-    quizPerformance.setCorrectanswers(1);
-    quizPerformance.setIncorrectanswers(1);
-    quizPerformance.setTotalanswers(2);
-    quizPerformance.setTotalCalibrationAnswers(2);
-    quizPerformanceService.save(quizPerformance);
-
-    quizPerformance = new QuizPerformance(QUIZ_ID3, USER_ID1);
-    quizPerformance.setScore(0.33);
-    quizPerformance.setCorrectanswers(1);
-    quizPerformance.setIncorrectanswers(2);
-    quizPerformance.setTotalanswers(3);
-    quizPerformance.setTotalCalibrationAnswers(2);
-    quizPerformanceService.save(quizPerformance);
-
-    quizPerformance = new QuizPerformance(QUIZ_ID3, USER_ID2);
-    quizPerformance.setScore(0.0);
-    quizPerformance.setCorrectanswers(0);
-    quizPerformance.setIncorrectanswers(3);
-    quizPerformance.setTotalanswers(3);
-    quizPerformance.setTotalCalibrationAnswers(2);
-    quizPerformanceService.save(quizPerformance);
-
-    quizPerformance = new QuizPerformance(QUIZ_ID3, USER_ID4);
-    quizPerformance.setScore(0.667);
-    quizPerformance.setCorrectanswers(2);
-    quizPerformance.setIncorrectanswers(1);
-    quizPerformance.setTotalanswers(3);
-    quizPerformance.setTotalCalibrationAnswers(2);
-    quizPerformanceService.save(quizPerformance);
-  }
-
-  protected void initQuizService() {
-    if (isInitQuizService) {
-      return;
-    }
-    isInitQuizService = true;
-    assertNotNull(getQuizService());
-    initQuestionService();
-    initQuizPerformanceService();
-    initUserAnswerService();
-    initUserReferralService();
-
-    quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
-    quizService.save(new Quiz("Quiz 2", QUIZ_ID2, QuizKind.MULTIPLE_CHOICE));
-    quizService.save(new Quiz("Quiz 3", QUIZ_ID3, QuizKind.MULTIPLE_CHOICE));
-  }
-
-  protected void initUserReferralService() {
-    if (isInitUserReferralService) {
-      return;
-    }
-    isInitUserReferralService = true;
-
-    assertNotNull(getUserReferralService());
-    Browser browser = Browser.valueOf(BROWSER_STRING);
-    UserReferal userReferal = new UserReferal(USER_ID1);
-    userReferal.setQuiz(QUIZ_ID1);
-    userReferal.setBrowser(browser);
-    userReferralService.save(userReferal);
-
-    userReferal = new UserReferal(USER_ID1);
-    userReferal.setQuiz(QUIZ_ID2);
-    userReferal.setBrowser(browser);
-    userReferralService.save(userReferal);
-
-    userReferal = new UserReferal(USER_ID2);
-    userReferal.setQuiz(QUIZ_ID1);
-    userReferal.setBrowser(browser);
-    userReferralService.save(userReferal);
-
-    userReferal = new UserReferal(USER_ID3);
-    userReferal.setQuiz(QUIZ_ID1);
-    userReferal.setBrowser(browser);
-    userReferralService.save(userReferal);
-  }
-
-  protected void initUserService() {
-    if (isInitUserService) {
-      return;
-    }
-    isInitUserService = true;
-
-    assertNotNull(getUserService());
-    userService.save(new User(USER_ID1));
-    userService.save(new User(USER_ID3));
   }
 
   // Returns a list of Question of num * 2 size, each with numChoices answers for the given quizID.

@@ -5,14 +5,21 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.appengine.api.datastore.Text;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.enums.QuestionKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.utils.QuizWebBaseTest;
 
 import java.util.List;
@@ -25,15 +32,20 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initQuizService();
-    initUserService();
-    initQuestionService();
-    initUserAnswerService();
-    initUserAnswerFeedbackService();
-    initExplorationExploitationService();
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(
         getQuizService(), getUserService(), getQuestionService(), getUserAnswerService(),
         getUserAnswerFeedbackService(), getExplorationExploitationService());
+
+    quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
+
+    Question question =
+        new Question(
+            QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID3,
+            QUESTION_CLIENT_ID3, false, true, 0.3);
+    addAnswers(question, QUESTION_ID3, 4, QUIZ_ID1, false);
+    questionService.save(question);
+
+    userService.save(new User(USER_ID3));
   }
 
   @Test

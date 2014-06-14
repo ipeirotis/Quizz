@@ -29,10 +29,8 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initQuizService();
-    initQuestionService();
-
     questionEndpoint = new QuestionEndpoint(getQuizService(), getQuestionService());
+    quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
   }
 
   @Test

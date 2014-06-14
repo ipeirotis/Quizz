@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import us.quizz.entities.AnswerChallengeCounter;
 import us.quizz.entities.UserAnswer;
 import us.quizz.utils.QuizWebBaseTest;
 
@@ -20,12 +21,9 @@ public class UserAnswerEndpointTest extends QuizWebBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initUserAnswerService();
-    initUserService();
-    initAnswerChallengeCounterService();
-
     userAnswerEndpoint = new UserAnswerEndpoint(
         getUserAnswerService(), getUserService(), getAnswerChallengeCounterService());
+    answerChallengeCounterService.save(new AnswerChallengeCounter(QUIZ_ID2, QUESTION_ID9));
   }
 
   @Test
@@ -33,8 +31,11 @@ public class UserAnswerEndpointTest extends QuizWebBaseTest {
     assertNotNull(answerChallengeCounterService.get(QUIZ_ID2, QUESTION_ID9));
     assertEquals((Long) 0L, answerChallengeCounterService.get(QUIZ_ID2, QUESTION_ID9).getCount());
 
-    Long userAnswerID = 6L;
-    UserAnswer userAnswer = userAnswerEndpoint.addAnswerFeedback(
+    UserAnswer userAnswer = userAnswerService.save(
+       new UserAnswer(
+           USER_ID1, QUESTION_ID9, ANSWER_ID0, QUIZ_ID2, true, 1L, UserAnswer.SUBMIT));
+    Long userAnswerID = userAnswer.getId();
+    userAnswer = userAnswerEndpoint.addAnswerFeedback(
         QUIZ_ID2, QUESTION_ID9, userAnswerID, USER_ID1, "new answer feedback",
         "correct value", "http://url_evidence", "WRONG_ANSWER");
 

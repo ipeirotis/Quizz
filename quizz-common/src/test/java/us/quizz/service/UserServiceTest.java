@@ -23,7 +23,13 @@ public class UserServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initUserService();
+    initUserServiceTest();
+  }
+
+  private void initUserServiceTest() {
+    assertNotNull(getUserService());
+    userService.save(new User(USER_ID1));
+    userService.save(new User(USER_ID3));
   }
 
   @Test

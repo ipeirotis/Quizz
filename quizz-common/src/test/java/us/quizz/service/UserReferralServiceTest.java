@@ -3,6 +3,7 @@ package us.quizz.service;
 import com.google.appengine.api.datastore.Text;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import nl.bitwalker.useragentutils.Browser;
@@ -26,7 +27,31 @@ public class UserReferralServiceTest extends QuizBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    initUserReferralService();
+    initUserReferralServiceTest();
+  }
+
+  private void initUserReferralServiceTest() {
+    assertNotNull(getUserReferralService());
+    Browser browser = Browser.valueOf(BROWSER_STRING);
+    UserReferal userReferal = new UserReferal(USER_ID1);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID1);
+    userReferal.setQuiz(QUIZ_ID2);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID2);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
+
+    userReferal = new UserReferal(USER_ID3);
+    userReferal.setQuiz(QUIZ_ID1);
+    userReferal.setBrowser(browser);
+    userReferralService.save(userReferal);
   }
 
   @Test
