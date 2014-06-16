@@ -11,6 +11,7 @@ import us.quizz.enums.QuestionKind;
 import us.quizz.utils.Helper;
 
 import java.lang.Math;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,6 +28,13 @@ public class QuestionStatisticsService {
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
   private QuizPerformanceService quizPerformanceService;
+
+  // Maps from internal answer id -> the information bit for the particular answer.
+  private Map<Integer, Double> answerBitsMap = new HashMap<Integer, Double>();
+  // Maps from internal answer id -> number of UserAnswer for the particular answer.
+  private Map<Integer, Integer> answerCountsMap = new HashMap<Integer, Integer>();
+  // Maps from internal answer id -> log probability correct of the answer.
+  private Map<Integer, Double> answerLogProbMap = new HashMap<Integer, Double>();
 
   @Inject
   public QuestionStatisticsService(
@@ -45,171 +53,196 @@ public class QuestionStatisticsService {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
 
-    int u = userAnswerService.getNumberOfUserAnswersExcludingIDK(Long.parseLong(questionID));
-    question.setHasUserAnswers(u > 0);
-    question.setNumberOfUserAnswers(u);
-
-    int c = userAnswerService.getNumberOfCorrectUserAnswers(Long.parseLong(questionID));
-    question.setNumberOfCorrectUserAnswers(c);
-
-    updateAnswerStatistics(question);
+    resetStatsMap(question);
+    computeAnswerStatistics(question);
+    computeQuestionStatistics(question);
+    computeDifficulty(question);
     questionService.save(question);
     return question;
   }
 
-  // Updates the answer statistics of the given question.
-  // TODO(chunhowt): Refactor this function to make it smaller and unit test it better.
-  private void updateAnswerStatistics(Question question) {
-    String quizID = question.getQuizID();
-    Long questionId = question.getId();
+  // Resets the instance variables of statistics map.
+  private void resetStatsMap(Question question) {
+    answerBitsMap.clear();
+    answerCountsMap.clear();
+    answerLogProbMap.clear();
 
-    // STEP 1: set up the default bits, count and probability for each answer id.
-    // AnswerId -> Bits.
-    Map<Integer, Double> answerBits = new HashMap<Integer, Double>();
-    // AnswerId -> UserAnswer count.
-    Map<Integer, Integer> answerCounts = new HashMap<Integer, Integer>();
-    // AnswerId -> Log Probability correct of the answer.
-    Map<Integer, Double> answerLogProb = new HashMap<Integer, Double>();
     int numAnswers = question.getAnswers().size();
-    for (Answer a : question.getAnswers()) {
-      Integer answerId = a.getInternalID();
-      answerBits.put(answerId, 0.0);
-      answerCounts.put(answerId, 0);
-      // In the beginning, we default to uniform probability for each answer.
-      answerLogProb.put(answerId, Math.log(1.0 / numAnswers));
+    for (Answer answer : question.getAnswers()) {
+      Integer answerId = answer.getInternalID();
+      answerBitsMap.put(answerId, 0.0);
+      answerCountsMap.put(answerId, 0);
+      // Initially, all answers are equally likely.
+      answerLogProbMap.put(answerId, Math.log(1.0 / numAnswers));
     }
+  }
 
-    // STEP 2: loop through all the user answers to aggregate the bits, counts and probability for
-    // each answer id.
-    List<UserAnswer> userAnswers = userAnswerService.getSubmittedUserAnswersForQuestion(questionId);
+  // Returns a list of filtered user answers for the given questions, sorted by timestamp.
+  // This filters away duplicate answers from the same user (keeping only the first one) and
+  // malformed user answer such as having an answer id that is not found in the question. 
+  private List<UserAnswer> getSortedSubmittedUserAnswers(Question question) {
+    List<UserAnswer> userAnswers =
+        userAnswerService.getSubmittedUserAnswersForQuestion(question.getId());
     // Sort UserAnswer result by increasing timestamp. This modifies userAnswers.
     Collections.sort(userAnswers, new Comparator<UserAnswer>() {
       public int compare(UserAnswer userAnswer1, UserAnswer userAnswer2) {
         return (int) (userAnswer1.getTimestamp() - userAnswer2.getTimestamp());
       }
     });
+
     Set<String> userIds = new HashSet<String>();
+    List<UserAnswer> results = new ArrayList<UserAnswer>();
+    for (UserAnswer userAnswer : userAnswers) {
+      // Skips duplicate answers from the same user, taking only the first answer.
+      // TODO(chunhowt): Deal better with duplicate answers.
+      if (userIds.contains(userAnswer.getUserid())) {
+        continue;
+      }
+      // Check that the answerID corresponds to a valid answer.
+      if (question.getAnswer(userAnswer.getAnswerID()) == null) {
+        continue;
+      }
+      results.add(userAnswer);
+      userIds.add(userAnswer.getUserid());
+    }
+    return results;
+  }
+
+  // Updates the instance variables of statistics map for the given question given a user answer's
+  // quality and information bit for a given answerId.
+  private void updateStatsMap(
+      Question question, Double userProb, Double userBits, Integer answerId, Integer numAnswers) {
+    if (!answerBitsMap.containsKey(answerId)) {
+      answerBitsMap.put(answerId, 0.0);
+    }
+    answerBitsMap.put(answerId, answerBitsMap.get(answerId) + userBits);
+
+    if (!answerCountsMap.containsKey(answerId)) {
+      answerCountsMap.put(answerId, 0);
+    } 
+    answerCountsMap.put(answerId, answerCountsMap.get(answerId) + 1);
+
+    // Estimate the probability that the answer is correct
+    // 
+    // NOTE: The computation of correctness below is applicable ONLY
+    // for multiple choice questions. For free-text answers, we need
+    // to use the Chinese Table process described by Dan Weld.
+    // 
+    // TODO(ipeirotis): Given that we are using smoothed maximum likelihood estimated for the
+    // userProb value, the overall probability estimate is going to be overconfident. Need to
+    // check the efficiency of doing some Monte Carlo estimates by sampling repeatedly from
+    // the Beta(correct,incorrect) distribution to get the quality of the user, and then
+    // estimate a distribution for the ProbCorrect.
+    for (Answer answer : question.getAnswers()) {
+      Double currentLogProb = answerLogProbMap.get(answer.getInternalID());
+      if (answer.getInternalID() == answerId) {
+        // If this is the answer chosen by user, multiply it by the new userProb.
+        answerLogProbMap.put(answer.getInternalID(), currentLogProb + Math.log(userProb));
+      } else {
+        // Else, multiply it by assuming that the reverse user (1 - user quality)
+        // picks randomly from the other answers. 
+        answerLogProbMap.put(
+            answer.getInternalID(), currentLogProb + Math.log(((1 - userProb) / (numAnswers - 1))));
+      }     
+    } 
+  }
+
+  // Computes the answer statistics for the given question and updates the instance variables of
+  // statistics map for each answer and the corresponding fields in the answers in the question
+  // passed in.
+  // This includes the information bits, number answers and log probability for each answer.
+  private void computeAnswerStatistics(Question question) {
+    int numAnswers = question.getAnswers().size();
+    List<UserAnswer> userAnswers = getSortedSubmittedUserAnswers(question);
+    String quizID = question.getQuizID();
     for (UserAnswer useranswer : userAnswers) {
       String userId = useranswer.getUserid();
-      if (userIds.contains(userId)) {
-        continue;  // Skip duplicate answers from the same user, taking only the first answer.
-      }
-
       Integer ansId = useranswer.getAnswerID();
-
-      // Check that the ansId corresponds to an answer
-      Answer selectedAnswer = null;
-      for (Answer a : question.getAnswers()) {
-        if (ansId == a.getInternalID()) {
-          selectedAnswer = a;
-          break;
-        }
-      }
-      if (selectedAnswer == null) {
-        continue;
-      }
-      userIds.add(userId);
-
-      Double userBits = 0.0;
-      Double userProb;
+      Answer selectedAnswer = question.getAnswer(ansId);
       QuizPerformance qp = quizPerformanceService.get(quizID, userId);
-      if (qp != null) {
-        Double correct = qp.getCorrectScore();
-        if (correct == null) {
-          correct = 0d;
-        }
-        Double total = qp.getTotalScore();
-        if (total == null) {
-          total = 0d;
-        }
-
-        // The probability that the user is correct. We use Laplacian smoothing
-        // with 1 being added in the nominator and numAnswers in the denominator.
-        userProb = 1.0 * (correct + 1) / (total + numAnswers);
-
-        // Here, we do not count the current question as correct answer & incorrect answer.
-        if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_CALIBRATION) {
-          if (useranswer.getIsCorrect()) {
-            correct--;
-          }
-          total--;
-        } else if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_COLLECTION) {
-          /* TODO(panos)
-          if (userProb > question.getConfidence()) {
-            total--;
-            correct -= selectedAnswer.getProbCorrect();
-          }
-          */
-        }
-
-        // Re estimate userProb.
-        userProb = 1.0 * (correct + 1) / (total + numAnswers);
-        try {
-          userBits = Helper.getInformationGain(userProb, numAnswers);
-        } catch (Exception e) {
-          logger.log(Level.WARNING, "Error when computing bits for user " + userId);
-        }
-      } else {
+      if (qp == null) {
         continue;
       }
 
-      // Update the bits for the answer
-      Double currentBits = answerBits.get(ansId);
-      if (currentBits == null) {
-        currentBits = 0.0;
+      Double userBits = 0.0, userProb = 0.0;
+      Double correct = qp.getCorrectScore();
+      if (correct == null) {
+        correct = 0d;
       }
-      answerBits.put(ansId, currentBits + userBits);
-
-      // Update the counts for the answer
-      Integer currentCount = answerCounts.get(ansId);
-      if (currentCount == null) {
-        currentCount = 0;
+      Double total = qp.getTotalScore();
+      if (total == null) {
+        total = 0d;
       }
-      answerCounts.put(ansId, currentCount + 1);
 
-      // Estimate the probability that the answer is correct
-      //
-      // NOTE: The computation of correctness below is applicable ONLY
-      // for multiple choice questions. For free-text answers, we need
-      // to use the Chinese Table process described by Dan Weld.
-      //
-      // TODO(ipeirotis): Given that we are using smoothed maximum likelihood estimated for the
-      // userProb value, the overall probability estimate is going to be overconfident. Need to
-      // check the efficiency of doing some Monte Carlo estimates by sampling repeatedly from
-      // the Beta(correct,incorrect) distribution to get the quality of the user, and then
-      // estimate a distribution for the ProbCorrect.
-      // TODO(chunhowt): Figure out the computation of answerLogProb here.
-      for (Answer a : question.getAnswers()) {
-        Double currentLogProb = answerLogProb.get(a.getInternalID());
-        // If this is also the answer chosen by the user
-        if (a.getInternalID() == ansId) {
-          answerLogProb.put(a.getInternalID(), currentLogProb + Math.log(userProb));
-        } else {
-          answerLogProb.put(a.getInternalID(),
-                            currentLogProb + Math.log(((1 - userProb) / (numAnswers - 1))));
+      // The probability that the user is correct. We use Laplacian smoothing
+      // with 1 being added in the nominator and numAnswers in the denominator.
+      userProb = 1.0 * (correct + 1) / (total + numAnswers);
+
+      // Here, we do not count the current question as correct answer & incorrect answer.
+      if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_CALIBRATION) {
+        if (useranswer.getIsCorrect()) {
+          correct--;
         }
+        total--;
+      } else if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_COLLECTION) {
+        // TODO(panos): Discount the current question when it is a collection question.
+        // if (userProb > question.getConfidence()) {
+        //   total--;
+        //   correct -= selectedAnswer.getProbCorrect();
+        // }
       }
+
+      // Re-estimate userProb after removing the effect of the current question.
+      userProb = 1.0 * (correct + 1) / (total + numAnswers);
+
+      try {
+        userBits = Helper.getInformationGain(userProb, numAnswers);
+      } catch (Exception e) {
+        logger.log(Level.WARNING, "Error when computing bits for user " + userId);
+      }
+      updateStatsMap(question, userProb, userBits, ansId, numAnswers);
     }
 
-    // STEP 3: Determines the best answer and stores the statistics for question and each answer.
+    Double sumProb = 0.0;
+    for (Double prob : answerLogProbMap.values()) {
+      sumProb += Math.exp(prob);
+    }
+    // Stores the statistics for each answer.
+    for (Answer answer : question.getAnswers()) {
+      answer.setBits(answerBitsMap.get(answer.getInternalID()));
+      answer.setNumberOfPicks(answerCountsMap.get(answer.getInternalID()));
+      Double aProbCorrect = Math.exp(answerLogProbMap.get(answer.getInternalID())) / sumProb;
+      answer.setProbCorrect(aProbCorrect);
+    }
+  }
+
+  // Computes the statistics and best answer for the given question and store them in the given
+  // question.
+  // Note: This requires the instance variables of statistics map to be updated fully.
+  private void computeQuestionStatistics(Question question) {
     Double questionBits = 0.0;
     Double sumProb = 0.0;
     Double maxProb = 0.0;
-    String likelyAnswer = "";
     Boolean isLikelyAnswerCorrect = null;
     Integer likelyAnswerID = 0;
-    // Number of users that are correct, if it is a calibration question.
+    Integer totalAnswers = 0;
     Integer numCorrect = 0;
-    for (Answer a : question.getAnswers()) {
-      Double aProb = Math.exp(answerLogProb.get(a.getInternalID()));
+
+    // Loops through the answers to pick the one with the highest probability as the best answer.
+    for (Answer answer : question.getAnswers()) {
+      Integer answerID = answer.getInternalID();
+      Double aProb = Math.exp(answerLogProbMap.get(answerID));
+      totalAnswers += answerCountsMap.get(answerID);
+      if (answer.getKind() == AnswerKind.GOLD) {
+        numCorrect = answerCountsMap.get(answerID);
+      }
+
       if (maxProb < aProb) {
         maxProb = aProb;
-        likelyAnswer = a.getText();
-        likelyAnswerID = a.getInternalID();
-        if (a.getKind() == AnswerKind.GOLD) {
+        likelyAnswerID = answerID;
+        if (answer.getKind() == AnswerKind.GOLD) {
           isLikelyAnswerCorrect = true;
-          numCorrect = answerCounts.get(a.getInternalID());
-        } else if (a.getKind() == AnswerKind.INCORRECT) {
+        } else if (answer.getKind() == AnswerKind.INCORRECT) {
           isLikelyAnswerCorrect = false;
         } else {
           isLikelyAnswerCorrect = null;
@@ -217,36 +250,35 @@ public class QuestionStatisticsService {
         // TODO(chunhowt): Don't use boolean.
       }
       sumProb += aProb;
-      questionBits += answerBits.get(a.getInternalID());
+      questionBits += answerBitsMap.get(answerID);
     }
 
+    // If it is a collection question, the numCorrect is the one for the best answer.
+    if (!question.getHasGoldAnswer()) {
+      numCorrect = answerCountsMap.get(likelyAnswerID);
+    }
     question.setTotalUserScore(questionBits);
     question.setConfidence(maxProb / sumProb);
-    question.setLikelyAnswer(likelyAnswer);
+    question.setLikelyAnswer(question.getAnswer(likelyAnswerID).getText());
     question.setLikelyAnswerID(likelyAnswerID);
     question.setIsLikelyAnswerCorrect(isLikelyAnswerCorrect);
+    question.setHasUserAnswers(totalAnswers > 0);
+    question.setNumberOfUserAnswers(totalAnswers);
+    question.setNumberOfCorrectUserAnswers(numCorrect);
+  }
 
-    Integer nonDuplicateAnswers = 0;   // we only count 1 answer per user
-    for (Answer a : question.getAnswers()) {
-      nonDuplicateAnswers += answerCounts.get(a.getInternalID());
-      Double aBits = answerBits.get(a.getInternalID());
-      a.setBits(aBits);
-      Integer aCount = answerCounts.get(a.getInternalID());
-      a.setNumberOfPicks(aCount);
-      Double aProbCorrect = Math.exp(answerLogProb.get(a.getInternalID())) / sumProb;
-      a.setProbCorrect(aProbCorrect);
-    }
-
-    if (nonDuplicateAnswers == 0) {
+  // Computes the difficulty of the question given and store it in the question given.
+  // Note: This requires the question's numberOfUserAnswers and numberOfCorrectUserAnswers
+  // field to be populated.
+  private void computeDifficulty(Question question) {
+    Integer totalAnswers = question.getNumberOfUserAnswers();
+    Integer numCorrect = question.getNumberOfCorrectUserAnswers();
+    if (totalAnswers == 0) {
       // If this question has not been answered, its difficulty is the prior.
       question.setDifficulty(question.getDifficultyPrior());
-    } else if (question.getHasGoldAnswer()) {
-      // If question is a gold question, we can compute the difficulty exactly.
-      question.setDifficulty(1.0 - numCorrect / new Double(nonDuplicateAnswers));
     } else {
-      // If question is silver, we can only approximate it using the best answer.
-      question.setDifficulty(1.0 - answerCounts.get(likelyAnswerID)
-          / new Double(nonDuplicateAnswers));
+      // Else, we can compute the difficulty exactly.
+      question.setDifficulty(1.0 - numCorrect / new Double(totalAnswers));
     }
   }
 }

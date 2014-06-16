@@ -131,8 +131,9 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     Question question = questionStatisticsService.updateStatistics("" + QUESTION_ID1);
     assertTrue(question.getHasUserAnswers());
     // Two answers are from USER_1 and the other answer is from USER_2.
-    assertEquals((Integer)3, question.getNumberOfUserAnswers());
-    assertEquals((Integer)2, question.getNumberOfCorrectUserAnswers());
+    // But one answer (second answer of USER_1) is a duplicate, so we ignore it.
+    assertEquals((Integer)2, question.getNumberOfUserAnswers());
+    assertEquals((Integer)1, question.getNumberOfCorrectUserAnswers());
 
     int numChoices = 4;
     assertEquals(numChoices, question.getAnswers().size());
