@@ -24,50 +24,77 @@ public class Question implements Serializable {
   private Long id;
   // The quizID of the parent quiz
   private String quizID;
+
   // The instruction of the question. Can be any HTML-compliant code.
   private Text instruction;
+
   // The text of the question. Can be any HTML-compliant code
   private Text questionText;
+
   // The id assigned by the client/source for this question to allow us to rejoin the
   // question with the original source.
   private String clientID;
+
   // The type of the question. Should match the type of the quiz that is added to
   private QuestionKind kind;
+
   // Computed statistic about the number of users that answered this question
   private Integer numberOfUserAnswers;
+
   // Computed statistic on whether the question has any user answers
   private Boolean hasUserAnswers;
+
   // Computed statistic on how many users answered this question correctly.
   // Applicable only for calibration questions. 
   private Integer numberOfCorrentUserAnswers;
+
   // Computed statistic showing the the total number of user bits assigned
   // to this question by the users that answered this question
   // Used to prioritize exposure of questions to users, favoring questions with low score
   private Double totalUserScore;
+
   // Whether any of the answers of the question is GOLD. Should be updated
   // after adding the answers
   private Boolean hasGoldAnswer;
+
   // Whether any of the answers of the question is SILVER. Should be updated
   // after adding the answers
   private Boolean hasSilverAnswers;
+
   // After computing the probability of correctness for each answer, the
   // confidence is the highest probability 
   private Double confidence;
+
   // After computing the probability of correctness for each answer,
   // this is the answer with the highest probability 
   private String likelyAnswer;
+
   // ID of most likely answer
   private Integer likelyAnswerID;
+
   // If likelyAnswer matches a GOLD answer, we set this to true
   private Boolean isLikelyAnswerCorrect;
+
   // The feedback that we give to the user to explain why a particular answer 
   // was correct (or incorrect)
   private String feedback;
+
   private ArrayList<Answer> answers;
+
   // The prior difficulty of a question between [0, 1] (0 is easiest); this is computed offline
   private Double difficultyPrior;
+
   // The difficulty of this question between [0, 1] (0 is easiest); this is computed online
   private Double difficulty;
+
+  // Answer ID of best answer using BAYES_PROB answer aggregation strategy.
+  private Integer bestBayesProbAnswerID;
+
+  // Answer ID of best answer using MAJORITY_VOTE answer aggregation strategy.
+  private Integer bestMajorityVoteProbAnswerID;
+
+  // Answer ID of best answer using WEIGHTED_VOTE answer aggregation strategy.
+  private Integer bestWeightedVoteProbAnswerID;
 
   //for Objectify
   @SuppressWarnings("unused")
@@ -283,5 +310,29 @@ public class Question implements Serializable {
 
   public void setLikelyAnswerID(Integer likelyAnswerID) {
     this.likelyAnswerID = likelyAnswerID;
+  }
+
+  public Integer getBestBayesProbAnswerID() {
+    return bestBayesProbAnswerID;
+  }
+
+  public void setBestBayesProbAnswerID(Integer bestAnswerID) {
+    this.bestBayesProbAnswerID = bestAnswerID;
+  }
+
+  public Integer getBestWeightedVoteProbAnswerID() {
+    return bestWeightedVoteProbAnswerID;
+  }
+
+  public void setBestWeightedVoteProbAnswerID(Integer bestAnswerID) {
+    this.bestWeightedVoteProbAnswerID = bestAnswerID;
+  }
+
+  public Integer getBestMajorityVoteProbAnswerID() {
+    return bestMajorityVoteProbAnswerID;
+  }
+
+  public void setBestMajorityVoteProbAnswerID(Integer bestAnswerID) {
+    this.bestMajorityVoteProbAnswerID = bestAnswerID;
   }
 }

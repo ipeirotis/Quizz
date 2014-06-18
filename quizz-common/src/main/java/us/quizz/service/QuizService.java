@@ -2,8 +2,12 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
+import us.quizz.entities.Answer;
+import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
+import us.quizz.enums.AnswerAggregationStrategy;
+import us.quizz.enums.AnswerKind;
 import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.QuizRepository;
 
@@ -35,6 +39,43 @@ public class QuizService extends OfyBaseService<Quiz> {
     params.put("quizID", quizID);
     userAnswerService.deleteAll(userAnswerService.listAll(params));
     questionService.deleteAll(questionService.listAll(params));
+  }
+
+  private double computeQuizQuality(String quizID, AnswerAggregationStrategy strategy) {
+    int total = 0;
+    int correct = 0;
+    List<Question> questions = questionService.getQuizQuestions(quizID);
+    for (Question question : questions) {
+      if (!question.getHasGoldAnswer()) {
+        continue;
+      }
+
+      ++total;
+      Integer bestAnswerID = -1;
+      switch (strategy) {
+        case BAYES_PROB:
+          bestAnswerID = question.getBestBayesProbAnswerID();
+          break;
+        case WEIGHTED_VOTE:
+          bestAnswerID = question.getBestWeightedVoteProbAnswerID();
+          break;
+        case MAJORITY_VOTE:
+          bestAnswerID = question.getBestMajorityVoteProbAnswerID();
+          break;
+        default:
+          break;
+      }
+      if (bestAnswerID == null) {
+        continue;
+      }
+      if (question.getAnswer(bestAnswerID) == null) {
+        continue;
+      }
+      if (AnswerKind.GOLD.equals(question.getAnswer(bestAnswerID).getKind())) {
+        ++correct;
+      }
+    }
+    return total == 0 ? 0.0 : correct * 1.0 / total;
   }
 
   public Quiz updateQuizCounts(String quizID) {
@@ -88,6 +129,13 @@ public class QuizService extends OfyBaseService<Quiz> {
       quiz.setAvgAnswerCorrectness(
           1.0 * quiz.getCorrectAnswers() / quiz.getTotalAnswers());
     }
+
+    quiz.setBayesProbQuizQuality(
+        computeQuizQuality(quizID, AnswerAggregationStrategy.BAYES_PROB));
+    quiz.setWeightedVoteProbQuizQuality(
+        computeQuizQuality(quizID, AnswerAggregationStrategy.WEIGHTED_VOTE));
+    quiz.setMajorityVoteProbQuizQuality(
+        computeQuizQuality(quizID, AnswerAggregationStrategy.MAJORITY_VOTE));
     return save(quiz);
   }
 }

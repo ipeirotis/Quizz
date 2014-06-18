@@ -22,17 +22,35 @@ public class Answer implements Serializable{
   private JsonObject metadata;
   private Long questionID;
   private String quizID;
+
   // The prior probability that this answer is correct, given by the client.
   private Double probability;
+
+  // Number of times this answer is picked by users.
   private Integer numberOfPicks;
+
   // The total number of bits assigned to this answer
   // Calculated as the sum of the average information gain for all users
   // that picked this answer.
   private Double bits;
-  // The posterior (estimated) probability that the given answer is correct, 
-  // computed based on the answers from the users.
+
+  // The posterior (estimated) probability that the given answer is correct, computed based on
+  // the answers from the users. This is computed using the best AnswerAggregationStrategy
+  // we have and should be used instead of the other posterior probabilities.
   private Double probCorrect;
-  
+
+  // The bayesian posterior probability that a given answer is correct, computed by assuming
+  // each of the user is independent. Refer to BAYES_PROB AnswerAggregationStrategy for more info.
+  private Double bayesProb;
+
+  // The posterior probability that a given answer is correct, computed using the majority
+  // votes of the user. Refer to MAJORITY_VOTE AnswerAggregationStrategy for more info.
+  private Double majorityVoteProb;
+
+  // The posterior probability that a given answer is correct, computed using the weighted
+  // votes of the user. Refer to WEIGHTED_VOTE AnswerAggregationStrategy for more info.
+  private Double weightedVoteProb;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Answer(){}
@@ -172,5 +190,29 @@ public class Answer implements Serializable{
 
   public void setParent(Key parent) {
     this.parent = parent;
+  }
+
+  public Double getBayesProb() {
+    return this.bayesProb;
+  }
+
+  public void setBayesProb(Double bayesProb) {
+    this.bayesProb = bayesProb;
+  }
+
+  public Double getMajorityVoteProb() {
+    return this.majorityVoteProb;
+  }
+
+  public void setMajorityVoteProb(Double majorityVoteProb) {
+    this.majorityVoteProb = majorityVoteProb;
+  }
+
+  public Double getWeightedVoteProb() {
+    return this.weightedVoteProb;
+  }
+
+  public void setWeightedVoteProb(Double weightedVoteProb) {
+    this.weightedVoteProb = weightedVoteProb;
   }
 }

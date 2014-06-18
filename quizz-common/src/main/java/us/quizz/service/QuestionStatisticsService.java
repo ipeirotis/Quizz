@@ -2,10 +2,13 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.utils.Helper;
@@ -24,17 +27,12 @@ import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
+  private static final AnswerAggregationStrategy ANSWER_AGGREGATION_STRATEGY =
+      AnswerAggregationStrategy.BAYES_PROB;
 
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
   private QuizPerformanceService quizPerformanceService;
-
-  // Maps from internal answer id -> the information bit for the particular answer.
-  private Map<Integer, Double> answerBitsMap = new HashMap<Integer, Double>();
-  // Maps from internal answer id -> number of UserAnswer for the particular answer.
-  private Map<Integer, Integer> answerCountsMap = new HashMap<Integer, Integer>();
-  // Maps from internal answer id -> log probability correct of the answer.
-  private Map<Integer, Double> answerLogProbMap = new HashMap<Integer, Double>();
 
   @Inject
   public QuestionStatisticsService(
@@ -53,27 +51,34 @@ public class QuestionStatisticsService {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
 
-    resetStatsMap(question);
-    computeAnswerStatistics(question);
-    computeQuestionStatistics(question);
+    // Maps from internal answer id -> the information bit for the particular answer.
+    Map<Integer, Double> answerBitsMap = new HashMap<Integer, Double>();
+    // Maps from internal answer id -> number of UserAnswer for the particular answer.
+    Map<Integer, Integer> answerCountsMap = new HashMap<Integer, Integer>();
+    // Maps from internal answer id -> list of (user probability, whether user picks this answer) of
+    // users giving the answer.
+    Map<Integer, List<Pair<Double, Boolean>>> answerProbMap =
+        new HashMap<Integer, List<Pair<Double, Boolean>>>();
+
+    resetStatsMap(question, answerBitsMap, answerCountsMap, answerProbMap);
+    computeAnswerStatistics(question, answerBitsMap, answerCountsMap, answerProbMap);
+    computeQuestionStatistics(question, answerBitsMap, answerCountsMap, answerProbMap);
     computeDifficulty(question);
     questionService.save(question);
     return question;
   }
 
   // Resets the instance variables of statistics map.
-  private void resetStatsMap(Question question) {
-    answerBitsMap.clear();
-    answerCountsMap.clear();
-    answerLogProbMap.clear();
-
+  private void resetStatsMap(Question question,
+      Map<Integer, Double> answerBitsMap,
+      Map<Integer, Integer> answerCountsMap,
+      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
     int numAnswers = question.getAnswers().size();
     for (Answer answer : question.getAnswers()) {
       Integer answerId = answer.getInternalID();
       answerBitsMap.put(answerId, 0.0);
       answerCountsMap.put(answerId, 0);
-      // Initially, all answers are equally likely.
-      answerLogProbMap.put(answerId, Math.log(1.0 / numAnswers));
+      answerProbMap.put(answerId, new ArrayList<Pair<Double, Boolean>>());
     }
   }
 
@@ -111,15 +116,20 @@ public class QuestionStatisticsService {
   // Updates the instance variables of statistics map for the given question given a user answer's
   // quality and information bit for a given answerId.
   private void updateStatsMap(
-      Question question, Double userProb, Double userBits, Integer answerId, Integer numAnswers) {
+      Question question, Double userProb, Double userBits, Integer answerId, Integer numAnswers,
+      Map<Integer, Double> answerBitsMap,
+      Map<Integer, Integer> answerCountsMap,
+      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
     if (!answerBitsMap.containsKey(answerId)) {
+      logger.warning("Unrecognized new answerID in answerBitsMap: " + answerId);
       answerBitsMap.put(answerId, 0.0);
     }
     answerBitsMap.put(answerId, answerBitsMap.get(answerId) + userBits);
 
     if (!answerCountsMap.containsKey(answerId)) {
+      logger.warning("Unrecognized new answerID in answerCountsMap: " + answerId);
       answerCountsMap.put(answerId, 0);
-    } 
+    }
     answerCountsMap.put(answerId, answerCountsMap.get(answerId) + 1);
 
     // Estimate the probability that the answer is correct
@@ -134,24 +144,146 @@ public class QuestionStatisticsService {
     // the Beta(correct,incorrect) distribution to get the quality of the user, and then
     // estimate a distribution for the ProbCorrect.
     for (Answer answer : question.getAnswers()) {
-      Double currentLogProb = answerLogProbMap.get(answer.getInternalID());
-      if (answer.getInternalID() == answerId) {
-        // If this is the answer chosen by user, multiply it by the new userProb.
-        answerLogProbMap.put(answer.getInternalID(), currentLogProb + Math.log(userProb));
+      List<Pair<Double, Boolean>> currentProb = answerProbMap.get(answer.getInternalID());
+      if (currentProb == null) {
+        logger.warning("Unrecognized new answerID in answerProbMap: " + answerId);
+        currentProb = new ArrayList<Pair<Double, Boolean>>();
+      }
+      currentProb.add(Pair.of(userProb, answer.getInternalID() == answerId));
+      answerProbMap.put(answer.getInternalID(), currentProb);
+    }
+  }
+
+  // Computes the bayesian posterior probability for each answer of the question based on the list
+  // of user quality stored in the global answerProbMap, and stores the result in the Answer
+  // entity of the question given.
+  // This assumes that each of the user is independent and thus the probability for each answer is
+  //   answerProb = PRODUCT(userProb)
+  //   where userProb is just the user quality if the answer is the one the user picks and
+  //   (1 - user quality) / (numAnswers - 1) if the answer isn't the one the user picks.
+  // Refer to BAYES_PROB AnswerAggregationStrategy for more information.
+  private void computeBayesProb(Question question,
+      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
+    double sumProb = 0.0;
+    double maxProb = 0.0;
+    int bestAnswerID = -1;
+    Integer numAnswer = question.getAnswers().size();
+    for (Answer answer : question.getAnswers()) {
+      Integer internalID = answer.getInternalID();
+      List<Pair<Double, Boolean>> probs = answerProbMap.get(internalID);
+      Double answerProb = Math.log(1.0 / numAnswer);
+      for (Pair<Double, Boolean> prob : probs) {
+        if (prob.getRight()) {
+          answerProb += Math.log(prob.getLeft());
+        } else {
+          answerProb += Math.log((1.0 - prob.getLeft()) / (numAnswer - 1));
+        }
+      }
+      answerProb = Math.exp(answerProb);
+      answer.setBayesProb(answerProb);
+      sumProb += answerProb;
+      if (answerProb > maxProb) {
+        maxProb = answerProb;
+        bestAnswerID = answer.getInternalID();
+      }
+    }
+
+    // Normalize bayesProb.
+    for (Answer answer : question.getAnswers()) {
+      answer.setBayesProb(answer.getBayesProb() / sumProb);
+    }
+    question.setBestBayesProbAnswerID(bestAnswerID);
+  }
+
+  // Computes the posterior probability for each answer based on the majority votes, and stores
+  // the result in the Answer entitiy of the question given.
+  private void computeMajorityVoteProb(Question question,
+      Map<Integer, Integer> answerCountsMap) {
+    int sumVotes = 0;
+    int maxVotes = 0;
+    int bestAnswerID = -1;
+    for (Answer answer : question.getAnswers()) {
+      Integer numVotes = answerCountsMap.get(answer.getInternalID());
+      answer.setMajorityVoteProb(numVotes * 1.0);
+      sumVotes += numVotes;
+      if (numVotes > maxVotes) {
+        maxVotes = numVotes;
+        bestAnswerID = answer.getInternalID();
+      }
+    }
+
+    // Normalize majorityVoteProb.
+    for (Answer answer : question.getAnswers()) {
+      if (sumVotes > 0) {
+        answer.setMajorityVoteProb(answer.getMajorityVoteProb() / sumVotes);
       } else {
-        // Else, multiply it by assuming that the reverse user (1 - user quality)
-        // picks randomly from the other answers. 
-        answerLogProbMap.put(
-            answer.getInternalID(), currentLogProb + Math.log(((1 - userProb) / (numAnswers - 1))));
-      }     
-    } 
+        answer.setMajorityVoteProb(1.0 / question.getAnswers().size());
+      }
+    }
+    question.setBestMajorityVoteProbAnswerID(bestAnswerID);
+  }
+
+  // Computes the posterior probability for each answer based on the weighted votes, and stores
+  // the result in the Answer entitiy of the question given. Each vote is weighted by the user
+  // quality.
+  private void computeWeightedVoteProb(Question question,
+      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
+    double weightedVotes = 0.0;
+    double maxVotes = 0.0;
+    int bestAnswerID = -1;
+    for (Answer answer : question.getAnswers()) {
+      List<Pair<Double, Boolean>> probs = answerProbMap.get(answer.getInternalID());
+      double votes = 0.0;
+      for (Pair<Double, Boolean> prob : probs) {
+        if (prob.getRight()) {
+          votes += prob.getLeft();
+        }
+      }
+      answer.setWeightedVoteProb(votes);
+      weightedVotes += votes;
+      if (votes > maxVotes) {
+        maxVotes = votes;
+        bestAnswerID = answer.getInternalID();
+      }
+    }
+
+    // Normalize weightedVoteProb.
+    for (Answer answer : question.getAnswers()) {
+      if (weightedVotes > 0) {
+        answer.setWeightedVoteProb(answer.getWeightedVoteProb() / weightedVotes);
+      } else {
+        answer.setWeightedVoteProb(1.0 / question.getAnswers().size());
+      }
+    }
+    question.setBestWeightedVoteProbAnswerID(bestAnswerID);
+  }
+
+  private void computeBestProbCorrect(Question question) {
+    for (Answer answer : question.getAnswers()) {
+      switch (ANSWER_AGGREGATION_STRATEGY) {
+        case BAYES_PROB:
+          answer.setProbCorrect(answer.getBayesProb());
+          break;
+        case MAJORITY_VOTE:
+          answer.setProbCorrect(answer.getMajorityVoteProb());
+          break;
+        case WEIGHTED_VOTE:
+          answer.setProbCorrect(answer.getWeightedVoteProb());
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   // Computes the answer statistics for the given question and updates the instance variables of
   // statistics map for each answer and the corresponding fields in the answers in the question
   // passed in.
   // This includes the information bits, number answers and log probability for each answer.
-  private void computeAnswerStatistics(Question question) {
+  private void computeAnswerStatistics(Question question,
+      Map<Integer, Double> answerBitsMap,
+      Map<Integer, Integer> answerCountsMap,
+      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
     int numAnswers = question.getAnswers().size();
     List<UserAnswer> userAnswers = getSortedSubmittedUserAnswers(question);
     String quizID = question.getQuizID();
@@ -200,26 +332,31 @@ public class QuestionStatisticsService {
       } catch (Exception e) {
         logger.log(Level.WARNING, "Error when computing bits for user " + userId);
       }
-      updateStatsMap(question, userProb, userBits, ansId, numAnswers);
+      updateStatsMap(question, userProb, userBits, ansId, numAnswers,
+          answerBitsMap, answerCountsMap, answerProbMap);
     }
 
-    Double sumProb = 0.0;
-    for (Double prob : answerLogProbMap.values()) {
-      sumProb += Math.exp(prob);
-    }
     // Stores the statistics for each answer.
     for (Answer answer : question.getAnswers()) {
-      answer.setBits(answerBitsMap.get(answer.getInternalID()));
-      answer.setNumberOfPicks(answerCountsMap.get(answer.getInternalID()));
-      Double aProbCorrect = Math.exp(answerLogProbMap.get(answer.getInternalID())) / sumProb;
-      answer.setProbCorrect(aProbCorrect);
+      Integer internalID = answer.getInternalID();
+      answer.setBits(answerBitsMap.get(internalID));
+      answer.setNumberOfPicks(answerCountsMap.get(internalID));
     }
+
+    computeBayesProb(question, answerProbMap);
+    computeMajorityVoteProb(question, answerCountsMap);
+    computeWeightedVoteProb(question, answerProbMap);
+    computeBestProbCorrect(question);
   }
 
   // Computes the statistics and best answer for the given question and store them in the given
   // question.
-  // Note: This requires the instance variables of statistics map to be updated fully.
-  private void computeQuestionStatistics(Question question) {
+  // Note: This requires the instance variables of statistics map to be updated fully and the
+  // probCorrect field of the answer to be populated.
+  private void computeQuestionStatistics(Question question,
+      Map<Integer, Double> answerBitsMap,
+      Map<Integer, Integer> answerCountsMap,
+      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
     Double questionBits = 0.0;
     Double sumProb = 0.0;
     Double maxProb = 0.0;
@@ -231,7 +368,7 @@ public class QuestionStatisticsService {
     // Loops through the answers to pick the one with the highest probability as the best answer.
     for (Answer answer : question.getAnswers()) {
       Integer answerID = answer.getInternalID();
-      Double aProb = Math.exp(answerLogProbMap.get(answerID));
+      Double aProb = answer.getProbCorrect();
       totalAnswers += answerCountsMap.get(answerID);
       if (answer.getKind() == AnswerKind.GOLD) {
         numCorrect = answerCountsMap.get(answerID);

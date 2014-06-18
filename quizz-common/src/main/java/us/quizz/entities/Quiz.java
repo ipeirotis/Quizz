@@ -86,6 +86,24 @@ public class Quiz implements Serializable {
   // The number of questions for the quiz that have gold answers
   private Integer gold;
 
+  // The quality of quiz's bestAnswer for all calibration questions (percentage of calibration
+  // questions having the correct answer chosen as likelyAnswer) based on the BAYES_PROB
+  // AnswerAggregationStrategy.
+  // Ranges from [0, 1]. 1.0 means we did perfectly on the quiz's calibration answer.
+  private Double bayesProbQuizQuality;
+
+  // The quality of quiz's bestAnswer for all calibration questions (percentage of calibration
+  // questions having the correct answer chosen as likelyAnswer) based on the MAJORITY_VOTE
+  // AnswerAggregationStrategy. 
+  // Ranges from [0, 1]. 1.0 means we did perfectly on the quiz's calibration answer.
+  private Double majorityVoteProbQuizQuality;
+
+  // The quality of quiz's bestAnswer for all calibration questions (percentage of calibration
+  // questions having the correct answer chosen as likelyAnswer) based on the WEIGHTED_VOTE
+  // AnswerAggregationStrategy. 
+  // Ranges from [0, 1]. 1.0 means we did perfectly on the quiz's calibration answer.
+  private Double weightedVoteProbQuizQuality;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Quiz(){}
@@ -293,5 +311,29 @@ public class Quiz implements Serializable {
   public void setShowOnDefault(Boolean showOnDefault) {
     Preconditions.checkNotNull(showOnDefault);
     this.showOnDefault = showOnDefault;
+  }
+
+  public Double getBayesProbQuizQuality() {
+    return this.bayesProbQuizQuality;
+  }
+
+  public void setBayesProbQuizQuality(Double bayesProbQuizQuality) {
+    this.bayesProbQuizQuality = bayesProbQuizQuality;
+  }
+
+  public Double getMajorityVoteProbQuizQuality() {
+    return this.majorityVoteProbQuizQuality;
+  }
+
+  public void setMajorityVoteProbQuizQuality(Double majorityVoteProbQuizQuality) {
+    this.majorityVoteProbQuizQuality = majorityVoteProbQuizQuality;
+  }
+
+  public Double getWeightedVoteProbQuizQuality() {
+    return this.weightedVoteProbQuizQuality;
+  }
+
+  public void setWeightedVoteProbQuizQuality(Double weightedVoteProbQuizQuality) {
+    this.weightedVoteProbQuizQuality = weightedVoteProbQuizQuality;
   }
 }

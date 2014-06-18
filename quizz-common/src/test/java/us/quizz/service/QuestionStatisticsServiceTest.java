@@ -115,11 +115,26 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
         Helper.getInformationGain(user1Quality, numChoices), question.getTotalUserScore(), 0.01);
 
     // The answer chosen by user will have probability = userProb.
-    assertEquals(user1Quality, question.getAnswer(0).getProbCorrect(), 0.01);
+    assertEquals(user1Quality, question.getAnswer(0).getBayesProb(), 0.01);
     // While each of the other answer will have probability (1 - userProb) / 3.
-    assertEquals((1 - user1Quality) / 3, question.getAnswer(1).getProbCorrect(), 0.01);
-    assertEquals((1 - user1Quality) / 3, question.getAnswer(2).getProbCorrect(), 0.01);
-    assertEquals((1 - user1Quality) / 3, question.getAnswer(3).getProbCorrect(), 0.01);
+    assertEquals((1 - user1Quality) / 3, question.getAnswer(1).getBayesProb(), 0.01);
+    assertEquals((1 - user1Quality) / 3, question.getAnswer(2).getBayesProb(), 0.01);
+    assertEquals((1 - user1Quality) / 3, question.getAnswer(3).getBayesProb(), 0.01);
+    assertEquals((Integer) 0, question.getBestBayesProbAnswerID());
+
+    // Only answer 0 is ever picked, so the majority vote prob will give it all the probability.
+    assertEquals(1.0, question.getAnswer(0).getMajorityVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(1).getMajorityVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(2).getMajorityVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(3).getMajorityVoteProb(), 0.01);
+    assertEquals((Integer) 0, question.getBestMajorityVoteProbAnswerID());
+
+    // Only answer 0 is ever picked, so the weighted vote prob will give it all the probability.
+    assertEquals(1.0, question.getAnswer(0).getWeightedVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(1).getWeightedVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(2).getWeightedVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(3).getWeightedVoteProb(), 0.01);
+    assertEquals((Integer) 0, question.getBestWeightedVoteProbAnswerID());
 
     // The question confidence is the highest probCorrect.
     assertEquals(user1Quality, question.getConfidence(), 0.01);
@@ -182,10 +197,29 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     double probAnswer1 = (1 - user1QualityWithoutQ1) / 3 * (1 - user2QualityWithoutQ1) / 3;
     double probAnswer2 = (1 - user1QualityWithoutQ1) / 3 * (1 - user2QualityWithoutQ1) / 3;
     double totalUnnormalizedProb = (probAnswer0 + probAnswer1 + probAnswer2 + probAnswer3);
-    assertEquals(probAnswer0 / totalUnnormalizedProb, question.getAnswer(0).getProbCorrect(), 0.01);
-    assertEquals(probAnswer1 / totalUnnormalizedProb, question.getAnswer(1).getProbCorrect(), 0.01);
-    assertEquals(probAnswer2 / totalUnnormalizedProb, question.getAnswer(2).getProbCorrect(), 0.01);
-    assertEquals(probAnswer3 / totalUnnormalizedProb, question.getAnswer(3).getProbCorrect(), 0.01);
+    assertEquals(probAnswer0 / totalUnnormalizedProb, question.getAnswer(0).getBayesProb(), 0.01);
+    assertEquals(probAnswer1 / totalUnnormalizedProb, question.getAnswer(1).getBayesProb(), 0.01);
+    assertEquals(probAnswer2 / totalUnnormalizedProb, question.getAnswer(2).getBayesProb(), 0.01);
+    assertEquals(probAnswer3 / totalUnnormalizedProb, question.getAnswer(3).getBayesProb(), 0.01);
+    assertEquals((Integer) 3, question.getBestBayesProbAnswerID());
+
+    // Only answer 0 and 3 are ever picked, so the majority vote prob will give it half the
+    // probability each.
+    assertEquals(0.5, question.getAnswer(0).getMajorityVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(1).getMajorityVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(2).getMajorityVoteProb(), 0.01);
+    assertEquals(0.5, question.getAnswer(3).getMajorityVoteProb(), 0.01);
+    // For now, the first best answer is the best, if there is a tie.
+    assertEquals((Integer) 0, question.getBestMajorityVoteProbAnswerID());
+
+    double sumWeightedVotes = user1QualityWithoutQ1 + user2QualityWithoutQ1;
+    assertEquals(user2QualityWithoutQ1 / sumWeightedVotes,
+                 question.getAnswer(0).getWeightedVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(1).getWeightedVoteProb(), 0.01);
+    assertEquals(0.0, question.getAnswer(2).getWeightedVoteProb(), 0.01);
+    assertEquals(user1QualityWithoutQ1 / sumWeightedVotes,
+                 question.getAnswer(3).getWeightedVoteProb(), 0.01);
+    assertEquals((Integer) 3, question.getBestWeightedVoteProbAnswerID());
 
     // The question confidence is the highest probCorrect.
     assertEquals(probAnswer3 / totalUnnormalizedProb, question.getConfidence(), 0.01);
