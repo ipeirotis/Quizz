@@ -1,21 +1,5 @@
 package us.quizz.service;
 
-import com.google.inject.Inject;
-
-import com.googlecode.objectify.cmd.Query;
-
-import us.quizz.entities.Answer;
-import us.quizz.entities.Question;
-import us.quizz.entities.UserAnswer;
-import us.quizz.enums.AnswerKind;
-import us.quizz.enums.QuestionKind;
-import us.quizz.ofy.OfyBaseService;
-import us.quizz.repository.QuestionRepository;
-import us.quizz.repository.UserAnswerRepository;
-import us.quizz.utils.CachePMF;
-import us.quizz.utils.LevenshteinAlgorithm;
-import us.quizz.utils.MemcacheKey;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import us.quizz.entities.Answer;
+import us.quizz.entities.Question;
+import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerKind;
+import us.quizz.ofy.OfyBaseService;
+import us.quizz.repository.QuestionRepository;
+import us.quizz.repository.UserAnswerRepository;
+import us.quizz.utils.CachePMF;
+import us.quizz.utils.LevenshteinAlgorithm;
+import us.quizz.utils.MemcacheKey;
+
+import com.google.inject.Inject;
+import com.googlecode.objectify.cmd.Query;
 
 public class QuestionService extends OfyBaseService<Question> {
   @SuppressWarnings("unused")

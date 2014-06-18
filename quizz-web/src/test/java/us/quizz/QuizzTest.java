@@ -7,11 +7,13 @@ import static org.mockito.Mockito.when;
 
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.ForbiddenException;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -50,6 +52,7 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.AuthService;
 import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExperimentService;
 import us.quizz.service.ExplorationExploitationService;
@@ -93,7 +96,8 @@ public class QuizzTest {
           new LocalTaskQueueTestConfig()
               .setQueueXmlPath("src/main/webapp/WEB-INF/queue.xml")
               .setDisableAutoTaskExecution(true),
-          new LocalMemcacheServiceTestConfig())
+          new LocalMemcacheServiceTestConfig(),
+          new LocalUserServiceTestConfig().setOAuthIsAdmin(true))
       .setEnvEmail("test@example.com")
       .setEnvIsAdmin(true)
       .setEnvIsLoggedIn(true);
@@ -116,6 +120,7 @@ public class QuizzTest {
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
   private ExperimentRepository experimentRepository;
 
+  private AuthService authService;
   private AnswerChallengeCounterService answerChallengeCounterService;
   private QuestionService questionService;
   private ExperimentService experimentService;
@@ -161,6 +166,7 @@ public class QuizzTest {
     explorationExploitationResultRepository = new ExplorationExploitationResultRepository();
     experimentRepository = new ExperimentRepository();
 
+    authService = new AuthService();
     answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
     questionService = new QuestionService(questionRepository, userAnswerRepository);
@@ -179,8 +185,8 @@ public class QuizzTest {
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
 
-    quizEndpoint = new QuizEndpoint(quizService, questionService);
-    questionEndpoint = new QuestionEndpoint(quizService, questionService);
+    quizEndpoint = new QuizEndpoint(quizService, questionService, authService);
+    questionEndpoint = new QuestionEndpoint(quizService, questionService, authService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
         questionService, userAnswerService, userAnswerFeedbackService,
         explorationExploitationService);
@@ -253,7 +259,7 @@ public class QuizzTest {
     System.out.println("-------------------------------------------------------");
   }
 
-  private Quiz createQuiz(Quiz quiz) {
+  private Quiz createQuiz(Quiz quiz) throws ForbiddenException {
     Quiz newQuiz = quizEndpoint.insertQuiz(quiz);
     logResponse("create quiz", newQuiz);
     Assert.assertEquals(newQuiz.getQuizID(), QUIZ_ID);
@@ -272,13 +278,13 @@ public class QuizzTest {
     logResponse("list quizes", resp.getItems());
   }
 
-  private Question createQuestion(Question question) throws BadRequestException {
+  private Question createQuestion(Question question) throws BadRequestException, ForbiddenException {
     Question newQuestion =  questionEndpoint.insertQuestion(question);
     Assert.assertNotNull(newQuestion.getId());
     return newQuestion;
   }
   
-  private void createFreeTextQuestionInMultichoiceQuiz(Question question) {
+  private void createFreeTextQuestionInMultichoiceQuiz(Question question) throws ForbiddenException {
     try {
       questionEndpoint.insertQuestion(question);
       Assert.fail("this method should throw an exception BadRequestException");

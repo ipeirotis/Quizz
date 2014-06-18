@@ -20,6 +20,7 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.AuthService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
@@ -57,6 +58,7 @@ public class CommonModule extends AbstractModule {
     bind(UserRepository.class).in(Singleton.class);
     bind(TreatmentRepository.class).in(Singleton.class);
 
+    bind(AuthService.class).in(Singleton.class);
     bind(AnswerChallengeCounterService.class).in(Singleton.class);
     bind(QuestionService.class).in(Singleton.class);
     bind(ExperimentService.class).in(Singleton.class);

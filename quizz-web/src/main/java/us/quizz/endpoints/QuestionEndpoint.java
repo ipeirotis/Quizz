@@ -4,6 +4,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.ForbiddenException;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
@@ -12,6 +13,7 @@ import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
+import us.quizz.service.AuthService;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
 
@@ -23,11 +25,13 @@ import javax.inject.Named;
 public class QuestionEndpoint {
   private QuizService quizService;
   private QuestionService questionService;
+  private AuthService authService;
 
   @Inject
-  public QuestionEndpoint(QuizService quizService, QuestionService questionService) {
+  public QuestionEndpoint(QuizService quizService, QuestionService questionService, AuthService authService) {
     this.quizService = quizService;
     this.questionService = questionService;
+    this.authService = authService;
   }
 
   // Lists all the questions in the quizID.
@@ -38,7 +42,10 @@ public class QuestionEndpoint {
 
   // Inserts the question given into the datastore.
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
-  public Question insertQuestion(Question question) throws BadRequestException {
+  public Question insertQuestion(Question question) throws BadRequestException, ForbiddenException {
+    if (!authService.isUserAdmin()) {
+      throw new ForbiddenException("Forbidden");
+    }
     // Sanity check for QuizKind and QuestionKind.
     Quiz quiz = quizService.get(question.getQuizID());
     QuizKind quizKind = quiz.getKind();

@@ -1,31 +1,21 @@
 package us.quizz.utils;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.appengine.api.datastore.Text;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-
-import nl.bitwalker.useragentutils.Browser;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 
 import us.quizz.entities.Answer;
-import us.quizz.entities.AnswerChallengeCounter;
-import us.quizz.entities.BadgeAssignment;
 import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
-import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
-import us.quizz.entities.UserReferal;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
-import us.quizz.enums.QuizKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
 import us.quizz.repository.BadgeAssignmentRepository;
 import us.quizz.repository.BadgeRepository;
@@ -42,6 +32,7 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.AuthService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
@@ -55,10 +46,11 @@ import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
 // A test util class to do all the common initialization of persistent manager and repositories
 // construction and content.
@@ -117,6 +109,7 @@ public class QuizBaseTest {
   protected UserReferralRepository userReferralRepository = null;
   protected UserRepository userRepository = null;
 
+  protected AuthService authService = null;
   protected AnswerChallengeCounterService answerChallengeCounterService = null;
   protected BadgeAssignmentService badgeAssignmentService = null;
   protected BadgeService badgeService = null;
@@ -148,6 +141,7 @@ public class QuizBaseTest {
     userAnswerRepository = null;
     userReferralRepository = null;
 
+    authService = null;
     answerChallengeCounterService = null;
     badgeAssignmentService = null;
     badgeService = null;
@@ -310,6 +304,13 @@ public class QuizBaseTest {
       userRepository = new UserRepository();
     }
     return userRepository;
+  }
+  
+  protected AuthService getAuthService() {
+    if (authService == null) {
+      authService = new AuthService();
+    }
+    return authService;
   }
 
   protected AnswerChallengeCounterService getAnswerChallengeCounterService() {

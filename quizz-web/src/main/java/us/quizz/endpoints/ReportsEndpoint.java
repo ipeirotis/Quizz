@@ -1,19 +1,5 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.inject.Inject;
-
-import us.quizz.entities.BrowserStats;
-import us.quizz.entities.DomainStats;
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.service.BrowserStatsService;
-import us.quizz.service.DomainStatsService;
-import us.quizz.service.QuestionService;
-import us.quizz.service.QuizService;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,49 +8,88 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
+import us.quizz.entities.BrowserStats;
+import us.quizz.entities.DomainStats;
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.service.AuthService;
+import us.quizz.service.BrowserStatsService;
+import us.quizz.service.DomainStatsService;
+import us.quizz.service.QuestionService;
+import us.quizz.service.QuizService;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.ForbiddenException;
+import com.google.inject.Inject;
+
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class ReportsEndpoint {
   private QuizService quizService;
   private QuestionService questionService;
   private BrowserStatsService browserStatsService;
   private DomainStatsService domainStatsService;
+  private AuthService authService;
 
   @Inject
   public ReportsEndpoint(
       QuizService quizService,
       QuestionService questionService,
       BrowserStatsService browserStatsService,
-      DomainStatsService domainStatsService) {
+      DomainStatsService domainStatsService,
+      AuthService authService) {
     this.quizService = quizService;
     this.questionService = questionService;
     this.browserStatsService = browserStatsService;
     this.domainStatsService = domainStatsService;
+    this.authService = authService;
   }
 
   @ApiMethod(name = "reports.multiChoiceAnswers", path = "reports/multiChoiceAnswers")
-  public List<Question> getMultiChoiceAnswersReport(@Named("quizID")String quizID) {
+  public List<Question> getMultiChoiceAnswersReport(@Named("quizID")String quizID) throws ForbiddenException {
+    if (!authService.isUserAdmin()) {
+      throw new ForbiddenException("Forbidden");
+    }
+
     return questionService.getQuizQuestions(quizID);
   }
 
   @ApiMethod(name = "reports.freeTextAnswers", path = "reports/freeTextAnswers")
-  public List<Question> getFreeTextAnswersReport(@Named("quizID")String quizID) {
+  public List<Question> getFreeTextAnswersReport(@Named("quizID")String quizID) throws ForbiddenException {
+    if (!authService.isUserAdmin()) {
+      throw new ForbiddenException("Forbidden");
+    }
+
     return questionService.getQuizQuestions(quizID);
   }
 
   @ApiMethod(name = "reports.scoreByBrowser", path = "reports/scoreByBrowser")
-  public List<BrowserStats> getScoreByBrowserReport() {
+  public List<BrowserStats> getScoreByBrowserReport() throws ForbiddenException {
+    if (!authService.isUserAdmin()) {
+      throw new ForbiddenException("Forbidden");
+    }
+
     return browserStatsService.listAll();
   }
 
   @ApiMethod(name = "reports.scoreByDomain", path = "reports/scoreByDomain")
   public CollectionResponse<DomainStats> getScoreByDomainReport(
       @Nullable @Named("cursor") String cursorString,
-      @Nullable @Named("limit") Integer limit) {
+      @Nullable @Named("limit") Integer limit) throws ForbiddenException {
+    if (!authService.isUserAdmin()) {
+      throw new ForbiddenException("Forbidden");
+    }
+
     return domainStatsService.listWithCursor(cursorString, limit);
   }
 
   @ApiMethod(name = "reports.contributionQuality", path = "reports/contributionQuality")
-  public List<Map<String, Object>> getContributionQualityReport() {
+  public List<Map<String, Object>> getContributionQualityReport() throws ForbiddenException {
+    if (!authService.isUserAdmin()) {
+      throw new ForbiddenException("Forbidden");
+    }
+
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
     List<Quiz> quizzes = quizService.listAll();
 
