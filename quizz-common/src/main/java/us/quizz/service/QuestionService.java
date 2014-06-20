@@ -274,26 +274,84 @@ public class QuestionService extends OfyBaseService<Question> {
             bestAnswer, maxProbability, isCorrect, answerID);
         break;
       case FREETEXT_CALIBRATION:
-        // TODO(chunhowt): We need to work further on free text quizzes
-        List<Answer> answers = question.getAnswers();
-        for (Answer ans : answers) {
+        for (Answer ans : question.getAnswers()) {
           AnswerKind ak = ans.getKind();
-          if (ak == AnswerKind.GOLD || ak == AnswerKind.SILVER) {
+          if (ak == AnswerKind.SILVER) {
+            bestAnswer = ans;
+          }
+        }
+        
+        for (Answer ans : question.getAnswers()) {
+          AnswerKind ak = ans.getKind();
+          if (ak == AnswerKind.SILVER) {
             if (ans.getText().equalsIgnoreCase(userInput)) {
               isCorrect = true;
+              message = "Great! The correct answer is " + ans.getText();
               break;
             } 
             if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
               isCorrect = true;
+              message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
               break;
             }
           } else if (ak == AnswerKind.USER_SUBMITTED) {
-            // TODO(chunhowt): Check if some other user submitted the same answer.
+            if (ans.getText().equalsIgnoreCase(userInput)) {
+              isCorrect = true;
+              message = "We did not know about this one, but other users submitted the same answer, so we will count it as correct."; 
+              break;
+            } 
+            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+              isCorrect = true;
+              message = "We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.";
+              break;
+            }
+          } else {
+            isCorrect = false;
+            message = "Sorry! The correct answer is " + bestAnswer.getText();
+            break;
           }
         }
         break;
       case FREETEXT_COLLECTION: 
-        // TODO(chunhowt): We need to work further on free text quizzes
+        for (Answer ans : question.getAnswers()) {
+          AnswerKind ak = ans.getKind();
+          if (ak == AnswerKind.SILVER) {
+            bestAnswer = ans;
+          }
+          if (bestAnswer == null && ak == AnswerKind.USER_SUBMITTED) {
+            
+          }
+        }
+        for (Answer ans : question.getAnswers()) {
+          AnswerKind ak = ans.getKind();
+          if (ak == AnswerKind.GOLD) {
+            if (ans.getText().equalsIgnoreCase(userInput)) {
+              isCorrect = true;
+              message = "Great! The correct answer is " + ans.getText();
+              break;
+            } 
+            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+              isCorrect = true;
+              message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
+              break;
+            }
+          } else if (ak == AnswerKind.USER_SUBMITTED) {
+            if (ans.getText().equalsIgnoreCase(userInput)) {
+              isCorrect = true;
+              message = "We did not know about this one, but other users submitted the same answer, so we will count it as correct."; 
+              break;
+            } 
+            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+              isCorrect = true;
+              message = "We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.";
+              break;
+            }
+          } else {
+            isCorrect = false;
+            message = "Sorry! The correct answer is " + bestAnswer.getText();
+            break;
+          }
+        }
         break;
       default:
         break;

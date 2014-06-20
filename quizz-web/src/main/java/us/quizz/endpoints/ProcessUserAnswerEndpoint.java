@@ -10,9 +10,11 @@ import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.enums.QuizKind;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionService;
 import us.quizz.service.QuizService;
@@ -72,9 +74,14 @@ public class ProcessUserAnswerEndpoint {
     User user = userService.get(userID);
     Question question = questionService.get(questionID);
     // TODO(chunhowt): Don't need this for free-text question.
-    Integer numChoices = quizService.get(quizID).getNumChoices();
-    if (numChoices == null) {
-      numChoices = 4;
+    Quiz quiz = quizService.get(quizID);
+    
+    Integer numChoices = null;
+    if (quiz.getKind()== QuizKind.MULTIPLE_CHOICE) {
+      numChoices = quizService.get(quizID).getNumChoices();
+      if (numChoices == null) {
+        numChoices = 4;
+      }
     }
 
     String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
