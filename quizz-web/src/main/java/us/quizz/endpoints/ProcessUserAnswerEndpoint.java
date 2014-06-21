@@ -14,6 +14,7 @@ import us.quizz.entities.Quiz;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
+import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionService;
@@ -73,7 +74,6 @@ public class ProcessUserAnswerEndpoint {
     // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
     User user = userService.get(userID);
     Question question = questionService.get(questionID);
-    // TODO(chunhowt): Don't need this for free-text question.
     Quiz quiz = quizService.get(quizID);
     
     Integer numChoices = null;
@@ -86,12 +86,38 @@ public class ProcessUserAnswerEndpoint {
 
     String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
+    
+    // If we have a free text quiz, we need to store the submitted answer
+    if (quiz.getKind()== QuizKind.FREE_TEXT) {
+      Integer internalAnswerID = null;
+      
+      // We check to see if the submitted answer is already among the answers for the question
+      // If yes, we increase the count of picks
+      for (Answer a : question.getAnswers()) {
+        if (a.getText().equalsIgnoreCase(userInput)) {
+          int numberOfPicks = a.getNumberOfPicks();
+          a.setNumberOfPicks(numberOfPicks + 1);
+          internalAnswerID = a.getInternalID(); 
+        }
+      }
+      // If the answer has not been seen before, we store it as a user submitted answer
+      if (internalAnswerID == null) {
+        internalAnswerID = question.getAnswers().size();
+        Answer answer = new Answer(questionID, quizID, userInput, AnswerKind.USER_SUBMITTED, internalAnswerID);
+        answer.setNumberOfPicks(1);
+        question.addAnswer(answer);
+      }
+      
+      questionService.save(question);
+    }
 
     // TODO(chunhowt): Have a cron task to anonymize IP after 9 months.
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
     Long timestamp = (new Date()).getTime();
 
+    
+    
     UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
         userInput, qResult.getIsCorrect(), qResult.getMessage());
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
