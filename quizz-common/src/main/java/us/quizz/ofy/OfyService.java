@@ -17,6 +17,7 @@ import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.SurvivalProbabilityResult;
 import us.quizz.entities.Treatment;
 import us.quizz.entities.User;
+import us.quizz.entities.UserAction;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.entities.UserReferal;
@@ -37,6 +38,7 @@ public class OfyService {
     register(Treatment.class);
     register(User.class);
     register(UserAnswer.class);
+    register(UserAction.class);
     register(UserAnswerFeedback.class);
     register(UserReferal.class);
   }
