@@ -104,6 +104,9 @@ public class Quiz implements Serializable {
   // Ranges from [0, 1]. 1.0 means we did perfectly on the quiz's calibration answer.
   private Double weightedVoteProbQuizQuality;
 
+  // Whether this quiz should use a questions selection strategy.
+  private Boolean useQuestionSelectionStrategy;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Quiz(){}
@@ -131,6 +134,7 @@ public class Quiz implements Serializable {
     this.capacity = 0.0;
     this.questions = 0;
     this.gold = 0;
+    this.useQuestionSelectionStrategy = false;
   }
 
   public Double getAvgAnswerCorrectness() {
@@ -335,5 +339,15 @@ public class Quiz implements Serializable {
 
   public void setWeightedVoteProbQuizQuality(Double weightedVoteProbQuizQuality) {
     this.weightedVoteProbQuizQuality = weightedVoteProbQuizQuality;
+  }
+
+  public Boolean getUseQuestionSelectionStrategy() {
+    return this.useQuestionSelectionStrategy;
+  }
+
+  public void setUseQuestionSelectionStrategy(Boolean useQuestionSelectionStrategy) {
+    Preconditions.checkNotNull(useQuestionSelectionStrategy,
+        "Question selection strategy cannot be null.");
+    this.useQuestionSelectionStrategy = useQuestionSelectionStrategy;
   }
 }

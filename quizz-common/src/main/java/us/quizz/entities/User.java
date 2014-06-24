@@ -4,6 +4,7 @@ import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import us.quizz.enums.QuestionSelectionStrategy;
 
 import java.io.Serializable;
 
@@ -18,6 +19,7 @@ public class User implements Serializable {
   private String userid;
   private Integer challengeBudget;
   private Long experimentId;
+  private QuestionSelectionStrategy selectionStrategy;
 
   //for Objectify
   @SuppressWarnings("unused")
@@ -58,5 +60,17 @@ public class User implements Serializable {
 
   public void setExperimentId(Long experimentId) {
     this.experimentId = experimentId;
+  }
+
+  /**
+   * Pick a strategy based on the userID
+   * TODO(kobren): implement a better way of assigning Users to question selection strategies
+   */
+  public QuestionSelectionStrategy pickQuestionSelectionStrategy() {
+    if (selectionStrategy == null) {
+      selectionStrategy = QuestionSelectionStrategy.values()[
+          userid.hashCode() % QuestionSelectionStrategy.values().length];
+    }
+    return selectionStrategy;
   }
 }

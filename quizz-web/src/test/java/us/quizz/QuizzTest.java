@@ -1,8 +1,6 @@
 package us.quizz;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.google.api.server.spi.response.BadRequestException;
@@ -13,7 +11,6 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -51,20 +48,7 @@ import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
-import us.quizz.service.AnswerChallengeCounterService;
-import us.quizz.service.AuthService;
-import us.quizz.service.DomainStatsService;
-import us.quizz.service.ExperimentService;
-import us.quizz.service.ExplorationExploitationService;
-import us.quizz.service.QuestionService;
-import us.quizz.service.QuizPerformanceService;
-import us.quizz.service.QuizService;
-import us.quizz.service.SurvivalProbabilityService;
-import us.quizz.service.TreatmentService;
-import us.quizz.service.UserAnswerFeedbackService;
-import us.quizz.service.UserAnswerService;
-import us.quizz.service.UserReferralService;
-import us.quizz.service.UserService;
+import us.quizz.service.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,8 +80,7 @@ public class QuizzTest {
           new LocalTaskQueueTestConfig()
               .setQueueXmlPath("src/main/webapp/WEB-INF/queue.xml")
               .setDisableAutoTaskExecution(true),
-          new LocalMemcacheServiceTestConfig(),
-          new LocalUserServiceTestConfig().setOAuthIsAdmin(true))
+          new LocalMemcacheServiceTestConfig())
       .setEnvEmail("test@example.com")
       .setEnvIsAdmin(true)
       .setEnvIsLoggedIn(true);
@@ -120,8 +103,8 @@ public class QuizzTest {
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
   private ExperimentRepository experimentRepository;
 
-  private AuthService authService;
   private AnswerChallengeCounterService answerChallengeCounterService;
+  private AuthService authenticationService;
   private QuestionService questionService;
   private ExperimentService experimentService;
   private UserService userService;
@@ -166,10 +149,11 @@ public class QuizzTest {
     explorationExploitationResultRepository = new ExplorationExploitationResultRepository();
     experimentRepository = new ExperimentRepository();
 
-    authService = new AuthService();
     answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
+    authenticationService = new AuthService();
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
-    questionService = new QuestionService(questionRepository, userAnswerRepository);
+    questionService = new QuestionService(
+        questionRepository, userAnswerRepository, quizRepository, userService);
     treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentRepository);
     userService = new UserService(userRepository, experimentRepository);
@@ -185,8 +169,8 @@ public class QuizzTest {
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
 
-    quizEndpoint = new QuizEndpoint(quizService, questionService, authService);
-    questionEndpoint = new QuestionEndpoint(quizService, questionService, authService);
+    quizEndpoint = new QuizEndpoint(quizService, questionService, authenticationService);
+    questionEndpoint = new QuestionEndpoint(quizService, questionService, authenticationService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
         questionService, userAnswerService, userAnswerFeedbackService,
         explorationExploitationService);
@@ -278,13 +262,15 @@ public class QuizzTest {
     logResponse("list quizes", resp.getItems());
   }
 
-  private Question createQuestion(Question question) throws BadRequestException, ForbiddenException {
+  private Question createQuestion(Question question) throws
+      BadRequestException, ForbiddenException {
     Question newQuestion =  questionEndpoint.insertQuestion(question);
     Assert.assertNotNull(newQuestion.getId());
     return newQuestion;
   }
   
-  private void createFreeTextQuestionInMultichoiceQuiz(Question question) throws ForbiddenException {
+  private void createFreeTextQuestionInMultichoiceQuiz(Question question) throws
+      ForbiddenException {
     try {
       questionEndpoint.insertQuestion(question);
       Assert.fail("this method should throw an exception BadRequestException");

@@ -15,9 +15,11 @@ import org.junit.runners.JUnit4;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
+import us.quizz.enums.QuizKind;
 import us.quizz.utils.QuizBaseTest;
 
 import java.util.HashSet;
@@ -33,6 +35,14 @@ public class QuestionServiceTest extends QuizBaseTest {
   }
 
   private void initQuestionServiceTest() {
+    assertNotNull(getQuizService());
+
+    Quiz quiz1 = new Quiz("quiz1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE);
+    quizService.save(quiz1);
+
+    Quiz quiz2 = new Quiz("quiz2", QUIZ_ID2, QuizKind.MULTIPLE_CHOICE);
+    quizService.save(quiz2);
+
     assertNotNull(getQuestionService());
 
     // Quiz 1 has 5 questions, 2 are calibration, 3 are collections.

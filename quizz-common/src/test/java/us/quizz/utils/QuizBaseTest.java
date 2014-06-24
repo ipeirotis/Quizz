@@ -2,10 +2,11 @@ package us.quizz.utils;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,26 +32,12 @@ import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
-import us.quizz.service.AnswerChallengeCounterService;
-import us.quizz.service.AuthService;
-import us.quizz.service.BadgeAssignmentService;
-import us.quizz.service.BadgeService;
-import us.quizz.service.BrowserStatsService;
-import us.quizz.service.ExplorationExploitationService;
-import us.quizz.service.QuestionService;
-import us.quizz.service.QuizPerformanceService;
-import us.quizz.service.QuizService;
-import us.quizz.service.SurvivalProbabilityService;
-import us.quizz.service.UserAnswerFeedbackService;
-import us.quizz.service.UserAnswerService;
-import us.quizz.service.UserReferralService;
-import us.quizz.service.UserService;
+import us.quizz.service.*;
 
-import com.google.appengine.api.datastore.Text;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // A test util class to do all the common initialization of persistent manager and repositories
 // construction and content.
@@ -58,7 +45,6 @@ public class QuizBaseTest {
   protected static final String USER_ID1 = "1001";
   protected static final String USER_ID2 = "1002";
   protected static final String USER_ID3 = "1003";
-  protected static final String USER_ID4 = "1004";
   protected static final String QUIZ_ID1 = "quizid_1";
   protected static final String QUIZ_ID2 = "quizid_2";
   protected static final String QUIZ_ID3 = "quizid_3";
@@ -71,10 +57,6 @@ public class QuizBaseTest {
   protected static final Long QUESTION_ID7 = 2007L;
   protected static final Long QUESTION_ID8 = 2008L;
   protected static final Long QUESTION_ID9 = 2009L;
-  protected static final Long QUESTION_ID10 = 2010L;
-  protected static final Long QUESTION_ID11 = 2011L;
-  protected static final Long QUESTION_ID12 = 2012L;
-  protected static final Long QUESTION_ID13 = 2013L;
   protected static final String QUESTION_CLIENT_ID1 = "qclient_1";
   protected static final String QUESTION_CLIENT_ID2 = "qclient_2";
   protected static final String QUESTION_CLIENT_ID3 = "qclient_3";
@@ -109,8 +91,8 @@ public class QuizBaseTest {
   protected UserReferralRepository userReferralRepository = null;
   protected UserRepository userRepository = null;
 
-  protected AuthService authService = null;
   protected AnswerChallengeCounterService answerChallengeCounterService = null;
+  protected AuthService authService = null;
   protected BadgeAssignmentService badgeAssignmentService = null;
   protected BadgeService badgeService = null;
   protected BrowserStatsService browserStatsService = null;
@@ -141,8 +123,8 @@ public class QuizBaseTest {
     userAnswerRepository = null;
     userReferralRepository = null;
 
-    authService = null;
     answerChallengeCounterService = null;
+    authService = null;
     badgeAssignmentService = null;
     badgeService = null;
     browserStatsService = null;
@@ -206,6 +188,13 @@ public class QuizBaseTest {
       answerChallengeCounterRepository = new AnswerChallengeCounterRepository();
     }
     return answerChallengeCounterRepository;
+  }
+
+  protected AuthService getAuthService() {
+    if (authService == null) {
+      authService = new AuthService();
+    }
+    return authService;
   }
 
   protected BadgeAssignmentRepository getBadgeAssignmentRepository() {
@@ -305,13 +294,7 @@ public class QuizBaseTest {
     }
     return userRepository;
   }
-  
-  protected AuthService getAuthService() {
-    if (authService == null) {
-      authService = new AuthService();
-    }
-    return authService;
-  }
+
 
   protected AnswerChallengeCounterService getAnswerChallengeCounterService() {
     if (answerChallengeCounterService == null) {
@@ -355,7 +338,8 @@ public class QuizBaseTest {
 
   protected QuestionService getQuestionService() {    
     if (questionService == null) {
-      questionService = new QuestionService(getQuestionRepository(), getUserAnswerRepository());
+      questionService = new QuestionService(getQuestionRepository(), getUserAnswerRepository(),
+          getQuizRepository(), getUserService());
     }
     return questionService;
   }
