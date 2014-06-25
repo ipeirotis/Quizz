@@ -1,4 +1,4 @@
-angular.module('quizz', ['ngRoute', 'ngSanitize'])
+angular.module('quizz', ['ngRoute', 'ngSanitize', 'mgcrea.ngStrap'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {
   $routeProvider
       .when('/feedback', {

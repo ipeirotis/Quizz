@@ -1,9 +1,9 @@
 package us.quizz.entities;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import com.googlecode.objectify.annotation.Parent;
 
 import us.quizz.enums.AnswerKind;
@@ -22,6 +22,7 @@ public class Answer implements Serializable{
   private JsonObject metadata;
   private Long questionID;
   private String quizID;
+  private Text helpText;
 
   // The prior probability that this answer is correct, given by the client.
   private Double probability;
@@ -214,5 +215,13 @@ public class Answer implements Serializable{
 
   public void setWeightedVoteProb(Double weightedVoteProb) {
     this.weightedVoteProb = weightedVoteProb;
+  }
+
+  public Text getHelpText() {
+    return helpText;
+  }
+
+  public void setHelpText(Text helpText) {
+    this.helpText = helpText;
   }
 }

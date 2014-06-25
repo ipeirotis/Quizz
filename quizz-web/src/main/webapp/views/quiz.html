@@ -10,20 +10,26 @@
     <span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
   </div>
 
-  <div class="instruction-text"
-       ng-bind-html="currentQuestion.instruction.value">
-  </div>
-
-  <div class="lead text-center"
-       ng-bind-html="currentQuestion.questionText.value">
+  <div class="lead text-center">
+    <span ng-bind-html="currentQuestion.questionText.value"></span>
+    <span class="help" title="Help" data-placement="left"  data-trigger="click"
+      data-template="views/parts/help.html" data-content="{{currentQuestion.instruction.value}}" container="body" bs-popover></span>
   </div>
 
   <div class="answers">
-    <button type="button" class="btn btn-primary btn-lg btn-block"
-            ng-click="answerQuestion(answer.internalID)"
-            ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
-      {{answer.text}}
-    </button>
+    <div ng-repeat="answer in currentQuestion.answers |filter:filterSelectable" class="answer-container">
+      <div class="answer-text-container">
+		    <button type="button" class="btn btn-primary btn-lg btn-block"
+		            ng-click="answerQuestion(answer.internalID)"
+		            >
+		      {{answer.text}}
+		    </button>
+      </div>
+      <div class="answer-help-container">
+		<span class="help" title="Help" data-placement="left"  data-trigger="click"
+		  data-template="views/parts/help.html" data-content="{{answer.helpText.value}}" container="body" bs-popover></span>
+      </div>
+    </div>
 
     <div ng-repeat="answer in currentQuestion.answers |filter:filterNotSelectable">
       <h4>Your answer:</h4>
@@ -35,10 +41,12 @@
       </button>
     </div>
 
-    <button type="button" class="btn btn-danger btn-lg btn-block"
-            ng-click="answerQuestion(-1)">
-      Skip
-    </button>
+	<div style="padding-right: 20px;">
+	    <button type="button" class="btn btn-danger btn-lg btn-block"
+	            ng-click="answerQuestion(-1)">
+	      Skip
+	    </button>
+    </div>
   </div>
 
 </div>

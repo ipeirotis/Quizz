@@ -38,6 +38,8 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js" type="text/javascript"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
+<script src="/lib/angular-strap.min.js" type="text/javascript"></script>
+<script src="/lib/angular-strap.tpl.min.js" type="text/javascript"></script>
 <script src="/js/all.js" type="text/javascript"></script>
 <script src='/_ah/channel/jsapi'></script>
 </head>

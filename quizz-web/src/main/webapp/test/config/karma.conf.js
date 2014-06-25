@@ -12,6 +12,7 @@ module.exports = function(config) {
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js',
       'test/lib/angular-mocks.js',
       'js/**/*.js',
+      'lib/**/*.js',
       'test/unit/**/*.js'
     ],
 

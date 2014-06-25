@@ -82,6 +82,21 @@ body {
 
 .answer-container {
   padding: 2px 0;
+  position:relative;
+}
+
+.answer-text-container {
+  display: inline-block;
+  padding-right: 20px;
+  width: 100%;
+}
+
+.answer-help-container {
+  display: inline-block;
+  position: absolute;
+  right: 0px;
+  padding-top: 10px;
+  top: 0px;
 }
 
 .answer-feedback-blk {
@@ -113,4 +128,13 @@ body {
 .user-answer {
   background-color: #d9534f;
   border-color: #d9534f;
+}
+
+.help {
+	background: url(../assets/question.png) no-repeat;
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin: 3px 3px;
+	opacity: 0.55;
 }
