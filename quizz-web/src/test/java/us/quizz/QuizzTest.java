@@ -11,6 +11,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -80,7 +81,8 @@ public class QuizzTest {
           new LocalTaskQueueTestConfig()
               .setQueueXmlPath("src/main/webapp/WEB-INF/queue.xml")
               .setDisableAutoTaskExecution(true),
-          new LocalMemcacheServiceTestConfig())
+          new LocalMemcacheServiceTestConfig(),
+          new LocalUserServiceTestConfig().setOAuthIsAdmin(true))
       .setEnvEmail("test@example.com")
       .setEnvIsAdmin(true)
       .setEnvIsLoggedIn(true);
