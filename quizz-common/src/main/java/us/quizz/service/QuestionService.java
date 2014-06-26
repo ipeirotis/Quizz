@@ -1,7 +1,6 @@
 package us.quizz.service;
 
 import com.google.inject.Inject;
-
 import com.googlecode.objectify.cmd.Query;
 
 import us.quizz.entities.Answer;
@@ -10,6 +9,7 @@ import us.quizz.entities.Quiz;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuestionSelectionStrategy;
 import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.QuestionRepository;
@@ -377,90 +377,124 @@ public class QuestionService extends OfyBaseService<Question> {
             bestAnswer, maxProbability, isCorrect, answerID);
         break;
       case FREETEXT_CALIBRATION:
-        for (Answer ans : question.getAnswers()) {
-          AnswerKind ak = ans.getKind();
-          if (ak == AnswerKind.SILVER) {
-            bestAnswer = ans;
-          }
-        }
-
-        for (Answer ans : question.getAnswers()) {
-          AnswerKind ak = ans.getKind();
-          if (ak == AnswerKind.SILVER) {
-            if (ans.getText().equalsIgnoreCase(userInput)) {
-              isCorrect = true;
-              message = "Great! The correct answer is " + ans.getText();
-              break;
-            }
-            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-              isCorrect = true;
-              message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
-              break;
-            }
-          } else if (ak == AnswerKind.USER_SUBMITTED) {
-            if (ans.getText().equalsIgnoreCase(userInput)) {
-              isCorrect = true;
-              message = "We did not know about this one, but other users submitted the same answer, so we will count it as correct.";
-              break;
-            }
-            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-              isCorrect = true;
-              message = "We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.";
-              break;
-            }
-          } else {
-            isCorrect = false;
-            message = "Sorry! The correct answer is " + bestAnswer.getText();
-            break;
-          }
-        }
-        break;
       case FREETEXT_COLLECTION:
-        for (Answer ans : question.getAnswers()) {
-          AnswerKind ak = ans.getKind();
-          if (ak == AnswerKind.SILVER) {
-            bestAnswer = ans;
-          }
-          if (bestAnswer == null && ak == AnswerKind.USER_SUBMITTED) {
+        
+        //TODO(panos): Need to handle "Skip"
+        
+        Result r;
+        
+        // Check if submitted answer matches a gold or silver answer
+        r = checkFreeTextAgainstGoldSilver(question, userInput);
+        if (r!=null) return r;
+        
+        // If it does not match a gold/silver, then check if it matches a gold/silver with a typo
+        r = checkFreeTextAgainstGoldSilverWithTypos(question, userInput);
+        if (r!=null) return r;
+        
+        // If it does not match a gold/silver (without a typo), check if it matches 
+        // exactly answers submitted by other users 
+        r = checkFreeTextAgainstUserAnswers(question, userInput);
+        if (r!=null) return r;
+        
+        // Check if the answer submitted by the user matches an answer submitted by other users,
+        // even with a typo
+        r = checkFreeTextAgainstUserAnswersWithTypos(question, userInput);
+        if (r!=null) return r;
+        
+        // At this point, it seems that the user answer does not match gold 
+        // or any other user answer (even with a typo)
+        r = generateFreeTextIncorrectResponse(question, userInput);
+        return r;
 
-          }
-        }
-        for (Answer ans : question.getAnswers()) {
-          AnswerKind ak = ans.getKind();
-          if (ak == AnswerKind.GOLD) {
-            if (ans.getText().equalsIgnoreCase(userInput)) {
-              isCorrect = true;
-              message = "Great! The correct answer is " + ans.getText();
-              break;
-            }
-            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-              isCorrect = true;
-              message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
-              break;
-            }
-          } else if (ak == AnswerKind.USER_SUBMITTED) {
-            if (ans.getText().equalsIgnoreCase(userInput)) {
-              isCorrect = true;
-              message = "We did not know about this one, but other users submitted the same answer, so we will count it as correct.";
-              break;
-            }
-            if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-              isCorrect = true;
-              message = "We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.";
-              break;
-            }
-          } else {
-            isCorrect = false;
-            message = "Sorry! The correct answer is " + bestAnswer.getText();
-            break;
-          }
-        }
-        break;
       default:
         break;
     }
 
     return new Result(bestAnswer, isCorrect, message);
+  }
+
+  private Result generateFreeTextIncorrectResponse(Question question, String userInput) {
+    Boolean isCorrect = false;
+    Answer bestAnswer = null;
+    for (Answer ans : question.getAnswers()) {
+      AnswerKind ak = ans.getKind();
+      if (ak == AnswerKind.GOLD) {
+        bestAnswer = ans;
+        break;
+      }
+    }
+    String message = "Sorry! The correct answer is " + bestAnswer.getText();
+    return new Result(bestAnswer, isCorrect, message);
+  }
+  
+  
+  private Result checkFreeTextAgainstUserAnswersWithTypos(Question question, String userInput) {
+    Boolean isCorrect;
+    String message;
+    for (Answer ans : question.getAnswers()) {
+      AnswerKind ak = ans.getKind();
+      if (ak == AnswerKind.USER_SUBMITTED) {
+        if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+          isCorrect = true;
+          message = "We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.";
+          return new Result(ans, isCorrect, message);
+        }
+      } 
+    }
+    return null;
+  }
+
+  private Result checkFreeTextAgainstUserAnswers(Question question, String userInput) {
+    Boolean isCorrect;
+    String message;
+    for (Answer ans : question.getAnswers()) {
+      AnswerKind ak = ans.getKind();
+      if (ak == AnswerKind.USER_SUBMITTED) {
+        if (ans.getText().equalsIgnoreCase(userInput)) {
+          isCorrect = true;
+          message = "We did not know about this one, but other users submitted the same answer, so we will count it as correct.";
+          return new Result(ans, isCorrect, message);
+        }
+      } 
+    }
+    return null;
+  }
+
+  private Result checkFreeTextAgainstGoldSilverWithTypos(Question question, String userInput) {
+    Boolean isCorrect;
+    String message;
+    QuestionKind qk = question.getKind();
+    for (Answer ans : question.getAnswers()) {
+      AnswerKind ak = ans.getKind();
+      if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
+          || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
+        if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+          isCorrect = true;
+          message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
+          return new Result(ans, isCorrect, message);
+        }
+      }
+    }
+    return null;
+  }
+
+  private Result checkFreeTextAgainstGoldSilver(Question question, String userInput) {
+    Boolean isCorrect;
+    String message;
+    QuestionKind qk = question.getKind();
+    for (Answer ans : question.getAnswers()) {
+      AnswerKind ak = ans.getKind();
+      if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
+          || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
+       if (ans.getText().equalsIgnoreCase(userInput)) {
+          isCorrect = true;
+          message = "Great! The correct answer is " + ans.getText();
+          return new Result(ans, isCorrect, message);
+        }
+      }
+    }
+    return null;
+    
   }
 
   public class Result {
