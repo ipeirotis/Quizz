@@ -398,6 +398,10 @@ public class QuestionService extends OfyBaseService<Question> {
         
         // Check if the answer submitted by the user matches an answer submitted by other users,
         // even with a typo
+        // TODO(panos): While immediately we may give credit to the users for matching the answers
+        // of other users, there are extra tests that we need to run before accepting these answers as 
+        // correct. First of all, the user submissions should not be the same across different questions
+        // and the user submissions should be vetted by another quiz.
         r = checkFreeTextAgainstUserAnswersWithTypos(question, userInput);
         if (r!=null) return r;
         
