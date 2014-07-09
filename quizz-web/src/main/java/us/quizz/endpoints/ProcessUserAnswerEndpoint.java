@@ -26,6 +26,7 @@ import us.quizz.utils.QueueUtils;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -75,7 +76,7 @@ public class ProcessUserAnswerEndpoint {
     User user = userService.get(userID);
     Question question = questionService.get(questionID);
     Quiz quiz = quizService.get(quizID);
-    
+
     Integer numChoices = null;
     if (quiz.getKind()== QuizKind.MULTIPLE_CHOICE) {
       numChoices = quizService.get(quizID).getNumChoices();
@@ -86,18 +87,19 @@ public class ProcessUserAnswerEndpoint {
 
     String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
-    
+
     // If we have a free text quiz, we need to store the submitted answer
     if (quiz.getKind()== QuizKind.FREE_TEXT) {
       Integer internalAnswerID = null;
-      
+
       // We check to see if the submitted answer is already among the answers for the question
       // If yes, we increase the count of picks
       for (Answer a : question.getAnswers()) {
         if (a.getText().equalsIgnoreCase(userInput)) {
           int numberOfPicks = a.getNumberOfPicks();
           a.setNumberOfPicks(numberOfPicks + 1);
-          internalAnswerID = a.getInternalID(); 
+          internalAnswerID = a.getInternalID();
+          updateVerificationQuiz(question.getId(), internalAnswerID);
         }
       }
       // If the answer has not been seen before, we store it as a user submitted answer
@@ -107,17 +109,23 @@ public class ProcessUserAnswerEndpoint {
         answer.setNumberOfPicks(1);
         question.addAnswer(answer);
       }
-      
-      questionService.save(question);
+
+    } else {
+      for (Answer a : question.getAnswers()) {
+        if (a.getInternalID().equals(answerID)) {
+          int numberOfPicks = a.getNumberOfPicks();
+          a.setNumberOfPicks(numberOfPicks + 1);
+        }
+      }
     }
+
+    questionService.save(question);
 
     // TODO(chunhowt): Have a cron task to anonymize IP after 9 months.
     String ipAddress = req.getRemoteAddr();
     String browser = req.getHeader("User-Agent");
     Long timestamp = (new Date()).getTime();
 
-    
-    
     UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
         userInput, qResult.getIsCorrect(), qResult.getMessage());
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
@@ -131,6 +139,7 @@ public class ProcessUserAnswerEndpoint {
     result.put("userAnswerFeedback", uaf);
     result.put("exploit", isExploit(numCorrect, numIncorrect, numExploit, numChoices));
     result.put("bestAnswer", qResult.getBestAnswer());
+    result.put("question", question);
     return result;
   }
 
@@ -183,6 +192,16 @@ public class ProcessUserAnswerEndpoint {
             .param("quizID", quizID)
             .param("userID", user.getUserid())
             .param("channelNotify", "true")
+            .method(TaskOptions.Method.POST));
+  }
+
+  // Schedules a task to update the verifiction quiz.
+  private void updateVerificationQuiz(Long questionID, Integer internalAnswerID) {
+    Queue queueUserStats = QueueUtils.getUserStatisticsQueue();
+    queueUserStats
+        .add(Builder.withUrl("/api/updateVerificationQuiz")
+            .param("questionID", String.valueOf(questionID))
+            .param("internalAnswerID", String.valueOf(internalAnswerID))
             .method(TaskOptions.Method.POST));
   }
 

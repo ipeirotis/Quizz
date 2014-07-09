@@ -1,7 +1,5 @@
 package us.quizz.di;
 
-import com.google.inject.servlet.ServletModule;
-
 import us.quizz.servlets.CacheExploreExploit;
 import us.quizz.servlets.CacheSurvivalProbability;
 import us.quizz.servlets.GetQuizCounts;
@@ -11,6 +9,9 @@ import us.quizz.servlets.UpdateBrowsersStatistics;
 import us.quizz.servlets.UpdateCountStatistics;
 import us.quizz.servlets.UpdateQuestionStatistics;
 import us.quizz.servlets.UpdateUserQuizStatistics;
+import us.quizz.servlets.UpdateVerificationQuiz;
+
+import com.google.inject.servlet.ServletModule;
 
 public class TasksModule extends ServletModule {
   @Override
@@ -25,5 +26,6 @@ public class TasksModule extends ServletModule {
     serve("/api/updateCountStatistics").with(UpdateCountStatistics.class);
     serve("/api/updateQuestionStatistics").with(UpdateQuestionStatistics.class);
     serve("/api/updateUserQuizStatistics").with(UpdateUserQuizStatistics.class);
+    serve("/api/updateVerificationQuiz").with(UpdateVerificationQuiz.class);
   }
 }
