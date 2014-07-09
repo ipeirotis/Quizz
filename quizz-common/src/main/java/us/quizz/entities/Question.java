@@ -96,6 +96,10 @@ public class Question implements Serializable {
   // Answer ID of best answer using WEIGHTED_VOTE answer aggregation strategy.
   private Integer bestWeightedVoteProbAnswerID;
 
+
+  //Text for showing context for the particular question
+  private Text helpText;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Question(){}
@@ -335,4 +339,13 @@ public class Question implements Serializable {
   public void setBestMajorityVoteProbAnswerID(Integer bestAnswerID) {
     this.bestMajorityVoteProbAnswerID = bestAnswerID;
   }
+  
+  public Text getHelpText() {
+    return helpText;
+  }
+
+  public void setHelpText(Text helpText) {
+    this.helpText = helpText;
+  }
+  
 }

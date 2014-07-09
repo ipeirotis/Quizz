@@ -22,6 +22,8 @@ public class Answer implements Serializable{
   private JsonObject metadata;
   private Long questionID;
   private String quizID;
+  
+  // Text for showing context for the particular answer
   private Text helpText;
 
   // The prior probability that this answer is correct, given by the client.
