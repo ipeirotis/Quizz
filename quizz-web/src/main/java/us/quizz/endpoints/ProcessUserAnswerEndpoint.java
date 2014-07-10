@@ -15,6 +15,7 @@ import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserAnswerFeedback;
 import us.quizz.enums.AnswerKind;
+import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.service.ExplorationExploitationService;
 import us.quizz.service.QuestionService;
@@ -98,8 +99,14 @@ public class ProcessUserAnswerEndpoint {
         if (a.getText().equalsIgnoreCase(userInput)) {
           int numberOfPicks = a.getNumberOfPicks();
           a.setNumberOfPicks(numberOfPicks + 1);
+          
+          // If this is the second time that we see a particular answer in a free text quiz
+          // then we launch a verification question (multiple choice)
+          if (numberOfPicks + 1 == 2 && 
+              (question.getKind() == QuestionKind.FREETEXT_COLLECTION || question.getKind() == QuestionKind.FREETEXT_CALIBRATION) ) {
+            updateVerificationQuiz(quiz, question.getId(), internalAnswerID);
+          }
           internalAnswerID = a.getInternalID();
-          updateVerificationQuiz(question.getId(), internalAnswerID);
         }
       }
       // If the answer has not been seen before, we store it as a user submitted answer
@@ -195,11 +202,24 @@ public class ProcessUserAnswerEndpoint {
             .method(TaskOptions.Method.POST));
   }
 
-  // Schedules a task to update the verifiction quiz.
-  private void updateVerificationQuiz(Long questionID, Integer internalAnswerID) {
+  // Schedules a task to update the verification quiz.
+  private void updateVerificationQuiz(Quiz quiz, Long questionID, Integer internalAnswerID) {
+    
+    // Ensure that the verification quiz exists
+    // If not, create it
+    String verificationQuizId = quiz.getQuizID()+"-verification";
+    Quiz verificationQuiz = quizService.get(verificationQuizId);
+    if(verificationQuiz == null) {
+      String verificationQuizName = quiz.getName()+" (Verification)";
+      quiz = new Quiz(verificationQuizName, verificationQuizId, QuizKind.FREE_TEXT);
+      quiz.setNumChoices(2);
+      quizService.save(quiz);
+    }
+    
     Queue queueUserStats = QueueUtils.getUserStatisticsQueue();
     queueUserStats
         .add(Builder.withUrl("/api/updateVerificationQuiz")
+            .param("quizId", verificationQuizId)
             .param("questionID", String.valueOf(questionID))
             .param("internalAnswerID", String.valueOf(internalAnswerID))
             .method(TaskOptions.Method.POST));

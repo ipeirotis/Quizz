@@ -27,37 +27,30 @@ public class UpdateVerificationQuiz extends HttpServlet {
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(UpdateVerificationQuiz.class.getName());
   
-  private static final String VERIFICATION_QUIZ_ID = "verificationquiz";
-  private static final String VERIFICATION_QUIZ_NAME = "Verification quiz";
-  private static final String VERIFICATION_QUESTION = "%s Answer: %s Correct?";
+  private static final String VERIFICATION_QUESTION_TEMPLATE = "%s <div class=\"label label-info\">%s</div>";
 
   private QuestionService questionService;
-  private QuizService quizService;
 
   @Inject
-  public UpdateVerificationQuiz(QuestionService questionService, QuizService quizService) {
+  public UpdateVerificationQuiz(QuestionService questionService) {
     this.questionService = questionService;
-    this.quizService = quizService;
   }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    Quiz quiz = quizService.get(VERIFICATION_QUIZ_ID);
-    if(quiz == null) {
-      quiz = new Quiz(VERIFICATION_QUIZ_NAME, VERIFICATION_QUIZ_ID, QuizKind.FREE_TEXT);
-      quizService.save(quiz);
-    }
-    
+
+    String quizId = req.getParameter("quizId");
     String questionID = req.getParameter("questionID");
     String internalAnswerID = req.getParameter("internalAnswerID");
     Question question = questionService.get(Long.parseLong(questionID));
+    Text verificationQuestionText = question.getVerificationText();
     Answer answer = question.getAnswer(Integer.parseInt(internalAnswerID));
     
-    Question verificationQuestion = new Question(VERIFICATION_QUIZ_ID, 
-        new Text(String.format(VERIFICATION_QUESTION, question.getQuestionText(), answer.getText())), 
+    Question verificationQuestion = new Question(quizId, 
+        new Text(String.format(VERIFICATION_QUESTION_TEMPLATE, verificationQuestionText, answer.getText())), 
         QuestionKind.FREETEXT_COLLECTION);
-    verificationQuestion.addAnswer(new Answer("Yes", AnswerKind.USER_SUBMITTED));
-    verificationQuestion.addAnswer(new Answer("No", AnswerKind.USER_SUBMITTED));
+    verificationQuestion.addAnswer(new Answer("Yes", AnswerKind.SILVER));
+    verificationQuestion.addAnswer(new Answer("No", AnswerKind.SILVER));
     
     questionService.save(verificationQuestion);
   }

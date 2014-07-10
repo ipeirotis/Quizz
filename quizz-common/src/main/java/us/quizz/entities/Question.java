@@ -30,6 +30,9 @@ public class Question implements Serializable {
 
   // The text of the question. Can be any HTML-compliant code
   private Text questionText;
+  
+  // If this is a free-text quiz, the question may launch a verification question, and this text contains the verification question
+  private Text verificationText;
 
   // The id assigned by the client/source for this question to allow us to rejoin the
   // question with the original source.
@@ -346,6 +349,22 @@ public class Question implements Serializable {
 
   public void setHelpText(Text helpText) {
     this.helpText = helpText;
+  }
+
+  public Text getVerificationText() {
+    return verificationText;
+  }
+
+  public void setVerificationText(Text verificationText) {
+    this.verificationText = verificationText;
+  }
+
+  public Integer getNumberOfCorrentUserAnswers() {
+    return numberOfCorrentUserAnswers;
+  }
+
+  public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
+    this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
   }
   
 }
