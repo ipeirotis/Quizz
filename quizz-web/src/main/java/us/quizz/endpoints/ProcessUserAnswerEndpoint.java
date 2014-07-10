@@ -1,12 +1,12 @@
 package us.quizz.endpoints;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -25,14 +25,13 @@ import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
 import us.quizz.utils.QueueUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 
 @Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
 public class ProcessUserAnswerEndpoint {
@@ -120,7 +119,7 @@ public class ProcessUserAnswerEndpoint {
     } else {
       for (Answer a : question.getAnswers()) {
         if (a.getInternalID().equals(answerID)) {
-          int numberOfPicks = a.getNumberOfPicks();
+          int numberOfPicks = a.getNumberOfPicks() == null ? 0 : a.getNumberOfPicks();
           a.setNumberOfPicks(numberOfPicks + 1);
         }
       }
