@@ -77,7 +77,7 @@ public class ProcessUserAnswerEndpoint {
     Question question = questionService.get(questionID);
     Quiz quiz = quizService.get(quizID);
 
-    Integer numChoices = null;
+    Integer numChoices = 0;
     if (quiz.getKind()== QuizKind.MULTIPLE_CHOICE) {
       numChoices = quizService.get(quizID).getNumChoices();
       if (numChoices == null) {
