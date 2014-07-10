@@ -137,4 +137,11 @@ body {
 	height: 14px;
 	margin: 3px 3px;
 	opacity: 0.55;
+	cursor: hand;
+	cursor: pointer;
+}
+
+.help-panel {
+  margin-top: 5px;
+  margin-bottom: 0px;
 }

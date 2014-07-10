@@ -10,6 +10,17 @@ angular.module('quizz').controller('QuizController',
          workflowService.getCurrentQuestionIndex() + 1;
      $scope.numQuestions = workflowService.getNumQuestions();
 
+     $scope.answerHelpStates = {};
+     $scope.questionHelpState = false;
+
+     $scope.toggleAnswerHelp = function(id){
+       $scope.answerHelpStates[id] = !$scope.answerHelpStates[id];
+     };
+
+     $scope.toggleQuestionHelp = function(id){
+       $scope.questionHelpState = !$scope.questionHelpState;
+     };
+
      // Fetches the list of questions for the associated quiz and stores them
      // in the workflow service, if necessary, then picks the next question
      // to be displayed.

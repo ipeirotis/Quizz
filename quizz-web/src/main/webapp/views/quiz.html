@@ -14,9 +14,12 @@
 
   <div class="lead text-center">
     <span ng-bind-html="currentQuestion.questionText.value"></span>
-    <span ng-if="currentQuestion.helpText" class="help" title="Help" data-placement="left"  data-trigger="click"
-    data-template="views/parts/help.html" data-content="{{currentQuestion.helpText.value}}" container="body" 
-    data-animation="am-flip-x" placement="top" bs-popover></span>
+    <span ng-if="currentQuestion.helpText" class="help" ng-click="toggleQuestionHelp('help-' + answer.internalID)"></span>
+    <div ng-if="currentQuestion.helpText" class="panel panel-default help-panel"
+      slide-toggle="questionHelpState" style="display:none">
+        <div class="panel-body">{{currentQuestion.helpText.value}}
+        </div>
+    </div>
   </div>
 
   <div class="answers">
@@ -27,11 +30,13 @@
         >
           {{answer.text}}
         </button>
+        <div ng-if="answer.helpText" class="panel panel-default help-panel" style="display:none" slide-toggle="answerHelpStates['help-' + answer.internalID]">
+          <div class="panel-body">{{answer.helpText.value}}
+          </div>
+        </div>
       </div>
       <div class="answer-help-container">
-        <span ng-if="answer.helpText" class="help" title="Help" data-placement="left"  data-trigger="click"
-        data-template="views/parts/help.html" data-content="{{answer.helpText.value}}" container="body" 
-        placement="top" data-animation="am-flip-x" bs-popover></span>
+        <span ng-if="answer.helpText" class="help" ng-click="toggleAnswerHelp('help-' + answer.internalID)"></span>
       </div>
     </div>
 
