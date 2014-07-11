@@ -43,6 +43,9 @@ public class QuestionServiceTest extends QuizBaseTest {
     Quiz quiz2 = new Quiz("quiz2", QUIZ_ID2, QuizKind.MULTIPLE_CHOICE);
     quizService.save(quiz2);
 
+    Quiz quiz3 = new Quiz("quiz3", QUIZ_ID3, QuizKind.FREE_TEXT);
+    quizService.save(quiz3);
+
     assertNotNull(getQuestionService());
 
     // Quiz 1 has 5 questions, 2 are calibration, 3 are collections.
@@ -110,6 +113,15 @@ public class QuestionServiceTest extends QuizBaseTest {
             QUIZ_ID2, new Text("test9"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID9,
             null, false, true, 0.2);
     addAnswers(question, QUESTION_ID9, 4, QUIZ_ID2, false);
+    questionService.save(question);
+
+    // Quiz 3 has 1 free text question
+    question =
+        new Question(
+            QUIZ_ID3, new Text("test10"), QuestionKind.FREETEXT_CALIBRATION, QUESTION_ID10,
+            QUESTION_CLIENT_ID1, true, false, 0d);
+    question.addAnswer(new Answer(QUESTION_ID10, QUIZ_ID3, "answer", AnswerKind.GOLD, 0));
+    question.addAnswer(new Answer(QUESTION_ID10, QUIZ_ID3, "user submitted answer", AnswerKind.USER_SUBMITTED, 1));
     questionService.save(question);
 
     // User 1 answers 4 questions (2 collection, 2 calibration) from quiz 1,
@@ -286,6 +298,46 @@ public class QuestionServiceTest extends QuizBaseTest {
   public void testGetNumberOfGoldQuestions() {
     assertEquals((Integer)2, questionService.getNumberOfGoldQuestions(QUIZ_ID1, false));
     assertEquals((Integer)0, questionService.getNumberOfGoldQuestions("fake_quiz", false));
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextCorrect() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID10), 0, "answer");
+    assertTrue(result.getIsCorrect());
+    assertEquals("Great! The correct answer is answer", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextWithTypo() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID10), 0, "answe");
+    assertTrue(result.getIsCorrect());
+    assertEquals("Nice! Be careful of typos next time. The correct answer is answer", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextInCorrect() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID10), 0, "wrong answer");
+    assertFalse(result.getIsCorrect());
+    assertEquals("Sorry! The correct answer is answer", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextUserAnswer() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID10), 0, "user submitted answer");
+    assertTrue(result.getIsCorrect());
+    assertEquals("We did not know about this one, but other users submitted the same answer, so we will count it as correct.", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextUserAnswerWithTypo() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID10), 0, "user submitted answe");
+    assertTrue(result.getIsCorrect());
+    assertEquals("We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.", result.getMessage());
   }
 
   @Test
