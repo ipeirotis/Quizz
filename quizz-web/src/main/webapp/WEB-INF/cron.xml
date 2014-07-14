@@ -38,7 +38,7 @@
   </cron>
   <cron>
     <description>Backup Entities</description>
-    <url>/_ah/datastore_admin/backup.create?name=BackupEntities&amp;kind=Answer&amp;kind=AnswerChallengeCounter&amp;kind=Badge&amp;kind=BrowserStats&amp;kind=DomainStats&amp;kind=Experiment&amp;kind=ExplorationExploitationResult&amp;kind=Question&amp;kind=Quiz&amp;kind=QuizPerformance&amp;kind=SurvivalProbabilityResult&amp;kind=User&amp;kind=UserAnswer&amp;kind=UserAnswerFeedback&amp;kind=UserReferal&amp;filesystem=gs&amp;gs_bucket_name=quizz-us.appspot.com</url>
+    <url>/_ah/datastore_admin/backup.create?name=BackupEntities&amp;kind=Answer&amp;kind=AnswerChallengeCounter&amp;kind=Badge&amp;kind=BrowserStats&amp;kind=DomainStats&amp;kind=Experiment&amp;kind=ExplorationExploitationResult&amp;kind=Question&amp;kind=Quiz&amp;kind=QuizPerformance&amp;kind=SurvivalProbabilityResult&amp;kind=User&amp;kind=UserAnswer&amp;kind=UserAnswerFeedback&amp;kind=UserReferal&amp;filesystem=gs&amp;gs_bucket_name=crowd-power.appspot.com</url>
     <schedule>every day 06:10</schedule>
     <target>ah-builtin-python-bundle</target>
   </cron>
