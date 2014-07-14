@@ -73,7 +73,7 @@ public class ProcessUserAnswerEndpoint {
       @Named("numIncorrect") Integer numIncorrect,
       @Named("numExploit") Integer numExploit) throws Exception {
     // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
-    User user = userService.getOrCreateUser(userID);
+    User user = userService.get(userID);
     Question question = questionService.get(questionID);
     Quiz quiz = quizService.get(quizID);
 

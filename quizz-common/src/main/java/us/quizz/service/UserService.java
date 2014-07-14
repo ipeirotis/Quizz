@@ -64,7 +64,7 @@ public class UserService extends OfyBaseService<User> {
 
   // Gets a new User entity for the given userid, or if it does not exist, create a new one
   // and store it in datastore.
-  public User getOrCreateUser(String userid) {
+  public User get(String userid) {
     User user = get(userid);
     if (user == null) {
       user = new User(userid);
@@ -77,6 +77,6 @@ public class UserService extends OfyBaseService<User> {
   public User getUserFromCookie(HttpServletRequest req, HttpServletResponse resp) {
     String userid = getUseridFromCookie(req, resp);
     flush();
-    return getOrCreateUser(userid);
+    return get(userid);
   }
 }
