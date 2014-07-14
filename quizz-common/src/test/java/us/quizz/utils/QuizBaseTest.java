@@ -32,7 +32,20 @@ import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
-import us.quizz.service.*;
+import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.AuthService;
+import us.quizz.service.BadgeAssignmentService;
+import us.quizz.service.BadgeService;
+import us.quizz.service.BrowserStatsService;
+import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuestionService;
+import us.quizz.service.QuizPerformanceService;
+import us.quizz.service.QuizService;
+import us.quizz.service.SurvivalProbabilityService;
+import us.quizz.service.UserAnswerFeedbackService;
+import us.quizz.service.UserAnswerService;
+import us.quizz.service.UserReferralService;
+import us.quizz.service.UserService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -295,7 +308,6 @@ public class QuizBaseTest {
     }
     return userRepository;
   }
-
 
   protected AnswerChallengeCounterService getAnswerChallengeCounterService() {
     if (answerChallengeCounterService == null) {

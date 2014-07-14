@@ -49,19 +49,27 @@ import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
-import us.quizz.service.*;
+import us.quizz.service.AnswerChallengeCounterService;
+import us.quizz.service.AuthService;
+import us.quizz.service.DomainStatsService;
+import us.quizz.service.ExperimentService;
+import us.quizz.service.ExplorationExploitationService;
+import us.quizz.service.QuestionService;
+import us.quizz.service.QuizPerformanceService;
+import us.quizz.service.QuizService;
+import us.quizz.service.SurvivalProbabilityService;
+import us.quizz.service.TreatmentService;
+import us.quizz.service.UserAnswerFeedbackService;
+import us.quizz.service.UserAnswerService;
+import us.quizz.service.UserReferralService;
+import us.quizz.service.UserService;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("unused")
