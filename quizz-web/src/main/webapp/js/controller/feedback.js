@@ -40,4 +40,26 @@ angular.module('quizz').controller('FeedbackController',
            answer.kind == 'INCORRECT' ||
            answer.kind == 'SILVER';
   };
+
+  $scope.getPicksPercentage = function(internalID) {
+    var answers = $scope.currentQuestion.answers;
+    var current = 0;
+    var total = 0;
+    angular.forEach(answers, function(answer) {
+      total += answer.numberOfPicks || 0;
+      if(answer.internalID == internalID) {
+        current = answer.numberOfPicks || 0;
+      }
+    });
+
+    if(total == 0) {
+      return '';
+    } else {
+      if(current == 0) {
+        return '';
+      } else {
+        return '(' + current/total*100 + '%)';
+      }
+    }
+  };
 }]);

@@ -17,15 +17,15 @@
   <div class="answer-container" ng-repeat="answer in currentQuestion.answers |filter:filterSelectable">
     <div class="correct-answer answer-feedback-blk"
          ng-show="bestAnswerID == answer.internalID">
-      {{answer.text}}
+      {{answer.text}} {{getPicksPercentage()}}
     </div>
     <div class="user-answer answer-feedback-blk"
          ng-show="userAnswerID == answer.internalID && userAnswerID != bestAnswerID">
-      {{answer.text}}
+      {{answer.text}} {{getPicksPercentage()}}
     </div>
     <div class="incorrect-answer answer-feedback-blk"
          ng-show="bestAnswerID != answer.internalID && userAnswerID != answer.internalID">
-      {{answer.text}}
+      {{answer.text}} {{getPicksPercentage()}}
     </div>
   </div>
 </div>
