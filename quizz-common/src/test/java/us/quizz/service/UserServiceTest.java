@@ -33,14 +33,14 @@ public class UserServiceTest extends QuizBaseTest {
   }
 
   @Test
-  public void testGetOrCreateUser() {
+  public void testGetUser() {
     // test the get.
     assertEquals(2, userService.listAll().size());
-    assertNotNull(userService.getOrCreateUser(USER_ID1));
+    assertNotNull(userService.get(USER_ID1));
     assertEquals(2, userService.listAll().size());
 
     // test the create.
-    assertNotNull(userService.getOrCreateUser(USER_ID2));
+    assertNotNull(userService.get(USER_ID2));
     assertEquals(3, userService.listAll().size());
   }
 

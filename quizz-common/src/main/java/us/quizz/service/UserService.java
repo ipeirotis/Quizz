@@ -65,7 +65,7 @@ public class UserService extends OfyBaseService<User> {
   // Gets a new User entity for the given userid, or if it does not exist, create a new one
   // and store it in datastore.
   public User get(String userid) {
-    User user = get(userid);
+    User user = super.get(userid);
     if (user == null) {
       user = new User(userid);
       save(user);
