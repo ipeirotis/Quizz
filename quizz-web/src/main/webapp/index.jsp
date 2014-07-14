@@ -1,6 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.google.appengine.api.utils.SystemProperty"%>
 
+<%
+  boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
+  String apiUrl;
+
+  if (isDev) {
+    apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+  } else {
+    apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
+  }
+%>
+
 <!DOCTYPE html>
 <html ng-app="quizz">
 <head>
@@ -40,18 +51,29 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
 <script src="/lib/angular-strap.min.js" type="text/javascript"></script>
 <script src="/lib/angular-strap.tpl.min.js" type="text/javascript"></script>
+<% if (isDev) {%>
+<script src="/js/app.js" type="text/javascript"></script>
+<script src="/js/templates.js" type="text/javascript"></script>
+<script src="/js/service/interceptor.js" type="text/javascript"></script>
+<script src="/js/service/loading.js" type="text/javascript"></script>
+<script src="/js/service/modal.js" type="text/javascript"></script>
+<script src="/js/service/questionService.js" type="text/javascript"></script>
+<script src="/js/service/quizService.js" type="text/javascript"></script>
+<script src="/js/service/userService.js" type="text/javascript"></script>
+<script src="/js/service/utils.js" type="text/javascript"></script>
+<script src="/js/service/workflowService.js" type="text/javascript"></script>
+<script src="/js/controller/feedback.js" type="text/javascript"></script>
+<script src="/js/controller/list.js" type="text/javascript"></script>
+<script src="/js/controller/quiz.js" type="text/javascript"></script>
+<script src="/js/controller/summary.js" type="text/javascript"></script>
+<script src="/js/controller/modals/challengeAnswer.js" type="text/javascript"></script>
+<script src="/js/directive/slide.js" type="text/javascript"></script>
+<% } else {%>
 <script src="/js/all.js" type="text/javascript"></script>
+<% } %>
 <script src='/_ah/channel/jsapi'></script>
 </head>
-<%
-  boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
-  String apiUrl;
 
-  if (isDev)
-    apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
-  else
-    apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
-%>
 
 <script>
   var Config = {

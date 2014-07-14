@@ -137,6 +137,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
         "answer2", 0, 0, 0);
 
     Quiz verificationQuiz = quizService.get(verificationQuizId);
+    //ensure that verification quizz is not created
     assertNull(verificationQuiz);
 
     Question question = questionService.get(QUESTION_ID4);
@@ -146,6 +147,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
         request, QUIZ_ID2, QUESTION_ID4, 0, USER_ID3,
         "answer2", 0, 0, 0);
 
+    //ensure that verification quizz is created
     verificationQuiz = quizService.get(verificationQuizId);
     assertEquals(verificationQuiz.getQuizID(), verificationQuizId);
     assertEquals(verificationQuiz.getName(), "Quiz 2 (Verification)");
