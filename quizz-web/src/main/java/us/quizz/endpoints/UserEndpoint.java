@@ -5,13 +5,18 @@ import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.inject.Inject;
 
+import us.quizz.entities.User;
+import us.quizz.enums.QuestionSelectionStrategy;
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
 import us.quizz.utils.Constants;
+import us.quizz.utils.Security;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -35,8 +40,13 @@ public class UserEndpoint {
     this.userReferralService = userReferralService;
   }
 
-  // Gets the User from the request, or create the new one, if there is no cookie.
-  // quizID can be null if the user comes directly to the Quizz homepage.
+  /**
+   * Gets the User from the request, or create the new one, if there is no cookie.
+   *
+   * @param req an httpRequest (to get the userID).
+   * @param referer the (url) referer of the user.
+   * @param quizID can be null if the user comes directly to the Quizz homepage.
+   */
   @ApiMethod(name = "getUser", path = "getUser", httpMethod = HttpMethod.POST)
   public Map<String, Object> getUser(HttpServletRequest req,
       @Named("referer") String referer, @Nullable @Named("quizID") String quizID) {
@@ -46,5 +56,25 @@ public class UserEndpoint {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("userid", userid);
     return result;
+  }
+
+  /**
+   * Returns a map of all users to their question selection strategy.
+   * TODO(kobren): currently this code doesn't take long to run but in the future we might
+   *               favor something with more api fetches to smaller subsets of the data.
+   */
+  @ApiMethod(name = "getUsersAndStrategies", path = "getUsersAndStrategies",
+      httpMethod = HttpMethod.GET)
+  public Map<String, String> getUsersAndStrategies(com.google.appengine.api.users.User user)
+      throws UnauthorizedException{
+    Security.verifyAuthenticatedUser(user);
+    List<User> quizzUsers = userService.listAll();
+    Map<String, String> userToStrategy = new HashMap<>();
+    for (User quizzUser : quizzUsers) {
+      // TODO(kobren): for now, the users we care about have a single question selection strategy
+      //               but in future implementations this might change (and so will the following).
+      userToStrategy.put(quizzUser.getUserid(), quizzUser.pickQuestionSelectionStrategy().name());
+    }
+    return userToStrategy;
   }
 }

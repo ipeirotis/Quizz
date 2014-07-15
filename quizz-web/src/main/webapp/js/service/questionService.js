@@ -30,7 +30,8 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
     //   - exploit: Whether the next question should be an exploit.
     //   - bestAnswer: Best answer for the given question.
     sendAnswer: function(quizID, questionID, answerID, userID, userInput,
-        currCorrectAnswers, currIncorrectAnswers, success, error) {
+        currCorrectAnswers, currIncorrectAnswers, questionIndex,
+        success, error) {
       var params = {
         quizID: quizID,
         questionID: questionID,
@@ -39,7 +40,8 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
         userInput: userInput,
         numCorrect: currCorrectAnswers,
         numIncorrect: currIncorrectAnswers,
-        numExploit: 0
+        numExploit: 0,
+        questionIndex: questionIndex
       };
       $http.post(Config.api + '/processUserAnswer', $.param(params), options)
            .success(success).error(error);

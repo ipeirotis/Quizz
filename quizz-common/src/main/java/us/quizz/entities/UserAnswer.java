@@ -36,15 +36,24 @@ public class UserAnswer implements Serializable {
   private String browser;
   private String action;
   private Boolean isCorrect;
+
+  // Index of the question in a quiz answered by user.
+  private Integer questionIndex;
+
   // Free text comment provided by user to justify her challenge.
   private Text answerChallengeText;
+
   // Correct value user provided for the question.
   private Text answerChallengeCorrectValue;
+
   // Url evidence provided by user to support her challenge.
   private Text answerChallengeUrlSupport;
+
   // Reason code on why user challenges the answer.
   private String answerChallengeReason;
+
   private AnswerChallengeStatus answerChallengeStatus;
+
   private Double answerChallengeWeight = 0.0d;
 
   //for Objectify
@@ -103,6 +112,10 @@ public class UserAnswer implements Serializable {
     return questionID;
   }
 
+  public Integer getQuestionIndex() {
+    return questionIndex;
+  }
+
   public String getQuizID() {
     return quizID;
   }
@@ -153,6 +166,10 @@ public class UserAnswer implements Serializable {
 
   public void setQuestionID(Long questionID) {
     this.questionID = questionID;
+  }
+
+  public void setQuestionIndex(Integer questionIndex) {
+    this.questionIndex = questionIndex;
   }
 
   public void setQuizID(String quizID) {
@@ -250,6 +267,7 @@ public class UserAnswer implements Serializable {
         .append(this.getReferer())
         .append(this.getTimestamp())
         .append(this.getScore())
+        .append(this.getQuestionIndex())
         .toHashCode();
   }
 
@@ -275,6 +293,7 @@ public class UserAnswer implements Serializable {
            .append(rhs.getReferer(), this.getReferer())
            .append(rhs.getTimestamp(), this.getTimestamp())
            .append(rhs.getScore(), this.getScore())
+           .append(rhs.getQuestionIndex(), this.getQuestionIndex())
            .isEquals();
   }
 }

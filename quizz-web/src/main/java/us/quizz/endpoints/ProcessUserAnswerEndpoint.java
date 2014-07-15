@@ -80,7 +80,8 @@ public class ProcessUserAnswerEndpoint {
       @Named("userInput") String userInput,
       @Named("numCorrect") Integer numCorrect,
       @Named("numIncorrect") Integer numIncorrect,
-      @Named("numExploit") Integer numExploit) throws Exception {
+      @Named("numExploit") Integer numExploit,
+      @Named("questionIndex") Integer questionIndex) throws Exception {
     // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
     User user = userService.get(userID);
     Question question = questionService.get(questionID);
@@ -139,7 +140,7 @@ public class ProcessUserAnswerEndpoint {
     UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
         userInput, qResult.getIsCorrect(), qResult.getMessage());
     UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
-        userInput, ipAddress, browser, timestamp, qResult.getIsCorrect());
+        userInput, ipAddress, browser, timestamp, qResult.getIsCorrect(), questionIndex);
 
     updateQuizPerformance(user, quizID);
     updateQuestionStatistics(questionID);
@@ -182,7 +183,7 @@ public class ProcessUserAnswerEndpoint {
 
   private UserAnswer storeUserAnswer(User user, String quizID, Long questionID,
       String action, Integer useranswerID, String userInput, String ipAddress,
-      String browser, Long timestamp, Boolean isCorrect) {
+      String browser, Long timestamp, Boolean isCorrect, Integer questionIndex) {
     UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
     ue.setBrowser(browser);
     ue.setIpaddress(ipAddress);
@@ -191,8 +192,9 @@ public class ProcessUserAnswerEndpoint {
     ue.setIsCorrect(isCorrect);
     ue.setQuizID(quizID);
     ue.setUserInput(userInput);
+    ue.setQuestionIndex(questionIndex);
     return userAnswerService.save(ue);
-  } 
+  }
 
   // Schedules a task to update the quiz performance for the given user and quiz.
   private void updateQuizPerformance(User user, String quizID) {

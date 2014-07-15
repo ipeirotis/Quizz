@@ -99,6 +99,7 @@ angular.module('quizz').controller('QuizController',
            workflowService.getNumCorrectAnswers(),
            workflowService.getNumQuestions() -
                workflowService.getNumCorrectAnswers(),
+           $scope.currentQuestionIndex,
            function(response) {
              if (response) {
                var gaType = '';

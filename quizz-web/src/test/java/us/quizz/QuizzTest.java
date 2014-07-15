@@ -311,7 +311,7 @@ public class QuizzTest {
 
     Map<String, Object> resp = processUserAnswerEndpoint.processUserAnswer(req,
         quiz.getQuizID(), question.getId(), 0, user.getUserid(), null,
-        numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0);
+        numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0, 0);
 
     UserAnswerFeedback userAnswerFeedback = (UserAnswerFeedback) resp.get("userAnswerFeedback");
 
