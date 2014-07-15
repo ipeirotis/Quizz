@@ -29,7 +29,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
   @Before
   public void setUp() {
     super.setUp();
-    questionEndpoint = new QuestionEndpoint(getQuizService(), getQuestionService(), getAuthService());
+    questionEndpoint = new QuestionEndpoint(getQuizService(), getQuestionService());
     quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
   }
 
@@ -41,7 +41,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
     Question question = new Question(
         QUIZ_ID1, new Text("New question"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, questionID,
         "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
-    questionEndpoint.insertQuestion(question);
+    questionEndpoint.insertQuestion(question, authenticatedUser);
 
     // Make sure questionID is reused if provided.
     assertNotNull(questionService.get(questionID));
@@ -54,7 +54,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
     for (int i = 0; i < 4; ++i) {
       question.addAnswer(new Answer("Answer " + i, AnswerKind.SILVER));
     }
-    question = questionEndpoint.insertQuestion(question);
+    question = questionEndpoint.insertQuestion(question, authenticatedUser);
     assertTrue(question.getHasSilverAnswers());
     assertFalse(question.getHasGoldAnswer());
     for (int i = 0; i < question.getAnswers().size(); ++i) {
@@ -68,7 +68,7 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
     Question question =
         new Question(QUIZ_ID1, new Text("New question"), QuestionKind.FREETEXT_CALIBRATION, 12345L,
                      "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
-    questionEndpoint.insertQuestion(question);
+    questionEndpoint.insertQuestion(question, authenticatedUser);
   }
 
   @Test(expected = BadRequestException.class)
@@ -76,24 +76,26 @@ public class QuestionEndpointTest extends QuizWebBaseTest {
     Question question =
         new Question(QUIZ_ID1, new Text("New question"), QuestionKind.FREETEXT_COLLECTION, 12345L,
                      "some_client_id", false, true, 1.2);
-    questionEndpoint.insertQuestion(question);
+    questionEndpoint.insertQuestion(question, authenticatedUser);
   }
 
   @Test(expected = BadRequestException.class)
   public void testInsertQuestionWrongKindMultipleChoiceCalibration() throws Exception {
     quizService.save(new Quiz("Quiz 123", "test_quiz", QuizKind.FREE_TEXT));
     Question question =
-        new Question("test_quiz", new Text("New question"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, 12345L,
-                     "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
-    questionEndpoint.insertQuestion(question);
+        new Question("test_quiz", new Text("New question"),
+            QuestionKind.MULTIPLE_CHOICE_CALIBRATION, 12345L,
+            "some_client_id", true  /* is Gold */, false  /* Not silver */, 1.2);
+    questionEndpoint.insertQuestion(question, authenticatedUser);
   }
 
   @Test(expected = BadRequestException.class)
   public void testInsertQuestionWrongKindMultipleChoiceCollection() throws Exception {
     quizService.save(new Quiz("Quiz 123", "test_quiz", QuizKind.FREE_TEXT));
     Question question =
-        new Question("test_quiz", new Text("New question"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
-                     "some_client_id", false, true, 1.2);
-    questionEndpoint.insertQuestion(question);
+        new Question("test_quiz", new Text("New question"),
+            QuestionKind.MULTIPLE_CHOICE_COLLECTION, 12345L,
+            "some_client_id", false, true, 1.2);
+    questionEndpoint.insertQuestion(question, authenticatedUser);
   }
 }

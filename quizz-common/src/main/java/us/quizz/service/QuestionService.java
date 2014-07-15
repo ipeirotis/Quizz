@@ -1,6 +1,7 @@
 package us.quizz.service;
 
 import com.google.inject.Inject;
+
 import com.googlecode.objectify.cmd.Query;
 
 import us.quizz.entities.Answer;
@@ -369,7 +370,7 @@ public class QuestionService extends OfyBaseService<Question> {
             bestAnswer = answer;
           }
         }
-
+        // If user answers, and it is the first answer, or it agrees with the best answer,
         // then the answer is correct. Else it is not.
         isCorrect = answerID != -1 &&
             (bestAnswer == null || bestAnswer.getInternalID() == answerID);
@@ -378,38 +379,35 @@ public class QuestionService extends OfyBaseService<Question> {
         break;
       case FREETEXT_CALIBRATION:
       case FREETEXT_COLLECTION:
-        
-        //TODO(panos): Need to handle "Skip"
-        
+        // TODO(chunhowt): The logic here still looks suspicious.
+        // TODO(panos): Need to handle "Skip"
         Result r;
-        
         // Check if submitted answer matches a gold or silver answer
         r = checkFreeTextAgainstGoldSilver(question, userInput);
-        if (r!=null) return r;
-        
+        if (r != null) return r;
+
         // If it does not match a gold/silver, then check if it matches a gold/silver with a typo
         r = checkFreeTextAgainstGoldSilverWithTypos(question, userInput);
-        if (r!=null) return r;
-        
+        if (r != null) return r;
+
         // If it does not match a gold/silver (without a typo), check if it matches 
         // exactly answers submitted by other users 
         r = checkFreeTextAgainstUserAnswers(question, userInput);
-        if (r!=null) return r;
-        
+        if (r != null) return r;
+
         // Check if the answer submitted by the user matches an answer submitted by other users,
-        // even with a typo
+        // even with a typo.
         // TODO(panos): While immediately we may give credit to the users for matching the answers
-        // of other users, there are extra tests that we need to run before accepting these answers as 
-        // correct. First of all, the user submissions should not be the same across different questions
-        // and the user submissions should be vetted by another quiz.
+        // of other users, there are extra tests that we need to run before accepting these answers
+        // as correct. First of all, the user submissions should not be the same across different
+        // questions and the user submissions should be vetted by another quiz.
         r = checkFreeTextAgainstUserAnswersWithTypos(question, userInput);
-        if (r!=null) return r;
-        
+        if (r != null) return r;
+
         // At this point, it seems that the user answer does not match gold 
         // or any other user answer (even with a typo)
         r = generateFreeTextIncorrectResponse(question, userInput);
         return r;
-
       default:
         break;
     }
@@ -427,11 +425,16 @@ public class QuestionService extends OfyBaseService<Question> {
         break;
       }
     }
-    String message = "Sorry! The correct answer is " + bestAnswer.getText();
+
+    String message;
+    if (bestAnswer == null) {
+      message = "We don't know the answer either, and you are the first user submitting!";
+    } else {
+      message = "Sorry! The correct answer is " + bestAnswer.getText();
+    }
     return new Result(bestAnswer, isCorrect, message);
   }
-  
-  
+
   private Result checkFreeTextAgainstUserAnswersWithTypos(Question question, String userInput) {
     Boolean isCorrect;
     String message;
@@ -440,10 +443,11 @@ public class QuestionService extends OfyBaseService<Question> {
       if (ak == AnswerKind.USER_SUBMITTED) {
         if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
           isCorrect = true;
-          message = "We did not know about this one, but other users submitted almost the same answer, so we will count it as correct.";
+          message = "We did not know about this one, but other users submitted almost the same " + 
+              "answer, so we will count it as correct.";
           return new Result(ans, isCorrect, message);
         }
-      } 
+      }
     }
     return null;
   }
@@ -456,7 +460,8 @@ public class QuestionService extends OfyBaseService<Question> {
       if (ak == AnswerKind.USER_SUBMITTED) {
         if (ans.getText().equalsIgnoreCase(userInput)) {
           isCorrect = true;
-          message = "We did not know about this one, but other users submitted the same answer, so we will count it as correct.";
+          message = "We did not know about this one, but other users submitted the same answer, " +
+              "so we will count it as correct.";
           return new Result(ans, isCorrect, message);
         }
       } 

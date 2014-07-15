@@ -6,13 +6,15 @@ module.exports = function(config) {
       'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
       'http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.js',
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.js',
-      'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-cookie.js',
+      'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-animate.js',
+      'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-cookies.js',
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-resource.js',
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js',
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.min.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.tpl.min.js',
       'test/lib/angular-mocks.js',
       'js/**/*.js',
-      'lib/**/*.js',
       'test/unit/**/*.js'
     ],
 

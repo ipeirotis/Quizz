@@ -13,5 +13,6 @@
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     <property name="GOOGLE_ANALYTICS_ID" value="${google.analytics.id}"/>
+    <property name="AUTH_CLIENT_ID" value="${auth.client.id}"/>
   </system-properties>
 </appengine-web-app>

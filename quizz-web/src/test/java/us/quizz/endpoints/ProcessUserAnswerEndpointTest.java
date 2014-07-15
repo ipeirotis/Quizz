@@ -5,8 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-import java.util.Map;
+import com.google.appengine.api.datastore.Text;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +24,8 @@ import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.utils.QuizWebBaseTest;
 
-import com.google.appengine.api.datastore.Text;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(JUnit4.class)
 public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
@@ -137,7 +137,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
         "answer2", 0, 0, 0);
 
     Quiz verificationQuiz = quizService.get(verificationQuizId);
-    //ensure that verification quizz is not created
+    // Ensure that verification quiz is not created.
     assertNull(verificationQuiz);
 
     Question question = questionService.get(QUESTION_ID4);
@@ -147,10 +147,10 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
         request, QUIZ_ID2, QUESTION_ID4, 0, USER_ID3,
         "answer2", 0, 0, 0);
 
-    //ensure that verification quizz is created
+    // Ensure that verification quiz is created.
     verificationQuiz = quizService.get(verificationQuizId);
     assertEquals(verificationQuiz.getQuizID(), verificationQuizId);
     assertEquals(verificationQuiz.getName(), "Quiz 2 (Verification)");
-    assertEquals(verificationQuiz.getKind(), QuizKind.FREE_TEXT);
+    assertEquals(verificationQuiz.getKind(), QuizKind.MULTIPLE_CHOICE);
   }
 }

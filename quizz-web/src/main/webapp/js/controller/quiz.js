@@ -13,11 +13,11 @@ angular.module('quizz').controller('QuizController',
      $scope.answerHelpStates = {};
      $scope.questionHelpState = false;
 
-     $scope.toggleAnswerHelp = function(id){
+     $scope.toggleAnswerHelp = function(id) {
        $scope.answerHelpStates[id] = !$scope.answerHelpStates[id];
      };
 
-     $scope.toggleQuestionHelp = function(id){
+     $scope.toggleQuestionHelp = function(id) {
        $scope.questionHelpState = !$scope.questionHelpState;
      };
 

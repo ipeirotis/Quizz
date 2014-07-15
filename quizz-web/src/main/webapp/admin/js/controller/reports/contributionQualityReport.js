@@ -4,8 +4,10 @@ angular.module('quizz-admin').controller('ContributionQualityReportController',
   $scope.load = function() {
     reportService.loadContributionQualityReport(
         function(response) {
-          $scope.reportData = response.items;
-          $scope.readyToShow = true;
+          $scope.$apply(function() {
+              $scope.reportData = response.items;
+              $scope.readyToShow = true;
+          });
         },
         function(error) {
         });

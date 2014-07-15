@@ -1,13 +1,13 @@
 package us.quizz.entities;
 
-import java.io.Serializable;
-
-import us.quizz.enums.UserActionKind;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+
+import us.quizz.enums.UserActionKind;
+
+import java.io.Serializable;
 
 @Entity
 @Cache

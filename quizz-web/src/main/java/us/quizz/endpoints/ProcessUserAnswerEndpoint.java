@@ -1,12 +1,14 @@
 package us.quizz.endpoints;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
 
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Builder;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
@@ -23,17 +25,24 @@ import us.quizz.service.QuizService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserService;
+import us.quizz.utils.Constants;
 import us.quizz.utils.QueueUtils;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.api.taskqueue.TaskOptions.Builder;
-import com.google.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+
+@Api(name = "quizz",
+     description = "The API for Quizz.us",
+     version = "v1",
+     clientIds = {Constants.PROD_WEB_CLIENT_ID, Constants.PROD_SERVICE_CLIENT_ID,
+                  Constants.DEV_WEB_CLIENT_ID, Constants.DEV_SERVICE_CLIENT_ID,
+                  API_EXPLORER_CLIENT_ID},
+     scopes = {Constants.EMAIL_SCOPE})
 public class ProcessUserAnswerEndpoint {
   @SuppressWarnings("unused")
   private static final Logger logger = Logger.getLogger(ProcessUserAnswerEndpoint.class.getName());
@@ -78,7 +87,7 @@ public class ProcessUserAnswerEndpoint {
     Quiz quiz = quizService.get(quizID);
 
     Integer numChoices = 0;
-    if (quiz.getKind()== QuizKind.MULTIPLE_CHOICE) {
+    if (quiz.getKind() == QuizKind.MULTIPLE_CHOICE) {
       numChoices = quizService.get(quizID).getNumChoices();
       if (numChoices == null) {
         numChoices = 4;
@@ -89,43 +98,38 @@ public class ProcessUserAnswerEndpoint {
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
 
     // If we have a free text quiz, we need to store the submitted answer
-    if (quiz.getKind()== QuizKind.FREE_TEXT) {
+    if (quiz.getKind() == QuizKind.FREE_TEXT) {
       Integer internalAnswerID = null;
 
       // We check to see if the submitted answer is already among the answers for the question
       // If yes, we increase the count of picks
+      // TODO(chunhowt): There is a lot of potential that there might be race condition in
+      // updating the numberOfPicks and creating the new answer.
       for (Answer a : question.getAnswers()) {
         if (a.getText().equalsIgnoreCase(userInput)) {
           int numberOfPicks = a.getNumberOfPicks();
           a.setNumberOfPicks(numberOfPicks + 1);
-          
+
+          internalAnswerID = a.getInternalID();
           // If this is the second time that we see a particular answer in a free text quiz
           // then we launch a verification question (multiple choice)
-          if (numberOfPicks + 1 == 2 && 
-              (question.getKind() == QuestionKind.FREETEXT_COLLECTION || question.getKind() == QuestionKind.FREETEXT_CALIBRATION) ) {
+          if (numberOfPicks + 1 == 2 &&
+              (question.getKind() == QuestionKind.FREETEXT_COLLECTION ||
+               question.getKind() == QuestionKind.FREETEXT_CALIBRATION)) {
             updateVerificationQuiz(quiz, question.getId(), internalAnswerID);
           }
-          internalAnswerID = a.getInternalID();
         }
       }
       // If the answer has not been seen before, we store it as a user submitted answer
       if (internalAnswerID == null) {
         internalAnswerID = question.getAnswers().size();
-        Answer answer = new Answer(questionID, quizID, userInput, AnswerKind.USER_SUBMITTED, internalAnswerID);
+        Answer answer = new Answer(
+            questionID, quizID, userInput, AnswerKind.USER_SUBMITTED, internalAnswerID);
         answer.setNumberOfPicks(1);
         question.addAnswer(answer);
       }
-
-    } else {
-      for (Answer a : question.getAnswers()) {
-        if (a.getInternalID().equals(answerID)) {
-          int numberOfPicks = a.getNumberOfPicks() == null ? 0 : a.getNumberOfPicks();
-          a.setNumberOfPicks(numberOfPicks + 1);
-        }
-      }
+      questionService.save(question);
     }
-
-    questionService.save(question);
 
     // TODO(chunhowt): Have a cron task to anonymize IP after 9 months.
     String ipAddress = req.getRemoteAddr();
@@ -203,19 +207,18 @@ public class ProcessUserAnswerEndpoint {
 
   // Schedules a task to update the verification quiz.
   private void updateVerificationQuiz(Quiz quiz, Long questionID, Integer internalAnswerID) {
-    
     // Ensure that the verification quiz exists
     // If not, create it
-    String verificationQuizId = quiz.getQuizID()+"-verification";
+    String verificationQuizId = quiz.getQuizID() + "-verification";
     Quiz verificationQuiz = quizService.get(verificationQuizId);
-    if(verificationQuiz == null) {
-      String verificationQuizName = quiz.getName()+" (Verification)";
-      quiz = new Quiz(verificationQuizName, verificationQuizId, QuizKind.FREE_TEXT);
+    if (verificationQuiz == null) {
+      String verificationQuizName = quiz.getName() + " (Verification)";
+      quiz = new Quiz(verificationQuizName, verificationQuizId, QuizKind.MULTIPLE_CHOICE);
       quiz.setNumChoices(2);
       quizService.save(quiz);
     }
-    
-    Queue queueUserStats = QueueUtils.getUserStatisticsQueue();
+
+    Queue queueUserStats = QueueUtils.getVerificationQueue();
     queueUserStats
         .add(Builder.withUrl("/api/updateVerificationQuiz")
             .param("quizId", verificationQuizId)

@@ -31,7 +31,8 @@ public class Question implements Serializable {
   // The text of the question. Can be any HTML-compliant code
   private Text questionText;
   
-  // If this is a free-text quiz, the question may launch a verification question, and this text contains the verification question
+  // If this is a free-text quiz, the question may launch a verification question,
+  // and this text contains the verification question.
   private Text verificationText;
 
   // The id assigned by the client/source for this question to allow us to rejoin the
@@ -99,8 +100,7 @@ public class Question implements Serializable {
   // Answer ID of best answer using WEIGHTED_VOTE answer aggregation strategy.
   private Integer bestWeightedVoteProbAnswerID;
 
-
-  //Text for showing context for the particular question
+  // Text for showing context for the particular question
   private Text helpText;
 
   //for Objectify
@@ -342,7 +342,7 @@ public class Question implements Serializable {
   public void setBestMajorityVoteProbAnswerID(Integer bestAnswerID) {
     this.bestMajorityVoteProbAnswerID = bestAnswerID;
   }
-  
+
   public Text getHelpText() {
     return helpText;
   }
@@ -358,13 +358,4 @@ public class Question implements Serializable {
   public void setVerificationText(Text verificationText) {
     this.verificationText = verificationText;
   }
-
-  public Integer getNumberOfCorrentUserAnswers() {
-    return numberOfCorrentUserAnswers;
-  }
-
-  public void setNumberOfCorrentUserAnswers(Integer numberOfCorrentUserAnswers) {
-    this.numberOfCorrentUserAnswers = numberOfCorrentUserAnswers;
-  }
-  
 }

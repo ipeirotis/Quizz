@@ -4,8 +4,10 @@ angular.module('quizz-admin').controller('ScoreByBrowserReportController',
   $scope.load = function() {
     reportService.loadScoreByBrowserReport(
       function(response) {
-        $scope.reportData = response.items;
-        $scope.readyToShow = true;
+        $scope.$apply(function() {
+            $scope.reportData = response.items;
+            $scope.readyToShow = true;
+        });
       },
       function(error) {
       });

@@ -49,10 +49,61 @@
 %>
 
 <script>
+  var SCOPES = 'https://www.googleapis.com/auth/userinfo.email';
+  var CLIENT_ID = '<%=System.getProperty("AUTH_CLIENT_ID")%>';
+
   var Config = {
     api : '<%=apiUrl%>/_ah/api/quizz/v1'
   };
+
+  // Attempts to authorize the app to access the secured API.
+  // Params:
+  //   mode: A boolean to indicate the value of the "immediate" field for the
+  //         authorize function's param. If true, the authorization will happen
+  //         in background using existing authentication token, if any. If there
+  //         is no authentication token available, it will fail to authorize.
+  //         If false, a window will pop up to prompt user to explicitly
+  //         authorize the app.
+  function signIn(mode) {
+    var params = {};
+    params.immediate = mode;
+    params.client_id = CLIENT_ID;
+    params.scope = SCOPES;
+
+    gapi.auth.authorize(params, function() {
+      gapi.client.oauth2.userinfo.get().execute(function(resp) {
+        if (!resp.code) {
+          var elements = document.getElementsByClassName('loginButton');
+          for (var i = 0; i < elements.length; ++i) {
+            elements[i].style.visibility = 'hidden';
+          }
+        }
+      });
+    });
+  };
+
+  // Callback function to initialize the endpoints javascript library upon
+  // page loading and set up the handlers for the login buttons..
+  function initEndpoint() {
+    var apiRoot = '<%=apiUrl%>/_ah/api';
+    var apisToLoad = 2;
+    var loadCallback = function() {
+      if (--apisToLoad == 0) {
+        signIn(true);
+      }
+    };
+
+    gapi.client.load('quizz', 'v1', loadCallback, apiRoot);
+    gapi.client.load('oauth2', 'v2', loadCallback);
+
+    var elements = document.getElementsByClassName('loginButton');
+    for (var i = 0; i < elements.length; ++i) {
+      elements[i].onclick = function() {signIn(false)};
+    }
+  };
 </script>
+
+<script src="https://apis.google.com/js/client.js?onload=initEndpoint"></script>
 
 </head>
 
@@ -80,6 +131,9 @@
           </ul>
         </li>
       </ul>
+      <div style="padding: 8px; text-align: right">
+        <input class="loginButton" type="button" value="Authenticate"/>
+      </div>
     </div>
   </nav>
   <div id="content" ng-view></div>

@@ -33,7 +33,6 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
-import us.quizz.service.AuthService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
@@ -106,7 +105,6 @@ public class QuizBaseTest {
   protected UserRepository userRepository = null;
 
   protected AnswerChallengeCounterService answerChallengeCounterService = null;
-  protected AuthService authService = null;
   protected BadgeAssignmentService badgeAssignmentService = null;
   protected BadgeService badgeService = null;
   protected BrowserStatsService browserStatsService = null;
@@ -119,6 +117,8 @@ public class QuizBaseTest {
   protected UserAnswerService userAnswerService = null;
   protected UserReferralService userReferralService = null;
   protected UserService userService = null;
+
+  protected com.google.appengine.api.users.User authenticatedUser;
 
   @Before
   public void setUp() {
@@ -138,7 +138,6 @@ public class QuizBaseTest {
     userReferralRepository = null;
 
     answerChallengeCounterService = null;
-    authService = null;
     badgeAssignmentService = null;
     badgeService = null;
     browserStatsService = null;
@@ -150,6 +149,8 @@ public class QuizBaseTest {
     userAnswerFeedbackService = null;
     userAnswerService = null;
     userReferralService = null;
+
+    authenticatedUser = new com.google.appengine.api.users.User("adminUser", "authDomain");
   }
 
   @After
@@ -202,13 +203,6 @@ public class QuizBaseTest {
       answerChallengeCounterRepository = new AnswerChallengeCounterRepository();
     }
     return answerChallengeCounterRepository;
-  }
-
-  protected AuthService getAuthService() {
-    if (authService == null) {
-      authService = new AuthService();
-    }
-    return authService;
   }
 
   protected BadgeAssignmentRepository getBadgeAssignmentRepository() {

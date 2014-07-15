@@ -5,9 +5,16 @@ angular.module('quizz-admin').controller('ScoreByDomainReportController',
 
   $scope.load = function() {
     reportService.loadScoreByDomainReport($scope.pageNumber,
-      function(response) {
+      function(response, isCallback) {
         $scope.reportData = response;
         $scope.readyToShow = true;
+        // TODO(chunhowt): loadScoreByDomainReport might call success
+        // callback directly instead of in the callback if the data is
+        // cached locally, and thus, we need to check that before calling
+        // $apply.
+        if (isCallback) {
+          $scope.$digest();
+        }
       },
       function(error) {
       });

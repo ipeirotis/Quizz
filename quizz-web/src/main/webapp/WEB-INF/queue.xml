@@ -58,4 +58,11 @@
     <bucket-size>1</bucket-size>
     <max-concurrent-requests>1</max-concurrent-requests>
   </queue>
+
+  <queue>
+    <name>verification</name>
+    <rate>50/s</rate>
+    <bucket-size>50</bucket-size>
+    <max-concurrent-requests>5</max-concurrent-requests>
+  </queue>
 </queue-entries>

@@ -7,6 +7,7 @@ import com.googlecode.objectify.annotation.Index;
 import us.quizz.enums.QuestionSelectionStrategy;
 
 import java.io.Serializable;
+import java.lang.Math;
 
 @Entity
 @Cache
@@ -69,7 +70,7 @@ public class User implements Serializable {
   public QuestionSelectionStrategy pickQuestionSelectionStrategy() {
     if (selectionStrategy == null) {
       selectionStrategy = QuestionSelectionStrategy.values()[
-          userid.hashCode() % QuestionSelectionStrategy.values().length];
+          Math.abs(userid.hashCode()) % QuestionSelectionStrategy.values().length];
     }
     return selectionStrategy;
   }

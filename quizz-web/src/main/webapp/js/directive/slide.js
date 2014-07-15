@@ -5,9 +5,9 @@ angular.module('quizz').directive('slideToggle', function() {
       isOpen: "=slideToggle"
     },
     link: function(scope, element, attr) {
-      scope.$watch('isOpen', function(newVal,oldVal){
-        if(newVal !== oldVal){
-            element.stop().slideToggle();
+      scope.$watch('isOpen', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          element.stop().slideToggle();
         }
       });
     }

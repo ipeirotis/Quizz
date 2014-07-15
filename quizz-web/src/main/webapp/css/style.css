@@ -131,14 +131,14 @@ body {
 }
 
 .help {
-	background: url(../assets/question.png) no-repeat;
-	display: inline-block;
-	width: 14px;
-	height: 14px;
-	margin: 3px 3px;
-	opacity: 0.55;
-	cursor: hand;
-	cursor: pointer;
+  background: url(../assets/question.png) no-repeat;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 3px 3px;
+  opacity: 0.55;
+  cursor: hand;
+  cursor: pointer;
 }
 
 .help-panel {

@@ -1,37 +1,45 @@
 package us.quizz.endpoints;
 
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
+import com.google.inject.Inject;
+
+import us.quizz.entities.Question;
+import us.quizz.entities.Quiz;
+import us.quizz.service.QuestionService;
+import us.quizz.service.QuizService;
+import us.quizz.utils.Constants;
+import us.quizz.utils.Security;
+
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
 
-import us.quizz.entities.Question;
-import us.quizz.entities.Quiz;
-import us.quizz.service.AuthService;
-import us.quizz.service.QuestionService;
-import us.quizz.service.QuizService;
-
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.api.server.spi.response.ForbiddenException;
-import com.google.inject.Inject;
-
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
+@Api(name = "quizz",
+     description = "The API for Quizz.us",
+     version = "v1",
+     clientIds = {Constants.PROD_WEB_CLIENT_ID, Constants.PROD_SERVICE_CLIENT_ID,
+                  Constants.DEV_WEB_CLIENT_ID, Constants.DEV_SERVICE_CLIENT_ID,
+                  API_EXPLORER_CLIENT_ID},
+     scopes = {Constants.EMAIL_SCOPE})
 public class QuizEndpoint {
   protected static final int QUESTION_PACKAGE_SIZE = 10;
 
   private QuizService quizService;
   private QuestionService questionService;
-  private AuthService authService;
 
   @Inject
-  public QuizEndpoint(QuizService quizService, QuestionService questionService, AuthService authService) {
+  public QuizEndpoint(QuizService quizService, QuestionService questionService) {
     this.quizService = quizService;
     this.questionService = questionService;
-    this.authService = authService;
   }
 
   // Lists the quiz in datastore using paging.
@@ -46,10 +54,8 @@ public class QuizEndpoint {
 
   // Sets the quiz for the quizID given to be shown on landing page by default.
   @ApiMethod(name = "showQuiz", path = "showQuiz", httpMethod = HttpMethod.GET)
-  public Quiz showQuiz(@Named("quizID") String quizID) throws ForbiddenException {
-    if (!authService.isUserAdmin()) {
-      throw new ForbiddenException("Forbidden");
-    }
+  public Quiz showQuiz(@Named("quizID") String quizID, User user) throws UnauthorizedException {
+    Security.verifyAuthenticatedUser(user);
 
     Quiz quiz = quizService.get(quizID);
     quiz.setShowOnDefault(true);
@@ -58,10 +64,8 @@ public class QuizEndpoint {
 
   // Sets the quiz for the quizID given to be hidden on landing page by default.
   @ApiMethod(name = "hideQuiz", path = "hideQuiz", httpMethod = HttpMethod.GET)
-  public Quiz hideQuiz(@Named("quizID") String quizID) throws ForbiddenException {
-    if (!authService.isUserAdmin()) {
-      throw new ForbiddenException("Forbidden");
-    }
+  public Quiz hideQuiz(@Named("quizID") String quizID, User user) throws UnauthorizedException {
+    Security.verifyAuthenticatedUser(user);
 
     Quiz quiz = quizService.get(quizID);
     quiz.setShowOnDefault(false);
@@ -85,10 +89,8 @@ public class QuizEndpoint {
   // Inserts a new entity into Datastore. If the entity already exists, an exception will be thrown.
   // If the showOnDefault field is not filled, it will be set to false.
   @ApiMethod(name = "insertQuiz", path = "insertQuiz", httpMethod = HttpMethod.POST)
-  public Quiz insertQuiz(Quiz quiz) throws ForbiddenException {
-    if (!authService.isUserAdmin()) {
-      throw new ForbiddenException("Forbidden");
-    }
+  public Quiz insertQuiz(Quiz quiz, User user) throws UnauthorizedException {
+    Security.verifyAuthenticatedUser(user);
 
     if (quiz.getShowOnDefault() == null) {
       quiz.setShowOnDefault(false);
@@ -100,11 +102,9 @@ public class QuizEndpoint {
   // such as Question, Answer, and UserAnswer.
   @ApiMethod(name = "removeQuizRecursively", path = "removeQuizRecursively",
              httpMethod = HttpMethod.DELETE)
-  public void removeQuizRecursively(@Named("quizID") String quizID) throws ForbiddenException {
-    if (!authService.isUserAdmin()) {
-      throw new ForbiddenException("Forbidden");
-    }
-
+  public void removeQuizRecursively(@Named("quizID") String quizID, User user)
+      throws UnauthorizedException {
+    Security.verifyAuthenticatedUser(user);
     quizService.deleteRecursively(quizID);
   }
 

@@ -1,5 +1,7 @@
 package us.quizz.endpoints;
 
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
@@ -7,6 +9,7 @@ import com.google.inject.Inject;
 
 import us.quizz.service.UserReferralService;
 import us.quizz.service.UserService;
+import us.quizz.utils.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +18,13 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-@Api(name = "quizz", description = "The API for Quizz.us", version = "v1")
+@Api(name = "quizz",
+     description = "The API for Quizz.us",
+     version = "v1",
+     clientIds = {Constants.PROD_WEB_CLIENT_ID, Constants.PROD_SERVICE_CLIENT_ID,
+                  Constants.DEV_WEB_CLIENT_ID, Constants.DEV_SERVICE_CLIENT_ID,
+                  API_EXPLORER_CLIENT_ID},
+     scopes = {Constants.EMAIL_SCOPE})
 public class UserEndpoint {
   private UserService userService;
   private UserReferralService userReferralService;

@@ -37,4 +37,9 @@ public final class QueueUtils {
   public static Queue getQuestionStatisticsQueue() {
     return QueueFactory.getQueue("questionStatistics");
   }
+
+  // Queue to add a new multiple choice verification quiz given a free text question.
+  public static Queue getVerificationQueue() {
+    return QueueFactory.getQueue("verification");
+  }
 }

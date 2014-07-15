@@ -18,6 +18,9 @@ fi
 
 VERSION_ID=$1
 APP_ID='crowd-power'
+# Endpoint web client id for dev version.
+CLIENT_ID='572385566876.apps.googleusercontent.com'
+
 if [ "$#" -gt 1 ]; then
   APP_ID=$2
 fi
@@ -26,6 +29,7 @@ fi
 # Args:
 #   $1: target version id to replace the id in the pom.xml.
 #   $2: Appengine id to push to.
+#   $3: Endpoint client id for authentication purpose.
 replace_pom_config() {
   POM_FILE='pom.xml'
   chmod 664 $POM_FILE
@@ -49,6 +53,15 @@ $POM_FILE > "$POM_FILE.bak"
 $POM_FILE > "$POM_FILE.bak"
   mv $POM_FILE.bak $POM_FILE
 
+  # Modifies the endpoint client id.
+  CLIENT_ID='auth.client.id'
+  TARGET_CLIENT_ID=$3
+  # Replaces the value surrounded by $CLIENT_ID with the $TARGET_CLIENT_ID.
+  sed "s/$CLIENT_ID.*$CLIENT_ID/"\
+"$CLIENT_ID\>$TARGET_CLIENT_ID\<\/$CLIENT_ID/g" \
+$POM_FILE > "$POM_FILE.bak"
+  mv $POM_FILE.bak $POM_FILE
+
   # Updates the app id in cron file.
   CRON_FILE='quizz-web/src/main/webapp/WEB-INF/cron.xml'
   chmod 664 $CRON_FILE
@@ -62,5 +75,5 @@ $CRON_FILE > "$CRON_FILE.bak"
 # Copy stuffs to local disk.
 rm -R -f ~/quizz
 cd .. && cp -rf quizz ~/ && cd ~/quizz
-replace_pom_config $VERSION_ID $APP_ID
+replace_pom_config $VERSION_ID $APP_ID $CLIENT_ID
 mvn install -U && cd quizz-ear && mvn appengine:update

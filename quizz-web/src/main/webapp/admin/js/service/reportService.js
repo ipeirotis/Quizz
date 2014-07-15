@@ -1,48 +1,64 @@
-angular.module('quizz-admin').factory('reportService', 
+angular.module('quizz-admin').factory('reportService',
     ['$http', '$cacheFactory', function($http, $cacheFactory) {
   var LIMIT = 20;
   var pageTokens = [];
   var cache = $cacheFactory('domainsReportCache');
 
+  function callbackWrapper(resp, success, error) {
+    if (!resp.code && angular.isFunction(success)) {
+      success(resp);
+    } else if (angular.isFunction(error)) {
+      error(resp);
+    }
+  };
+
+  // All functions in reportService (except listQuizes) use gapi.client
+  // to sends http request directly (instead of going through $http). Thus,
+  // clients of these function should wrap the callback with $scope.$apply
+  // to ensure that a digest cycle is kicked off to update the UI.
   return {
     loadAnswersReport: function(quizId, success, error) {
-      var url = Config.api + '/reports/multiChoiceAnswers?quizID=' + quizId;
-      $http.get(url).success(success).error(error);
+      var params = {};
+      params.quizID = quizId;
+      gapi.client.quizz.reports.multiChoiceAnswers(params).execute(
+          function(resp) {
+            callbackWrapper(resp, success, error);
+          });
     },
     loadScoreByBrowserReport: function(success, error) {
-      var url = Config.api + '/reports/scoreByBrowser';
-      $http.get(url).success(success).error(error);
+      gapi.client.quizz.reports.scoreByBrowser().execute(function(resp) {
+          callbackWrapper(resp, success, error);
+      });
     },
     loadScoreByDomainReport: function(pageNumber, success, error) {
       if (pageNumber > 0 && pageNumber < pageTokens.length) {
         var items = cache.get(pageTokens[pageNumber]);
         if (items && angular.isFunction(success)) {
-          success(items);
+          success(items, false);
           return;
         }
       }
 
-      var url = Config.api + '/reports/scoreByDomain?limit=' + LIMIT;
+      var params = {};
+      params.limit = LIMIT;
       if (pageNumber > 0) {
-        console.log(pageTokens.length);
-        url += '&cursor=' + pageTokens[pageNumber-1];
+        params.cursor = pageTokens[pageNumber - 1];
       }
-      $http.get(url)
-           .success(
-               function(response) {
-                 if (response.nextPageToken) {
-                   pageTokens.push(response.nextPageToken);
-                   cache.put(pageTokens[pageNumber], response.items);
-                 }
-                 if (angular.isFunction(success)) {
-                   success(response.items);
-                 }
-               })
-           .error(error);
+      gapi.client.quizz.reports.scoreByDomain(params).execute(
+          function(response) {
+            if (response.nextPageToken) {
+              pageTokens.push(response.nextPageToken);
+              cache.put(pageTokens[pageNumber], response.items);
+            }
+            if (angular.isFunction(success)) {
+              success(response.items, true);
+            }
+          });
     },
     loadContributionQualityReport: function(success, error) {
-      var url = Config.api + '/reports/contributionQuality';
-      $http.get(url).success(success).error(error);
+      gapi.client.quizz.reports.contributionQuality().execute(function(resp) {
+          callbackWrapper(resp, success, error);
+      });
     },
     listQuizes: function(success, error) {
       $http.get(Config.api + '/listQuiz').success(success).error(error);

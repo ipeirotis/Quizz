@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Interface for getting user actions. */
 public class UserActionService extends OfyBaseService<UserAction> {
   @Inject
   public UserActionService(UserActionRepository userActionRepository){
@@ -27,6 +28,4 @@ public class UserActionService extends OfyBaseService<UserAction> {
   public List<UserAction> getUserActions(String userid) {
     return ((UserActionRepository) baseRepository).getUserActions(userid);
   }
-
-
 }

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.api.server.spi.response.ForbiddenException;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
@@ -50,7 +50,6 @@ import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
 import us.quizz.repository.UserRepository;
 import us.quizz.service.AnswerChallengeCounterService;
-import us.quizz.service.AuthService;
 import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExperimentService;
 import us.quizz.service.ExplorationExploitationService;
@@ -114,7 +113,6 @@ public class QuizzTest {
   private ExperimentRepository experimentRepository;
 
   private AnswerChallengeCounterService answerChallengeCounterService;
-  private AuthService authenticationService;
   private QuestionService questionService;
   private ExperimentService experimentService;
   private UserService userService;
@@ -139,6 +137,8 @@ public class QuizzTest {
 
   private int numberOfCorrectAnswers = 0;
 
+  private com.google.appengine.api.users.User authenticatedUser;
+
   @Before
   public void setUp() {
     helper.setUp();
@@ -160,7 +160,6 @@ public class QuizzTest {
     experimentRepository = new ExperimentRepository();
 
     answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
-    authenticationService = new AuthService();
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
     questionService = new QuestionService(
         questionRepository, userAnswerRepository, quizRepository, userService);
@@ -179,8 +178,8 @@ public class QuizzTest {
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
 
-    quizEndpoint = new QuizEndpoint(quizService, questionService, authenticationService);
-    questionEndpoint = new QuestionEndpoint(quizService, questionService, authenticationService);
+    quizEndpoint = new QuizEndpoint(quizService, questionService);
+    questionEndpoint = new QuestionEndpoint(quizService, questionService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
         questionService, userAnswerService, userAnswerFeedbackService,
         explorationExploitationService);
@@ -200,6 +199,8 @@ public class QuizzTest {
       }
       questionsToCreate.put("question_" + i, question);
     }
+
+    authenticatedUser = new com.google.appengine.api.users.User("adminUser", "authDomain");
   }
 
   @After
@@ -253,8 +254,8 @@ public class QuizzTest {
     System.out.println("-------------------------------------------------------");
   }
 
-  private Quiz createQuiz(Quiz quiz) throws ForbiddenException {
-    Quiz newQuiz = quizEndpoint.insertQuiz(quiz);
+  private Quiz createQuiz(Quiz quiz) throws UnauthorizedException {
+    Quiz newQuiz = quizEndpoint.insertQuiz(quiz, authenticatedUser);
     logResponse("create quiz", newQuiz);
     Assert.assertEquals(newQuiz.getQuizID(), QUIZ_ID);
     return newQuiz;
@@ -273,24 +274,25 @@ public class QuizzTest {
   }
 
   private Question createQuestion(Question question) throws
-      BadRequestException, ForbiddenException {
-    Question newQuestion =  questionEndpoint.insertQuestion(question);
+      BadRequestException, UnauthorizedException {
+    Question newQuestion =  questionEndpoint.insertQuestion(question, authenticatedUser);
     Assert.assertNotNull(newQuestion.getId());
     return newQuestion;
   }
-  
+
   private void createFreeTextQuestionInMultichoiceQuiz(Question question) throws
-      ForbiddenException {
+      UnauthorizedException {
     try {
-      questionEndpoint.insertQuestion(question);
+      questionEndpoint.insertQuestion(question, authenticatedUser);
       Assert.fail("this method should throw an exception BadRequestException");
     } catch (BadRequestException e) {
       //success
     }
   }
 
-  private void listQuestions(int expectedQuestionsCount) {
-    Assert.assertEquals(questionEndpoint.listAllQuestions(QUIZ_ID).size(), expectedQuestionsCount);
+  private void listQuestions(int expectedQuestionsCount) throws UnauthorizedException {
+    Assert.assertEquals(questionEndpoint.listAllQuestions(QUIZ_ID, authenticatedUser).size(),
+        expectedQuestionsCount);
   }
 
   private Set<Question> startQuiz(String quizId) {

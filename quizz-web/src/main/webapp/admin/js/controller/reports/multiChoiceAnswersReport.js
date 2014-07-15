@@ -31,8 +31,10 @@ angular.module('quizz-admin').controller('MultiChoiceAnswersReportController',
   $scope.load = function(quizID) {
     reportService.loadAnswersReport($scope.quizID,
       function(response) {
-        $scope.answersKind = $scope.getAnswersKind(response.items);
-        $scope.reportData = response.items;
+        $scope.$apply(function() {
+            $scope.answersKind = $scope.getAnswersKind(response.items);
+            $scope.reportData = response.items;
+        });
       },
       function(error) {
       });

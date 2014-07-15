@@ -47,18 +47,19 @@ angular.module('quizz').controller('FeedbackController',
     var total = 0;
     angular.forEach(answers, function(answer) {
       total += answer.numberOfPicks || 0;
-      if(answer.internalID == internalID) {
+      if (answer.internalID == internalID) {
         current = answer.numberOfPicks || 0;
       }
     });
 
-    if(total == 0) {
+    if (total == 0) {
       return '';
     } else {
-      if(current == 0) {
+      if (current == 0) {
         return '';
       } else {
-        return '(' + current/total*100 + '%)';
+        return '(' + (current * 100. / total).toFixed(0) +
+            '% picked this answer)';
       }
     }
   };

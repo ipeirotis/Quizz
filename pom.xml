@@ -12,6 +12,7 @@
     <appengine.target.version>1.9.6</appengine.target.version>
     <appspot.app.id>crowd-power</appspot.app.id>
     <appspot.app.version>1</appspot.app.version>
+    <auth.client.id>572385566876.apps.googleusercontent.com</auth.client.id>
     <google.analytics.id>UA-42553914-1</google.analytics.id>
     <appengine.app.version>1</appengine.app.version>
     <api.adwords.clientId>572385566876-99pm64281kbtfjd6i15rhj3a72tdper5.apps.googleusercontent.com</api.adwords.clientId>

@@ -14,29 +14,33 @@
 
   <div class="lead text-center">
     <span ng-bind-html="currentQuestion.questionText.value"></span>
-    <span ng-if="currentQuestion.helpText" class="help" ng-click="toggleQuestionHelp('help-' + answer.internalID)"></span>
+    <span ng-if="currentQuestion.helpText" class="help"
+          ng-click="toggleQuestionHelp('help-' + answer.internalID)">
+    </span>
     <div ng-if="currentQuestion.helpText" class="panel panel-default help-panel"
-      slide-toggle="questionHelpState" style="display:none">
-        <div class="panel-body">{{currentQuestion.helpText.value}}
-        </div>
+         slide-toggle="questionHelpState" style="display:none">
+      <div class="panel-body">{{currentQuestion.helpText.value}}</div>
     </div>
   </div>
 
   <div class="answers">
-    <div ng-repeat="answer in currentQuestion.answers |filter:filterSelectable" class="answer-container">
+    <div ng-repeat="answer in currentQuestion.answers |filter:filterSelectable"
+         class="answer-container">
       <div class="answer-text-container">
         <button type="button" class="btn btn-primary btn-lg btn-block"
-        ng-click="answerQuestion(answer.internalID)"
-        >
+                ng-click="answerQuestion(answer.internalID)">
           {{answer.text}}
         </button>
-        <div ng-if="answer.helpText" class="panel panel-default help-panel" style="display:none" slide-toggle="answerHelpStates['help-' + answer.internalID]">
-          <div class="panel-body">{{answer.helpText.value}}
-          </div>
+        <div ng-if="answer.helpText" class="panel panel-default help-panel"
+             style="display:none"
+             slide-toggle="answerHelpStates['help-' + answer.internalID]">
+          <div class="panel-body">{{answer.helpText.value}}</div>
         </div>
       </div>
       <div class="answer-help-container">
-        <span ng-if="answer.helpText" class="help" ng-click="toggleAnswerHelp('help-' + answer.internalID)"></span>
+        <span ng-if="answer.helpText" class="help"
+              ng-click="toggleAnswerHelp('help-' + answer.internalID)">
+        </span>
       </div>
     </div>
 
@@ -44,18 +48,17 @@
       <h4>Your answer:</h4>
       <input type="text" class="form-control" ng-model="userInput">
       <button type="button" class="btn btn-primary btn-lg btn-block send"
-      ng-disabled="!userInput || userInput==''"
-      ng-click="answerQuestion(-1, 'input_text')">
+              ng-disabled="!userInput || userInput==''"
+              ng-click="answerQuestion(-1, 'input_text')">
         Send
       </button>
     </div>
 
     <div style="padding-right: 20px;">
       <button type="button" class="btn btn-danger btn-lg btn-block"
-      ng-click="answerQuestion(-1)">
+              ng-click="answerQuestion(-1)">
         Skip
       </button>
     </div>
   </div>
-
 </div>
