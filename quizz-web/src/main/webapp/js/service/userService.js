@@ -30,5 +30,9 @@ angular.module('quizz').factory('userService', ['$http', function($http) {
       getUsername: function() {
         return $.cookie("username");
       },
+      storeCookie: function(userid) {
+        $.cookie("username", userid,
+                 { expires: 60, path: "/", secure: true });
+      }
     };
 }]);

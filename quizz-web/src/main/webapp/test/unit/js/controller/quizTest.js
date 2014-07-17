@@ -55,8 +55,15 @@ describe('QuizController test', function() {
     }])
   );
 
-  it('test reload diff quiz', inject(['$rootScope', '$controller',
-    function($rootScope, $controller) {
+  it('test reload diff quiz', inject([
+    '$rootScope', '$controller', 'userService',
+    function($rootScope, $controller, userService) {
+      // Mocks the storeCookie function to store a cookie that works without
+      // https since karma test starts a http server.
+      userService.storeCookie = function(userid) {
+        $.cookie("username", userid);
+      };
+
       // init scopes
       quizControllerScope = $rootScope.$new();
       // quiz controller
@@ -82,8 +89,15 @@ describe('QuizController test', function() {
     }])
   );
 
-  it('test reload same quiz', inject(['$rootScope', '$controller',
-    function($rootScope, $controller) {
+  it('test reload same quiz', inject([
+    '$rootScope', '$controller', 'userService',
+    function($rootScope, $controller, userService) {
+      // Mocks the storeCookie function to store a cookie that works without
+      // https since karma test starts a http server.
+      userService.storeCookie = function(userid) {
+        $.cookie("username", userid);
+      };
+
       // init scopes
       quizControllerScope = $rootScope.$new();
       // quiz controller
