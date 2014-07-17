@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
@@ -426,9 +427,32 @@ public class QuestionStatisticsService {
    * with the probabilities computed using various aggregation strategies
    * 
    * @param question
-   * @param userInput
    */
   public Question computeEntropyOfQuestionAnswers(Question question) {
+    
+    Map<AnswerAggregationStrategy, Double> result = new EnumMap<AnswerAggregationStrategy, Double>(AnswerAggregationStrategy.class);
+    for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
+      double entropy = 0.0;
+      for (Answer ans : question.getAnswers()) {
+        double p = strategy.getProbCorrect(ans);
+        if (p>0) entropy += - p * Math.log(p);
+      }
+      result.put(strategy, entropy);
+    }
+    question.setEntropy(result);
+    
+    return question;
+    
+  }
+  
+  /**
+   * Computes the entropy over the probabilities for the answers of the question,
+   * with the probabilities computed using various aggregation strategies
+   * 
+   * @param question
+   * @param userInput
+   */
+  public Question computeInformationGainForQuestionAndUser(Question question, User user) {
     
     Map<AnswerAggregationStrategy, Double> result = new EnumMap<AnswerAggregationStrategy, Double>(AnswerAggregationStrategy.class);
     for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
@@ -444,5 +468,6 @@ public class QuestionStatisticsService {
     return question;
     
   }
+  
   
 }
