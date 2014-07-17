@@ -331,7 +331,7 @@ public class QuizzTest {
     when(req.getRemoteAddr()).thenReturn(IP_ADDRESS);
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
-    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads", QUIZ_ID);
+    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads", QUIZ_ID, null);
     String userid = (String) map.get("userid");
     logResponse("get user", userid);
 

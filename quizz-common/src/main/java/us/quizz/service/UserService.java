@@ -39,12 +39,25 @@ public class UserService extends OfyBaseService<User> {
     // Get an array of Cookies associated with this domain
     String userid = null;
     Cookie[] cookies = req.getCookies();
+    // This will always be null, see bug tracker here:
+    // https://code.google.com/p/googleappengine/issues/detail?id=10100
     if (cookies != null) {
       for (Cookie c : cookies) {
         if (c.getName().equals(COOKIE_NAME)) {
           userid = c.getValue();
           break;
         }
+      }
+    }
+
+    if (userid != null) {
+      // If there is no associated User in the datastore for this userid, there are two reasons:
+      // - This user visited Quizz before and somehow its User entity was deleted from datastore
+      //   during previous migration etc.
+      // - The userid in the cookie might be faked by a malicious user.
+      // So, we are just going to reset and create a new userid.
+      if (get(userid) == null) {
+        userid = null;
       }
     }
 

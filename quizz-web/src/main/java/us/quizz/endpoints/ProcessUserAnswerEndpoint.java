@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
@@ -81,7 +82,11 @@ public class ProcessUserAnswerEndpoint {
       @Named("numCorrect") Integer numCorrect,
       @Named("numIncorrect") Integer numIncorrect,
       @Named("numExploit") Integer numExploit,
-      @Named("questionIndex") Integer questionIndex) throws Exception {
+      @Nullable @Named("questionIndex") Integer questionIndex) throws Exception {
+    if (questionIndex == null) {
+      questionIndex = -1;
+    }
+
     // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
     User user = userService.get(userID);
     Question question = questionService.get(questionID);

@@ -178,7 +178,8 @@ angular.module('quizz').controller('QuizController',
        function(response) {
          if (response) {
            if (response.userid) {
-             $.cookie("username", response.userid, { expires: 365, path: "/" });
+             $.cookie("username", response.userid,
+                      { expires: 60, path: "/", secure: true });
            }
          }
          $scope.fetchQuestions();

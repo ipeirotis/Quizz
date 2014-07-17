@@ -46,15 +46,20 @@ public class UserEndpoint {
    * @param req an httpRequest (to get the userID).
    * @param referer the (url) referer of the user.
    * @param quizID can be null if the user comes directly to the Quizz homepage.
+   * @param userID can be null if the user is new, and then we need to create a new one for her.
    */
   @ApiMethod(name = "getUser", path = "getUser", httpMethod = HttpMethod.POST)
   public Map<String, Object> getUser(HttpServletRequest req,
-      @Named("referer") String referer, @Nullable @Named("quizID") String quizID) {
-    String userid = userService.getUseridFromCookie(req);
-    userReferralService.asyncCreateAndStoreUserReferal(req, userid, referer, quizID);
-
+      @Named("referer") String referer, @Nullable @Named("quizID") String quizID,
+      @Nullable @Named("userID") String userID) {
+    // If the user is new or the userid no longer exists in the datastore, try to get it from the
+    // cookie and creates one if needed.
+    if (userID == null || userService.get(userID) == null) {
+      userID = userService.getUseridFromCookie(req);
+    }
+    userReferralService.asyncCreateAndStoreUserReferal(req, userID, referer, quizID);
     Map<String, Object> result = new HashMap<String, Object>();
-    result.put("userid", userid);
+    result.put("userid", userID);
     return result;
   }
 

@@ -69,7 +69,7 @@ public class UserEndpointTest extends QuizWebBaseTest {
     request.addHeader("User-Agent", userAgentString);
 
     Map<String, Object> results = userEndpoint.getUser(
-        request, "www.google.com/some_ads", QUIZ_ID1);
+        request, "www.google.com/some_ads", QUIZ_ID1, null);
     assertEquals(1, results.size());
     assertTrue(results.containsKey("userid"));
 
@@ -104,7 +104,7 @@ public class UserEndpointTest extends QuizWebBaseTest {
     request.setCookies(cookies);
 
     Map<String, Object> results = userEndpoint.getUser(
-        request, "www.google.com/some_ads", QUIZ_ID1);
+        request, "www.google.com/some_ads", QUIZ_ID1, USER_ID1);
     assertEquals(1, results.size());
     assertTrue(results.containsKey("userid"));
 

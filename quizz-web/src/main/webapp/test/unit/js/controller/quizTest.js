@@ -17,9 +17,7 @@ describe('QuizController test', function() {
     initQuizPerformance();
 
     $httpBackend = $injector.get('$httpBackend');
-    // TODO(chunhowt): cookies are still persisted over jasmine tests even
-    // though it should be removed in afterEach.
-    // $httpBackend.expectPOST('/getUser').respond(userResponse);
+    $httpBackend.expectPOST('/getUser').respond(userResponse);
     $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz1);
     $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
   }));
