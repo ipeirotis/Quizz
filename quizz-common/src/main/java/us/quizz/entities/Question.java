@@ -1,17 +1,23 @@
 package us.quizz.entities;
 
 import com.google.appengine.api.datastore.Text;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Stringify;
 
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.QuestionKind;
+
+import us.quizz.utils.EnumStringifier;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.logging.Logger;
+
 
 @Entity
 @Cache
@@ -99,6 +105,12 @@ public class Question implements Serializable {
 
   // Answer ID of best answer using WEIGHTED_VOTE answer aggregation strategy.
   private Integer bestWeightedVoteProbAnswerID;
+  
+  @Stringify(EnumStringifier.class)
+  private Map<AnswerAggregationStrategy, Double> entropy;
+  
+  @Stringify(EnumStringifier.class)
+  private Map<AnswerAggregationStrategy, Integer> bestAnswerID;
 
   // Text for showing context for the particular question
   private Text helpText;
@@ -125,6 +137,24 @@ public class Question implements Serializable {
     this.difficulty = 0.0;
 
     this.answers = new ArrayList<Answer>();
+    this.entropy = new EnumMap<AnswerAggregationStrategy, Double>(AnswerAggregationStrategy.class);
+    this.bestAnswerID = new EnumMap<AnswerAggregationStrategy, Integer>(AnswerAggregationStrategy.class);
+  }
+
+  public Map<AnswerAggregationStrategy, Double> getEntropy() {
+    return entropy;
+  }
+
+  public void setEntropy(Map<AnswerAggregationStrategy, Double> entropy) {
+    this.entropy = entropy;
+  }
+
+  public Map<AnswerAggregationStrategy, Integer> getBestAnswerID() {
+    return bestAnswerID;
+  }
+
+  public void setBestAnswerID(Map<AnswerAggregationStrategy, Integer> bestAnswerID) {
+    this.bestAnswerID = bestAnswerID;
   }
 
   // Note: This function should ONLY be used for test purpose because it sets the questionID

@@ -1,7 +1,6 @@
 package us.quizz.service;
 
 import com.google.inject.Inject;
-
 import com.googlecode.objectify.cmd.Query;
 
 import us.quizz.entities.Answer;
@@ -9,6 +8,7 @@ import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuestionSelectionStrategy;
@@ -22,6 +22,7 @@ import us.quizz.utils.MemcacheKey;
 import us.quizz.utils.QuestionSelector;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -414,6 +415,8 @@ public class QuestionService extends OfyBaseService<Question> {
 
     return new Result(bestAnswer, isCorrect, message);
   }
+  
+
 
   private Result generateFreeTextIncorrectResponse(Question question, String userInput) {
     Boolean isCorrect = false;

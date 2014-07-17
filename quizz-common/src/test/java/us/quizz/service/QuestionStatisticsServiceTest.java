@@ -14,9 +14,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
+import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.utils.Helper;
 import us.quizz.utils.QuizBaseTest;
@@ -284,4 +287,54 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     Question question4 = questionStatisticsService.updateStatistics("" + QUESTION_ID4);
     assertEquals(1.0, question4.getDifficulty(), 0.00);
   }
+  
+  @Test
+  public void testInformationGainCalculation() {
+    // First, create a new question that has no probability correct in any of the answer.
+    Question question =
+        new Question(QUIZ_ID1, new Text("test8"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 8888L,
+                     QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
+    
+    Answer a1 = new Answer(8888L, QUIZ_ID1, "Answer1", AnswerKind.SILVER, 1);
+    a1.setBayesProb(1.0);
+    a1.setMajorityVoteProb(0.5);
+    a1.setWeightedVoteProb(0.25);
+    question.addAnswer(a1);
+    Answer a2 = new Answer(8888L, QUIZ_ID1, "Answer2", AnswerKind.SILVER, 2);
+    a2.setBayesProb(0.0);
+    a2.setMajorityVoteProb(0.5);
+    a2.setWeightedVoteProb(0.25);
+    question.addAnswer(a2);
+    Answer a3 = new Answer(8888L, QUIZ_ID1, "Answer3", AnswerKind.SILVER, 3);
+    a3.setBayesProb(0.0);
+    a3.setMajorityVoteProb(0.0);
+    a3.setWeightedVoteProb(0.25);
+    question.addAnswer(a3);
+    Answer a4 = new Answer(8888L, QUIZ_ID1, "Answer4", AnswerKind.SILVER, 4);
+    a4.setBayesProb(0.0);
+    a4.setMajorityVoteProb(0.0);
+    a4.setWeightedVoteProb(0.25);
+    question.addAnswer(a4);
+
+
+    questionStatisticsService.computeEntropyOfQuestionAnswers(question);
+    
+    
+    Double epsilon = 0.0001;
+    Double entropyNB = question.getEntropy().get(AnswerAggregationStrategy.NAIVE_BAYES);
+    assertEquals((Double)0.0, entropyNB, epsilon);
+    
+    Double entropyMV = question.getEntropy().get(AnswerAggregationStrategy.MAJORITY_VOTE);
+    assertEquals((Double)0.69314718056, entropyMV, epsilon);
+    
+    Double entropyWM = question.getEntropy().get(AnswerAggregationStrategy.WEIGHTED_VOTE);
+    assertEquals((Double)1.386294, entropyWM, epsilon);
+    
+
+  }
+
+
+  
+  
+  
 }

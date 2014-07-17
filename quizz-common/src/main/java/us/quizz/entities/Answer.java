@@ -4,9 +4,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import com.googlecode.objectify.annotation.Parent;
 
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 
 import java.io.Serializable;
@@ -184,6 +184,10 @@ public class Answer implements Serializable{
     return probCorrect;
   }
 
+  public double getProbCorrect(AnswerAggregationStrategy strategy) {
+    return strategy.getProbCorrect(this);
+  }
+  
   public void setProbCorrect(Double probCorrect) {
     this.probCorrect = probCorrect;
   }

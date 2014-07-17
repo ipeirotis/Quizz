@@ -17,6 +17,7 @@ import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
@@ -447,4 +448,8 @@ public class QuestionServiceTest extends QuizBaseTest {
                  "and you are the first user to see this question!",
                  result.getMessage());
   }
+  
+
+  
+  
 }

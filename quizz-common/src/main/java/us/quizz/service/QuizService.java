@@ -52,8 +52,10 @@ public class QuizService extends OfyBaseService<Quiz> {
 
       ++total;
       Integer bestAnswerID = -1;
+      bestAnswerID = strategy.getBestProbAnswerID(question);
+      /*
       switch (strategy) {
-        case BAYES_PROB:
+        case NAIVE_BAYES:
           bestAnswerID = question.getBestBayesProbAnswerID();
           break;
         case WEIGHTED_VOTE:
@@ -65,6 +67,7 @@ public class QuizService extends OfyBaseService<Quiz> {
         default:
           break;
       }
+      */
       if (bestAnswerID == null) {
         continue;
       }
@@ -131,11 +134,12 @@ public class QuizService extends OfyBaseService<Quiz> {
     }
 
     quiz.setBayesProbQuizQuality(
-        computeQuizQuality(quizID, AnswerAggregationStrategy.BAYES_PROB));
+        computeQuizQuality(quizID, AnswerAggregationStrategy.NAIVE_BAYES));
     quiz.setWeightedVoteProbQuizQuality(
         computeQuizQuality(quizID, AnswerAggregationStrategy.WEIGHTED_VOTE));
     quiz.setMajorityVoteProbQuizQuality(
         computeQuizQuality(quizID, AnswerAggregationStrategy.MAJORITY_VOTE));
     return save(quiz);
   }
+  
 }

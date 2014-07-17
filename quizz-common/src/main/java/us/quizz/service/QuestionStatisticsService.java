@@ -17,6 +17,7 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,8 +28,7 @@ import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
-  private static final AnswerAggregationStrategy ANSWER_AGGREGATION_STRATEGY =
-      AnswerAggregationStrategy.BAYES_PROB;
+  private static final AnswerAggregationStrategy ANSWER_AGGREGATION_STRATEGY = AnswerAggregationStrategy.NAIVE_BAYES;
 
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
@@ -260,8 +260,10 @@ public class QuestionStatisticsService {
 
   private void computeBestProbCorrect(Question question) {
     for (Answer answer : question.getAnswers()) {
+      
+
       switch (ANSWER_AGGREGATION_STRATEGY) {
-        case BAYES_PROB:
+        case NAIVE_BAYES:
           answer.setProbCorrect(answer.getBayesProb());
           break;
         case MAJORITY_VOTE:
@@ -418,4 +420,29 @@ public class QuestionStatisticsService {
       question.setDifficulty(1.0 - numCorrect / new Double(totalAnswers));
     }
   }
+  
+  /**
+   * Computes the entropy over the probabilities for the answers of the question,
+   * with the probabilities computed using various aggregation strategies
+   * 
+   * @param question
+   * @param userInput
+   */
+  public Question computeEntropyOfQuestionAnswers(Question question) {
+    
+    Map<AnswerAggregationStrategy, Double> result = new EnumMap<AnswerAggregationStrategy, Double>(AnswerAggregationStrategy.class);
+    for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
+      double entropy = 0.0;
+      for (Answer ans : question.getAnswers()) {
+        double p = ans.getProbCorrect(strategy);
+        if (p>0) entropy += - p * Math.log(p);
+      }
+      result.put(strategy, entropy);
+    }
+    question.setEntropy(result);
+    
+    return question;
+    
+  }
+  
 }
