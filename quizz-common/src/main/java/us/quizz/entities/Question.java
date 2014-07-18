@@ -89,26 +89,15 @@ public class Question implements Serializable {
 
   // The difficulty of this question between [0, 1] (0 is easiest); this is computed online
   private Double difficulty;
-
-  // Answer ID of best answer using BAYES_PROB answer aggregation strategy.
-  //private Integer bestBayesProbAnswerID;
-
-  // Answer ID of best answer using MAJORITY_VOTE answer aggregation strategy.
-  //private Integer bestMajorityVoteProbAnswerID;
-
-  // Answer ID of best answer using WEIGHTED_VOTE answer aggregation strategy.
-  //private Integer bestWeightedVoteProbAnswerID;
   
   //@Stringify(EnumStringifier.class)
   private Map<String, Double> entropy;
   
-  //After computing the probability of correctness for each answer,
+  // After computing the probability of correctness for each answer,
   // this is the answer with the highest probability 
-  //@Stringify(EnumStringifier.class)
   private Map<String, String> likelyAnswer;
 
-  //ID of most likely answer
-  //@Stringify(EnumStringifier.class)
+  // ID of most likely answer
   private Map<String, Integer> likelyAnswerID;
   
   // Text for showing context for the particular question
@@ -350,32 +339,6 @@ public class Question implements Serializable {
   public void setLikelyAnswerIDForStrategy(AnswerAggregationStrategy strategy, Integer likelyAnswerID) {
     this.likelyAnswerID.put(strategy.toString(), likelyAnswerID);
   }
-  
-/*
-  public Integer getBestBayesProbAnswerID() {
-    return bestBayesProbAnswerID;
-  }
-
-  public void setBestBayesProbAnswerID(Integer bestAnswerID) {
-    this.bestBayesProbAnswerID = bestAnswerID;
-  }
-
-  public Integer getBestWeightedVoteProbAnswerID() {
-    return bestWeightedVoteProbAnswerID;
-  }
-
-  public void setBestWeightedVoteProbAnswerID(Integer bestAnswerID) {
-    this.bestWeightedVoteProbAnswerID = bestAnswerID;
-  }
-
-  public Integer getBestMajorityVoteProbAnswerID() {
-    return bestMajorityVoteProbAnswerID;
-  }
-
-  public void setBestMajorityVoteProbAnswerID(Integer bestAnswerID) {
-    this.bestMajorityVoteProbAnswerID = bestAnswerID;
-  }
-*/
 
   public Text getHelpText() {
     return helpText;

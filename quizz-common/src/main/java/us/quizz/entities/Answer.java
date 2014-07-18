@@ -43,25 +43,9 @@ public class Answer implements Serializable{
   // that picked this answer.
   private Double bits;
 
-  // The posterior (estimated) probability that the given answer is correct, computed based on
-  // the answers from the users. This is computed using the best AnswerAggregationStrategy
-  // we have and should be used instead of the other posterior probabilities.
-  //private Double probCorrect;
-
-  // The bayesian posterior probability that a given answer is correct, computed by assuming
-  // each of the user is independent. Refer to BAYES_PROB AnswerAggregationStrategy for more info.
-  //private Double bayesProb;
-
-  // The posterior probability that a given answer is correct, computed using the majority
-  // votes of the user. Refer to MAJORITY_VOTE AnswerAggregationStrategy for more info.
-  //private Double majorityVoteProb;
-
-  // The posterior probability that a given answer is correct, computed using the weighted
-  // votes of the user. Refer to WEIGHTED_VOTE AnswerAggregationStrategy for more info.
-  //private Double weightedVoteProb;
-
   // The posterior probabilities that a given answer is correct
-  //@Stringify(EnumStringifier.class)
+  // for a given strategy, which is represented as String (and is 
+  // an enum in the AnswerAggregationStrategy)
   private Map<String, Double> probCorrect;
   
   //for Objectify
