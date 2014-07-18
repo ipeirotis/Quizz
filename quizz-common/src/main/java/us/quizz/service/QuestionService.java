@@ -364,7 +364,7 @@ public class QuestionService extends OfyBaseService<Question> {
           if (answer.getNumberOfPicks() == null || answer.getNumberOfPicks() == 0) {
             continue;
           }
-          Double prob = answer.getProbCorrect();
+          Double prob = answer.getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES);
           if (prob == null) prob = 0.0;
           if (prob > maxProbability) {
             maxProbability = prob;

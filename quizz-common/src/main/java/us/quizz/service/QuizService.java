@@ -52,7 +52,7 @@ public class QuizService extends OfyBaseService<Quiz> {
 
       ++total;
       Integer bestAnswerID = -1;
-      bestAnswerID = strategy.getBestProbAnswerID(question);
+      bestAnswerID = question.getLikelyAnswerIDForStrategy(strategy);
       /*
       switch (strategy) {
         case NAIVE_BAYES:

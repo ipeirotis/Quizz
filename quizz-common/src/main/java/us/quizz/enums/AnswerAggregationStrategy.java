@@ -1,8 +1,5 @@
 package us.quizz.enums;
 
-import us.quizz.entities.Answer;
-import us.quizz.entities.Question;
-
 // The strategies here define how we aggregate votes from multiple users (with different
 // accuracy) to determine the best answer for a given question.
 // Specifically, given a list of users, each with different accuracy U_i, and each picks a
@@ -18,65 +15,12 @@ public enum AnswerAggregationStrategy {
   //     2. If user picks another answer rather than the current answer, A_j evaluated:
   //        - Use (1 - smoothed_accuracy) / (num_answers - 1).
   //          (i.e. assumes user picks the rest of the answer uniformly).
-  NAIVE_BAYES {
-    @Override
-    public Double getProbCorrect(Answer a) {
-      return a.getBayesProb();
-    }
-    
-    @Override
-    public void setProbCorrect(Answer a, Double prob) {
-      a.setBayesProb(prob);
-    }
-    
-    @Override
-    public Integer getBestProbAnswerID(Question q) {
-      return q.getBestBayesProbAnswerID();
-    }
-    
-  },
+  NAIVE_BAYES,
   // Posterior probability by weighing each user vote by her smoothed laplacian user accuracy.
-  WEIGHTED_VOTE {
-    @Override
-    public Double getProbCorrect(Answer a) {
-      return a.getWeightedVoteProb();
-    }
-    
-    @Override
-    public void setProbCorrect(Answer a, Double prob) {
-      a.setWeightedVoteProb(prob);
-    }
-    
-    @Override
-    public Integer getBestProbAnswerID(Question q) {
-      return q.getBestWeightedVoteProbAnswerID();
-    }
-    
-  },
+  WEIGHTED_VOTE ,
   // Posterior probability by weighing each user equally.
-  MAJORITY_VOTE {
-    @Override
-    public Double getProbCorrect(Answer a) {
-      return a.getMajorityVoteProb();
-    }
-    
-    @Override
-    public void setProbCorrect(Answer a, Double prob) {
-      a.setMajorityVoteProb(prob);
-    }
-    
-    @Override
-    public Integer getBestProbAnswerID(Question q) {
-      return q.getBestMajorityVoteProbAnswerID();
-    }
-    
-  };
+  MAJORITY_VOTE
   
-  public abstract Double getProbCorrect(Answer a);
-  
-  public abstract void setProbCorrect(Answer a, Double prob);
-  
-  public abstract Integer getBestProbAnswerID(Question q);
-  
+
   
 }

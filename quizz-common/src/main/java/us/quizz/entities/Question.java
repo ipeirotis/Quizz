@@ -9,12 +9,12 @@ import com.googlecode.objectify.annotation.Stringify;
 
 import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.QuestionKind;
-
 import us.quizz.utils.EnumStringifier;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -75,13 +75,6 @@ public class Question implements Serializable {
   // confidence is the highest probability 
   private Double confidence;
 
-  // After computing the probability of correctness for each answer,
-  // this is the answer with the highest probability 
-  private String likelyAnswer;
-
-  // ID of most likely answer
-  private Integer likelyAnswerID;
-
   // If likelyAnswer matches a GOLD answer, we set this to true
   private Boolean isLikelyAnswerCorrect;
 
@@ -98,20 +91,26 @@ public class Question implements Serializable {
   private Double difficulty;
 
   // Answer ID of best answer using BAYES_PROB answer aggregation strategy.
-  private Integer bestBayesProbAnswerID;
+  //private Integer bestBayesProbAnswerID;
 
   // Answer ID of best answer using MAJORITY_VOTE answer aggregation strategy.
-  private Integer bestMajorityVoteProbAnswerID;
+  //private Integer bestMajorityVoteProbAnswerID;
 
   // Answer ID of best answer using WEIGHTED_VOTE answer aggregation strategy.
-  private Integer bestWeightedVoteProbAnswerID;
+  //private Integer bestWeightedVoteProbAnswerID;
   
-  @Stringify(EnumStringifier.class)
-  private Map<AnswerAggregationStrategy, Double> entropy;
+  //@Stringify(EnumStringifier.class)
+  private Map<String, Double> entropy;
   
-  @Stringify(EnumStringifier.class)
-  private Map<AnswerAggregationStrategy, Integer> bestAnswerID;
+  //After computing the probability of correctness for each answer,
+  // this is the answer with the highest probability 
+  //@Stringify(EnumStringifier.class)
+  private Map<String, String> likelyAnswer;
 
+  //ID of most likely answer
+  //@Stringify(EnumStringifier.class)
+  private Map<String, Integer> likelyAnswerID;
+  
   // Text for showing context for the particular question
   private Text helpText;
 
@@ -130,32 +129,27 @@ public class Question implements Serializable {
     this.hasGoldAnswer = false;
     this.hasSilverAnswers = false;
     this.confidence = 0.0;
-    this.likelyAnswer = "";
+    
     this.isLikelyAnswerCorrect = false;
     this.feedback = "";
     this.difficultyPrior = 0.5;  // 0.5 is "half" difficult
     this.difficulty = 0.0;
 
     this.answers = new ArrayList<Answer>();
-    this.entropy = new EnumMap<AnswerAggregationStrategy, Double>(AnswerAggregationStrategy.class);
-    this.bestAnswerID = new EnumMap<AnswerAggregationStrategy, Integer>(AnswerAggregationStrategy.class);
+    this.likelyAnswer = new HashMap<String, String>();
+    this.likelyAnswerID = new HashMap<String, Integer>();;
+    this.entropy = new HashMap<String, Double>();
+
   }
 
-  public Map<AnswerAggregationStrategy, Double> getEntropy() {
+  public Map<String, Double> getEntropy() {
     return entropy;
   }
 
-  public void setEntropy(Map<AnswerAggregationStrategy, Double> entropy) {
+  public void setEntropy(Map<String, Double> entropy) {
     this.entropy = entropy;
   }
 
-  public Map<AnswerAggregationStrategy, Integer> getBestAnswerID() {
-    return bestAnswerID;
-  }
-
-  public void setBestAnswerID(Map<AnswerAggregationStrategy, Integer> bestAnswerID) {
-    this.bestAnswerID = bestAnswerID;
-  }
 
   // Note: This function should ONLY be used for test purpose because it sets the questionID
   // explicitly.
@@ -317,11 +311,11 @@ public class Question implements Serializable {
     this.confidence = confidence;
   }
 
-  public String getLikelyAnswer() {
+  public Map<String, String> getLikelyAnswer() {
     return likelyAnswer;
   }
 
-  public void setLikelyAnswer(String likelyAnswer) {
+  public void setLikelyAnswer(Map<String, String> likelyAnswer) {
     this.likelyAnswer = likelyAnswer;
   }
 
@@ -341,14 +335,23 @@ public class Question implements Serializable {
     this.difficulty = difficulty;
   }
 
-  public Integer getLikelyAnswerID() {
+  public Map<String, Integer> getLikelyAnswerIDForStrategy() {
     return likelyAnswerID;
   }
+  
+  public Integer getLikelyAnswerIDForStrategy(AnswerAggregationStrategy strategy) {
+    return likelyAnswerID.get(strategy.toString());
+  }
 
-  public void setLikelyAnswerID(Integer likelyAnswerID) {
+  public void setLikelyAnswerID(Map<String, Integer> likelyAnswerID) {
     this.likelyAnswerID = likelyAnswerID;
   }
 
+  public void setLikelyAnswerIDForStrategy(AnswerAggregationStrategy strategy, Integer likelyAnswerID) {
+    this.likelyAnswerID.put(strategy.toString(), likelyAnswerID);
+  }
+  
+/*
   public Integer getBestBayesProbAnswerID() {
     return bestBayesProbAnswerID;
   }
@@ -372,6 +375,7 @@ public class Question implements Serializable {
   public void setBestMajorityVoteProbAnswerID(Integer bestAnswerID) {
     this.bestMajorityVoteProbAnswerID = bestAnswerID;
   }
+*/
 
   public Text getHelpText() {
     return helpText;

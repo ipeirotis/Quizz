@@ -15,6 +15,7 @@ import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.repository.AnswerChallengeCounterRepository;
@@ -421,7 +422,7 @@ public class QuizBaseTest {
         }
       }
       Answer answer = new Answer(questionID, quizID, "Answer " + j, kind, j);
-      answer.setProbCorrect(j == 0 ? 0.70 : 0.1);
+      answer.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, j == 0 ? 0.70 : 0.1 );
       answer.setNumberOfPicks(j == 0 ? 1 : 0);
       question.addAnswer(answer);
     }
