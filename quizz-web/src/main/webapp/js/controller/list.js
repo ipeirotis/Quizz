@@ -24,8 +24,7 @@ angular.module('quizz').controller('ListController',
     function(response) {
       if (response) {
         if (response.userid) {
-          $.cookie("username", response.userid,
-                   { expires: 60, path: "/", secure: true });
+          userService.storeCookie(response.userid);
         }
       }
       // Calls fetchQuizes after creating user cookies as we need them to show
