@@ -53,21 +53,6 @@ public class QuizService extends OfyBaseService<Quiz> {
       ++total;
       Integer bestAnswerID = -1;
       bestAnswerID = question.getLikelyAnswerIDForStrategy(strategy);
-      /*
-      switch (strategy) {
-        case NAIVE_BAYES:
-          bestAnswerID = question.getBestBayesProbAnswerID();
-          break;
-        case WEIGHTED_VOTE:
-          bestAnswerID = question.getBestWeightedVoteProbAnswerID();
-          break;
-        case MAJORITY_VOTE:
-          bestAnswerID = question.getBestMajorityVoteProbAnswerID();
-          break;
-        default:
-          break;
-      }
-      */
       if (bestAnswerID == null) {
         continue;
       }
@@ -141,5 +126,4 @@ public class QuizService extends OfyBaseService<Quiz> {
         computeQuizQuality(quizID, AnswerAggregationStrategy.MAJORITY_VOTE));
     return save(quiz);
   }
-  
 }

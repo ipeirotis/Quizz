@@ -6,15 +6,14 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
   };
 
   return {
-    // Lists the next numQuestions of calibration and collection questions for
-    // the given userid and quizid.
+    // Lists the next calibration and collection questions for the given userid
+    // and quizid.
     // If successful, the success callback will be called with the response,
     // which is a map containing two values:
     //   - calibration - Set of calibration questions.
     //   - collection - Set of collection questions.
-    list: function(numQuestions, quizId, userid, success, error) {
+    list: function(quizId, userid, success, error) {
       var params = {
-        num: numQuestions,
         quizID: quizId,
         userID: userid
       };

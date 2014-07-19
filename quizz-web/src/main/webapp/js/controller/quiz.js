@@ -21,28 +21,38 @@ angular.module('quizz').controller('QuizController',
        $scope.questionHelpState = !$scope.questionHelpState;
      };
 
-     // Fetches the list of questions for the associated quiz and stores them
-     // in the workflow service, if necessary, then picks the next question
-     // to be displayed.
+     // Fetches new list of questions from the server.
+     $scope.fetchAdditionalQuestions = function() {
+       questionService.list(
+         $routeParams.quizId,
+         userService.getUsername(),
+         function(response) {
+           workflowService.setQuestions(response, $routeParams.quizId);
+           $scope.currentQuestion = workflowService.getNewCurrentQuestion();
+           $scope.numQuestions = workflowService.getNumQuestions();
+           $scope.readyToShow = true;
+         },
+         function(error) {
+         });
+     };
+
+     // Fetches the next question to be shown to the user from workflowService,
+     // if possible, else get a list of new questions from the server.
      $scope.fetchQuestions = function() {
-       // If we don't have questions set in the workflowService OR
-       // the requested quizId is different from the quizId in the workflow
-       // service, fetch a new set of questions.
+       // If we don't have questions set in the workflowService or the quizID
+       // changes.
        if (!workflowService.hasQuestions() ||
            $routeParams.quizId != workflowService.getCurrentQuizID()) {
          workflowService.clear();
          $scope.currentQuestionIndex = 1;
-         questionService.list(
-           $scope.numQuestions,
-           $routeParams.quizId,
-           userService.getUsername(),
-           function(response) {
-             workflowService.setQuestions(response, $routeParams.quizId);
-             $scope.currentQuestion = workflowService.getNewCurrentQuestion();
-             $scope.readyToShow = true;
-           },
-           function(error) {
-           });
+         $scope.fetchAdditionalQuestions();
+       } else if (workflowService.getNumQuestions() == -1 &&
+                  !workflowService.hasEnoughQuestions()) {
+         // If this is an unlimited quiz and we have not enough questions.
+         workflowService.clear();
+         workflowService.setCurrentQuestionIndex(
+             $scope.currentQuestionIndex - 1);
+         $scope.fetchAdditionalQuestions();
        } else {
          // Else, reuse the existing questions.
          $scope.currentQuestion = workflowService.getNewCurrentQuestion();
@@ -97,8 +107,7 @@ angular.module('quizz').controller('QuizController',
            userService.getUsername(),
            userInput || '',
            workflowService.getNumCorrectAnswers(),
-           workflowService.getNumQuestions() -
-               workflowService.getNumCorrectAnswers(),
+           workflowService.getNumIncorrectAnswers(),
            $scope.currentQuestionIndex,
            function(response) {
              if (response) {
@@ -121,6 +130,7 @@ angular.module('quizz').controller('QuizController',
                } else if (answerID == -1 && !userInput) {
                  gaType += 'skip';
                } else {
+                 workflowService.incNumIncorrectAnswers();
                  gaType += 'incorrect';
                }
 

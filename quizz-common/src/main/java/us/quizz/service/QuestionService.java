@@ -1,6 +1,7 @@
 package us.quizz.service;
 
 import com.google.inject.Inject;
+
 import com.googlecode.objectify.cmd.Query;
 
 import us.quizz.entities.Answer;
@@ -22,7 +23,6 @@ import us.quizz.utils.MemcacheKey;
 import us.quizz.utils.QuestionSelector;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,10 +37,15 @@ public class QuestionService extends OfyBaseService<Question> {
   // Keys used to annotate the question results in the map returned by getNextQuizQuestions.
   public static final String CALIBRATION_KEY = "calibration";
   public static final String COLLECTION_KEY = "collection";
+  public static final String NUM_QUESTIONS_KEY = "numQuestions";
 
   // Multiplier used to fetch more questions than being asked when choosing the next questions
   // to allow us to fetch enough candidate questions for each user.
   private static final int QUESTION_FETCHING_MULTIPLIER = 3;
+
+  public static final int DEFAULT_NUM_QUESTIONS_PER_QUIZ = 10;
+
+  public static final int UNLIMITED_QUESTIONS_PER_QUIZ = -1;
 
   private UserAnswerRepository userAnswerRepository;
 
@@ -88,54 +93,58 @@ public class QuestionService extends OfyBaseService<Question> {
   }
 
   /**
-   * Returns the next numQuestions calibration and collection questions in the given quizID
-   * for a given userID.
-   * Here, we prioritizes questions that userID has never answered before (not the same
-   * questionID and not the same clientID) and have the least questions' totalUserScore.
-   * If there are not enough questions to fulfill the numQuestions questions desired, we will
-   * reask answered questions for collection questions, but won't reask for calibration
-   * questions. This is due to the assumption that if we repeat asking collection question,
-   * we will gain extra information bit, but we won't get extra information bit from asking
-   * calibration questions.
+   * Returns the number of questions to group into a quiz based on the quiz and the user.
    *
-   * @return The map result returned will has two values, mapping from:
-   *         CALIBRATION_KEY -> set of calibration questions.
-   *         COLLECTION_KEY -> set of collection questions.
-
-   * @param quizID identifier for quiz from which to get questions
-   * @param numQuestions the number of questions to try and return
-   * @param userID identifier for the user for whom these questions are intended
+   * @param quiz Quiz to return questions from.
+   * @param user User to answer the quiz questions.
+   * @return number of questions to group into a quiz.
    */
-  public Map<String, Set<Question>> getNextQuizQuestions(
-      String quizID, int numQuestions, String userID) {
-    // First, we try to get a list of questions that the user has answered before for this quiz.
-    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
-    Set<Long> questionIDs = new HashSet<Long>();
-    for (UserAnswer userAnswer : userAnswers) {
-      questionIDs.add(userAnswer.getQuestionID());
+  private Integer determineNumQuestions(Quiz quiz, User user) {
+    if (quiz != null
+        && quiz.getAllowVaryingLengthQuizSession() != null
+        && quiz.getAllowVaryingLengthQuizSession()) {
+      if (user != null
+          && user.getNumQuestionsLimit() != null) {
+        return user.getNumQuestionsLimit();
+      }
     }
-    Set<String> questionClientIDs = getQuestionClientIDs(questionIDs);
+    return DEFAULT_NUM_QUESTIONS_PER_QUIZ;
+  }
 
-    // Some quizzes use a question selection strategy and others do not.
-    // If this quiz uses such a strategy, select questions according to the strategy.
-    // Otherwise, use the default strategy;
-    // TODO(kobren): refactor this if statement, it's a bit ugly.
-    Quiz quiz = quizRepository.get(quizID);
-    Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
-    // We do not yet use question selection strategies.
-    if (quiz.getUseQuestionSelectionStrategy() == null || !quiz.getUseQuestionSelectionStrategy()) {
-      result.put(CALIBRATION_KEY,
-          new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
-              // TODO(kobren): refactor magic strings.
-              quizID, questionIDs, questionClientIDs, numQuestions, "hasGoldAnswer", false)));
-      result.put(COLLECTION_KEY,
-          new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
-              // TODO(kobren): refactor magic strings.
-              quizID, questionIDs, questionClientIDs, numQuestions, "hasSilverAnswers", true)));
-      return result;
-    }
+  /**
+   * If the originalNum of questions are too big to return, we will return a more reasonable
+   * number of questions per batch.
+   *
+   * @param originalNum Original number of questions to return to users.
+   * @return Final number of questions to return to users.
+   */
+  private Integer chooseQuestionBatchSize(int originalNum) {
+    return originalNum == UNLIMITED_QUESTIONS_PER_QUIZ ?
+        DEFAULT_NUM_QUESTIONS_PER_QUIZ : originalNum;
+  }
 
-    // If this quiz allows for the use of question selection, use it here.
+  private Map<String, Object> getQuestionsWithLeastBits(
+      String quizID, Set<Long> questionIDs, Set<String> questionClientIDs, Integer numQuestions) {
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put(NUM_QUESTIONS_KEY, numQuestions);
+    result.put(CALIBRATION_KEY,
+        new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
+            quizID, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            // TODO(kobren): refactor magic strings.
+            "hasGoldAnswer", false)));
+    result.put(COLLECTION_KEY,
+        new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
+            quizID, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            // TODO(kobren): refactor magic strings.
+            "hasSilverAnswers", true)));
+    return result;
+  }
+
+  private Map<String, Object> getQuestionsByStrategy(
+      String quizID, User user, Set<Long> questionIDs, Set<String> questionClientIDs,
+      Integer numQuestions) {
     Map<String, Object> calibrationParams = new HashMap<String, Object>();
     // TODO(kobren): refactor magic strings.
     calibrationParams.put("quizID", quizID);
@@ -156,21 +165,71 @@ public class QuestionService extends OfyBaseService<Question> {
     QuestionSelector collectionSelector  = new QuestionSelector(collectionQuestions);
 
     // TODO(kobren): find a way to pick a better parameter
-    User user = userService.get(userID);
     // TODO(kobren): think about assigning a question selection strategy upon user creation
     QuestionSelectionStrategy strategy = user.pickQuestionSelectionStrategy();
     userService.asyncSave(user);
 
     int numBins = 10;
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put(NUM_QUESTIONS_KEY, numQuestions);
     result.put(CALIBRATION_KEY,
         // TODO(kobren): eventually we want to pick this strategy in a smart way
         new HashSet<Question>(calibrationSelector.questionsByStrategy(
-            strategy, questionIDs, questionClientIDs, numQuestions, false, numBins)));
+            strategy, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            false, numBins)));
     result.put(COLLECTION_KEY,
         // TODO(kobren): eventually we want to pick this strategy in a smart way
         new HashSet<Question>(collectionSelector.questionsByStrategy(
-            strategy, questionIDs, questionClientIDs, numQuestions, true, numBins)));
+            strategy, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            true, numBins)));
     return result;
+  }
+
+  /**
+   * Returns a list of calibration and collection questions in the given quizID
+   * for a given userID.
+   * Here, we prioritizes questions that userID has never answered before (not the same
+   * questionID and not the same clientID) and have the least questions' totalUserScore.
+   * If there are not enough questions to fulfill the num questions desired, we will
+   * reask answered questions for collection questions, but won't reask for calibration
+   * questions. This is due to the assumption that if we repeat asking collection question,
+   * we will gain extra information bit, but we won't get extra information bit from asking
+   * calibration questions.
+   * The number of questions returned is stored as the value of the NUM_QUESTIONS_KEY of the
+   * results. For the case of UNLIMITED_QUESTIONS_PER_QUIZ, the number of questions returned
+   * will be the DEFAULT_NUM_QUESTIONS_PER_QUIZ and the caller of this function is responsible
+   * to continue fetching more questions.
+   *
+   * @param quizID identifier for quiz from which to get questions
+   * @param userID identifier for the user for whom these questions are intended
+   * @return The map result returned will has three values, mapping from:
+   *         CALIBRATION_KEY -> set of calibration questions.
+   *         COLLECTION_KEY -> set of collection questions.
+   *         NUM_QUESTIONS_KEY -> The number of questions to group into a single quiz.
+   */
+  public Map<String, Object> getNextQuizQuestions(String quizID, String userID) {
+    // First, we try to get a list of questions that the user has answered before for this quiz.
+    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
+    Set<Long> questionIDs = new HashSet<Long>();
+    for (UserAnswer userAnswer : userAnswers) {
+      questionIDs.add(userAnswer.getQuestionID());
+    }
+    Set<String> questionClientIDs = getQuestionClientIDs(questionIDs);
+
+    Quiz quiz = quizRepository.get(quizID);
+    User user = userService.get(userID);
+    Integer numQuestions = determineNumQuestions(quiz, user);
+
+    // Some quizzes use a question selection strategy and others do not.
+    // If this quiz uses such a strategy, select questions according to the strategy.
+    // Otherwise, use the default strategy, which is picking those with the least bits.
+    if (quiz.getUseQuestionSelectionStrategy() == null || !quiz.getUseQuestionSelectionStrategy()) {
+      return getQuestionsWithLeastBits(quizID, questionIDs, questionClientIDs, numQuestions);
+    } else {
+      return getQuestionsByStrategy(quizID, user, questionIDs, questionClientIDs, numQuestions);
+    } 
   }
 
   /**
@@ -415,8 +474,6 @@ public class QuestionService extends OfyBaseService<Question> {
 
     return new Result(bestAnswer, isCorrect, message);
   }
-  
-
 
   private Result generateFreeTextIncorrectResponse(Question question, String userInput) {
     Boolean isCorrect = false;

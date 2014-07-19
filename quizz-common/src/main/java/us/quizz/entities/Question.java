@@ -9,22 +9,18 @@ import com.googlecode.objectify.annotation.Stringify;
 
 import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.QuestionKind;
-import us.quizz.utils.EnumStringifier;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
 
 @Entity
 @Cache
 @Index
 public class Question implements Serializable {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = Logger.getLogger(Question.class.getName());
 
   @Id
   private Long id;
@@ -90,15 +86,14 @@ public class Question implements Serializable {
   // The difficulty of this question between [0, 1] (0 is easiest); this is computed online
   private Double difficulty;
   
-  //@Stringify(EnumStringifier.class)
   private Map<String, Double> entropy;
   
   // After computing the probability of correctness for each answer,
   // this is the answer with the highest probability 
-  private Map<String, String> likelyAnswer;
+  private Map<String, String> likelyAnswers;
 
   // ID of most likely answer
-  private Map<String, Integer> likelyAnswerID;
+  private Map<String, Integer> likelyAnswerIDs;
   
   // Text for showing context for the particular question
   private Text helpText;
@@ -118,20 +113,21 @@ public class Question implements Serializable {
     this.hasGoldAnswer = false;
     this.hasSilverAnswers = false;
     this.confidence = 0.0;
-    
     this.isLikelyAnswerCorrect = false;
     this.feedback = "";
     this.difficultyPrior = 0.5;  // 0.5 is "half" difficult
     this.difficulty = 0.0;
 
     this.answers = new ArrayList<Answer>();
-    this.likelyAnswer = new HashMap<String, String>();
-    this.likelyAnswerID = new HashMap<String, Integer>();;
+    this.likelyAnswers = new HashMap<String, String>();
+    this.likelyAnswerIDs = new HashMap<String, Integer>();;
     this.entropy = new HashMap<String, Double>();
-
   }
 
   public Map<String, Double> getEntropy() {
+    if (this.entropy == null) {
+      entropy = new HashMap<String, Double>();
+    }
     return entropy;
   }
 
@@ -139,14 +135,12 @@ public class Question implements Serializable {
     this.entropy = entropy;
   }
 
-
   // Note: This function should ONLY be used for test purpose because it sets the questionID
   // explicitly.
   // TODO(chunhowt): Makes this a private/protected method only visible for testing.
   public Question(String quizID, Text text, QuestionKind kind, Long questionID, String clientID,
                   Boolean hasGoldAnswer, Boolean hasSilverAnswers, Double totalUserScore) {
     this(quizID, text, kind);
-    logger.warning("This Question constructor should only be used for testing.");
     // Note: We are setting the entity id here explicitly so that we can control it for unit
     // test purpose.
     this.id = questionID;
@@ -301,11 +295,14 @@ public class Question implements Serializable {
   }
 
   public Map<String, String> getLikelyAnswer() {
-    return likelyAnswer;
+    if (likelyAnswers == null) {
+      likelyAnswers = new HashMap<String, String>();
+    }
+    return likelyAnswers;
   }
 
   public void setLikelyAnswer(Map<String, String> likelyAnswer) {
-    this.likelyAnswer = likelyAnswer;
+    this.likelyAnswers = likelyAnswer;
   }
 
   public Double getDifficultyPrior() {
@@ -324,20 +321,30 @@ public class Question implements Serializable {
     this.difficulty = difficulty;
   }
 
-  public Map<String, Integer> getLikelyAnswerIDForStrategy() {
-    return likelyAnswerID;
+  public Map<String, Integer> getLikelyAnswerIDs() {
+    if (likelyAnswerIDs == null) {
+      likelyAnswerIDs = new HashMap<String, Integer>();
+    }
+    return likelyAnswerIDs;
   }
   
   public Integer getLikelyAnswerIDForStrategy(AnswerAggregationStrategy strategy) {
-    return likelyAnswerID.get(strategy.toString());
+    if (likelyAnswerIDs == null) {
+      likelyAnswerIDs = new HashMap<String, Integer>();
+    }
+    return likelyAnswerIDs.get(strategy.toString());
   }
 
-  public void setLikelyAnswerID(Map<String, Integer> likelyAnswerID) {
-    this.likelyAnswerID = likelyAnswerID;
+  public void setLikelyAnswerIDs(Map<String, Integer> likelyAnswerID) {
+    this.likelyAnswerIDs = likelyAnswerID;
   }
 
-  public void setLikelyAnswerIDForStrategy(AnswerAggregationStrategy strategy, Integer likelyAnswerID) {
-    this.likelyAnswerID.put(strategy.toString(), likelyAnswerID);
+  public void setLikelyAnswerIDForStrategy(
+      AnswerAggregationStrategy strategy, Integer likelyAnswerID) {
+    if (likelyAnswerIDs == null) {
+      likelyAnswerIDs = new HashMap<String, Integer>();
+    }
+    this.likelyAnswerIDs.put(strategy.toString(), likelyAnswerID);
   }
 
   public Text getHelpText() {

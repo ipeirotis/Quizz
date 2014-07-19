@@ -9,10 +9,8 @@ import com.googlecode.objectify.annotation.Stringify;
 
 import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
-import us.quizz.utils.EnumStringifier;
 
 import java.io.Serializable;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +44,7 @@ public class Answer implements Serializable{
   // The posterior probabilities that a given answer is correct
   // for a given strategy, which is represented as String (and is 
   // an enum in the AnswerAggregationStrategy)
-  private Map<String, Double> probCorrect;
+  private Map<String, Double> probCorrects;
   
   //for Objectify
   @SuppressWarnings("unused")
@@ -59,13 +57,13 @@ public class Answer implements Serializable{
     this.text = text;
     this.kind = kind;
     this.internalID = internalID;
-    this.probCorrect = new HashMap<String, Double>();
+    this.probCorrects = new HashMap<String, Double>();
   }
 
   public Answer(String text, AnswerKind kind) {
     this.text = text;
     this.kind = kind;
-    this.probCorrect = new HashMap<String, Double>();
+    this.probCorrects = new HashMap<String, Double>();
   }
 
   public Integer getInternalID() {
@@ -175,7 +173,6 @@ public class Answer implements Serializable{
     this.bits = bits;
   }
 
-
   public Key getParent() {
     return parent;
   }
@@ -192,22 +189,28 @@ public class Answer implements Serializable{
     this.helpText = helpText;
   }
 
-  public Map<String, Double> getProbCorrect() {
-    return probCorrect;
+  public Map<String, Double> getProbCorrects() {
+    if (this.probCorrects == null) {
+      this.probCorrects = new HashMap<String, Double>();
+    }
+    return probCorrects;
   }
 
   public Double getProbCorrectForStrategy(AnswerAggregationStrategy strategy) {
-    return probCorrect.get(strategy.toString());
+    if (this.probCorrects == null) {
+      probCorrects = new HashMap<String, Double>();
+    }
+    return probCorrects.get(strategy.toString());
   }
-  
-  public void setProbCorrect(Map<String, Double> probCorrect) {
-    this.probCorrect = probCorrect;
+
+  public void setProbCorrects(Map<String, Double> probCorrect) {
+    this.probCorrects = probCorrect;
   }
-  
+
   public void setProbCorrectForStrategy(AnswerAggregationStrategy strategy, Double probCorrect) {
-    this.probCorrect.put(strategy.toString(), probCorrect);
+    if (this.probCorrects == null) {
+      this.probCorrects = new HashMap<String, Double>();
+    }
+    this.probCorrects.put(strategy.toString(), probCorrect);
   }
-  
-  
-  
 }

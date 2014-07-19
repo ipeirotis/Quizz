@@ -6,7 +6,6 @@ package us.quizz.enums;
 // user answer UA_i for the given question Q, we want to compute the probability that an
 // answer is correct, i.e. P(A_j | U, UA, Q).
 public enum AnswerAggregationStrategy {
-  
   // Posterior probability using Bayes rules by assuming independent users.
   // So, the P(A_j | U) = PRODUCT(U_i | A_j).
   //   where user quality, U_i is one of the following:
@@ -17,10 +16,7 @@ public enum AnswerAggregationStrategy {
   //          (i.e. assumes user picks the rest of the answer uniformly).
   NAIVE_BAYES,
   // Posterior probability by weighing each user vote by her smoothed laplacian user accuracy.
-  WEIGHTED_VOTE ,
+  WEIGHTED_VOTE,
   // Posterior probability by weighing each user equally.
   MAJORITY_VOTE
-  
-
-  
 }

@@ -16,8 +16,8 @@ import org.junit.runners.JUnit4;
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
+import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
-import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
@@ -155,6 +155,7 @@ public class QuestionServiceTest extends QuizBaseTest {
             USER_ID2, QUESTION_ID1, ANSWER_ID0, QUIZ_ID1, true, 7L, UserAnswer.SUBMIT));
 
     // User 3 answers 0 questions.
+    userService.save(new User(USER_ID3));
   }
 
   @Test
@@ -194,66 +195,61 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsDuplicateAnsweredClientID() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID1, 1, USER_ID1);
-    assertEquals(2, results.size());
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID1);
+    assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
     // There are only two calibration question - QUESTION_ID1 and QUESTION_ID4 in QUIZ_ID1.
     // USER_ID1 has answered QUESTION_ID1, and since QUESTION_ID1 and QUESTION_ID4 has the
     // same client id, it is not repeated.
-    assertEquals(0, results.get(QuestionService.CALIBRATION_KEY).size());
+    assertEquals(0, ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).size());
   }
 
   @Test
   public void testNextQuestionsDuplicateUnansweredClientID() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID1, 5, USER_ID3);
-    assertEquals(2, results.size());
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
     // Only 1 even though there are two unanswered gold questions, since both of them have the
     // same client id.
-    assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
+    assertEquals(1, ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).size());
   }
 
   @Test
   public void testNextQuestionsDuplicateCollectionQuestion() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID1, 5, USER_ID1);
-    assertEquals(2, results.size());
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID1);
+    assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
     // There are 3 collection questions and USER_ID1 has answered QUESTION_ID2 and QUESTION_ID3
     // before.
     // However, collection questions can be asked infinitely even though it had been answered
     // before, so they are all chosen again.
-    assertEquals(3, results.get(QuestionService.COLLECTION_KEY).size());
+    assertEquals(3, ((Set<Question>)results.get(QuestionService.COLLECTION_KEY)).size());
   }
 
   @Test
   public void testNextQuestionsNullOrEmptyClientID() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID2);
-    assertEquals(2, results.size());
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, USER_ID2);
+    assertEquals(3, results.size());
 
     // Make sure all the questions are selected even though there are "repeated" empty
     // and null client id.
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
-    assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
+    assertEquals(1, ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).size());
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
-    assertEquals(3, results.get(QuestionService.COLLECTION_KEY).size());
+    assertEquals(3, ((Set<Question>)results.get(QuestionService.COLLECTION_KEY)).size());
   }
 
   @Test
   public void testNextQuestionsCollectionQuestion() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID1);
-    assertEquals(2, results.size());
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, USER_ID1);
+    assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
-    assertEquals(3, results.get(QuestionService.COLLECTION_KEY).size());
-    for (Question question : results.get(QuestionService.COLLECTION_KEY)) {
+    assertEquals(3, ((Set<Question>)results.get(QuestionService.COLLECTION_KEY)).size());
+    for (Question question : (Set<Question>) results.get(QuestionService.COLLECTION_KEY)) {
       assertTrue(question.getHasSilverAnswers());
       assertFalse(question.getHasGoldAnswer());
     }
@@ -261,33 +257,85 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsCalibrationQuestion() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID2, 5, USER_ID2);
-    assertEquals(2, results.size());
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, USER_ID2);
+    assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
-    assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
-    Question question = (Question) results.get(QuestionService.CALIBRATION_KEY).toArray()[0];
+    assertEquals(1, ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).size());
+    Question question =
+        (Question) ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).toArray()[0];
     assertFalse(question.getHasSilverAnswers());
     assertTrue(question.getHasGoldAnswer());
   }
 
   @Test
   public void testNextQuestionsSortedByUserScore() throws Exception {
-    Map<String, Set<Question>> results =
-        questionService.getNextQuizQuestions(QUIZ_ID1, 1, USER_ID3);
-    assertEquals(2, results.size());
+    User user = userService.get(USER_ID3);
+    user.setNumQuestionsLimit(1);
+    userService.save(user);
+
+    Quiz quiz = quizService.get(QUIZ_ID1);
+    quiz.setAllowVaryingLengthQuizSession(true);
+    quizService.save(quiz);
+
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    assertEquals(3, results.size());
 
     // Makes sure the sole question selected has the lowest totalUserScore.
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
-    assertEquals(1, results.get(QuestionService.CALIBRATION_KEY).size());
-    Question question = (Question) results.get(QuestionService.CALIBRATION_KEY).toArray()[0];
+    assertEquals(1, ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).size());
+    Question question =
+        (Question) ((Set<Question>)results.get(QuestionService.CALIBRATION_KEY)).toArray()[0];
     assertEquals(QUESTION_ID4, question.getId());
 
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
-    assertEquals(1, results.get(QuestionService.COLLECTION_KEY).size());
-    question = (Question) results.get(QuestionService.COLLECTION_KEY).toArray()[0];
+    assertEquals(1, ((Set<Question>)results.get(QuestionService.COLLECTION_KEY)).size());
+    question = (Question) ((Set<Question>)results.get(QuestionService.COLLECTION_KEY)).toArray()[0];
     assertEquals(QUESTION_ID3, question.getId());
+
+    assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
+    assertEquals((Integer)1, (Integer) results.get(QuestionService.NUM_QUESTIONS_KEY));
+  }
+
+  @Test
+  public void testNextQuestionsDefaultNumQuestions() throws Exception {
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    assertEquals(3, results.size());
+    assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
+    assertEquals((Integer) QuestionService.DEFAULT_NUM_QUESTIONS_PER_QUIZ,
+                 (Integer) results.get(QuestionService.NUM_QUESTIONS_KEY));
+  }
+
+  @Test
+  public void testNextQuestionsUserNumQuestions() throws Exception {
+    User user = userService.get(USER_ID3);
+    user.setNumQuestionsLimit(8);
+    userService.save(user);
+
+    Quiz quiz = quizService.get(QUIZ_ID1);
+    quiz.setAllowVaryingLengthQuizSession(true);
+    quizService.save(quiz);
+
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    assertEquals(3, results.size());
+    assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
+    assertEquals((Integer) 8, (Integer) results.get(QuestionService.NUM_QUESTIONS_KEY));
+  }
+
+  @Test
+  public void testNextQuestionsUnlimitedNumQuestions() throws Exception {
+    User user = userService.get(USER_ID3);
+    user.setNumQuestionsLimit(-1);
+    userService.save(user);
+
+    Quiz quiz = quizService.get(QUIZ_ID1);
+    quiz.setAllowVaryingLengthQuizSession(true);
+    quizService.save(quiz);
+
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    assertEquals(3, results.size());
+    assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
+    assertEquals(-1, (int) (Integer) results.get(QuestionService.NUM_QUESTIONS_KEY));
   }
 
   @Test
@@ -448,8 +496,4 @@ public class QuestionServiceTest extends QuizBaseTest {
                  "and you are the first user to see this question!",
                  result.getMessage());
   }
-  
-
-  
-  
 }

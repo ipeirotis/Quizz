@@ -422,7 +422,7 @@ public class QuizBaseTest {
         }
       }
       Answer answer = new Answer(questionID, quizID, "Answer " + j, kind, j);
-      answer.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, j == 0 ? 0.70 : 0.1 );
+      answer.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, j == 0 ? 0.70 : 0.1);
       answer.setNumberOfPicks(j == 0 ? 1 : 0);
       question.addAnswer(answer);
     }

@@ -12,8 +12,8 @@ describe('QuizController test', function() {
 
   beforeEach(inject(function ($injector) {
     initUserResponse();
-    questionsQuiz1 = initQuestions(QUIZ_1);
-    questionsQuiz2 = initQuestions(QUIZ_2);
+    questionsQuiz1 = initQuestions(QUIZ_1, 10);
+    questionsQuiz2 = initQuestions(QUIZ_2, -1);
     initQuizPerformance();
 
     $httpBackend = $injector.get('$httpBackend');
@@ -121,13 +121,61 @@ describe('QuizController test', function() {
     }])
   );
 
+  it('test fetch unlimited question', inject([
+    '$rootScope', '$controller', 'userService', 'workflowService',
+    function($rootScope, $controller, userService, workflowService) {
+      // Mocks the storeCookie function to store a cookie that works without
+      // https since karma test starts a http server.
+      userService.storeCookie = function(userid) {
+        $.cookie("username", userid);
+      };
+
+      // Sets up listNextQuestions to only return 2 gold questions for the
+      // "unlimited" quiz.
+      questionsQuiz2.calibration = questionsQuiz2.calibration.slice(0, 2);
+      questionsQuiz2.collection = [];
+      $httpBackend.resetExpectations();
+      $httpBackend.expectPOST('/getUser').respond(userResponse);
+      $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz2);
+      $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+
+      quizControllerScope = $rootScope.$new();
+      routeParams['quizId'] = QUIZ_2;
+      $controller('QuizController', {
+        $scope: quizControllerScope, $routeParams: routeParams
+      });
+      $httpBackend.flush();
+      expect(quizControllerScope.numQuestions).toEqual(-1);
+
+      // Simulate answering the first question.
+      workflowService.incCurrentQuestionIndex();
+      $controller('QuizController', {
+        $scope: quizControllerScope, $routeParams: routeParams
+      });
+      // No extra call to fetch additional question.
+      $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+      $httpBackend.flush();
+
+      // Simulate answering the second question.
+      workflowService.incCurrentQuestionIndex();
+      $controller('QuizController', {
+        $scope: quizControllerScope, $routeParams: routeParams
+      });
+      // Since there is only two questions in this unlimited QUIZ_2, we need to
+      // fetch questions again.
+      $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz2);
+      $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+      $httpBackend.flush();
+    }])
+  );
+
   function initUserResponse() {
     userResponse = {
       userid: 'aff2',
     };
   }
 
-  function initQuestions(quizID) {
+  function initQuestions(quizID, numQuestions) {
     var calibrationQuestions = [];
     for (var i = 1; i <= 10; i++) {
       var question = {
@@ -166,7 +214,8 @@ describe('QuizController test', function() {
 
     return {
       calibration: calibrationQuestions,
-      collection: collectionQuestions
+      collection: collectionQuestions,
+      numQuestions: numQuestions
     };
   }
 

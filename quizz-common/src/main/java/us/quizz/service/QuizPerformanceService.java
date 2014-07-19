@@ -177,7 +177,8 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
         // confidence and will contribute in the estimation of user quality)
         if (userProb < question.getConfidence()) {
           scoreTotal++;
-          scoreCorrect += question.getAnswer(ua.getAnswerID()).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES);
+          scoreCorrect += question.getAnswer(ua.getAnswerID())
+              .getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES);
         }
       }
     }

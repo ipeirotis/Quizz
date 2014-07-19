@@ -27,8 +27,7 @@ angular.module('quizz').controller('FeedbackController',
   $scope.nextQuestion = function() {
     workflowService.incCurrentQuestionIndex();
 
-    if (workflowService.getCurrentQuestionIndex() <
-        workflowService.getNumQuestions()) {
+    if (!workflowService.isQuizFinished()) {
       $location.path('/quiz');
     } else {
       $location.path('/summary');

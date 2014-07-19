@@ -11,6 +11,7 @@ angular.module('quizz').factory('workflowService', [function() {
   var numCalibrationQuestions = 0;
   var numCollectionQuestions = 0;
   var numCorrectAnswers = 0;
+  var numIncorrectAnswers = 0;
   var numSubmittedUserAnswers = 0;
   // TODO(chunhowt): Seems like we always choose the first question to be
   // explore even though the user might already have answered questions in
@@ -30,19 +31,21 @@ angular.module('quizz').factory('workflowService', [function() {
       currentQuestionIndex = 0;
       currentGoldQuestionIndex = 0;
       currentSilverQuestionIndex = 0;
+      numQuestions = 10;
       numCalibrationQuestions = 0;
       numCollectionQuestions = 0;
       numCorrectAnswers = 0;
+      numIncorrectAnswers = 0;
       numSubmittedUserAnswers = 0;
       bestAnswer = null;
       userAnswerID = -1;
     },
     // Updates the workflow service with the new questions for the given quiz
     // id and reset the number of calibration and collection questions. The
-    // newQuestionsMap is a map with length 2 and have the following
-    // keys:
+    // newQuestionsMap is a map with length 3 and have the following keys:
     // - calibration: Calibration questions.
     // - collection: Collection questions.
+    // - numQuestions: Number of questions.
     setQuestions: function(newQuestionsMap, newQuizID) {
       quizID = newQuizID;
       questions = newQuestionsMap;
@@ -52,12 +55,29 @@ angular.module('quizz').factory('workflowService', [function() {
       if (newQuestionsMap.collection) {
         numCollectionQuestions = newQuestionsMap.collection.length;
       }
+      if (newQuestionsMap.numQuestions) {
+        numQuestions = newQuestionsMap.numQuestions;
+      }
     },
     getCurrentQuizID: function() {
       return quizID;
     },
     getQuestions: function() {
       return questions;
+    },
+    // Returns true if we have at least one more question to be asked for the
+    // next question.
+    hasEnoughQuestions: function() {
+      // If there are no questions to ask of a certain label (calibration /
+      // collection), ask a question of the other label type, if possible.
+      if (isNextQuestionGold && numCalibrationQuestions == 0) {
+        isNextQuestionGold = false;
+      } else if (!isNextQuestionGold && numCollectionQuestions == 0) {
+        isNextQuestionGold = true;
+      }
+      return isNextQuestionGold ?
+          currentGoldQuestionIndex < numCalibrationQuestions :
+          currentSilverQuestionIndex < numCollectionQuestions;
     },
     hasQuestions: function() {
       return questions.calibration || questions.collection;
@@ -68,8 +88,8 @@ angular.module('quizz').factory('workflowService', [function() {
     // Picks the next question based on whether we are asking collection
     // or calibration questions (isNextQuestionGold).
     getNewCurrentQuestion: function() {
-      // First, flip the bit of asking gold/silver question if one of them
-      // is empty.
+      // If there are no questions to ask of a certain label (calibration /
+      // collection), ask a question of the other label type, if possible.
       if (numCalibrationQuestions == 0) {
         isNextQuestionGold = false;
       } else if (numCollectionQuestions == 0) {
@@ -96,11 +116,17 @@ angular.module('quizz').factory('workflowService', [function() {
     getCurrentQuestionIndex: function() {
       return currentQuestionIndex;
     },
+    setCurrentQuestionIndex: function(index) {
+      currentQuestionIndex = index;
+    },
     getNumQuestions: function() {
       return numQuestions;
     },
     getNumCorrectAnswers: function() {
       return numCorrectAnswers;
+    },
+    getNumIncorrectAnswers: function() {
+      return numIncorrectAnswers;
     },
     getNumSubmittedUserAnswers : function() {
       return numSubmittedUserAnswers;
@@ -131,6 +157,9 @@ angular.module('quizz').factory('workflowService', [function() {
     incNumCorrectAnswers: function() {
       numCorrectAnswers++;
     },
+    incNumIncorrectAnswers: function() {
+      numIncorrectAnswers++;
+    },
     incNumSubmittedUserAnswers: function() {
       numSubmittedUserAnswers++;
     },
@@ -151,6 +180,11 @@ angular.module('quizz').factory('workflowService', [function() {
     },
     setUserAnswerId: function(newUserAnswerID) {
       userAnswerID = newUserAnswerID;
+    },
+    // Quiz is finished when the currentQuestionIndex reaches the numQuestions,
+    // provided that numQuestions is not -1 (i.e. infinity).
+    isQuizFinished: function() {
+      return numQuestions != -1 && currentQuestionIndex >= numQuestions;
     }
   };
 }]);

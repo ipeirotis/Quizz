@@ -57,8 +57,6 @@ public class QuizServiceTest extends QuizBaseTest {
     question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0);
     question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0);
     question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 0);
-    
-    
     questionService.save(question);
 
     question =

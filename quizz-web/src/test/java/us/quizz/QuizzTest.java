@@ -161,11 +161,11 @@ public class QuizzTest {
 
     answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
+    userService = new UserService(userRepository, experimentRepository);
     questionService = new QuestionService(
         questionRepository, userAnswerRepository, quizRepository, userService);
     treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentRepository);
-    userService = new UserService(userRepository, experimentRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
     quizPerformanceService = new QuizPerformanceService(
         quizPerformanceRepository, userAnswerService, questionService);
@@ -296,9 +296,9 @@ public class QuizzTest {
   }
 
   private Set<Question> startQuiz(String quizId) {
-    Map<String, Set<Question>> questionMap =
+    Map<String, Object> questionMap =
         quizEndpoint.getNextQuestions(quizId, "user1", NUMBER_OF_QUESTIONS);
-    return questionMap.get("calibration");
+    return (Set<Question>) questionMap.get("calibration");
   }
 
   private void processUserAnswer(User user, Quiz quiz, Question question, 

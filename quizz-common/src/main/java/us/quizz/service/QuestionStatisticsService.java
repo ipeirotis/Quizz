@@ -10,7 +10,6 @@ import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerAggregationStrategy;
-import us.quizz.enums.AnswerAggregationStrategy.*;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.utils.Helper;
@@ -30,7 +29,8 @@ import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
-  private static final String ANSWER_AGGREGATION_STRATEGY = AnswerAggregationStrategy.NAIVE_BAYES.toString();
+  private static final String ANSWER_AGGREGATION_STRATEGY =
+      AnswerAggregationStrategy.NAIVE_BAYES.toString();
 
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
@@ -57,9 +57,9 @@ public class QuestionStatisticsService {
     Map<Integer, Double> answerBitsMap = new HashMap<Integer, Double>();
     // Maps from internal answer id -> number of UserAnswer for the particular answer.
     Map<Integer, Integer> answerCountsMap = new HashMap<Integer, Integer>();
-    // Maps from internal answer id -> list of (user correct answers, user incorrect answers, whether user picks this answer) of
-    // users giving the answer.
-    Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap = 
+    // Maps from internal answer id -> list of (user correct answers, user incorrect answers,
+    // whether user picks this answer) of users giving the answer.
+    Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap =
         new HashMap<Integer, List<Triple<Double, Double, Boolean>>>();
 
     resetStatsMap(question, answerBitsMap, answerCountsMap, answerProbMap);
@@ -118,7 +118,8 @@ public class QuestionStatisticsService {
   // Updates the instance variables of statistics map for the given question given a user answer's
   // quality and information bit for a given answerId.
   private void updateStatsMap(
-      Question question, Double userCorrect, Double userIncorrect, Double userBits, Integer answerId, Integer numAnswers,
+      Question question, Double userCorrect, Double userIncorrect, Double userBits,
+      Integer answerId, Integer numAnswers,
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
       Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
@@ -155,7 +156,6 @@ public class QuestionStatisticsService {
   // Refer to BAYES_PROB AnswerAggregationStrategy for more information.
   private void computeBayesProb(Question question,
       Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
-    
     AnswerAggregationStrategy strategy = AnswerAggregationStrategy.NAIVE_BAYES;
     double sumProb = 0.0;
     double maxProb = 0.0;
@@ -198,7 +198,6 @@ public class QuestionStatisticsService {
   // the result in the Answer entitiy of the question given.
   private void computeMajorityVoteProb(Question question,
       Map<Integer, Integer> answerCountsMap) {
-    
     AnswerAggregationStrategy strategy = AnswerAggregationStrategy.MAJORITY_VOTE;
     int sumVotes = 0;
     int maxVotes = 0;
@@ -232,7 +231,6 @@ public class QuestionStatisticsService {
   // quality.
   private void computeWeightedVoteProb(Question question,
       Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
-    
     AnswerAggregationStrategy strategy = AnswerAggregationStrategy.WEIGHTED_VOTE;
     double weightedVotes = 0.0;
     double maxVotes = 0.0;
@@ -270,8 +268,6 @@ public class QuestionStatisticsService {
     }
     question.setLikelyAnswerIDForStrategy(strategy, bestAnswerID);
   }
-  
-
 
   // Computes the answer statistics for the given question and updates the instance variables of
   // statistics map for each answer and the corresponding fields in the answers in the question
@@ -306,9 +302,7 @@ public class QuestionStatisticsService {
       // Estimate userProb after removing the effect of the current question.
       Double userProb = 1.0 * (correct + 1) / (total + numAnswers);
       Double userBits = Helper.getInformationGain(userProb, numAnswers);
-
-
-      updateStatsMap(question, correct, total-correct, userBits, ansId, numAnswers,
+      updateStatsMap(question, correct, total - correct, userBits, ansId, numAnswers,
           answerBitsMap, answerCountsMap, answerProbMap);
     }
 
@@ -318,8 +312,6 @@ public class QuestionStatisticsService {
       answer.setBits(answerBitsMap.get(internalID));
       answer.setNumberOfPicks(answerCountsMap.get(internalID));
     }
-
-
   }
 
   // Computes the statistics and best answer for the given question and store them in the given
@@ -330,26 +322,23 @@ public class QuestionStatisticsService {
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
       Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
-    
     computeBayesProb(question, answerProbMap);
     computeMajorityVoteProb(question, answerCountsMap);
     computeWeightedVoteProb(question, answerProbMap);
-    // computeBestProbCorrect(question);
-    
+
     computeTotalResponses(question, answerCountsMap);
     computeBitsForQuestion(question, answerBitsMap);
-    
-    
+
     // Loops through the answers to pick the one with the highest probability as the best answer.
     Map<String, Integer> likelyAnswerIDmap = computeLikelyAnswers(question);
     computeNumberOfCorrectResponses(question, answerCountsMap, likelyAnswerIDmap);
 
-    // TODO(panos): The Confidence and IsLikelyAnswerCorrect need to be refactored to have an AnswerAggregationStrategy
-    // associated with them.
+    // TODO(panos): The Confidence and IsLikelyAnswerCorrect need to be refactored to have an
+    // AnswerAggregationStrategy associated with them.
     Integer answerId = likelyAnswerIDmap.get(ANSWER_AGGREGATION_STRATEGY);
     for (Answer answer : question.getAnswers()) {
       if (answer.getInternalID() == answerId) {
-        question.setConfidence(answer.getProbCorrect().get(ANSWER_AGGREGATION_STRATEGY));
+        question.setConfidence(answer.getProbCorrects().get(ANSWER_AGGREGATION_STRATEGY));
         if (answer.getKind() == AnswerKind.GOLD) {
           question.setIsLikelyAnswerCorrect(true);
         } else if  (answer.getKind() == AnswerKind.INCORRECT) {
@@ -358,8 +347,7 @@ public class QuestionStatisticsService {
           question.setIsLikelyAnswerCorrect(null);
         }
       }
-    }
-    
+    }    
   }
 
   private void computeTotalResponses(Question question, Map<Integer, Integer> answerCountsMap) {
@@ -388,7 +376,7 @@ public class QuestionStatisticsService {
       }
       likelyAnswerIDmap.put(strategy.toString(), likelyAnswerID);
     }
-    question.setLikelyAnswerID(likelyAnswerIDmap);
+    question.setLikelyAnswerIDs(likelyAnswerIDmap);
     
     Map<String, String> likelyAnswerMap = new HashMap<String, String>();
     for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
@@ -400,7 +388,8 @@ public class QuestionStatisticsService {
     return likelyAnswerIDmap;
   }
 
-  private void computeNumberOfCorrectResponses(Question question, Map<Integer, Integer> answerCountsMap,
+  private void computeNumberOfCorrectResponses(
+      Question question, Map<Integer, Integer> answerCountsMap,
       Map<String, Integer> likelyAnswerIDmap) {
     Integer numCorrect = 0;
     for (Answer answer : question.getAnswers()) {
@@ -441,30 +430,24 @@ public class QuestionStatisticsService {
       question.setDifficulty(1.0 - numCorrect / new Double(totalAnswers));
     }
   }
-  
+
   /**
    * Computes the entropy over the probabilities for the answers of the question,
    * with the probabilities computed using various aggregation strategies
-   * 
+   *
    * @param question
    */
   public Question computeEntropyOfQuestionAnswers(Question question) {
-    
     Map<String, Double> result = new HashMap<String, Double>();
     for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
       double entropy = 0.0;
       for (Answer ans : question.getAnswers()) {
         double p = ans.getProbCorrectForStrategy(strategy);
-        if (p>0) entropy += - p * Math.log(p);
+        if (p > 0) entropy += - p * Math.log(p);
       }
       result.put(strategy.toString(), entropy);
     }
     question.setEntropy(result);
-    
     return question;
-    
   }
-
-  
-  
 }
