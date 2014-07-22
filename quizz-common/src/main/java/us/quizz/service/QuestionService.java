@@ -443,7 +443,9 @@ public class QuestionService extends OfyBaseService<Question> {
       case FREETEXT_COLLECTION:
         Result r;
         // Check if submitted answer matches a gold or silver answer, even with typo.
-        r = checkFreeTextAgainstGoldSilver(question, userInput);
+        r = checkFreeTextAgainstGoldSilver(question, userInput, false  /* no typo */);
+        if (r != null) return r;
+        r = checkFreeTextAgainstGoldSilver(question, userInput, true  /* allows typo */);
         if (r != null) return r;
 
         // Check if the answer submitted by the user matches an answer submitted by other users,
@@ -452,7 +454,9 @@ public class QuestionService extends OfyBaseService<Question> {
         // of other users, there are extra tests that we need to run before accepting these answers
         // as correct. First of all, the user submissions should not be the same across different
         // questions and the user submissions should be vetted by another quiz.
-        r = checkFreeTextAgainstUserAnswers(question, userInput);
+        r = checkFreeTextAgainstUserAnswers(question, userInput, false  /* no typo */);
+        if (r != null) return r;
+        r = checkFreeTextAgainstUserAnswers(question, userInput, true  /* allows typo */);
         if (r != null) return r;
 
         // At this point, it seems that the user answer does not match gold 
@@ -494,16 +498,18 @@ public class QuestionService extends OfyBaseService<Question> {
     return new Result(bestAnswer, isCorrect, message);
   }
 
-  private Result checkFreeTextAgainstUserAnswers(Question question, String userInput) {
+  private Result checkFreeTextAgainstUserAnswers(
+      Question question, String userInput, boolean allowTypo) {
     Boolean isCorrect;
     String message;
     for (Answer ans : question.getAnswers()) {
       AnswerKind ak = ans.getKind();
       if (ak == AnswerKind.USER_SUBMITTED) {
-        if (ans.getText().equalsIgnoreCase(userInput)) {
+        if (!allowTypo && ans.getText().equalsIgnoreCase(userInput)) {
           message = "Well done! We don't know the answer for this question, but other users "
               + "submitted the same answer!";
-        } else if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+        } else if (allowTypo
+                   && LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
           message = "Well done! We don't know the answer for this question, but other users "
               + "submitted almost the same answer!";
         } else {
@@ -516,7 +522,8 @@ public class QuestionService extends OfyBaseService<Question> {
     return null;
   }
 
-  private Result checkFreeTextAgainstGoldSilver(Question question, String userInput) {
+  private Result checkFreeTextAgainstGoldSilver(
+      Question question, String userInput, boolean allowTypo) {
     Boolean isCorrect;
     String message;
     QuestionKind qk = question.getKind(); 
@@ -524,9 +531,10 @@ public class QuestionService extends OfyBaseService<Question> {
       AnswerKind ak = ans.getKind();
       if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
           || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
-        if (ans.getText().equalsIgnoreCase(userInput)) {
+        if (!allowTypo && ans.getText().equalsIgnoreCase(userInput)) {
           message = "Great! The correct answer is indeed " + ans.getText() + "!";
-        } else if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+        } else if (allowTypo
+                   && LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
           message = "Nice! Close one! The correct answer is " + ans.getText() + "!";
         } else {
           continue;
