@@ -1,0 +1,24 @@
+<div ng-show="readyToShow == true">
+  <ol class="breadcrumb">
+    <li>quizzes</li>
+  </ol>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Quiz</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="quiz in quizzes | orderBy:'name'">
+        <td>
+          <a href="#/editor/quiz/{{quiz.quizID}}/edit">{{quiz.name}}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="col-xs-12 text-center">
+      <a ng-href="#/editor/quiz/new" class="btn btn-primary">Create</a>
+    </div>
+  </div>
+</div>

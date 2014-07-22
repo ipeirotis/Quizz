@@ -2,13 +2,11 @@ package us.quizz.endpoints;
 
 import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
-import com.google.inject.Inject;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
@@ -17,11 +15,13 @@ import us.quizz.service.QuizService;
 import us.quizz.utils.Constants;
 import us.quizz.utils.Security;
 
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
+import com.google.inject.Inject;
 
 @Api(name = "quizz",
      description = "The API for Quizz.us",
@@ -40,6 +40,12 @@ public class QuizEndpoint {
   public QuizEndpoint(QuizService quizService, QuestionService questionService) {
     this.quizService = quizService;
     this.questionService = questionService;
+  }
+
+  // Gets the quiz by quizID
+  @ApiMethod(name = "getQuiz", path = "getQuiz", httpMethod = HttpMethod.GET)
+  public Quiz getQuiz(@Named("quizID") String quizID) {
+    return quizService.get(quizID);
   }
 
   // Lists the quiz in datastore using paging.

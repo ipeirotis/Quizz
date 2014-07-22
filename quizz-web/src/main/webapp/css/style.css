@@ -145,3 +145,28 @@ body {
   margin-top: 5px;
   margin-bottom: 0px;
 }
+
+.hr-line-dashed {
+  border-top: 1px dashed #E7EAEC;
+  color: #ffffff;
+  background-color: #ffffff;
+  height: 1px;
+  margin: 20px 0;
+}
+
+.form-control, .form-control:focus, .has-error
+.form-control:focus, .has-success .form-control:focus,
+.has-warning .form-control:focus, .navbar-collapse,
+.navbar-form, .navbar-form-custom .form-control:focus,
+.navbar-form-custom .form-control:hover, .open .btn.dropdown-toggle,
+.panel, .popover, .progress, .progress-bar {
+  box-shadow: none;
+}
+
+.form-control {
+  border-radius: 3px;
+}
+
+.error {
+  color: #b94a48;
+}

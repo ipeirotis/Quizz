@@ -43,11 +43,17 @@ public class QuestionEndpoint {
   }
 
   // Lists all the questions in the quizID.
-  @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.POST)
+  @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.GET)
   public List<Question> listAllQuestions(@Named("quizID") String quizID, User user)
       throws UnauthorizedException {
     Security.verifyAuthenticatedUser(user);
     return this.questionService.getQuizQuestions(quizID);
+  }
+
+  // Gets the question by questionId
+  @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.GET)
+  public Question getQuestion(@Named("id") Long id) {
+    return this.questionService.get(id);
   }
 
   // Inserts the question given into the datastore.
