@@ -36,7 +36,7 @@
 
 <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" href="/lib/summernote/summernote.css">
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/summernote/0.5.2/summernote.css">
 <link rel="stylesheet" type="text/css" href="/css/bootstrap-custom.css">
 <link rel="stylesheet" type="text/css" href="/css/style.css">
 
@@ -54,7 +54,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js" type="text/javascript"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
-<script src="/lib/summernote/summernote.min.js" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/summernote/0.5.2/summernote.min.js" type="text/javascript"></script>
 <% if (isDev) {%>
 <script src="/js/app.js" type="text/javascript"></script>
 <script src="/js/templates.js" type="text/javascript"></script>
