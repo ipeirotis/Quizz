@@ -385,6 +385,8 @@ public class QuestionService extends OfyBaseService<Question> {
    * the Result.
    * The answer given is either the answerID if it is a multiple choice question or the
    * userInput if it is a free text question.
+   * TODO(chunhowt): We should centralize all this logic of giving feedback to a single util
+   * class so that it is easy to play with giving different wordings of feedback.
    *
    * @param question a question whose answer will be verified.
    * @param answerID the id of the answer.
@@ -439,20 +441,9 @@ public class QuestionService extends OfyBaseService<Question> {
         break;
       case FREETEXT_CALIBRATION:
       case FREETEXT_COLLECTION:
-        // TODO(chunhowt): The logic here still looks suspicious.
-        // TODO(panos): Need to handle "Skip"
         Result r;
-        // Check if submitted answer matches a gold or silver answer
+        // Check if submitted answer matches a gold or silver answer, even with typo.
         r = checkFreeTextAgainstGoldSilver(question, userInput);
-        if (r != null) return r;
-
-        // If it does not match a gold/silver, then check if it matches a gold/silver with a typo
-        r = checkFreeTextAgainstGoldSilverWithTypos(question, userInput);
-        if (r != null) return r;
-
-        // If it does not match a gold/silver (without a typo), check if it matches 
-        // exactly answers submitted by other users 
-        r = checkFreeTextAgainstUserAnswers(question, userInput);
         if (r != null) return r;
 
         // Check if the answer submitted by the user matches an answer submitted by other users,
@@ -461,11 +452,11 @@ public class QuestionService extends OfyBaseService<Question> {
         // of other users, there are extra tests that we need to run before accepting these answers
         // as correct. First of all, the user submissions should not be the same across different
         // questions and the user submissions should be vetted by another quiz.
-        r = checkFreeTextAgainstUserAnswersWithTypos(question, userInput);
+        r = checkFreeTextAgainstUserAnswers(question, userInput);
         if (r != null) return r;
 
         // At this point, it seems that the user answer does not match gold 
-        // or any other user answer (even with a typo)
+        // or any other user answer (even with a typo).
         r = generateFreeTextIncorrectResponse(question, userInput);
         return r;
       default:
@@ -476,6 +467,7 @@ public class QuestionService extends OfyBaseService<Question> {
   }
 
   private Result generateFreeTextIncorrectResponse(Question question, String userInput) {
+    Boolean isSkip = userInput.isEmpty();
     Boolean isCorrect = false;
     Answer bestAnswer = null;
     for (Answer ans : question.getAnswers()) {
@@ -487,29 +479,19 @@ public class QuestionService extends OfyBaseService<Question> {
     }
 
     String message;
-    if (bestAnswer == null) {
-      message = "We don't know the answer either, and you are the first user submitting!";
+    if (bestAnswer == null && !isSkip) {
+      message = "Well done! We don't know the answer either, and you are the first user to "
+          + "choose this answer!";
+      // TODO(chunhowt): This counts any random crap as correct since we know nothing better.
+      isCorrect = true;
+    } else if (bestAnswer == null && isSkip) {
+      message = "No worries! This is a tough question! We are not sure about the answer either.";
+    } else if (bestAnswer != null && isSkip) {
+      message = "Learn something new today! The correct answer is " + bestAnswer.getText();
     } else {
       message = "Sorry! The correct answer is " + bestAnswer.getText();
     }
     return new Result(bestAnswer, isCorrect, message);
-  }
-
-  private Result checkFreeTextAgainstUserAnswersWithTypos(Question question, String userInput) {
-    Boolean isCorrect;
-    String message;
-    for (Answer ans : question.getAnswers()) {
-      AnswerKind ak = ans.getKind();
-      if (ak == AnswerKind.USER_SUBMITTED) {
-        if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-          isCorrect = true;
-          message = "We did not know about this one, but other users submitted almost the same " + 
-              "answer, so we will count it as correct.";
-          return new Result(ans, isCorrect, message);
-        }
-      }
-    }
-    return null;
   }
 
   private Result checkFreeTextAgainstUserAnswers(Question question, String userInput) {
@@ -519,29 +501,16 @@ public class QuestionService extends OfyBaseService<Question> {
       AnswerKind ak = ans.getKind();
       if (ak == AnswerKind.USER_SUBMITTED) {
         if (ans.getText().equalsIgnoreCase(userInput)) {
-          isCorrect = true;
-          message = "We did not know about this one, but other users submitted the same answer, " +
-              "so we will count it as correct.";
-          return new Result(ans, isCorrect, message);
+          message = "Well done! We don't know the answer for this question, but other users "
+              + "submitted the same answer!";
+        } else if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+          message = "Well done! We don't know the answer for this question, but other users "
+              + "submitted almost the same answer!";
+        } else {
+          continue;
         }
-      } 
-    }
-    return null;
-  }
-
-  private Result checkFreeTextAgainstGoldSilverWithTypos(Question question, String userInput) {
-    Boolean isCorrect;
-    String message;
-    QuestionKind qk = question.getKind();
-    for (Answer ans : question.getAnswers()) {
-      AnswerKind ak = ans.getKind();
-      if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
-          || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
-        if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-          isCorrect = true;
-          message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
-          return new Result(ans, isCorrect, message);
-        }
+        isCorrect = true;
+        return new Result(ans, isCorrect, message);
       }
     }
     return null;
@@ -550,20 +519,23 @@ public class QuestionService extends OfyBaseService<Question> {
   private Result checkFreeTextAgainstGoldSilver(Question question, String userInput) {
     Boolean isCorrect;
     String message;
-    QuestionKind qk = question.getKind();
+    QuestionKind qk = question.getKind(); 
     for (Answer ans : question.getAnswers()) {
       AnswerKind ak = ans.getKind();
       if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
           || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
-       if (ans.getText().equalsIgnoreCase(userInput)) {
-          isCorrect = true;
-          message = "Great! The correct answer is " + ans.getText();
-          return new Result(ans, isCorrect, message);
+        if (ans.getText().equalsIgnoreCase(userInput)) {
+          message = "Great! The correct answer is indeed " + ans.getText() + "!";
+        } else if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+          message = "Nice! Close one! The correct answer is " + ans.getText() + "!";
+        } else {
+          continue;
         }
+        isCorrect = true;
+        return new Result(ans, isCorrect, message);
       }
     }
     return null;
-    
   }
 
   public class Result {

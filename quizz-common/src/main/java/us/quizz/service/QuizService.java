@@ -46,7 +46,7 @@ public class QuizService extends OfyBaseService<Quiz> {
     int correct = 0;
     List<Question> questions = questionService.getQuizQuestions(quizID);
     for (Question question : questions) {
-      if (!question.getHasGoldAnswer()) {
+      if (question.getHasGoldAnswer() == null || !question.getHasGoldAnswer()) {
         continue;
       }
 

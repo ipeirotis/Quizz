@@ -13,6 +13,7 @@ import us.quizz.enums.QuestionKind;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -98,6 +99,14 @@ public class Question implements Serializable {
   // Text for showing context for the particular question
   private Text helpText;
 
+  // A list of categories to annotate this question.
+  // TODO(chunhowt): A string is not the most ideal way to store category because a category
+  // - should ideally be namespaced by the client/source, because "music" from source 1 might
+  //   be slightly different from "music" from source 2.
+  // - might need to be hierarchical.
+  // For now, we will ignore all these design concerns and iterate later.
+  private List<String> categories;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Question(){}
@@ -122,6 +131,7 @@ public class Question implements Serializable {
     this.likelyAnswers = new HashMap<String, String>();
     this.likelyAnswerIDs = new HashMap<String, Integer>();;
     this.entropy = new HashMap<String, Double>();
+    this.categories = new ArrayList<String>();
   }
 
   public Map<String, Double> getEntropy() {
@@ -243,6 +253,9 @@ public class Question implements Serializable {
   }
 
   public ArrayList<Answer> getAnswers() {
+    if (answers == null) {
+      answers = new ArrayList<Answer>();
+    }
     return answers;
   }
 
@@ -251,6 +264,9 @@ public class Question implements Serializable {
   }
 
   public void addAnswer(Answer answer) {
+    if (this.answers == null) {
+      this.answers = new ArrayList<Answer>();
+    }
     this.answers.add(answer);
   }
 
@@ -361,5 +377,17 @@ public class Question implements Serializable {
 
   public void setVerificationText(Text verificationText) {
     this.verificationText = verificationText;
+  }
+
+  public List<String> getCategories() {
+    return categories;
+  }
+
+  public void setCategories(List<String> categories) {
+    this.categories = categories;
+  }
+
+  public void addCategory(String category) {
+    this.categories.add(category);
   }
 }

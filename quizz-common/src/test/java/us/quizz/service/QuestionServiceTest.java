@@ -116,7 +116,7 @@ public class QuestionServiceTest extends QuizBaseTest {
     addAnswers(question, QUESTION_ID9, 4, QUIZ_ID2, false);
     questionService.save(question);
 
-    // Quiz 3 has 1 free text question
+    // Quiz 3 has 2 free text question
     question =
         new Question(
             QUIZ_ID3, new Text("test10"), QuestionKind.FREETEXT_CALIBRATION, QUESTION_ID10,
@@ -124,6 +124,12 @@ public class QuestionServiceTest extends QuizBaseTest {
     question.addAnswer(new Answer(QUESTION_ID10, QUIZ_ID3, "answer", AnswerKind.GOLD, 0));
     question.addAnswer(
         new Answer(QUESTION_ID10, QUIZ_ID3, "user submitted answer", AnswerKind.USER_SUBMITTED, 1));
+    questionService.save(question);
+
+    question =
+        new Question(
+            QUIZ_ID3, new Text("test11"), QuestionKind.FREETEXT_COLLECTION, QUESTION_ID11,
+            QUESTION_CLIENT_ID2, false, true, 0d);
     questionService.save(question);
 
     // User 1 answers 4 questions (2 collection, 2 calibration) from quiz 1,
@@ -355,7 +361,7 @@ public class QuestionServiceTest extends QuizBaseTest {
     QuestionService.Result result = questionService.verifyAnswer(
         questionService.get(QUESTION_ID10), -1, "answer");
     assertTrue(result.getIsCorrect());
-    assertEquals("Great! The correct answer is answer", result.getMessage());
+    assertEquals("Great! The correct answer is indeed answer!", result.getMessage());
   }
 
   @Test
@@ -363,12 +369,12 @@ public class QuestionServiceTest extends QuizBaseTest {
     QuestionService.Result result = questionService.verifyAnswer(
         questionService.get(QUESTION_ID10), -1, "answe");
     assertTrue(result.getIsCorrect());
-    assertEquals("Nice! Be careful of typos next time. The correct answer is answer",
+    assertEquals("Nice! Close one! The correct answer is answer!",
                  result.getMessage());
   }
 
   @Test
-  public void testVerifyAnswerFreeTextInCorrect() {
+  public void testVerifyAnswerFreeTextCalibrationInCorrect() {
     QuestionService.Result result = questionService.verifyAnswer(
         questionService.get(QUESTION_ID10), -1, "wrong answer");
     assertFalse(result.getIsCorrect());
@@ -381,8 +387,8 @@ public class QuestionServiceTest extends QuizBaseTest {
         questionService.get(QUESTION_ID10), -1, "user submitted answer");
     assertTrue(result.getIsCorrect());
     assertEquals(
-        "We did not know about this one, but other users submitted the same answer, " +
-        "so we will count it as correct.", result.getMessage());
+        "Well done! We don't know the answer for this question, but other users "
+            + "submitted the same answer!", result.getMessage());
   }
 
   @Test
@@ -391,8 +397,37 @@ public class QuestionServiceTest extends QuizBaseTest {
         questionService.get(QUESTION_ID10), -1, "user submitted answe");
     assertTrue(result.getIsCorrect());
     assertEquals(
-        "We did not know about this one, but other users submitted almost the same answer, " +
-        "so we will count it as correct.", result.getMessage());
+        "Well done! We don't know the answer for this question, but other users "
+            + "submitted almost the same answer!", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextCalibrationUserSkip() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID10), -1, "");
+    assertFalse(result.getIsCorrect());
+    assertEquals(
+        "Learn something new today! The correct answer is answer", result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextCollectionUserSkip() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID11), -1, "");
+    assertFalse(result.getIsCorrect());
+    assertEquals(
+        "No worries! This is a tough question! We are not sure about the answer either.",
+        result.getMessage());
+  }
+
+  @Test
+  public void testVerifyAnswerFreeTextCollectionUserAnswered() {
+    QuestionService.Result result = questionService.verifyAnswer(
+        questionService.get(QUESTION_ID11), -1, "some answer ");
+    assertTrue(result.getIsCorrect());
+    assertEquals(
+        "Well done! We don't know the answer either, and you are the first user to choose this "
+        + "answer!", result.getMessage());
   }
 
   @Test

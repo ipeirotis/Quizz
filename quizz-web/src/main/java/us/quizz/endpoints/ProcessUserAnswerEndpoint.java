@@ -100,11 +100,11 @@ public class ProcessUserAnswerEndpoint {
       }
     }
 
-    String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
+    String action = answerID == -1 && userInput.isEmpty() ? UserAnswer.SKIP : UserAnswer.SUBMIT;
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
 
-    // If we have a free text quiz, we need to store the submitted answer
-    if (quiz.getKind() == QuizKind.FREE_TEXT) {
+    // If we have a free text quiz, we need to store the submitted answer if it is not a SKIP.
+    if (quiz.getKind() == QuizKind.FREE_TEXT && !userInput.isEmpty()) {
       Integer internalAnswerID = null;
 
       // We check to see if the submitted answer is already among the answers for the question
@@ -171,7 +171,7 @@ public class ProcessUserAnswerEndpoint {
     UserAnswerFeedback uaf = new UserAnswerFeedback(
         questionID, user.getUserid(), useranswerID, isCorrect);
 
-    String answerText = "";
+    String answerText = userInput;
     if (useranswerID != -1) {
       Answer a = question.getAnswer(useranswerID);
       if (a != null) answerText = a.userAnswerText(userInput);

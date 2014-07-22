@@ -93,6 +93,14 @@ public class QuestionEndpoint {
         }
         internalID++;
       }
+      if (question.getAnswers().isEmpty()) {
+        // If there is no answer at all, then it is because it is a free text collection question.
+        // TODO(chunhowt): Here, we set the hasSilverAnswers to be true so that the question
+        // selection logic in QuestionService will correctly find these collection questions. We
+        // should refactor this to make hasSilverAnswers become isSilverQuestion etc.
+        question.setHasSilverAnswers(true);
+        question.setHasGoldAnswer(false);
+      }
     }
 
     return questionService.save(question);
