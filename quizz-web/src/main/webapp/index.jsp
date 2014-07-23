@@ -61,7 +61,6 @@
 
 <script src="/js/service/interceptor.js" type="text/javascript"></script>
 <script src="/js/service/loading.js" type="text/javascript"></script>
-<script src="/js/service/modal.js" type="text/javascript"></script>
 <script src="/js/service/questionService.js" type="text/javascript"></script>
 <script src="/js/service/quizService.js" type="text/javascript"></script>
 <script src="/js/service/userService.js" type="text/javascript"></script>
