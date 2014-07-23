@@ -271,6 +271,9 @@ public class Question implements Serializable {
   }
 
   public Answer getAnswer(Integer answerID) {
+    if (answers == null) {
+      answers = new ArrayList<Answer>();
+    }
     try {
       return answers.get(answerID);
     } catch (IndexOutOfBoundsException e) {

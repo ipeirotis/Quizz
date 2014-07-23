@@ -53,6 +53,9 @@ public class QuestionStatisticsService {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
 
+    List<UserAnswer> userAnswers = getSortedSubmittedUserAnswers(question);
+    maybeFixQuestionAnswers(userAnswers, question);
+
     // Maps from internal answer id -> the information bit for the particular answer.
     Map<Integer, Double> answerBitsMap = new HashMap<Integer, Double>();
     // Maps from internal answer id -> number of UserAnswer for the particular answer.
@@ -63,7 +66,7 @@ public class QuestionStatisticsService {
         new HashMap<Integer, List<Triple<Double, Double, Boolean>>>();
 
     resetStatsMap(question, answerBitsMap, answerCountsMap, answerProbMap);
-    computeAnswerStatistics(question, answerBitsMap, answerCountsMap, answerProbMap);
+    computeAnswerStatistics(question, userAnswers, answerBitsMap, answerCountsMap, answerProbMap);
     computeQuestionStatistics(question, answerBitsMap, answerCountsMap, answerProbMap);
     computeDifficulty(question);
     computeEntropyOfQuestionAnswers(question);
@@ -81,6 +84,62 @@ public class QuestionStatisticsService {
       answerBitsMap.put(answerId, 0.0);
       answerCountsMap.put(answerId, 0);
       answerProbMap.put(answerId, new ArrayList<Triple<Double, Double, Boolean>>());
+    }
+  }
+
+  // Tries to check whether we need to add new UserAnswer's userInput into question as a new answer
+  // of USER_SUBMITTED kind. If so, updates the question and modifies all the UserAnswer's answerID
+  // so that they continue to be valid.
+  private void maybeFixQuestionAnswers(List<UserAnswer> userAnswers, Question question) {
+    // Pre-empt early if the question is not a free-text question.
+    if (question.getKind() != QuestionKind.FREETEXT_CALIBRATION
+        && question.getKind() != QuestionKind.FREETEXT_COLLECTION) {
+      return;
+    }
+
+    boolean isDirty = false;
+    // Go through each userAnswer and check whether the userInput is in the list of answers.
+    // If it is not, create a new answer and store it in the question.
+    for (UserAnswer userAnswer : userAnswers) {
+      // Check if it is a free text answer AND the answer is not in the question's answers list.
+      if (userAnswer.getUserInput() != null
+          && !userAnswer.getUserInput().isEmpty()
+          && userAnswer.getAnswerID() != null
+          && (question.getAnswer(userAnswer.getAnswerID()) == null
+              || !question.getAnswer(userAnswer.getAnswerID()).getText().equals(
+                     userAnswer.getUserInput()))) {
+        isDirty = true;
+        question.addAnswer(
+            new Answer(question.getId(), question.getQuizID(), userAnswer.getUserInput(),
+                       AnswerKind.USER_SUBMITTED, question.getAnswers().size()));
+      }
+    }
+
+    if (!isDirty) {
+      return;
+    }
+    logger.info("Fixed answers for free-text question id: " + question.getId());
+    questionService.save(question);
+
+    // Now, fix the userAnswer's answerID too to be the updated answerID.
+    for (UserAnswer userAnswer : userAnswers) {
+      if (userAnswer.getUserInput() == null || userAnswer.getUserInput().isEmpty()) {
+        continue;  // Not a free-text answer, ignore.
+      }
+      // If the answerID is invalid OR the text of the answerID is not the same as userInput, fix.
+      if (question.getAnswer(userAnswer.getAnswerID()) == null
+          || !question.getAnswer(userAnswer.getAnswerID()).getText().equals(
+                 userAnswer.getUserInput())) {
+        // Find the new right answerID for the UserAnswer.
+        for (Answer answer : question.getAnswers()) {
+          if (answer.getText().equals(userAnswer.getUserInput())) {
+            userAnswer.setAnswerID(answer.getInternalID());
+            userAnswerService.save(userAnswer);
+            logger.info("Fixed answer index for UserAnswer id: " + userAnswer.getId());
+            break;
+          }
+        }
+      }
     }
   }
 
@@ -105,8 +164,9 @@ public class QuestionStatisticsService {
       if (userIds.contains(userAnswer.getUserid())) {
         continue;
       }
-      // Check that the answerID corresponds to a valid answer.
-      if (question.getAnswer(userAnswer.getAnswerID()) == null) {
+      // Skips if the answerID corresponds to an invalid answer AND it is not a free-text answer.
+      if (question.getAnswer(userAnswer.getAnswerID()) == null
+          && (userAnswer.getUserInput() == null || userAnswer.getUserInput().isEmpty())) {
         continue;
       }
       results.add(userAnswer);
@@ -274,11 +334,17 @@ public class QuestionStatisticsService {
   // passed in.
   // This includes the information bits, number answers and log probability for each answer.
   private void computeAnswerStatistics(Question question,
+      List<UserAnswer> userAnswers,
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
       Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
     int numAnswers = question.getAnswers().size();
-    List<UserAnswer> userAnswers = getSortedSubmittedUserAnswers(question);
+    // TODO(chunhowt): This is kinda a hack, we should use chinese restaurant process or something
+    // less fancy to estimate statistics for free-text questions.
+    if (question.getKind() == QuestionKind.FREETEXT_CALIBRATION
+        || question.getKind() == QuestionKind.FREETEXT_COLLECTION) {
+      numAnswers = 4;
+    }
     String quizID = question.getQuizID();
     for (UserAnswer useranswer : userAnswers) {
       String userId = useranswer.getUserid();
@@ -363,9 +429,9 @@ public class QuestionStatisticsService {
   private Map<String, Integer> computeLikelyAnswers(Question question) {
     Map<String, Integer> likelyAnswerIDmap = new HashMap<String, Integer>();
     for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
-      Integer likelyAnswerID = 0;
+      Integer likelyAnswerID = null;
       Double maxProb = 0.0;
-      
+
       for (Answer answer : question.getAnswers()) {
         Integer answerID = answer.getInternalID();
         Double aProb = answer.getProbCorrectForStrategy(strategy);
@@ -374,17 +440,21 @@ public class QuestionStatisticsService {
           likelyAnswerID = answerID;
         }
       }
-      likelyAnswerIDmap.put(strategy.toString(), likelyAnswerID);
+      if (likelyAnswerID != null) {
+        likelyAnswerIDmap.put(strategy.toString(), likelyAnswerID);
+      }
     }
     question.setLikelyAnswerIDs(likelyAnswerIDmap);
-    
+
     Map<String, String> likelyAnswerMap = new HashMap<String, String>();
     for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
       Integer answerId = likelyAnswerIDmap.get(strategy.toString());
-      likelyAnswerMap.put(strategy.toString(), question.getAnswer(answerId).getText());
+      if (answerId != null) {
+        likelyAnswerMap.put(strategy.toString(), question.getAnswer(answerId).getText());
+      }
     }
     question.setLikelyAnswer(likelyAnswerMap);
-    
+
     return likelyAnswerIDmap;
   }
 
@@ -398,12 +468,12 @@ public class QuestionStatisticsService {
         numCorrect = answerCountsMap.get(answerID);
       }
     }
-    
+
     // If it is a collection question, the numCorrect is the one for the best answer.
-    if (!question.getHasGoldAnswer()) {
+    if (question.getHasGoldAnswer() == null || !question.getHasGoldAnswer()) {
       numCorrect = answerCountsMap.get(likelyAnswerIDmap.get(ANSWER_AGGREGATION_STRATEGY));
     }
-    
+
     question.setNumberOfCorrectUserAnswers(numCorrect);
   }
 
@@ -412,6 +482,12 @@ public class QuestionStatisticsService {
     for (Answer answer : question.getAnswers()) {
       Integer answerID = answer.getInternalID();
       questionBits += answerBitsMap.get(answerID);
+    }
+    // TODO(chunhowt): Temporarily hack for quizzes that only have collection questions,
+    // because the user will always have the same random user quality and bits will remain 0
+    // forever.
+    if (questionBits == 0.0) {
+      questionBits = (Double) (double) question.getNumberOfUserAnswers();
     }
     question.setTotalUserScore(questionBits);
   }

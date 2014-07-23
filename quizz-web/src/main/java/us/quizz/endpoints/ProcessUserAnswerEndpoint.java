@@ -103,9 +103,10 @@ public class ProcessUserAnswerEndpoint {
     String action = answerID == -1 && userInput.isEmpty() ? UserAnswer.SKIP : UserAnswer.SUBMIT;
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
 
+    Integer internalAnswerID = answerID;
     // If we have a free text quiz, we need to store the submitted answer if it is not a SKIP.
     if (quiz.getKind() == QuizKind.FREE_TEXT && !userInput.isEmpty()) {
-      Integer internalAnswerID = null;
+      internalAnswerID = null;
 
       // We check to see if the submitted answer is already among the answers for the question
       // If yes, we increase the count of picks
@@ -124,6 +125,7 @@ public class ProcessUserAnswerEndpoint {
                question.getKind() == QuestionKind.FREETEXT_CALIBRATION)) {
             updateVerificationQuiz(quiz, question.getId(), internalAnswerID);
           }
+          break;
         }
       }
       // If the answer has not been seen before, we store it as a user submitted answer
@@ -142,9 +144,9 @@ public class ProcessUserAnswerEndpoint {
     String browser = req.getHeader("User-Agent");
     Long timestamp = (new Date()).getTime();
 
-    UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
-        userInput, qResult.getIsCorrect(), qResult.getMessage());
-    UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
+    UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID,
+        internalAnswerID, userInput, qResult.getIsCorrect(), qResult.getMessage());
+    UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, internalAnswerID,
         userInput, ipAddress, browser, timestamp, qResult.getIsCorrect(), questionIndex);
 
     updateQuizPerformance(user, quizID);

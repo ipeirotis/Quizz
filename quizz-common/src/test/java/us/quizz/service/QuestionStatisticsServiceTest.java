@@ -343,7 +343,7 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     Question question =
         new Question(QUIZ_ID1, new Text("test8"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 8888L,
                      QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
-    
+
     Answer a1 = new Answer(8888L, QUIZ_ID1, "Answer1", AnswerKind.SILVER, 1);
     a1.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 1.0);
     a1.setProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0.5);
@@ -379,5 +379,40 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     Double entropyWM =
         question.getEntropy().get(AnswerAggregationStrategy.WEIGHTED_VOTE.toString());
     assertEquals((Double)1.386294, entropyWM, epsilon);
+  }
+
+  @Test
+  public void testUpdateStatisticsAddUserSubmittedQuestion() {
+    assertNotNull(getQuestionService());
+    Question question = new Question(
+        QUIZ_ID3, new Text("test11"), QuestionKind.FREETEXT_COLLECTION, QUESTION_ID11,
+        QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
+    question.addAnswer(new Answer(QUESTION_ID11, QUIZ_ID3, "ans0", AnswerKind.USER_SUBMITTED, 0));
+    question.addAnswer(new Answer(QUESTION_ID11, QUIZ_ID3, "ans1", AnswerKind.USER_SUBMITTED, 1));
+    questionService.save(question);
+
+    UserAnswer userAnswer1 =
+        new UserAnswer(USER_ID2, QUESTION_ID11, ANSWER_ID1, QUIZ_ID3, true, 4L, UserAnswer.SUBMIT);
+    userAnswer1.setUserInput("ans2");
+    userAnswer1 = userAnswerRepository.saveAndGet(userAnswer1);
+
+    UserAnswer userAnswer2 =
+        new UserAnswer(USER_ID1, QUESTION_ID11, -1, QUIZ_ID3, true, 5L, UserAnswer.SUBMIT);
+    userAnswer2.setUserInput("ans3");
+    userAnswer2 = userAnswerRepository.saveAndGet(userAnswer2);
+
+    questionStatisticsService.updateStatistics("" + QUESTION_ID11);
+
+    question = questionService.get(QUESTION_ID11);
+    assertEquals((Integer)0, question.getAnswer(0).getInternalID());
+    assertEquals((Integer)1, question.getAnswer(1).getInternalID());
+
+    assertEquals((Integer)2, question.getAnswer(2).getInternalID());
+    assertEquals("ans2", question.getAnswer(2).getText());
+    assertEquals((Integer)2, userAnswerRepository.get(userAnswer1.getId()).getAnswerID());
+
+    assertEquals((Integer)3, question.getAnswer(3).getInternalID());
+    assertEquals("ans3", question.getAnswer(3).getText());
+    assertEquals((Integer)3, userAnswerRepository.get(userAnswer2.getId()).getAnswerID());
   }
 }

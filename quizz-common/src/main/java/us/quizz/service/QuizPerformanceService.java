@@ -175,6 +175,12 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
         // we are still not confident about which answer is correct.
         // (notice that eventually all collection questions will get high enough
         // confidence and will contribute in the estimation of user quality)
+        if (question.getConfidence() == null
+            || question.getAnswer(ua.getAnswerID()) == null
+            || question.getAnswer(ua.getAnswerID())
+                   .getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES) == null) {
+          continue;
+        }
         if (userProb < question.getConfidence()) {
           scoreTotal++;
           scoreCorrect += question.getAnswer(ua.getAnswerID())
