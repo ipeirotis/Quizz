@@ -31,8 +31,6 @@ import com.google.inject.Inject;
                   API_EXPLORER_CLIENT_ID},
      scopes = {Constants.EMAIL_SCOPE})
 public class QuizEndpoint {
-  protected static final int QUESTION_PACKAGE_SIZE = 10;
-
   private QuizService quizService;
   private QuestionService questionService;
 
@@ -78,18 +76,23 @@ public class QuizEndpoint {
     return quizService.save(quiz);
   }
 
-  // Generates num number of calibration and collection questions for the given userID and quizID.
-  // If num is null, it will be set to QUESTION_PACKAGE_SIZE.
+  /**
+   * Generates a list of calibration and collection questions for the given userID and quizID.
+   *
+   * @param quizID quiz to fetch the questions with.
+   * @param userID userid for the user to fetch the questions for.
+   * @return A map with three items:
+   *     CALIBRATION_KEY: A set of calibration questions.
+   *     COLLECTION_KEY: A set of collection questions.
+   *     NUM_QUESTIONS_KEY: Number of questions to group into a quiz. -1 if there is no limit.
+   */
   @ApiMethod(name = "listNextQuestions", path = "listNextQuestions",
              httpMethod = HttpMethod.POST)
-  public Map<String, Set<Question>> getNextQuestions(
+  public Map<String, Object> getNextQuestions(
       @Named("quizID") String quizID,
       @Named("userID") String userID,
       @Nullable @Named("num") Integer num) {
-    if (num == null) {
-      num = QUESTION_PACKAGE_SIZE;
-    }
-    return questionService.getNextQuizQuestions(quizID, num, userID);
+    return questionService.getNextQuizQuestions(quizID, userID);
   }
 
   // Inserts a new entity into Datastore. If the entity already exists, an exception will be thrown.

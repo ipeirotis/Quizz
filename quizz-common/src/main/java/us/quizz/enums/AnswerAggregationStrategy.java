@@ -14,7 +14,7 @@ public enum AnswerAggregationStrategy {
   //     2. If user picks another answer rather than the current answer, A_j evaluated:
   //        - Use (1 - smoothed_accuracy) / (num_answers - 1).
   //          (i.e. assumes user picks the rest of the answer uniformly).
-  BAYES_PROB,
+  NAIVE_BAYES,
   // Posterior probability by weighing each user vote by her smoothed laplacian user accuracy.
   WEIGHTED_VOTE,
   // Posterior probability by weighing each user equally.

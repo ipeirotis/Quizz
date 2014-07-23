@@ -4,12 +4,15 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import com.googlecode.objectify.annotation.Parent;
+import com.googlecode.objectify.annotation.Stringify;
 
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Answer implements Serializable{
   private static final long serialVersionUID = 1L;
@@ -38,23 +41,11 @@ public class Answer implements Serializable{
   // that picked this answer.
   private Double bits;
 
-  // The posterior (estimated) probability that the given answer is correct, computed based on
-  // the answers from the users. This is computed using the best AnswerAggregationStrategy
-  // we have and should be used instead of the other posterior probabilities.
-  private Double probCorrect;
-
-  // The bayesian posterior probability that a given answer is correct, computed by assuming
-  // each of the user is independent. Refer to BAYES_PROB AnswerAggregationStrategy for more info.
-  private Double bayesProb;
-
-  // The posterior probability that a given answer is correct, computed using the majority
-  // votes of the user. Refer to MAJORITY_VOTE AnswerAggregationStrategy for more info.
-  private Double majorityVoteProb;
-
-  // The posterior probability that a given answer is correct, computed using the weighted
-  // votes of the user. Refer to WEIGHTED_VOTE AnswerAggregationStrategy for more info.
-  private Double weightedVoteProb;
-
+  // The posterior probabilities that a given answer is correct
+  // for a given strategy, which is represented as String (and is 
+  // an enum in the AnswerAggregationStrategy)
+  private Map<String, Double> probCorrects;
+  
   //for Objectify
   @SuppressWarnings("unused")
   private Answer(){}
@@ -66,11 +57,13 @@ public class Answer implements Serializable{
     this.text = text;
     this.kind = kind;
     this.internalID = internalID;
+    this.probCorrects = new HashMap<String, Double>();
   }
 
   public Answer(String text, AnswerKind kind) {
     this.text = text;
     this.kind = kind;
+    this.probCorrects = new HashMap<String, Double>();
   }
 
   public Integer getInternalID() {
@@ -180,14 +173,6 @@ public class Answer implements Serializable{
     this.bits = bits;
   }
 
-  public Double getProbCorrect() {
-    return probCorrect;
-  }
-
-  public void setProbCorrect(Double probCorrect) {
-    this.probCorrect = probCorrect;
-  }
-
   public Key getParent() {
     return parent;
   }
@@ -196,35 +181,36 @@ public class Answer implements Serializable{
     this.parent = parent;
   }
 
-  public Double getBayesProb() {
-    return this.bayesProb;
-  }
-
-  public void setBayesProb(Double bayesProb) {
-    this.bayesProb = bayesProb;
-  }
-
-  public Double getMajorityVoteProb() {
-    return this.majorityVoteProb;
-  }
-
-  public void setMajorityVoteProb(Double majorityVoteProb) {
-    this.majorityVoteProb = majorityVoteProb;
-  }
-
-  public Double getWeightedVoteProb() {
-    return this.weightedVoteProb;
-  }
-
-  public void setWeightedVoteProb(Double weightedVoteProb) {
-    this.weightedVoteProb = weightedVoteProb;
-  }
-
   public Text getHelpText() {
     return helpText;
   }
 
   public void setHelpText(Text helpText) {
     this.helpText = helpText;
+  }
+
+  public Map<String, Double> getProbCorrects() {
+    if (this.probCorrects == null) {
+      this.probCorrects = new HashMap<String, Double>();
+    }
+    return probCorrects;
+  }
+
+  public Double getProbCorrectForStrategy(AnswerAggregationStrategy strategy) {
+    if (this.probCorrects == null) {
+      probCorrects = new HashMap<String, Double>();
+    }
+    return probCorrects.get(strategy.toString());
+  }
+
+  public void setProbCorrects(Map<String, Double> probCorrect) {
+    this.probCorrects = probCorrect;
+  }
+
+  public void setProbCorrectForStrategy(AnswerAggregationStrategy strategy, Double probCorrect) {
+    if (this.probCorrects == null) {
+      this.probCorrects = new HashMap<String, Double>();
+    }
+    this.probCorrects.put(strategy.toString(), probCorrect);
   }
 }

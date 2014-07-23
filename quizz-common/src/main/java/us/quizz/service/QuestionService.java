@@ -9,6 +9,7 @@ import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
 import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuestionSelectionStrategy;
@@ -36,10 +37,15 @@ public class QuestionService extends OfyBaseService<Question> {
   // Keys used to annotate the question results in the map returned by getNextQuizQuestions.
   public static final String CALIBRATION_KEY = "calibration";
   public static final String COLLECTION_KEY = "collection";
+  public static final String NUM_QUESTIONS_KEY = "numQuestions";
 
   // Multiplier used to fetch more questions than being asked when choosing the next questions
   // to allow us to fetch enough candidate questions for each user.
   private static final int QUESTION_FETCHING_MULTIPLIER = 3;
+
+  public static final int DEFAULT_NUM_QUESTIONS_PER_QUIZ = 10;
+
+  public static final int UNLIMITED_QUESTIONS_PER_QUIZ = -1;
 
   private UserAnswerRepository userAnswerRepository;
 
@@ -87,54 +93,58 @@ public class QuestionService extends OfyBaseService<Question> {
   }
 
   /**
-   * Returns the next numQuestions calibration and collection questions in the given quizID
-   * for a given userID.
-   * Here, we prioritizes questions that userID has never answered before (not the same
-   * questionID and not the same clientID) and have the least questions' totalUserScore.
-   * If there are not enough questions to fulfill the numQuestions questions desired, we will
-   * reask answered questions for collection questions, but won't reask for calibration
-   * questions. This is due to the assumption that if we repeat asking collection question,
-   * we will gain extra information bit, but we won't get extra information bit from asking
-   * calibration questions.
+   * Returns the number of questions to group into a quiz based on the quiz and the user.
    *
-   * @return The map result returned will has two values, mapping from:
-   *         CALIBRATION_KEY -> set of calibration questions.
-   *         COLLECTION_KEY -> set of collection questions.
-
-   * @param quizID identifier for quiz from which to get questions
-   * @param numQuestions the number of questions to try and return
-   * @param userID identifier for the user for whom these questions are intended
+   * @param quiz Quiz to return questions from.
+   * @param user User to answer the quiz questions.
+   * @return number of questions to group into a quiz.
    */
-  public Map<String, Set<Question>> getNextQuizQuestions(
-      String quizID, int numQuestions, String userID) {
-    // First, we try to get a list of questions that the user has answered before for this quiz.
-    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
-    Set<Long> questionIDs = new HashSet<Long>();
-    for (UserAnswer userAnswer : userAnswers) {
-      questionIDs.add(userAnswer.getQuestionID());
+  private Integer determineNumQuestions(Quiz quiz, User user) {
+    if (quiz != null
+        && quiz.getAllowVaryingLengthQuizSession() != null
+        && quiz.getAllowVaryingLengthQuizSession()) {
+      if (user != null
+          && user.getNumQuestionsLimit() != null) {
+        return user.getNumQuestionsLimit();
+      }
     }
-    Set<String> questionClientIDs = getQuestionClientIDs(questionIDs);
+    return DEFAULT_NUM_QUESTIONS_PER_QUIZ;
+  }
 
-    // Some quizzes use a question selection strategy and others do not.
-    // If this quiz uses such a strategy, select questions according to the strategy.
-    // Otherwise, use the default strategy;
-    // TODO(kobren): refactor this if statement, it's a bit ugly.
-    Quiz quiz = quizRepository.get(quizID);
-    Map<String, Set<Question>> result = new HashMap<String, Set<Question>>();
-    // We do not yet use question selection strategies.
-    if (quiz.getUseQuestionSelectionStrategy() == null || !quiz.getUseQuestionSelectionStrategy()) {
-      result.put(CALIBRATION_KEY,
-          new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
-              // TODO(kobren): refactor magic strings.
-              quizID, questionIDs, questionClientIDs, numQuestions, "hasGoldAnswer", false)));
-      result.put(COLLECTION_KEY,
-          new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
-              // TODO(kobren): refactor magic strings.
-              quizID, questionIDs, questionClientIDs, numQuestions, "hasSilverAnswers", true)));
-      return result;
-    }
+  /**
+   * If the originalNum of questions are too big to return, we will return a more reasonable
+   * number of questions per batch.
+   *
+   * @param originalNum Original number of questions to return to users.
+   * @return Final number of questions to return to users.
+   */
+  private Integer chooseQuestionBatchSize(int originalNum) {
+    return originalNum == UNLIMITED_QUESTIONS_PER_QUIZ ?
+        DEFAULT_NUM_QUESTIONS_PER_QUIZ : originalNum;
+  }
 
-    // If this quiz allows for the use of question selection, use it here.
+  private Map<String, Object> getQuestionsWithLeastBits(
+      String quizID, Set<Long> questionIDs, Set<String> questionClientIDs, Integer numQuestions) {
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put(NUM_QUESTIONS_KEY, numQuestions);
+    result.put(CALIBRATION_KEY,
+        new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
+            quizID, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            // TODO(kobren): refactor magic strings.
+            "hasGoldAnswer", false)));
+    result.put(COLLECTION_KEY,
+        new HashSet<Question>(getSomeQuizQuestionsWithCriteria(
+            quizID, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            // TODO(kobren): refactor magic strings.
+            "hasSilverAnswers", true)));
+    return result;
+  }
+
+  private Map<String, Object> getQuestionsByStrategy(
+      String quizID, User user, Set<Long> questionIDs, Set<String> questionClientIDs,
+      Integer numQuestions) {
     Map<String, Object> calibrationParams = new HashMap<String, Object>();
     // TODO(kobren): refactor magic strings.
     calibrationParams.put("quizID", quizID);
@@ -155,21 +165,71 @@ public class QuestionService extends OfyBaseService<Question> {
     QuestionSelector collectionSelector  = new QuestionSelector(collectionQuestions);
 
     // TODO(kobren): find a way to pick a better parameter
-    User user = userService.get(userID);
     // TODO(kobren): think about assigning a question selection strategy upon user creation
     QuestionSelectionStrategy strategy = user.pickQuestionSelectionStrategy();
     userService.asyncSave(user);
 
     int numBins = 10;
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put(NUM_QUESTIONS_KEY, numQuestions);
     result.put(CALIBRATION_KEY,
         // TODO(kobren): eventually we want to pick this strategy in a smart way
         new HashSet<Question>(calibrationSelector.questionsByStrategy(
-            strategy, questionIDs, questionClientIDs, numQuestions, false, numBins)));
+            strategy, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            false, numBins)));
     result.put(COLLECTION_KEY,
         // TODO(kobren): eventually we want to pick this strategy in a smart way
         new HashSet<Question>(collectionSelector.questionsByStrategy(
-            strategy, questionIDs, questionClientIDs, numQuestions, true, numBins)));
+            strategy, questionIDs, questionClientIDs,
+            chooseQuestionBatchSize(numQuestions),
+            true, numBins)));
     return result;
+  }
+
+  /**
+   * Returns a list of calibration and collection questions in the given quizID
+   * for a given userID.
+   * Here, we prioritizes questions that userID has never answered before (not the same
+   * questionID and not the same clientID) and have the least questions' totalUserScore.
+   * If there are not enough questions to fulfill the num questions desired, we will
+   * reask answered questions for collection questions, but won't reask for calibration
+   * questions. This is due to the assumption that if we repeat asking collection question,
+   * we will gain extra information bit, but we won't get extra information bit from asking
+   * calibration questions.
+   * The number of questions returned is stored as the value of the NUM_QUESTIONS_KEY of the
+   * results. For the case of UNLIMITED_QUESTIONS_PER_QUIZ, the number of questions returned
+   * will be the DEFAULT_NUM_QUESTIONS_PER_QUIZ and the caller of this function is responsible
+   * to continue fetching more questions.
+   *
+   * @param quizID identifier for quiz from which to get questions
+   * @param userID identifier for the user for whom these questions are intended
+   * @return The map result returned will has three values, mapping from:
+   *         CALIBRATION_KEY -> set of calibration questions.
+   *         COLLECTION_KEY -> set of collection questions.
+   *         NUM_QUESTIONS_KEY -> The number of questions to group into a single quiz.
+   */
+  public Map<String, Object> getNextQuizQuestions(String quizID, String userID) {
+    // First, we try to get a list of questions that the user has answered before for this quiz.
+    List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
+    Set<Long> questionIDs = new HashSet<Long>();
+    for (UserAnswer userAnswer : userAnswers) {
+      questionIDs.add(userAnswer.getQuestionID());
+    }
+    Set<String> questionClientIDs = getQuestionClientIDs(questionIDs);
+
+    Quiz quiz = quizRepository.get(quizID);
+    User user = userService.get(userID);
+    Integer numQuestions = determineNumQuestions(quiz, user);
+
+    // Some quizzes use a question selection strategy and others do not.
+    // If this quiz uses such a strategy, select questions according to the strategy.
+    // Otherwise, use the default strategy, which is picking those with the least bits.
+    if (quiz.getUseQuestionSelectionStrategy() == null || !quiz.getUseQuestionSelectionStrategy()) {
+      return getQuestionsWithLeastBits(quizID, questionIDs, questionClientIDs, numQuestions);
+    } else {
+      return getQuestionsByStrategy(quizID, user, questionIDs, questionClientIDs, numQuestions);
+    } 
   }
 
   /**
@@ -325,6 +385,8 @@ public class QuestionService extends OfyBaseService<Question> {
    * the Result.
    * The answer given is either the answerID if it is a multiple choice question or the
    * userInput if it is a free text question.
+   * TODO(chunhowt): We should centralize all this logic of giving feedback to a single util
+   * class so that it is easy to play with giving different wordings of feedback.
    *
    * @param question a question whose answer will be verified.
    * @param answerID the id of the answer.
@@ -363,7 +425,7 @@ public class QuestionService extends OfyBaseService<Question> {
           if (answer.getNumberOfPicks() == null || answer.getNumberOfPicks() == 0) {
             continue;
           }
-          Double prob = answer.getProbCorrect();
+          Double prob = answer.getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES);
           if (prob == null) prob = 0.0;
           if (prob > maxProbability) {
             maxProbability = prob;
@@ -379,20 +441,11 @@ public class QuestionService extends OfyBaseService<Question> {
         break;
       case FREETEXT_CALIBRATION:
       case FREETEXT_COLLECTION:
-        // TODO(chunhowt): The logic here still looks suspicious.
-        // TODO(panos): Need to handle "Skip"
         Result r;
-        // Check if submitted answer matches a gold or silver answer
-        r = checkFreeTextAgainstGoldSilver(question, userInput);
+        // Check if submitted answer matches a gold or silver answer, even with typo.
+        r = checkFreeTextAgainstGoldSilver(question, userInput, false  /* no typo */);
         if (r != null) return r;
-
-        // If it does not match a gold/silver, then check if it matches a gold/silver with a typo
-        r = checkFreeTextAgainstGoldSilverWithTypos(question, userInput);
-        if (r != null) return r;
-
-        // If it does not match a gold/silver (without a typo), check if it matches 
-        // exactly answers submitted by other users 
-        r = checkFreeTextAgainstUserAnswers(question, userInput);
+        r = checkFreeTextAgainstGoldSilver(question, userInput, true  /* allows typo */);
         if (r != null) return r;
 
         // Check if the answer submitted by the user matches an answer submitted by other users,
@@ -401,11 +454,13 @@ public class QuestionService extends OfyBaseService<Question> {
         // of other users, there are extra tests that we need to run before accepting these answers
         // as correct. First of all, the user submissions should not be the same across different
         // questions and the user submissions should be vetted by another quiz.
-        r = checkFreeTextAgainstUserAnswersWithTypos(question, userInput);
+        r = checkFreeTextAgainstUserAnswers(question, userInput, false  /* no typo */);
+        if (r != null) return r;
+        r = checkFreeTextAgainstUserAnswers(question, userInput, true  /* allows typo */);
         if (r != null) return r;
 
         // At this point, it seems that the user answer does not match gold 
-        // or any other user answer (even with a typo)
+        // or any other user answer (even with a typo).
         r = generateFreeTextIncorrectResponse(question, userInput);
         return r;
       default:
@@ -416,6 +471,7 @@ public class QuestionService extends OfyBaseService<Question> {
   }
 
   private Result generateFreeTextIncorrectResponse(Question question, String userInput) {
+    Boolean isSkip = userInput.isEmpty();
     Boolean isCorrect = false;
     Answer bestAnswer = null;
     for (Answer ans : question.getAnswers()) {
@@ -427,83 +483,67 @@ public class QuestionService extends OfyBaseService<Question> {
     }
 
     String message;
-    if (bestAnswer == null) {
-      message = "We don't know the answer either, and you are the first user submitting!";
+    if (bestAnswer == null && !isSkip) {
+      message = "Well done! We don't know the answer either, and you are the first user to "
+          + "choose this answer!";
+      // TODO(chunhowt): This counts any random crap as correct since we know nothing better.
+      isCorrect = true;
+    } else if (bestAnswer == null && isSkip) {
+      message = "No worries! This is a tough question! We are not sure about the answer either.";
+    } else if (bestAnswer != null && isSkip) {
+      message = "Learn something new today! The correct answer is " + bestAnswer.getText();
     } else {
       message = "Sorry! The correct answer is " + bestAnswer.getText();
     }
     return new Result(bestAnswer, isCorrect, message);
   }
 
-  private Result checkFreeTextAgainstUserAnswersWithTypos(Question question, String userInput) {
+  private Result checkFreeTextAgainstUserAnswers(
+      Question question, String userInput, boolean allowTypo) {
     Boolean isCorrect;
     String message;
     for (Answer ans : question.getAnswers()) {
       AnswerKind ak = ans.getKind();
       if (ak == AnswerKind.USER_SUBMITTED) {
-        if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-          isCorrect = true;
-          message = "We did not know about this one, but other users submitted almost the same " + 
-              "answer, so we will count it as correct.";
-          return new Result(ans, isCorrect, message);
+        if (!allowTypo && ans.getText().equalsIgnoreCase(userInput)) {
+          message = "Well done! We don't know the answer for this question, but other users "
+              + "submitted the same answer!";
+        } else if (allowTypo
+                   && LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+          message = "Well done! We don't know the answer for this question, but other users "
+              + "submitted almost the same answer!";
+        } else {
+          continue;
         }
+        isCorrect = true;
+        return new Result(ans, isCorrect, message);
       }
     }
     return null;
   }
 
-  private Result checkFreeTextAgainstUserAnswers(Question question, String userInput) {
+  private Result checkFreeTextAgainstGoldSilver(
+      Question question, String userInput, boolean allowTypo) {
     Boolean isCorrect;
     String message;
-    for (Answer ans : question.getAnswers()) {
-      AnswerKind ak = ans.getKind();
-      if (ak == AnswerKind.USER_SUBMITTED) {
-        if (ans.getText().equalsIgnoreCase(userInput)) {
-          isCorrect = true;
-          message = "We did not know about this one, but other users submitted the same answer, " +
-              "so we will count it as correct.";
-          return new Result(ans, isCorrect, message);
-        }
-      } 
-    }
-    return null;
-  }
-
-  private Result checkFreeTextAgainstGoldSilverWithTypos(Question question, String userInput) {
-    Boolean isCorrect;
-    String message;
-    QuestionKind qk = question.getKind();
+    QuestionKind qk = question.getKind(); 
     for (Answer ans : question.getAnswers()) {
       AnswerKind ak = ans.getKind();
       if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
           || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
-        if (LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
-          isCorrect = true;
-          message = "Nice! Be careful of typos next time. The correct answer is " + ans.getText();
-          return new Result(ans, isCorrect, message);
+        if (!allowTypo && ans.getText().equalsIgnoreCase(userInput)) {
+          message = "Great! The correct answer is indeed " + ans.getText() + "!";
+        } else if (allowTypo
+                   && LevenshteinAlgorithm.getLevenshteinDistance(userInput, ans.getText()) <= 1) {
+          message = "Nice! Close one! The correct answer is " + ans.getText() + "!";
+        } else {
+          continue;
         }
+        isCorrect = true;
+        return new Result(ans, isCorrect, message);
       }
     }
     return null;
-  }
-
-  private Result checkFreeTextAgainstGoldSilver(Question question, String userInput) {
-    Boolean isCorrect;
-    String message;
-    QuestionKind qk = question.getKind();
-    for (Answer ans : question.getAnswers()) {
-      AnswerKind ak = ans.getKind();
-      if ((qk == QuestionKind.FREETEXT_CALIBRATION && ak == AnswerKind.GOLD)
-          || (qk == QuestionKind.FREETEXT_COLLECTION && ak == AnswerKind.SILVER)) {
-       if (ans.getText().equalsIgnoreCase(userInput)) {
-          isCorrect = true;
-          message = "Great! The correct answer is " + ans.getText();
-          return new Result(ans, isCorrect, message);
-        }
-      }
-    }
-    return null;
-    
   }
 
   public class Result {

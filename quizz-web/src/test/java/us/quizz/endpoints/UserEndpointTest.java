@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
 
 import org.junit.Before;
@@ -16,6 +17,7 @@ import nl.bitwalker.useragentutils.Browser;
 
 import us.quizz.entities.User;
 import us.quizz.entities.UserReferal;
+import us.quizz.enums.QuestionSelectionStrategy;
 import us.quizz.service.UserService;
 import us.quizz.utils.QuizWebBaseTest;
 
@@ -67,7 +69,7 @@ public class UserEndpointTest extends QuizWebBaseTest {
     request.addHeader("User-Agent", userAgentString);
 
     Map<String, Object> results = userEndpoint.getUser(
-        request, "www.google.com/some_ads", QUIZ_ID1);
+        request, "www.google.com/some_ads", QUIZ_ID1, null);
     assertEquals(1, results.size());
     assertTrue(results.containsKey("userid"));
 
@@ -102,7 +104,7 @@ public class UserEndpointTest extends QuizWebBaseTest {
     request.setCookies(cookies);
 
     Map<String, Object> results = userEndpoint.getUser(
-        request, "www.google.com/some_ads", QUIZ_ID1);
+        request, "www.google.com/some_ads", QUIZ_ID1, USER_ID1);
     assertEquals(1, results.size());
     assertTrue(results.containsKey("userid"));
 
@@ -116,5 +118,14 @@ public class UserEndpointTest extends QuizWebBaseTest {
 
     List<UserReferal> userReferals = userReferralService.getUserQuizReferal(USER_ID1, QUIZ_ID1);
     assertEquals(2, userReferals.size());
+  }
+
+  @Test
+  public void testGetUsersAndStrategies() throws UnauthorizedException{
+    Map<String, String> usersToStrategies = userEndpoint.getUsersAndStrategies(authenticatedUser);
+    QuestionSelectionStrategy strategy = userService.get(USER_ID1).pickQuestionSelectionStrategy();
+    assertEquals(1, usersToStrategies.keySet().size());
+    assertTrue(usersToStrategies.containsKey(USER_ID1));
+    assertEquals(strategy.name(), usersToStrategies.get(USER_ID1));
   }
 }

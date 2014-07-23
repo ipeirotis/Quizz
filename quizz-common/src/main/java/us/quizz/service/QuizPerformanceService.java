@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.QuestionKind;
 import us.quizz.ofy.OfyBaseService;
 import us.quizz.repository.QuizPerformanceRepository;
@@ -174,9 +175,16 @@ public class QuizPerformanceService extends OfyBaseService<QuizPerformance> {
         // we are still not confident about which answer is correct.
         // (notice that eventually all collection questions will get high enough
         // confidence and will contribute in the estimation of user quality)
+        if (question.getConfidence() == null
+            || question.getAnswer(ua.getAnswerID()) == null
+            || question.getAnswer(ua.getAnswerID())
+                   .getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES) == null) {
+          continue;
+        }
         if (userProb < question.getConfidence()) {
           scoreTotal++;
-          scoreCorrect += question.getAnswer(ua.getAnswerID()).getProbCorrect();
+          scoreCorrect += question.getAnswer(ua.getAnswerID())
+              .getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES);
         }
       }
     }

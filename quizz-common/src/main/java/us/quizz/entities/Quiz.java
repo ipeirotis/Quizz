@@ -107,6 +107,10 @@ public class Quiz implements Serializable {
   // Whether this quiz should use a questions selection strategy.
   private Boolean useQuestionSelectionStrategy;
 
+  // Whether this quiz will allow varying number of questions in a single quiz (as opposed to
+  // a fixed DEFAULT_NUM_QUESTIONS_PER_QUIZ questions).
+  private Boolean allowVaryingLengthQuizSession;
+
   //for Objectify
   @SuppressWarnings("unused")
   private Quiz(){}
@@ -135,6 +139,7 @@ public class Quiz implements Serializable {
     this.questions = 0;
     this.gold = 0;
     this.useQuestionSelectionStrategy = false;
+    this.allowVaryingLengthQuizSession = false;
   }
 
   public Double getAvgAnswerCorrectness() {
@@ -349,5 +354,15 @@ public class Quiz implements Serializable {
     Preconditions.checkNotNull(useQuestionSelectionStrategy,
         "Question selection strategy cannot be null.");
     this.useQuestionSelectionStrategy = useQuestionSelectionStrategy;
+  }
+
+  public Boolean getAllowVaryingLengthQuizSession() {
+    return this.allowVaryingLengthQuizSession;
+  }
+
+  public void setAllowVaryingLengthQuizSession(Boolean allowVaryingLengthQuizSession) {
+    Preconditions.checkNotNull(allowVaryingLengthQuizSession,
+        "allowVaryingLengthQuizSession cannot be null.");
+    this.allowVaryingLengthQuizSession = allowVaryingLengthQuizSession;
   }
 }

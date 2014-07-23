@@ -79,7 +79,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
 
     Map<String, Object> result = processUserAnswerEndpoint.processUserAnswer(
         request, QUIZ_ID1, QUESTION_ID3, answerID, USER_ID3,
-        "", correctAnswers, incorrectAnswers, numExploit);
+        "", correctAnswers, incorrectAnswers, numExploit, 4);
 
     assertEquals(5, result.size());
     assertTrue(result.containsKey("userAnswer"));
@@ -98,6 +98,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
     assertEquals(USER_ID3, userAnswer.getUserid());
     assertEquals(QUESTION_ID3, userAnswer.getQuestionID());
     assertEquals(answerID, userAnswer.getAnswerID());
+    assertEquals((Integer) 4, userAnswer.getQuestionIndex());
 
     UserAnswerFeedback userAnswerFeedback = (UserAnswerFeedback) result.get("userAnswerFeedback");
     assertEquals(QUESTION_ID3, userAnswerFeedback.getQuestionID());
@@ -134,7 +135,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
 
     processUserAnswerEndpoint.processUserAnswer(
         request, QUIZ_ID2, QUESTION_ID4, 0, USER_ID3,
-        "answer2", 0, 0, 0);
+        "answer2", 0, 0, 0, 5);
 
     Quiz verificationQuiz = quizService.get(verificationQuizId);
     // Ensure that verification quiz is not created.
@@ -145,7 +146,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
 
     processUserAnswerEndpoint.processUserAnswer(
         request, QUIZ_ID2, QUESTION_ID4, 0, USER_ID3,
-        "answer2", 0, 0, 0);
+        "answer2", 0, 0, 0, 7);
 
     // Ensure that verification quiz is created.
     verificationQuiz = quizService.get(verificationQuizId);

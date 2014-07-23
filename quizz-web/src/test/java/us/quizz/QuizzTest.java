@@ -161,11 +161,11 @@ public class QuizzTest {
 
     answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
+    userService = new UserService(userRepository, experimentRepository);
     questionService = new QuestionService(
         questionRepository, userAnswerRepository, quizRepository, userService);
     treatmentService = new TreatmentService(treatmentRepository);
     experimentService = new ExperimentService(experimentRepository, treatmentRepository);
-    userService = new UserService(userRepository, experimentRepository);
     userAnswerService = new UserAnswerService(userAnswerRepository);
     quizPerformanceService = new QuizPerformanceService(
         quizPerformanceRepository, userAnswerService, questionService);
@@ -296,9 +296,9 @@ public class QuizzTest {
   }
 
   private Set<Question> startQuiz(String quizId) {
-    Map<String, Set<Question>> questionMap =
+    Map<String, Object> questionMap =
         quizEndpoint.getNextQuestions(quizId, "user1", NUMBER_OF_QUESTIONS);
-    return questionMap.get("calibration");
+    return (Set<Question>) questionMap.get("calibration");
   }
 
   private void processUserAnswer(User user, Quiz quiz, Question question, 
@@ -311,7 +311,7 @@ public class QuizzTest {
 
     Map<String, Object> resp = processUserAnswerEndpoint.processUserAnswer(req,
         quiz.getQuizID(), question.getId(), 0, user.getUserid(), null,
-        numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0);
+        numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0, 0);
 
     UserAnswerFeedback userAnswerFeedback = (UserAnswerFeedback) resp.get("userAnswerFeedback");
 
@@ -331,7 +331,7 @@ public class QuizzTest {
     when(req.getRemoteAddr()).thenReturn(IP_ADDRESS);
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
-    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads", QUIZ_ID);
+    Map<String, Object> map = userEndpoint.getUser(req, "www.google.com/some_ads", QUIZ_ID, null);
     String userid = (String) map.get("userid");
     logResponse("get user", userid);
 

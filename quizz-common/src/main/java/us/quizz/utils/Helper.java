@@ -20,19 +20,19 @@ public class Helper {
   // Computes the entropy of an answer given by a user with quality q (= probability of correct)
   // and n available options in a multiple choice question.
   // @throws Exception
-  public static double entropy(double q, int n) throws Exception {
+  public static Double entropy(double q, int n) {
     // There is no uncertainty, so entropy is 0.
     if (q == 1.0 || n == 1) {
-      return 0;
+      return 0.0d;
     }
     if (q == 0.0) {
       return -Math.log(1.0 / (n - 1)) / Math.log(2);
     }
     if (n < 1) {
-      throw new Exception("Invalid value for n in entropy calculation, n: " + n);
+      return Double.NaN;
     }
     if (q < 0.0 || q > 1.0) {
-      throw new Exception("Invalid value for q in entropy calculation, q: " + q);
+      return Double.NaN;
     }
     double entropy =
         (1 - q) * Math.log((1 - q) / (n - 1)) / Math.log(2) +
@@ -43,7 +43,7 @@ public class Helper {
   // Returns the information gain contributed by the user given its quality q and the number
   // of options, n, in a multiple choice question.
   // @throws Exception
-  public static double getInformationGain(double q, int n) throws Exception {
+  public static double getInformationGain(double q, int n) {
     return Helper.entropy(1.0 / n, n) - Helper.entropy(q, n);
   }
 

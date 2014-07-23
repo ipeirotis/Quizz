@@ -2,11 +2,12 @@ package us.quizz.service;
 
 import com.google.inject.Inject;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
+import us.quizz.entities.User;
 import us.quizz.entities.UserAnswer;
 import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.AnswerKind;
@@ -17,6 +18,7 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,8 +29,8 @@ import java.util.logging.Logger;
 
 public class QuestionStatisticsService {
   private static final Logger logger = Logger.getLogger(QuestionStatisticsService.class.getName());
-  private static final AnswerAggregationStrategy ANSWER_AGGREGATION_STRATEGY =
-      AnswerAggregationStrategy.BAYES_PROB;
+  private static final String ANSWER_AGGREGATION_STRATEGY =
+      AnswerAggregationStrategy.NAIVE_BAYES.toString();
 
   private QuestionService questionService;
   private UserAnswerService userAnswerService;
@@ -51,19 +53,23 @@ public class QuestionStatisticsService {
       throw new IllegalArgumentException("Question with id=" + questionID + " does not exist");
     }
 
+    List<UserAnswer> userAnswers = getSortedSubmittedUserAnswers(question);
+    maybeFixQuestionAnswers(userAnswers, question);
+
     // Maps from internal answer id -> the information bit for the particular answer.
     Map<Integer, Double> answerBitsMap = new HashMap<Integer, Double>();
     // Maps from internal answer id -> number of UserAnswer for the particular answer.
     Map<Integer, Integer> answerCountsMap = new HashMap<Integer, Integer>();
-    // Maps from internal answer id -> list of (user probability, whether user picks this answer) of
-    // users giving the answer.
-    Map<Integer, List<Pair<Double, Boolean>>> answerProbMap =
-        new HashMap<Integer, List<Pair<Double, Boolean>>>();
+    // Maps from internal answer id -> list of (user correct answers, user incorrect answers,
+    // whether user picks this answer) of users giving the answer.
+    Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap =
+        new HashMap<Integer, List<Triple<Double, Double, Boolean>>>();
 
     resetStatsMap(question, answerBitsMap, answerCountsMap, answerProbMap);
-    computeAnswerStatistics(question, answerBitsMap, answerCountsMap, answerProbMap);
+    computeAnswerStatistics(question, userAnswers, answerBitsMap, answerCountsMap, answerProbMap);
     computeQuestionStatistics(question, answerBitsMap, answerCountsMap, answerProbMap);
     computeDifficulty(question);
+    computeEntropyOfQuestionAnswers(question);
     questionService.save(question);
     return question;
   }
@@ -72,13 +78,68 @@ public class QuestionStatisticsService {
   private void resetStatsMap(Question question,
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
-      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
-    int numAnswers = question.getAnswers().size();
+      Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
     for (Answer answer : question.getAnswers()) {
       Integer answerId = answer.getInternalID();
       answerBitsMap.put(answerId, 0.0);
       answerCountsMap.put(answerId, 0);
-      answerProbMap.put(answerId, new ArrayList<Pair<Double, Boolean>>());
+      answerProbMap.put(answerId, new ArrayList<Triple<Double, Double, Boolean>>());
+    }
+  }
+
+  // Tries to check whether we need to add new UserAnswer's userInput into question as a new answer
+  // of USER_SUBMITTED kind. If so, updates the question and modifies all the UserAnswer's answerID
+  // so that they continue to be valid.
+  private void maybeFixQuestionAnswers(List<UserAnswer> userAnswers, Question question) {
+    // Pre-empt early if the question is not a free-text question.
+    if (question.getKind() != QuestionKind.FREETEXT_CALIBRATION
+        && question.getKind() != QuestionKind.FREETEXT_COLLECTION) {
+      return;
+    }
+
+    boolean isDirty = false;
+    // Go through each userAnswer and check whether the userInput is in the list of answers.
+    // If it is not, create a new answer and store it in the question.
+    for (UserAnswer userAnswer : userAnswers) {
+      // Check if it is a free text answer AND the answer is not in the question's answers list.
+      if (userAnswer.getUserInput() != null
+          && !userAnswer.getUserInput().isEmpty()
+          && userAnswer.getAnswerID() != null
+          && (question.getAnswer(userAnswer.getAnswerID()) == null
+              || !question.getAnswer(userAnswer.getAnswerID()).getText().equals(
+                     userAnswer.getUserInput()))) {
+        isDirty = true;
+        question.addAnswer(
+            new Answer(question.getId(), question.getQuizID(), userAnswer.getUserInput(),
+                       AnswerKind.USER_SUBMITTED, question.getAnswers().size()));
+      }
+    }
+
+    if (!isDirty) {
+      return;
+    }
+    logger.info("Fixed answers for free-text question id: " + question.getId());
+    questionService.save(question);
+
+    // Now, fix the userAnswer's answerID too to be the updated answerID.
+    for (UserAnswer userAnswer : userAnswers) {
+      if (userAnswer.getUserInput() == null || userAnswer.getUserInput().isEmpty()) {
+        continue;  // Not a free-text answer, ignore.
+      }
+      // If the answerID is invalid OR the text of the answerID is not the same as userInput, fix.
+      if (question.getAnswer(userAnswer.getAnswerID()) == null
+          || !question.getAnswer(userAnswer.getAnswerID()).getText().equals(
+                 userAnswer.getUserInput())) {
+        // Find the new right answerID for the UserAnswer.
+        for (Answer answer : question.getAnswers()) {
+          if (answer.getText().equals(userAnswer.getUserInput())) {
+            userAnswer.setAnswerID(answer.getInternalID());
+            userAnswerService.save(userAnswer);
+            logger.info("Fixed answer index for UserAnswer id: " + userAnswer.getId());
+            break;
+          }
+        }
+      }
     }
   }
 
@@ -103,8 +164,9 @@ public class QuestionStatisticsService {
       if (userIds.contains(userAnswer.getUserid())) {
         continue;
       }
-      // Check that the answerID corresponds to a valid answer.
-      if (question.getAnswer(userAnswer.getAnswerID()) == null) {
+      // Skips if the answerID corresponds to an invalid answer AND it is not a free-text answer.
+      if (question.getAnswer(userAnswer.getAnswerID()) == null
+          && (userAnswer.getUserInput() == null || userAnswer.getUserInput().isEmpty())) {
         continue;
       }
       results.add(userAnswer);
@@ -116,10 +178,11 @@ public class QuestionStatisticsService {
   // Updates the instance variables of statistics map for the given question given a user answer's
   // quality and information bit for a given answerId.
   private void updateStatsMap(
-      Question question, Double userProb, Double userBits, Integer answerId, Integer numAnswers,
+      Question question, Double userCorrect, Double userIncorrect, Double userBits,
+      Integer answerId, Integer numAnswers,
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
-      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
+      Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
     if (!answerBitsMap.containsKey(answerId)) {
       logger.warning("Unrecognized new answerID in answerBitsMap: " + answerId);
       answerBitsMap.put(answerId, 0.0);
@@ -132,24 +195,13 @@ public class QuestionStatisticsService {
     }
     answerCountsMap.put(answerId, answerCountsMap.get(answerId) + 1);
 
-    // Estimate the probability that the answer is correct
-    // 
-    // NOTE: The computation of correctness below is applicable ONLY
-    // for multiple choice questions. For free-text answers, we need
-    // to use the Chinese Table process described by Dan Weld.
-    // 
-    // TODO(ipeirotis): Given that we are using smoothed maximum likelihood estimated for the
-    // userProb value, the overall probability estimate is going to be overconfident. Need to
-    // check the efficiency of doing some Monte Carlo estimates by sampling repeatedly from
-    // the Beta(correct,incorrect) distribution to get the quality of the user, and then
-    // estimate a distribution for the ProbCorrect.
     for (Answer answer : question.getAnswers()) {
-      List<Pair<Double, Boolean>> currentProb = answerProbMap.get(answer.getInternalID());
+      List<Triple<Double, Double, Boolean>> currentProb = answerProbMap.get(answer.getInternalID());
       if (currentProb == null) {
         logger.warning("Unrecognized new answerID in answerProbMap: " + answerId);
-        currentProb = new ArrayList<Pair<Double, Boolean>>();
+        currentProb = new ArrayList<Triple<Double, Double, Boolean>>();
       }
-      currentProb.add(Pair.of(userProb, answer.getInternalID() == answerId));
+      currentProb.add(Triple.of(userCorrect, userIncorrect, answer.getInternalID() == answerId));
       answerProbMap.put(answer.getInternalID(), currentProb);
     }
   }
@@ -163,24 +215,30 @@ public class QuestionStatisticsService {
   //   (1 - user quality) / (numAnswers - 1) if the answer isn't the one the user picks.
   // Refer to BAYES_PROB AnswerAggregationStrategy for more information.
   private void computeBayesProb(Question question,
-      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
+      Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
+    AnswerAggregationStrategy strategy = AnswerAggregationStrategy.NAIVE_BAYES;
     double sumProb = 0.0;
     double maxProb = 0.0;
     int bestAnswerID = -1;
     Integer numAnswer = question.getAnswers().size();
     for (Answer answer : question.getAnswers()) {
       Integer internalID = answer.getInternalID();
-      List<Pair<Double, Boolean>> probs = answerProbMap.get(internalID);
+      List<Triple<Double, Double, Boolean>> probs = answerProbMap.get(internalID);
       Double answerProb = Math.log(1.0 / numAnswer);
-      for (Pair<Double, Boolean> prob : probs) {
-        if (prob.getRight()) {
-          answerProb += Math.log(prob.getLeft());
+      for (Triple<Double, Double, Boolean> prob : probs) {
+        Double correct = prob.getLeft();
+        Double incorrect = prob.getMiddle();
+        Double smoothedProbability = (correct + 1) / (correct + incorrect + numAnswer);
+        Boolean answeredCorrectly = prob.getRight();
+        
+        if (answeredCorrectly) {
+          answerProb += Math.log(smoothedProbability);
         } else {
-          answerProb += Math.log((1.0 - prob.getLeft()) / (numAnswer - 1));
+          answerProb += Math.log((1.0 - smoothedProbability) / (numAnswer - 1));
         }
       }
       answerProb = Math.exp(answerProb);
-      answer.setBayesProb(answerProb);
+      answer.setProbCorrectForStrategy(strategy, answerProb);
       sumProb += answerProb;
       if (answerProb > maxProb) {
         maxProb = answerProb;
@@ -190,21 +248,23 @@ public class QuestionStatisticsService {
 
     // Normalize bayesProb.
     for (Answer answer : question.getAnswers()) {
-      answer.setBayesProb(answer.getBayesProb() / sumProb);
+      Double v = answer.getProbCorrectForStrategy(strategy) / sumProb;
+      answer.setProbCorrectForStrategy(strategy, v);;
     }
-    question.setBestBayesProbAnswerID(bestAnswerID);
+    question.setLikelyAnswerIDForStrategy(strategy, bestAnswerID);
   }
 
   // Computes the posterior probability for each answer based on the majority votes, and stores
   // the result in the Answer entitiy of the question given.
   private void computeMajorityVoteProb(Question question,
       Map<Integer, Integer> answerCountsMap) {
+    AnswerAggregationStrategy strategy = AnswerAggregationStrategy.MAJORITY_VOTE;
     int sumVotes = 0;
     int maxVotes = 0;
     int bestAnswerID = -1;
     for (Answer answer : question.getAnswers()) {
       Integer numVotes = answerCountsMap.get(answer.getInternalID());
-      answer.setMajorityVoteProb(numVotes * 1.0);
+      answer.setProbCorrectForStrategy(strategy, numVotes * 1.0);
       sumVotes += numVotes;
       if (numVotes > maxVotes) {
         maxVotes = numVotes;
@@ -215,31 +275,40 @@ public class QuestionStatisticsService {
     // Normalize majorityVoteProb.
     for (Answer answer : question.getAnswers()) {
       if (sumVotes > 0) {
-        answer.setMajorityVoteProb(answer.getMajorityVoteProb() / sumVotes);
+        Double v = answer.getProbCorrectForStrategy(strategy) / sumVotes;
+        answer.setProbCorrectForStrategy(strategy, v);
       } else {
-        answer.setMajorityVoteProb(1.0 / question.getAnswers().size());
+        Integer numAnswer = question.getAnswers().size();
+        Double v = 1.0 / numAnswer;
+        answer.setProbCorrectForStrategy(strategy, v);
       }
     }
-    question.setBestMajorityVoteProbAnswerID(bestAnswerID);
+    question.setLikelyAnswerIDForStrategy(strategy, bestAnswerID);
   }
 
   // Computes the posterior probability for each answer based on the weighted votes, and stores
   // the result in the Answer entitiy of the question given. Each vote is weighted by the user
   // quality.
   private void computeWeightedVoteProb(Question question,
-      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
+      Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
+    AnswerAggregationStrategy strategy = AnswerAggregationStrategy.WEIGHTED_VOTE;
     double weightedVotes = 0.0;
     double maxVotes = 0.0;
     int bestAnswerID = -1;
+    Integer numAnswer = question.getAnswers().size();
     for (Answer answer : question.getAnswers()) {
-      List<Pair<Double, Boolean>> probs = answerProbMap.get(answer.getInternalID());
+      List<Triple<Double, Double, Boolean>> probs = answerProbMap.get(answer.getInternalID());
       double votes = 0.0;
-      for (Pair<Double, Boolean> prob : probs) {
-        if (prob.getRight()) {
-          votes += prob.getLeft();
+      for (Triple<Double, Double, Boolean> prob : probs) {
+        Double correct = prob.getLeft();
+        Double incorrect = prob.getMiddle();
+        Double smoothedProbability = (correct + 1) / (correct + incorrect + numAnswer);
+        Boolean answeredCorrectly = prob.getRight();
+        if (answeredCorrectly) {
+          votes += smoothedProbability;
         }
       }
-      answer.setWeightedVoteProb(votes);
+      answer.setProbCorrectForStrategy(strategy, votes);
       weightedVotes += votes;
       if (votes > maxVotes) {
         maxVotes = votes;
@@ -250,30 +319,14 @@ public class QuestionStatisticsService {
     // Normalize weightedVoteProb.
     for (Answer answer : question.getAnswers()) {
       if (weightedVotes > 0) {
-        answer.setWeightedVoteProb(answer.getWeightedVoteProb() / weightedVotes);
+        Double v = answer.getProbCorrectForStrategy(strategy) / weightedVotes;
+        answer.setProbCorrectForStrategy(strategy, v);
       } else {
-        answer.setWeightedVoteProb(1.0 / question.getAnswers().size());
+        Double v =  1.0 / numAnswer;
+        answer.setProbCorrectForStrategy(strategy, v);
       }
     }
-    question.setBestWeightedVoteProbAnswerID(bestAnswerID);
-  }
-
-  private void computeBestProbCorrect(Question question) {
-    for (Answer answer : question.getAnswers()) {
-      switch (ANSWER_AGGREGATION_STRATEGY) {
-        case BAYES_PROB:
-          answer.setProbCorrect(answer.getBayesProb());
-          break;
-        case MAJORITY_VOTE:
-          answer.setProbCorrect(answer.getMajorityVoteProb());
-          break;
-        case WEIGHTED_VOTE:
-          answer.setProbCorrect(answer.getWeightedVoteProb());
-          break;
-        default:
-          break;
-      }
-    }
+    question.setLikelyAnswerIDForStrategy(strategy, bestAnswerID);
   }
 
   // Computes the answer statistics for the given question and updates the instance variables of
@@ -281,34 +334,28 @@ public class QuestionStatisticsService {
   // passed in.
   // This includes the information bits, number answers and log probability for each answer.
   private void computeAnswerStatistics(Question question,
+      List<UserAnswer> userAnswers,
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
-      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
+      Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
     int numAnswers = question.getAnswers().size();
-    List<UserAnswer> userAnswers = getSortedSubmittedUserAnswers(question);
+    // TODO(chunhowt): This is kinda a hack, we should use chinese restaurant process or something
+    // less fancy to estimate statistics for free-text questions.
+    if (question.getKind() == QuestionKind.FREETEXT_CALIBRATION
+        || question.getKind() == QuestionKind.FREETEXT_COLLECTION) {
+      numAnswers = 4;
+    }
     String quizID = question.getQuizID();
     for (UserAnswer useranswer : userAnswers) {
       String userId = useranswer.getUserid();
       Integer ansId = useranswer.getAnswerID();
-      Answer selectedAnswer = question.getAnswer(ansId);
       QuizPerformance qp = quizPerformanceService.get(quizID, userId);
       if (qp == null) {
         continue;
       }
 
-      Double userBits = 0.0, userProb = 0.0;
       Double correct = qp.getCorrectScore();
-      if (correct == null) {
-        correct = 0d;
-      }
       Double total = qp.getTotalScore();
-      if (total == null) {
-        total = 0d;
-      }
-
-      // The probability that the user is correct. We use Laplacian smoothing
-      // with 1 being added in the nominator and numAnswers in the denominator.
-      userProb = 1.0 * (correct + 1) / (total + numAnswers);
 
       // Here, we do not count the current question as correct answer & incorrect answer.
       if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_CALIBRATION) {
@@ -316,23 +363,12 @@ public class QuestionStatisticsService {
           correct--;
         }
         total--;
-      } else if (question.getKind() == QuestionKind.MULTIPLE_CHOICE_COLLECTION) {
-        // TODO(panos): Discount the current question when it is a collection question.
-        // if (userProb > question.getConfidence()) {
-        //   total--;
-        //   correct -= selectedAnswer.getProbCorrect();
-        // }
       }
 
-      // Re-estimate userProb after removing the effect of the current question.
-      userProb = 1.0 * (correct + 1) / (total + numAnswers);
-
-      try {
-        userBits = Helper.getInformationGain(userProb, numAnswers);
-      } catch (Exception e) {
-        logger.log(Level.WARNING, "Error when computing bits for user " + userId);
-      }
-      updateStatsMap(question, userProb, userBits, ansId, numAnswers,
+      // Estimate userProb after removing the effect of the current question.
+      Double userProb = 1.0 * (correct + 1) / (total + numAnswers);
+      Double userBits = Helper.getInformationGain(userProb, numAnswers);
+      updateStatsMap(question, correct, total - correct, userBits, ansId, numAnswers,
           answerBitsMap, answerCountsMap, answerProbMap);
     }
 
@@ -342,11 +378,6 @@ public class QuestionStatisticsService {
       answer.setBits(answerBitsMap.get(internalID));
       answer.setNumberOfPicks(answerCountsMap.get(internalID));
     }
-
-    computeBayesProb(question, answerProbMap);
-    computeMajorityVoteProb(question, answerCountsMap);
-    computeWeightedVoteProb(question, answerProbMap);
-    computeBestProbCorrect(question);
   }
 
   // Computes the statistics and best answer for the given question and store them in the given
@@ -356,52 +387,109 @@ public class QuestionStatisticsService {
   private void computeQuestionStatistics(Question question,
       Map<Integer, Double> answerBitsMap,
       Map<Integer, Integer> answerCountsMap,
-      Map<Integer, List<Pair<Double, Boolean>>> answerProbMap) {
-    Double questionBits = 0.0;
-    Double sumProb = 0.0;
-    Double maxProb = 0.0;
-    Boolean isLikelyAnswerCorrect = null;
-    Integer likelyAnswerID = 0;
-    Integer totalAnswers = 0;
-    Integer numCorrect = 0;
+      Map<Integer, List<Triple<Double, Double, Boolean>>> answerProbMap) {
+    computeBayesProb(question, answerProbMap);
+    computeMajorityVoteProb(question, answerCountsMap);
+    computeWeightedVoteProb(question, answerProbMap);
+
+    computeTotalResponses(question, answerCountsMap);
+    computeBitsForQuestion(question, answerBitsMap);
 
     // Loops through the answers to pick the one with the highest probability as the best answer.
+    Map<String, Integer> likelyAnswerIDmap = computeLikelyAnswers(question);
+    computeNumberOfCorrectResponses(question, answerCountsMap, likelyAnswerIDmap);
+
+    // TODO(panos): The Confidence and IsLikelyAnswerCorrect need to be refactored to have an
+    // AnswerAggregationStrategy associated with them.
+    Integer answerId = likelyAnswerIDmap.get(ANSWER_AGGREGATION_STRATEGY);
+    for (Answer answer : question.getAnswers()) {
+      if (answer.getInternalID() == answerId) {
+        question.setConfidence(answer.getProbCorrects().get(ANSWER_AGGREGATION_STRATEGY));
+        if (answer.getKind() == AnswerKind.GOLD) {
+          question.setIsLikelyAnswerCorrect(true);
+        } else if  (answer.getKind() == AnswerKind.INCORRECT) {
+          question.setIsLikelyAnswerCorrect(false);
+        } else {
+          question.setIsLikelyAnswerCorrect(null);
+        }
+      }
+    }    
+  }
+
+  private void computeTotalResponses(Question question, Map<Integer, Integer> answerCountsMap) {
+    Integer totalAnswers = 0;
     for (Answer answer : question.getAnswers()) {
       Integer answerID = answer.getInternalID();
-      Double aProb = answer.getProbCorrect();
       totalAnswers += answerCountsMap.get(answerID);
+    }
+    question.setHasUserAnswers(totalAnswers > 0);
+    question.setNumberOfUserAnswers(totalAnswers);
+  }
+
+  private Map<String, Integer> computeLikelyAnswers(Question question) {
+    Map<String, Integer> likelyAnswerIDmap = new HashMap<String, Integer>();
+    for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
+      Integer likelyAnswerID = null;
+      Double maxProb = 0.0;
+
+      for (Answer answer : question.getAnswers()) {
+        Integer answerID = answer.getInternalID();
+        Double aProb = answer.getProbCorrectForStrategy(strategy);
+        if (maxProb < aProb) {
+          maxProb = aProb;
+          likelyAnswerID = answerID;
+        }
+      }
+      if (likelyAnswerID != null) {
+        likelyAnswerIDmap.put(strategy.toString(), likelyAnswerID);
+      }
+    }
+    question.setLikelyAnswerIDs(likelyAnswerIDmap);
+
+    Map<String, String> likelyAnswerMap = new HashMap<String, String>();
+    for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
+      Integer answerId = likelyAnswerIDmap.get(strategy.toString());
+      if (answerId != null) {
+        likelyAnswerMap.put(strategy.toString(), question.getAnswer(answerId).getText());
+      }
+    }
+    question.setLikelyAnswer(likelyAnswerMap);
+
+    return likelyAnswerIDmap;
+  }
+
+  private void computeNumberOfCorrectResponses(
+      Question question, Map<Integer, Integer> answerCountsMap,
+      Map<String, Integer> likelyAnswerIDmap) {
+    Integer numCorrect = 0;
+    for (Answer answer : question.getAnswers()) {
+      Integer answerID = answer.getInternalID();
       if (answer.getKind() == AnswerKind.GOLD) {
         numCorrect = answerCountsMap.get(answerID);
       }
-
-      if (maxProb < aProb) {
-        maxProb = aProb;
-        likelyAnswerID = answerID;
-        if (answer.getKind() == AnswerKind.GOLD) {
-          isLikelyAnswerCorrect = true;
-        } else if (answer.getKind() == AnswerKind.INCORRECT) {
-          isLikelyAnswerCorrect = false;
-        } else {
-          isLikelyAnswerCorrect = null;
-        }
-        // TODO(chunhowt): Don't use boolean.
-      }
-      sumProb += aProb;
-      questionBits += answerBitsMap.get(answerID);
     }
 
     // If it is a collection question, the numCorrect is the one for the best answer.
-    if (!question.getHasGoldAnswer()) {
-      numCorrect = answerCountsMap.get(likelyAnswerID);
+    if (question.getHasGoldAnswer() == null || !question.getHasGoldAnswer()) {
+      numCorrect = answerCountsMap.get(likelyAnswerIDmap.get(ANSWER_AGGREGATION_STRATEGY));
+    }
+
+    question.setNumberOfCorrectUserAnswers(numCorrect);
+  }
+
+  private void computeBitsForQuestion(Question question, Map<Integer, Double> answerBitsMap) {
+    Double questionBits = 0.0;
+    for (Answer answer : question.getAnswers()) {
+      Integer answerID = answer.getInternalID();
+      questionBits += answerBitsMap.get(answerID);
+    }
+    // TODO(chunhowt): Temporarily hack for quizzes that only have collection questions,
+    // because the user will always have the same random user quality and bits will remain 0
+    // forever.
+    if (questionBits == 0.0) {
+      questionBits = (Double) (double) question.getNumberOfUserAnswers();
     }
     question.setTotalUserScore(questionBits);
-    question.setConfidence(maxProb / sumProb);
-    question.setLikelyAnswer(question.getAnswer(likelyAnswerID).getText());
-    question.setLikelyAnswerID(likelyAnswerID);
-    question.setIsLikelyAnswerCorrect(isLikelyAnswerCorrect);
-    question.setHasUserAnswers(totalAnswers > 0);
-    question.setNumberOfUserAnswers(totalAnswers);
-    question.setNumberOfCorrectUserAnswers(numCorrect);
   }
 
   // Computes the difficulty of the question given and store it in the question given.
@@ -417,5 +505,25 @@ public class QuestionStatisticsService {
       // Else, we can compute the difficulty exactly.
       question.setDifficulty(1.0 - numCorrect / new Double(totalAnswers));
     }
+  }
+
+  /**
+   * Computes the entropy over the probabilities for the answers of the question,
+   * with the probabilities computed using various aggregation strategies
+   *
+   * @param question
+   */
+  public Question computeEntropyOfQuestionAnswers(Question question) {
+    Map<String, Double> result = new HashMap<String, Double>();
+    for (AnswerAggregationStrategy strategy : AnswerAggregationStrategy.values()) {
+      double entropy = 0.0;
+      for (Answer ans : question.getAnswers()) {
+        double p = ans.getProbCorrectForStrategy(strategy);
+        if (p > 0) entropy += - p * Math.log(p);
+      }
+      result.put(strategy.toString(), entropy);
+    }
+    question.setEntropy(result);
+    return question;
   }
 }

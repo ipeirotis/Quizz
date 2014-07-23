@@ -14,9 +14,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import us.quizz.entities.Answer;
 import us.quizz.entities.Question;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
+import us.quizz.enums.AnswerAggregationStrategy;
+import us.quizz.enums.AnswerKind;
 import us.quizz.enums.QuestionKind;
 import us.quizz.utils.Helper;
 import us.quizz.utils.QuizBaseTest;
@@ -50,13 +53,13 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     // Only initializes the fields that are needed for the QuizPerformance.
     assertNotNull(getQuizPerformanceService());
     QuizPerformance quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID1);
-    quizPerformance.setCorrectScore(4d);
-    quizPerformance.setTotalScore(6d);
+    quizPerformance.setCorrectScore(1d);
+    quizPerformance.setTotalScore(2d);
     quizPerformanceService.save(quizPerformance);
 
     quizPerformance = new QuizPerformance(QUIZ_ID1, USER_ID2);
-    quizPerformance.setCorrectScore(2d);
-    quizPerformance.setTotalScore(2d);
+    quizPerformance.setCorrectScore(1d);
+    quizPerformance.setTotalScore(1d);
     quizPerformanceService.save(quizPerformance);
 
     assertNotNull(getQuestionService());
@@ -88,7 +91,7 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
 
     // userProb = (correctScore + 1) / (totalScore + numChoices).
     // user 1 has 4 correct out of 6 answers.
-    double user1Quality = 1.0 * (4 + 1) / (6 + numChoices);
+    double user1Quality = 1.0 * (1 + 1) / (2 + numChoices);
 
     // QUESTION_ID2 is a silver question, so this is null.
     assertNull(question.getIsLikelyAnswerCorrect());
@@ -115,30 +118,58 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
         Helper.getInformationGain(user1Quality, numChoices), question.getTotalUserScore(), 0.01);
 
     // The answer chosen by user will have probability = userProb.
-    assertEquals(user1Quality, question.getAnswer(0).getBayesProb(), 0.01);
+    assertEquals(user1Quality,
+        question.getAnswer(0).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
     // While each of the other answer will have probability (1 - userProb) / 3.
-    assertEquals((1 - user1Quality) / 3, question.getAnswer(1).getBayesProb(), 0.01);
-    assertEquals((1 - user1Quality) / 3, question.getAnswer(2).getBayesProb(), 0.01);
-    assertEquals((1 - user1Quality) / 3, question.getAnswer(3).getBayesProb(), 0.01);
-    assertEquals((Integer) 0, question.getBestBayesProbAnswerID());
+    assertEquals((1 - user1Quality) / 3,
+        question.getAnswer(1).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals((1 - user1Quality) / 3,
+        question.getAnswer(2).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals((1 - user1Quality) / 3,
+        question.getAnswer(3).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals((Integer) 0,
+        question.getLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES));
 
     // Only answer 0 is ever picked, so the majority vote prob will give it all the probability.
-    assertEquals(1.0, question.getAnswer(0).getMajorityVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(1).getMajorityVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(2).getMajorityVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(3).getMajorityVoteProb(), 0.01);
-    assertEquals((Integer) 0, question.getBestMajorityVoteProbAnswerID());
+    assertEquals(1.0,
+        question.getAnswer(0).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(1).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(2).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(3).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals((Integer) 0,
+        question.getLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE));
 
     // Only answer 0 is ever picked, so the weighted vote prob will give it all the probability.
-    assertEquals(1.0, question.getAnswer(0).getWeightedVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(1).getWeightedVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(2).getWeightedVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(3).getWeightedVoteProb(), 0.01);
-    assertEquals((Integer) 0, question.getBestWeightedVoteProbAnswerID());
+    assertEquals(1.0,
+        question.getAnswer(0).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(1).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(2).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(3).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals((Integer) 0,
+        question.getLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE));
 
     // The question confidence is the highest probCorrect.
     assertEquals(user1Quality, question.getConfidence(), 0.01);
-    assertEquals("Answer 0", question.getLikelyAnswer());
+    assertEquals("Answer 0",
+        question.getLikelyAnswer().get(AnswerAggregationStrategy.NAIVE_BAYES.toString()));
   }
 
   @Test
@@ -153,14 +184,9 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     int numChoices = 4;
     assertEquals(numChoices, question.getAnswers().size());
 
-    // userProb = (correctScore + 1) / (totalScore + numChoices).
-    // Since Q1 is a calibration question, we remove it from the influence of the userProb.
-    // user1 without q1 has 4 correct out of 5. Note that user1 actually answers question 1
-    // twice, but we only takes its first answer response, which is a wrong.
-    double user1QualityWithoutQ1 = 1.0 * (4 + 1) / (5 + numChoices);
+    double user1QualityWithoutQ1 = 1.0 * (1 + 1) / (1 + numChoices);
 
-    // user 2 without q1 has only 1 correct.
-    double user2QualityWithoutQ1 = 1.0 * (1 + 1) / (1 + numChoices);
+    double user2QualityWithoutQ1 = 1.0 * (0 + 1) / (0 + numChoices);
 
     // USER_1 picks answer 3 first, while USER_2 picks answer 0 once, the rest of answers
     // are never picked.
@@ -197,34 +223,60 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     double probAnswer1 = (1 - user1QualityWithoutQ1) / 3 * (1 - user2QualityWithoutQ1) / 3;
     double probAnswer2 = (1 - user1QualityWithoutQ1) / 3 * (1 - user2QualityWithoutQ1) / 3;
     double totalUnnormalizedProb = (probAnswer0 + probAnswer1 + probAnswer2 + probAnswer3);
-    assertEquals(probAnswer0 / totalUnnormalizedProb, question.getAnswer(0).getBayesProb(), 0.01);
-    assertEquals(probAnswer1 / totalUnnormalizedProb, question.getAnswer(1).getBayesProb(), 0.01);
-    assertEquals(probAnswer2 / totalUnnormalizedProb, question.getAnswer(2).getBayesProb(), 0.01);
-    assertEquals(probAnswer3 / totalUnnormalizedProb, question.getAnswer(3).getBayesProb(), 0.01);
-    assertEquals((Integer) 3, question.getBestBayesProbAnswerID());
+    assertEquals(probAnswer0 / totalUnnormalizedProb,
+        question.getAnswer(0).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals(probAnswer1 / totalUnnormalizedProb,
+        question.getAnswer(1).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals(probAnswer2 / totalUnnormalizedProb,
+        question.getAnswer(2).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals(probAnswer3 / totalUnnormalizedProb,
+        question.getAnswer(3).getProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES),
+        0.01);
+    assertEquals((Integer) 3,
+        question.getLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES));
 
     // Only answer 0 and 3 are ever picked, so the majority vote prob will give it half the
     // probability each.
-    assertEquals(0.5, question.getAnswer(0).getMajorityVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(1).getMajorityVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(2).getMajorityVoteProb(), 0.01);
-    assertEquals(0.5, question.getAnswer(3).getMajorityVoteProb(), 0.01);
+    assertEquals(0.5,
+        question.getAnswer(0).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(1).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(2).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
+    assertEquals(0.5,
+        question.getAnswer(3).getProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE),
+        0.01);
     // For now, the first best answer is the best, if there is a tie.
-    assertEquals((Integer) 0, question.getBestMajorityVoteProbAnswerID());
+    assertEquals((Integer) 0,
+        question.getLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE));
 
     double sumWeightedVotes = user1QualityWithoutQ1 + user2QualityWithoutQ1;
     assertEquals(user2QualityWithoutQ1 / sumWeightedVotes,
-                 question.getAnswer(0).getWeightedVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(1).getWeightedVoteProb(), 0.01);
-    assertEquals(0.0, question.getAnswer(2).getWeightedVoteProb(), 0.01);
+        question.getAnswer(0).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(1).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals(0.0,
+        question.getAnswer(2).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
     assertEquals(user1QualityWithoutQ1 / sumWeightedVotes,
-                 question.getAnswer(3).getWeightedVoteProb(), 0.01);
-    assertEquals((Integer) 3, question.getBestWeightedVoteProbAnswerID());
+        question.getAnswer(3).getProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE),
+        0.01);
+    assertEquals((Integer) 3,
+        question.getLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE));
 
     // The question confidence is the highest probCorrect.
     assertEquals(probAnswer3 / totalUnnormalizedProb, question.getConfidence(), 0.01);
     assertFalse(question.getIsLikelyAnswerCorrect());
-    assertEquals("Answer 3", question.getLikelyAnswer());
+    assertEquals("Answer 3",
+        question.getLikelyAnswer().get(AnswerAggregationStrategy.NAIVE_BAYES.toString()));
   }
 
   @Test
@@ -283,5 +335,84 @@ public class QuestionStatisticsServiceTest extends QuizBaseTest {
     // Question 4 is answered incorrectly by everyone.
     Question question4 = questionStatisticsService.updateStatistics("" + QUESTION_ID4);
     assertEquals(1.0, question4.getDifficulty(), 0.00);
+  }
+  
+  @Test
+  public void testInformationGainCalculation() {
+    // First, create a new question that has no probability correct in any of the answer.
+    Question question =
+        new Question(QUIZ_ID1, new Text("test8"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, 8888L,
+                     QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
+
+    Answer a1 = new Answer(8888L, QUIZ_ID1, "Answer1", AnswerKind.SILVER, 1);
+    a1.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 1.0);
+    a1.setProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0.5);
+    a1.setProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0.25);
+    question.addAnswer(a1);
+    Answer a2 = new Answer(8888L, QUIZ_ID1, "Answer2", AnswerKind.SILVER, 2);
+    a2.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 0.0);
+    a2.setProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0.5);
+    a2.setProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0.25);
+    question.addAnswer(a2);
+    Answer a3 = new Answer(8888L, QUIZ_ID1, "Answer3", AnswerKind.SILVER, 3);
+    a3.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 0.0);
+    a3.setProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0.0);
+    a3.setProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0.25);
+    question.addAnswer(a3);
+    Answer a4 = new Answer(8888L, QUIZ_ID1, "Answer4", AnswerKind.SILVER, 4);
+    a4.setProbCorrectForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 0.0);
+    a4.setProbCorrectForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0.0);
+    a4.setProbCorrectForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0.25);
+    question.addAnswer(a4);
+
+    questionStatisticsService.computeEntropyOfQuestionAnswers(question);
+
+    Double epsilon = 0.0001;
+    Double entropyNB =
+        question.getEntropy().get(AnswerAggregationStrategy.NAIVE_BAYES.toString());
+    assertEquals((Double)0.0, entropyNB, epsilon);
+
+    Double entropyMV =
+        question.getEntropy().get(AnswerAggregationStrategy.MAJORITY_VOTE.toString());
+    assertEquals((Double)0.69314718056, entropyMV, epsilon);
+
+    Double entropyWM =
+        question.getEntropy().get(AnswerAggregationStrategy.WEIGHTED_VOTE.toString());
+    assertEquals((Double)1.386294, entropyWM, epsilon);
+  }
+
+  @Test
+  public void testUpdateStatisticsAddUserSubmittedQuestion() {
+    assertNotNull(getQuestionService());
+    Question question = new Question(
+        QUIZ_ID3, new Text("test11"), QuestionKind.FREETEXT_COLLECTION, QUESTION_ID11,
+        QUESTION_CLIENT_ID2, false  /* not Gold */, true  /* is silver */, 1.5);
+    question.addAnswer(new Answer(QUESTION_ID11, QUIZ_ID3, "ans0", AnswerKind.USER_SUBMITTED, 0));
+    question.addAnswer(new Answer(QUESTION_ID11, QUIZ_ID3, "ans1", AnswerKind.USER_SUBMITTED, 1));
+    questionService.save(question);
+
+    UserAnswer userAnswer1 =
+        new UserAnswer(USER_ID2, QUESTION_ID11, ANSWER_ID1, QUIZ_ID3, true, 4L, UserAnswer.SUBMIT);
+    userAnswer1.setUserInput("ans2");
+    userAnswer1 = userAnswerRepository.saveAndGet(userAnswer1);
+
+    UserAnswer userAnswer2 =
+        new UserAnswer(USER_ID1, QUESTION_ID11, -1, QUIZ_ID3, true, 5L, UserAnswer.SUBMIT);
+    userAnswer2.setUserInput("ans3");
+    userAnswer2 = userAnswerRepository.saveAndGet(userAnswer2);
+
+    questionStatisticsService.updateStatistics("" + QUESTION_ID11);
+
+    question = questionService.get(QUESTION_ID11);
+    assertEquals((Integer)0, question.getAnswer(0).getInternalID());
+    assertEquals((Integer)1, question.getAnswer(1).getInternalID());
+
+    assertEquals((Integer)2, question.getAnswer(2).getInternalID());
+    assertEquals("ans2", question.getAnswer(2).getText());
+    assertEquals((Integer)2, userAnswerRepository.get(userAnswer1.getId()).getAnswerID());
+
+    assertEquals((Integer)3, question.getAnswer(3).getInternalID());
+    assertEquals("ans3", question.getAnswer(3).getText());
+    assertEquals((Integer)3, userAnswerRepository.get(userAnswer2.getId()).getAnswerID());
   }
 }

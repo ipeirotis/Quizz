@@ -46,25 +46,13 @@ public class QuizService extends OfyBaseService<Quiz> {
     int correct = 0;
     List<Question> questions = questionService.getQuizQuestions(quizID);
     for (Question question : questions) {
-      if (!question.getHasGoldAnswer()) {
+      if (question.getHasGoldAnswer() == null || !question.getHasGoldAnswer()) {
         continue;
       }
 
       ++total;
       Integer bestAnswerID = -1;
-      switch (strategy) {
-        case BAYES_PROB:
-          bestAnswerID = question.getBestBayesProbAnswerID();
-          break;
-        case WEIGHTED_VOTE:
-          bestAnswerID = question.getBestWeightedVoteProbAnswerID();
-          break;
-        case MAJORITY_VOTE:
-          bestAnswerID = question.getBestMajorityVoteProbAnswerID();
-          break;
-        default:
-          break;
-      }
+      bestAnswerID = question.getLikelyAnswerIDForStrategy(strategy);
       if (bestAnswerID == null) {
         continue;
       }
@@ -131,7 +119,7 @@ public class QuizService extends OfyBaseService<Quiz> {
     }
 
     quiz.setBayesProbQuizQuality(
-        computeQuizQuality(quizID, AnswerAggregationStrategy.BAYES_PROB));
+        computeQuizQuality(quizID, AnswerAggregationStrategy.NAIVE_BAYES));
     quiz.setWeightedVoteProbQuizQuality(
         computeQuizQuality(quizID, AnswerAggregationStrategy.WEIGHTED_VOTE));
     quiz.setMajorityVoteProbQuizQuality(

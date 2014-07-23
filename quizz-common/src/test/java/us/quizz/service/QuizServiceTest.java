@@ -18,6 +18,7 @@ import us.quizz.entities.Quiz;
 import us.quizz.entities.QuizPerformance;
 import us.quizz.entities.UserAnswer;
 import us.quizz.entities.UserReferal;
+import us.quizz.enums.AnswerAggregationStrategy;
 import us.quizz.enums.QuestionKind;
 import us.quizz.enums.QuizKind;
 import us.quizz.utils.QuizBaseTest;
@@ -43,9 +44,9 @@ public class QuizServiceTest extends QuizBaseTest {
             QUIZ_ID1, new Text("test1"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID1,
             QUESTION_CLIENT_ID1, true  /* is Gold */, false  /* Not silver */, 1.5);
     addAnswers(question, QUESTION_ID1, 4, QUIZ_ID1, true);
-    question.setBestMajorityVoteProbAnswerID(3);
-    question.setBestWeightedVoteProbAnswerID(0);
-    question.setBestBayesProbAnswerID(1);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 3);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 1);
     questionService.save(question);
 
     question =
@@ -53,9 +54,9 @@ public class QuizServiceTest extends QuizBaseTest {
             QUIZ_ID1, new Text("test2"), QuestionKind.MULTIPLE_CHOICE_COLLECTION, QUESTION_ID2,
             QUESTION_CLIENT_ID2, false, true, 0.9);
     addAnswers(question, QUESTION_ID2, 4, QUIZ_ID1, false);
-    question.setBestMajorityVoteProbAnswerID(0);
-    question.setBestWeightedVoteProbAnswerID(0);
-    question.setBestBayesProbAnswerID(0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 0);
     questionService.save(question);
 
     question =
@@ -63,10 +64,10 @@ public class QuizServiceTest extends QuizBaseTest {
             QUIZ_ID1, new Text("test3"), QuestionKind.MULTIPLE_CHOICE_CALIBRATION, QUESTION_ID3,
             QUESTION_CLIENT_ID3, true, false, 0.7);
     addAnswers(question, QUESTION_ID3, 4, QUIZ_ID1, true);
-    question.setBestMajorityVoteProbAnswerID(0);
-    question.setBestWeightedVoteProbAnswerID(0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, 0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0);
     // Makes sure that no exception is thrown if the answerID is negative.
-    question.setBestBayesProbAnswerID(-1);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, -1);
     questionService.save(question);
 
     question =
@@ -75,10 +76,10 @@ public class QuizServiceTest extends QuizBaseTest {
             QUESTION_CLIENT_ID4, true, false, 1.2);
     addAnswers(question, QUESTION_ID4, 4, QUIZ_ID1, true);
     // Makes sure that no exception is thrown if the answerID is null.
-    question.setBestMajorityVoteProbAnswerID(null);
-    question.setBestWeightedVoteProbAnswerID(0);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.MAJORITY_VOTE, null);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.WEIGHTED_VOTE, 0);
     // Makes sure that no exception is thrown if the answerID is out of bound.
-    question.setBestBayesProbAnswerID(80);
+    question.setLikelyAnswerIDForStrategy(AnswerAggregationStrategy.NAIVE_BAYES, 80);
     questionService.save(question);
 
     assertNotNull(getQuizPerformanceService());

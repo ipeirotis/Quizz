@@ -6,15 +6,14 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
   };
 
   return {
-    // Lists the next numQuestions of calibration and collection questions for
-    // the given userid and quizid.
+    // Lists the next calibration and collection questions for the given userid
+    // and quizid.
     // If successful, the success callback will be called with the response,
     // which is a map containing two values:
     //   - calibration - Set of calibration questions.
     //   - collection - Set of collection questions.
-    list: function(numQuestions, quizId, userid, success, error) {
+    list: function(quizId, userid, success, error) {
       var params = {
-        num: numQuestions,
         quizID: quizId,
         userID: userid
       };
@@ -30,7 +29,8 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
     //   - exploit: Whether the next question should be an exploit.
     //   - bestAnswer: Best answer for the given question.
     sendAnswer: function(quizID, questionID, answerID, userID, userInput,
-        currCorrectAnswers, currIncorrectAnswers, success, error) {
+        currCorrectAnswers, currIncorrectAnswers, questionIndex,
+        success, error) {
       var params = {
         quizID: quizID,
         questionID: questionID,
@@ -39,7 +39,8 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
         userInput: userInput,
         numCorrect: currCorrectAnswers,
         numIncorrect: currIncorrectAnswers,
-        numExploit: 0
+        numExploit: 0,
+        questionIndex: questionIndex
       };
       $http.post(Config.api + '/processUserAnswer', $.param(params), options)
            .success(success).error(error);

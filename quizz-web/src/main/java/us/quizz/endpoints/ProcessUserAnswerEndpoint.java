@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
@@ -80,7 +81,12 @@ public class ProcessUserAnswerEndpoint {
       @Named("userInput") String userInput,
       @Named("numCorrect") Integer numCorrect,
       @Named("numIncorrect") Integer numIncorrect,
-      @Named("numExploit") Integer numExploit) throws Exception {
+      @Named("numExploit") Integer numExploit,
+      @Nullable @Named("questionIndex") Integer questionIndex) throws Exception {
+    if (questionIndex == null) {
+      questionIndex = -1;
+    }
+
     // TODO(chunhowt): Modifies these getters to be asynchronous using futures.
     User user = userService.get(userID);
     Question question = questionService.get(questionID);
@@ -94,12 +100,13 @@ public class ProcessUserAnswerEndpoint {
       }
     }
 
-    String action = answerID == -1 ? UserAnswer.SKIP : UserAnswer.SUBMIT;
+    String action = answerID == -1 && userInput.isEmpty() ? UserAnswer.SKIP : UserAnswer.SUBMIT;
     QuestionService.Result qResult = questionService.verifyAnswer(question, answerID, userInput);
 
-    // If we have a free text quiz, we need to store the submitted answer
-    if (quiz.getKind() == QuizKind.FREE_TEXT) {
-      Integer internalAnswerID = null;
+    Integer internalAnswerID = answerID;
+    // If we have a free text quiz, we need to store the submitted answer if it is not a SKIP.
+    if (quiz.getKind() == QuizKind.FREE_TEXT && !userInput.isEmpty()) {
+      internalAnswerID = null;
 
       // We check to see if the submitted answer is already among the answers for the question
       // If yes, we increase the count of picks
@@ -118,6 +125,7 @@ public class ProcessUserAnswerEndpoint {
                question.getKind() == QuestionKind.FREETEXT_CALIBRATION)) {
             updateVerificationQuiz(quiz, question.getId(), internalAnswerID);
           }
+          break;
         }
       }
       // If the answer has not been seen before, we store it as a user submitted answer
@@ -136,10 +144,10 @@ public class ProcessUserAnswerEndpoint {
     String browser = req.getHeader("User-Agent");
     Long timestamp = (new Date()).getTime();
 
-    UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID, answerID,
-        userInput, qResult.getIsCorrect(), qResult.getMessage());
-    UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, answerID,
-        userInput, ipAddress, browser, timestamp, qResult.getIsCorrect());
+    UserAnswerFeedback uaf = asyncStoreUserAnswerFeedback(question, user, questionID,
+        internalAnswerID, userInput, qResult.getIsCorrect(), qResult.getMessage());
+    UserAnswer ua = storeUserAnswer(user, quizID, questionID, action, internalAnswerID,
+        userInput, ipAddress, browser, timestamp, qResult.getIsCorrect(), questionIndex);
 
     updateQuizPerformance(user, quizID);
     updateQuestionStatistics(questionID);
@@ -165,7 +173,7 @@ public class ProcessUserAnswerEndpoint {
     UserAnswerFeedback uaf = new UserAnswerFeedback(
         questionID, user.getUserid(), useranswerID, isCorrect);
 
-    String answerText = "";
+    String answerText = userInput;
     if (useranswerID != -1) {
       Answer a = question.getAnswer(useranswerID);
       if (a != null) answerText = a.userAnswerText(userInput);
@@ -182,7 +190,7 @@ public class ProcessUserAnswerEndpoint {
 
   private UserAnswer storeUserAnswer(User user, String quizID, Long questionID,
       String action, Integer useranswerID, String userInput, String ipAddress,
-      String browser, Long timestamp, Boolean isCorrect) {
+      String browser, Long timestamp, Boolean isCorrect, Integer questionIndex) {
     UserAnswer ue = new UserAnswer(user.getUserid(), questionID, useranswerID);
     ue.setBrowser(browser);
     ue.setIpaddress(ipAddress);
@@ -191,8 +199,9 @@ public class ProcessUserAnswerEndpoint {
     ue.setIsCorrect(isCorrect);
     ue.setQuizID(quizID);
     ue.setUserInput(userInput);
+    ue.setQuestionIndex(questionIndex);
     return userAnswerService.save(ue);
-  } 
+  }
 
   // Schedules a task to update the quiz performance for the given user and quiz.
   private void updateQuizPerformance(User user, String quizID) {
