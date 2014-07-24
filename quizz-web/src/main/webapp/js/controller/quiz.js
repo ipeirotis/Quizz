@@ -1,8 +1,8 @@
 angular.module('quizz').controller('QuizController',
   ['$scope', '$rootScope', '$routeParams', '$location', 'questionService',
-   'quizService', 'workflowService', 'userService',
+   'quizService', 'workflowService', 'userService', 'userActionService',
    function ($scope, $rootScope, $routeParams, $location, questionService,
-             quizService, workflowService, userService) {
+             quizService, workflowService, userService, userActionService) {
      // Variables used in this controller and the html template.
      // The index in workflowService is 0-based but we need a 1-based number
      // to show to the user.
@@ -11,13 +11,30 @@ angular.module('quizz').controller('QuizController',
      $scope.numQuestions = workflowService.getNumQuestions();
 
      $scope.answerHelpStates = {};
-     $scope.questionHelpState = false;
+     $scope.questionHelpState = true;
 
      $scope.toggleAnswerHelp = function(id) {
        $scope.answerHelpStates[id] = !$scope.answerHelpStates[id];
      };
 
      $scope.toggleQuestionHelp = function(id) {
+       if ($scope.questionHelpState) {
+         userActionService.recordHideQuestionContext(
+             userService.getUsername(),
+             $routeParams.quizId,
+             workflowService.getCurrentQuestion().id,
+             function(response) {},
+             function(error) {}
+         );
+       } else {
+         userActionService.recordExpandQuestionContext(
+             userService.getUsername(),
+             $routeParams.quizId,
+             workflowService.getCurrentQuestion().id,
+             function(response) {},
+             function(error) {}
+         );
+       }
        $scope.questionHelpState = !$scope.questionHelpState;
      };
 
@@ -30,6 +47,13 @@ angular.module('quizz').controller('QuizController',
            workflowService.setQuestions(response, $routeParams.quizId);
            $scope.currentQuestion = workflowService.getNewCurrentQuestion();
            $scope.numQuestions = workflowService.getNumQuestions();
+           userActionService.recordQuestionShown(
+               userService.getUsername(),
+               $routeParams.quizId,
+               workflowService.getCurrentQuestion().id,
+               function(response) {},
+               function(error) {}
+           );
            $scope.readyToShow = true;
          },
          function(error) {
@@ -56,6 +80,13 @@ angular.module('quizz').controller('QuizController',
        } else {
          // Else, reuse the existing questions.
          $scope.currentQuestion = workflowService.getNewCurrentQuestion();
+         userActionService.recordQuestionShown(
+             userService.getUsername(),
+             $routeParams.quizId,
+             workflowService.getCurrentQuestion().id,
+             function(response) {},
+             function(error) {}
+         );
          $scope.readyToShow = true;
        }
      };

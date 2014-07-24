@@ -51,7 +51,7 @@ angular.module('quizz').controller('FeedbackController',
       }
     });
 
-    if (total == 0) {
+    if (total < 5) {
       return '';
     } else {
       if (current == 0) {

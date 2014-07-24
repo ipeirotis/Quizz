@@ -14,14 +14,32 @@ import java.io.Serializable;
 @Index
 public class UserAction implements Serializable {
   private static final long serialVersionUID = 1L;
-  
+
   @Id
   private Long id;
-  
+
+  // Required fields.
   private String userid;
   private Long timestamp;
   private UserActionKind kind;
-  
+
+  // Optional fields only used for certain UserAction.
+  // Required for:
+  // QUESTION_SHOWN, ANSWER_SENT, ANSWER_SKIPPED, EXPAND_QUESTION_CONTEXT, HIDE_QUESTION_CONTEXT.
+  private String quizID;
+
+  // Required for:
+  // QUESTION_SHOWN, ANSWER_SENT, ANSWER_SKIPPED, EXPAND_QUESTION_CONTEXT, HIDE_QUESTION_CONTEXT.
+  private Long questionID;
+
+  // Optional for:
+  // ANSWER_SENT (if it is a multiple choice question).
+  private Integer answerID;
+
+  // Optional for:
+  // ANSWER_SENT (if it is a free text question).
+  private String userAnswer;
+
   //for Objectify
   @SuppressWarnings("unused")
   private UserAction(){}
@@ -55,6 +73,36 @@ public class UserAction implements Serializable {
   public void setKind(UserActionKind kind) {
     this.kind = kind;
   }
-  
 
+  public String getQuizID() {
+    return quizID;
+  }
+
+  public void setQuizID(String quizID) {
+    this.quizID = quizID;
+  }
+
+  public Long getQuestionID() {
+    return questionID;
+  }
+
+  public void setQuestionID(Long questionID) {
+    this.questionID = questionID;
+  }
+
+  public Integer getAnswerID() {
+    return answerID;
+  }
+
+  public void setAnswerID(Integer answerID) {
+    this.answerID = answerID;
+  }
+
+  public String getUserAnswer() {
+    return userAnswer;
+  }
+
+  public void setUserAnswer(String userAnswer) {
+    this.userAnswer = userAnswer;
+  }
 }

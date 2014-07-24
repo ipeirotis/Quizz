@@ -29,6 +29,7 @@ import us.quizz.repository.QuestionRepository;
 import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
+import us.quizz.repository.UserActionRepository;
 import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
@@ -42,6 +43,7 @@ import us.quizz.service.QuestionService;
 import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
+import us.quizz.service.UserActionService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserReferralService;
@@ -101,6 +103,7 @@ public class QuizBaseTest {
   protected QuizPerformanceRepository quizPerformanceRepository = null;
   protected QuizRepository quizRepository = null;
   protected SurvivalProbabilityResultRepository survivalProbabilityResultRepository = null;
+  protected UserActionRepository userActionRepository = null;
   protected UserAnswerFeedbackRepository userAnswerFeedbackRepository = null;
   protected UserAnswerRepository userAnswerRepository = null;
   protected UserReferralRepository userReferralRepository = null;
@@ -115,6 +118,7 @@ public class QuizBaseTest {
   protected QuizPerformanceService quizPerformanceService = null;
   protected QuizService quizService = null;
   protected SurvivalProbabilityService survivalProbabilityService = null;
+  protected UserActionService userActionService = null;
   protected UserAnswerFeedbackService userAnswerFeedbackService = null;
   protected UserAnswerService userAnswerService = null;
   protected UserReferralService userReferralService = null;
@@ -135,6 +139,7 @@ public class QuizBaseTest {
     quizPerformanceRepository = null;
     quizRepository = null;
     survivalProbabilityResultRepository = null;
+    userActionRepository = null;
     userAnswerFeedbackRepository = null;
     userAnswerRepository = null;
     userReferralRepository = null;
@@ -148,6 +153,7 @@ public class QuizBaseTest {
     quizPerformanceService = null;
     quizService = null;
     survivalProbabilityService = null;
+    userActionService = null;
     userAnswerFeedbackService = null;
     userAnswerService = null;
     userReferralService = null;
@@ -186,6 +192,9 @@ public class QuizBaseTest {
     }
     if (survivalProbabilityResultRepository != null) {
       survivalProbabilityResultRepository.wipeClean();
+    }
+    if (userActionRepository != null) {
+      userActionRepository.wipeClean();
     }
     if (userAnswerFeedbackRepository != null) {
       userAnswerFeedbackRepository.wipeClean();
@@ -275,6 +284,13 @@ public class QuizBaseTest {
       survivalProbabilityResultRepository = new SurvivalProbabilityResultRepository();
     }
     return survivalProbabilityResultRepository;
+  }
+
+  protected UserActionRepository getUserActionRepository() {
+    if (userActionRepository == null) {
+      userActionRepository = new UserActionRepository();
+    }
+    return userActionRepository;
   }
 
   protected UserAnswerFeedbackRepository getUserAnswerFeedbackRepository() {
@@ -380,6 +396,13 @@ public class QuizBaseTest {
           getSurvivalProbabilityResultRepository());
     }
     return survivalProbabilityService;
+  }
+
+  protected UserActionService getUserActionService() {
+    if (userActionService == null) {
+      userActionService = new UserActionService(getUserActionRepository());
+    }
+    return userActionService;
   }
 
   protected UserAnswerFeedbackService getUserAnswerFeedbackService() {

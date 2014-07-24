@@ -18,7 +18,7 @@
           ng-click="toggleQuestionHelp('help-' + answer.internalID)">
     </span>
     <div ng-if="currentQuestion.helpText" class="panel panel-default help-panel"
-         slide-toggle="questionHelpState" style="display:none">
+         slide-toggle="questionHelpState">
       <div ng-bind-html="currentQuestion.helpText.value" class="panel-body">
       </div>
     </div>
