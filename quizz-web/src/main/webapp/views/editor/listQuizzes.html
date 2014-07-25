@@ -6,12 +6,16 @@
     <thead>
       <tr>
         <th>Quiz</th>
+        <th width="100">Questions</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="quiz in quizzes | orderBy:'name'">
         <td>
           <a href="#/editor/quiz/{{quiz.quizID}}/edit">{{quiz.name}}</a>
+        </td>
+        <td>
+          {{quiz.questions}}
         </td>
       </tr>
     </tbody>

@@ -8,7 +8,8 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Questions</th>
+        <th>Question</th>
+        <th>Kind</th>
       </tr>
     </thead>
     <tbody>
@@ -19,6 +20,9 @@
           </a>
         </td>
         <td ng-bind-html="trustAsHtml(question.questionText.value)">
+        </td>
+        <td>
+          {{question.kind}}
         </td>
       </tr>
     </tbody>

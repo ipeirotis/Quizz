@@ -6,8 +6,8 @@ angular.module('quizz').controller('EditorEditQuizController',
       
       $scope.quiz = {
         kind: 'MULTIPLE_CHOICE',
-        useQuestionSelectionStrategy: false,
-        showOnDefault: false
+        questions: 0,
+        showOnDefault: true
       };
       
       $scope.loadQuiz = function () {

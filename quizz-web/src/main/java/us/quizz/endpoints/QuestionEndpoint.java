@@ -109,6 +109,11 @@ public class QuestionEndpoint {
       }
     }
 
+    if(question.getId() == null) {
+      quiz.setQuestions(quiz.getQuestions() == null ? 1 : (quiz.getQuestions() + 1));
+      quizService.asyncSave(quiz);
+    }
+
     return questionService.save(question);
   }
 }

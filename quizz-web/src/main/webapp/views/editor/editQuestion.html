@@ -28,13 +28,7 @@
               <label> <input type="radio" checked="" value="MULTIPLE_CHOICE_CALIBRATION" ng-model="question.kind"> multiple choice calibration </label>
             </div>
             <div class="radio">
-              <label> <input type="radio" checked="" value="MULTIPLE_CHOICE_COLLECTION" ng-model="question.kind"> multiple choice collection </label>
-            </div>
-            <div class="radio">
               <label> <input type="radio" checked="" value="FREETEXT_CALIBRATION" ng-model="question.kind"> free text calibration </label>
-            </div>
-            <div class="radio">
-              <label> <input type="radio" checked="" value="FREETEXT_COLLECTION" ng-model="question.kind"> free text collection </label>
             </div>
           </div>
         </div>
@@ -68,6 +62,7 @@
           <tr>
             <th>#</th>
             <th>Answer</th>
+            <th>Kind</th>
           </tr>
         </thead>
         <tbody>
@@ -76,6 +71,8 @@
             {{$index+1}}
             </td>
             <td>{{answer.text}}
+            </td>
+            <td>{{answer.kind}}
             </td>
           </tr>
         </tbody>

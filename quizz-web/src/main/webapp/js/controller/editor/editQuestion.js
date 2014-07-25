@@ -4,13 +4,13 @@ angular.module('quizz').controller('EditorEditQuestionController',
 
       $scope.questionID = $routeParams.questionID;
       $scope.quizID = $routeParams.quizID;
-      
+
       $scope.question = {
           quizID: $routeParams.quizID,
           kind: 'MULTIPLE_CHOICE_CALIBRATION',
           answers: []
       };
-      
+
       $scope.loadQuestion = function () {
         if($routeParams.questionID) {
           editorService.getQuestion($routeParams.questionID, function(response) {
@@ -30,6 +30,18 @@ angular.module('quizz').controller('EditorEditQuestionController',
       $scope.saveQuestion = function (form) {
         if(form.$invalid){
           $scope.notValidForm = true;
+          return;
+        }
+        
+        var hasGoldAnswer = false;
+        angular.forEach($scope.question.answers, function(answer) {
+          if (answer.kind == 'GOLD') {
+            hasGoldAnswer = true;
+          }
+        });
+        
+        if($scope.question.answers && $scope.question.answers.length > 0 && hasGoldAnswer == false) {
+          $scope.error = 'At least one gold answer is required';
           return;
         }
         
