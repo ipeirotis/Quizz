@@ -19,4 +19,12 @@ angular.module('quizz').controller('EditorListQuestionsController',
         return $sce.trustAsHtml(html_code);
       };
 
+      $scope.removeQuestion = function(id) {
+        editorService.removeQuestion(id, function(response) {
+          $scope.loadQuestions();
+        },
+        function(error) {
+          console.log(error);
+        });
+      };
 }]);

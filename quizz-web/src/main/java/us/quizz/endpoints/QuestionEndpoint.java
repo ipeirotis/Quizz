@@ -56,6 +56,14 @@ public class QuestionEndpoint {
     return this.questionService.get(id);
   }
 
+  // Removes the question
+  @ApiMethod(name = "removeQuestion", path = "removeQuestion/{id}", httpMethod = HttpMethod.DELETE)
+  public void removeQuestion(@Named("id") Long id, User user)
+      throws UnauthorizedException {
+    Security.verifyAuthenticatedUser(user);
+    questionService.delete(id);
+  }
+
   // Inserts the question given into the datastore.
   @ApiMethod(name = "insertQuestion", path = "insertQuestion", httpMethod = HttpMethod.POST)
   public Question insertQuestion(Question question, User user)

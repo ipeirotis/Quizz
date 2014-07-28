@@ -80,7 +80,7 @@
 <script src="/js/controller/modals/answerModalController.js" type="text/javascript"></script>
 
 <script src="/js/directive/slide.js" type="text/javascript"></script>
-<script src="/js/directive/angular-summernote.js" type="text/javascript"></script>
+<script src="/js/directive/summernote.js" type="text/javascript"></script>
 <% } else {%>
 <script src="/js/all.js" type="text/javascript"></script>
 <% } %>

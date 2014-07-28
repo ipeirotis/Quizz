@@ -10,6 +10,7 @@
         <th>#</th>
         <th>Question</th>
         <th>Kind</th>
+        <th width="20"></th>
       </tr>
     </thead>
     <tbody>
@@ -23,6 +24,8 @@
         </td>
         <td>
           {{question.kind}}
+        </td>
+        <td><a href="" ng-click="removeQuestion(question.id)"><i class="fa fa-trash-o"></i></a>
         </td>
       </tr>
     </tbody>

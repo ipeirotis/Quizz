@@ -4,7 +4,7 @@ angular.module('quizz').controller('EditorListQuizzesController',
 
       $scope.loadQuizzes = function () {
         editorService.listQuizzes(function(response) {
-          $scope.quizzes = response.items;
+          $scope.quizzes = response;
           $scope.readyToShow = true;
         },
         function(error) {

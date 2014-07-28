@@ -1,4 +1,4 @@
-angular.module('quizz', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'summernote'])
+angular.module('quizz', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {
   $routeProvider
       .when('/feedback', {

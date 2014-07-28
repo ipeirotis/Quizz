@@ -21,7 +21,17 @@ angular.module('quizz').controller('EditorEditQuestionController',
             console.log(error);
           });
         } else {
-          $scope.readyToShow = true;
+          editorService.getQuiz($routeParams.quizID, function(quiz) {
+            if(quiz.kind == 'FREE_TEXT') {
+              $scope.question.kind = 'FREETEXT_CALIBRATION';
+            } else if(quiz.kind == 'MULTIPLE_CHOICE') {
+              $scope.question.kind = 'MULTIPLE_CHOICE_CALIBRATION';
+            }
+            $scope.readyToShow = true;
+          },
+          function(error) {
+            console.log(error);
+          });
         }
       };
       
@@ -69,7 +79,15 @@ angular.module('quizz').controller('EditorEditQuestionController',
           if(!$scope.question.answers) {
             $scope.question.answers = [];
           }
-          $scope.question.answers.push(answer);
+
+          if(answer.internalID === undefined) {
+            answer.internalID = $scope.question.answers.length + 1;
+            $scope.question.answers.push(answer);
+          }
         });
+      };
+
+      $scope.deleteAnswer = function(index) {
+        $scope.question.answers.splice(index, 1);
       };
 }]);
