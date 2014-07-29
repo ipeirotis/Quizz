@@ -31,6 +31,7 @@ describe('full test', function() {
                 .respond({"calibration": questions});
     $httpBackend.when('POST', '/processUserAnswer')
                 .respond(RESPONSE_ON_ANSWER);
+    $httpBackend.when('POST', '/recordQuestionShown').respond("ok");
     initQuestions();
   }));
 

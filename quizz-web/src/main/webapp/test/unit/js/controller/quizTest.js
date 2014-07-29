@@ -20,6 +20,7 @@ describe('QuizController test', function() {
     $httpBackend.expectPOST('/getUser').respond(userResponse);
     $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz1);
     $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+    $httpBackend.expectPOST('/recordQuestionShown').respond('ok');
   }));
 
   afterEach(function() {
@@ -84,6 +85,7 @@ describe('QuizController test', function() {
       // As the routeParams changes, we need to fetch new questions.
       $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz2);
       $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+      $httpBackend.expectPOST('/recordQuestionShown').respond('ok');
       $httpBackend.flush();
       expect(quizControllerScope.currentQuestion.quizID).toEqual(QUIZ_2);
     }])
@@ -115,6 +117,7 @@ describe('QuizController test', function() {
       });
 
       // Since this is the same quiz, we won't need to fetch questions again.
+      $httpBackend.expectPOST('/recordQuestionShown').respond('ok');
       $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
       $httpBackend.flush();
       expect(quizControllerScope.currentQuestion.quizID).toEqual(QUIZ_1);
@@ -138,6 +141,7 @@ describe('QuizController test', function() {
       $httpBackend.expectPOST('/getUser').respond(userResponse);
       $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz2);
       $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+      $httpBackend.expectPOST('/recordQuestionShown').respond('ok');
 
       quizControllerScope = $rootScope.$new();
       routeParams['quizId'] = QUIZ_2;
@@ -153,6 +157,7 @@ describe('QuizController test', function() {
         $scope: quizControllerScope, $routeParams: routeParams
       });
       // No extra call to fetch additional question.
+      $httpBackend.expectPOST('/recordQuestionShown').respond('ok');
       $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
       $httpBackend.flush();
 
@@ -165,6 +170,7 @@ describe('QuizController test', function() {
       // fetch questions again.
       $httpBackend.expectPOST('/listNextQuestions').respond(questionsQuiz2);
       $httpBackend.expectPOST('/getQuizPerformance').respond(quizPerformance);
+      $httpBackend.expectPOST('/recordQuestionShown').respond('ok');
       $httpBackend.flush();
     }])
   );

@@ -36,7 +36,8 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
     super.setUp();
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(
         getQuizService(), getUserService(), getQuestionService(), getUserAnswerService(),
-        getUserAnswerFeedbackService(), getExplorationExploitationService());
+        getUserAnswerFeedbackService(), getExplorationExploitationService(),
+        getUserActionService());
 
     quizService.save(new Quiz("Quiz 1", QUIZ_ID1, QuizKind.MULTIPLE_CHOICE));
     quizService.save(new Quiz("Quiz 2", QUIZ_ID2, QuizKind.FREE_TEXT));
@@ -123,7 +124,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
   }
 
   @Test
-  public void testProcessFreeTextUserAnswer() throws Exception {
+  public void testProcessFreeTextUserAnswerCreateVerificationQuiz() throws Exception {
     String verificationQuizId = QUIZ_ID2 + "-verification";
 
     MockHttpServletRequest request = new MockHttpServletRequest();
@@ -134,7 +135,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
     request.addHeader("User-Agent", userAgentString);
 
     processUserAnswerEndpoint.processUserAnswer(
-        request, QUIZ_ID2, QUESTION_ID4, 0, USER_ID3,
+        request, QUIZ_ID2, QUESTION_ID4, -1, USER_ID3,
         "answer2", 0, 0, 0, 5);
 
     Quiz verificationQuiz = quizService.get(verificationQuizId);
@@ -145,7 +146,7 @@ public class ProcessUserAnswerEndpointTest extends QuizWebBaseTest {
     assertEquals(question.getAnswers().size(), 2);
 
     processUserAnswerEndpoint.processUserAnswer(
-        request, QUIZ_ID2, QUESTION_ID4, 0, USER_ID3,
+        request, QUIZ_ID2, QUESTION_ID4, -1, USER_ID3,
         "answer2", 0, 0, 0, 7);
 
     // Ensure that verification quiz is created.

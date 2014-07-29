@@ -45,6 +45,7 @@ import us.quizz.repository.QuizPerformanceRepository;
 import us.quizz.repository.QuizRepository;
 import us.quizz.repository.SurvivalProbabilityResultRepository;
 import us.quizz.repository.TreatmentRepository;
+import us.quizz.repository.UserActionRepository;
 import us.quizz.repository.UserAnswerFeedbackRepository;
 import us.quizz.repository.UserAnswerRepository;
 import us.quizz.repository.UserReferralRepository;
@@ -58,6 +59,7 @@ import us.quizz.service.QuizPerformanceService;
 import us.quizz.service.QuizService;
 import us.quizz.service.SurvivalProbabilityService;
 import us.quizz.service.TreatmentService;
+import us.quizz.service.UserActionService;
 import us.quizz.service.UserAnswerFeedbackService;
 import us.quizz.service.UserAnswerService;
 import us.quizz.service.UserReferralService;
@@ -111,6 +113,7 @@ public class QuizzTest {
   private SurvivalProbabilityResultRepository survivalProbabilityResultRepository;
   private ExplorationExploitationResultRepository explorationExploitationResultRepository;
   private ExperimentRepository experimentRepository;
+  private UserActionRepository userActionRepository;
 
   private AnswerChallengeCounterService answerChallengeCounterService;
   private QuestionService questionService;
@@ -125,6 +128,7 @@ public class QuizzTest {
   private QuizService quizService;
   private SurvivalProbabilityService survivalProbabilityService;
   private ExplorationExploitationService explorationExploitationService;
+  private UserActionService userActionService;
 
   private QuizEndpoint quizEndpoint;
   private QuestionEndpoint questionEndpoint;
@@ -158,6 +162,7 @@ public class QuizzTest {
     survivalProbabilityResultRepository = new SurvivalProbabilityResultRepository();
     explorationExploitationResultRepository = new ExplorationExploitationResultRepository();
     experimentRepository = new ExperimentRepository();
+    userActionRepository = new UserActionRepository();
 
     answerChallengeCounterService = new AnswerChallengeCounterService(answerChallengeCounterRepository);
     userAnswerFeedbackService = new UserAnswerFeedbackService(userAnswerFeedbackRepository);
@@ -177,12 +182,13 @@ public class QuizzTest {
         survivalProbabilityResultRepository);
     explorationExploitationService = new ExplorationExploitationService(survivalProbabilityService,
         explorationExploitationResultRepository);
+    userActionService = new UserActionService(userActionRepository);
 
     quizEndpoint = new QuizEndpoint(quizService, questionService);
     questionEndpoint = new QuestionEndpoint(quizService, questionService);
     processUserAnswerEndpoint = new ProcessUserAnswerEndpoint(quizService, userService,
         questionService, userAnswerService, userAnswerFeedbackService,
-        explorationExploitationService);
+        explorationExploitationService, userActionService);
     userEndpoint = new UserEndpoint(userService, userReferralService);
     quizPerformanceEndpoint = new QuizPerformanceEndpoint(quizPerformanceService);
 
@@ -310,7 +316,7 @@ public class QuizzTest {
     when(req.getHeader("User-Agent")).thenReturn(USER_AGENT);
 
     Map<String, Object> resp = processUserAnswerEndpoint.processUserAnswer(req,
-        quiz.getQuizID(), question.getId(), 0, user.getUserid(), null,
+        quiz.getQuizID(), question.getId(), 0, user.getUserid(), "",
         numberOfCorrectAnswers, (NUMBER_OF_QUESTIONS - numberOfCorrectAnswers), 0, 0);
 
     UserAnswerFeedback userAnswerFeedback = (UserAnswerFeedback) resp.get("userAnswerFeedback");
