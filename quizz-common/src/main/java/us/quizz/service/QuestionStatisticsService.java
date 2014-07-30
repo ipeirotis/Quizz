@@ -526,4 +526,56 @@ public class QuestionStatisticsService {
     question.setEntropy(result);
     return question;
   }
+  
+  /**
+   * TODO(panos): This function DOES NOT WORK YET.
+   * Computes the entropy over the probabilities for the answers of the question,
+   * with the probabilities computed using various aggregation strategies
+   *
+   * @param question
+   */
+  public Question computeExpectedInformationGain(Question question, User u) {
+    
+    // Get the QuizPerformance object
+    this.quizPerformanceService.getNoCache(question.getQuizID(), u.getUserid());
+    
+    // Generate answer: This returns the probability with which each of the answers gets picked
+    // Returns Map<Answer, Double> answerProbability pairs
+    //
+    // Now we need to generate the answer the user is going to assign to the question
+    // With probability p = (correct+1)/(correct+incorrect+1) the user gives the correct answer.
+    //
+    // We assume that the current probability distribution among the answers is the best
+    // possible estimate of which answer is correct
+    // 
+    // When the user is correct (with probability p), then:
+    /// with probability p1 the answer is a1
+    //  with probability p2 the answer is a2
+    //  with probability p3 the answer is a3
+    // ...
+    //
+    // With the remaining probability the user gives an incorrect answer
+    // TODO: We have two options of how to assign the probability among the remaining answers
+    // Option #1: assign (1-p)/(n-1) probability, equally among the incorrect answers
+    // Option #2: assign the 1-p probability, proportionally to the probability of the answers
+    
+
+    // With probability pAnswer, the user selects Answer. 
+    //
+    // addAnswerAndUpdateProbabilities: We add the new user Answer and we update the probability estimates
+    // 
+    // In the basic approach, we call computeAnswerStatistics and computeQuestionStatistics, 
+    // with the updated countMaps, etc., and then compute the revised probability estimates
+    //
+    // TODO: We need to change/modify the computerMajorityVote, computeWeightedVote, computeBayesProb
+    // to operate in an "online/streaming" mode, and not require the full processing of all the
+    // submitted answers
+
+     // Now we have the new entropy of the answer probability distribution, and we
+     // can compute the information gain when the user gives this particular question
+    
+    return question;
+  }
+  
+  
 }
