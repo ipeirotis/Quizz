@@ -1,0 +1,38 @@
+<div ng-show="readyToShow == true">
+  <ol class="breadcrumb">
+    <li><a href="#/editor/quiz/list">quizzes</a></li>
+    <li><a href="#/editor/quiz/{{quizID}}/edit">{{quizID}}</a></li>
+    <li>questions</li>
+  </ol>
+  <table class="table table-hover table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Question</th>
+        <th>Kind</th>
+        <th width="20"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="question in questions">
+        <td>
+          <a href="#/editor/quiz/{{quizID}}/question/{{question.id}}/edit">
+          {{$index+1}}
+          </a>
+        </td>
+        <td ng-bind-html="trustAsHtml(question.questionText.value)">
+        </td>
+        <td>
+          {{question.kind}}
+        </td>
+        <td><a href="" ng-click="removeQuestion(question.id)"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="col-xs-12 text-center">
+      <a ng-href="#/editor/quiz/{{quizID}}/question/new" class="btn btn-primary">Create</a>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-angular.module('quizz', ['ngRoute', 'ngSanitize', 'mgcrea.ngStrap'])
+angular.module('quizz', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
 .config(['$routeProvider', 'templates', function($routeProvider, templates) {
   $routeProvider
       .when('/feedback', {
@@ -17,6 +17,30 @@ angular.module('quizz', ['ngRoute', 'ngSanitize', 'mgcrea.ngStrap'])
       .when('/summary', {
                 templateUrl: templates.summary,
                 controller: 'SummaryController'
+            })
+      .when('/editor/quiz/list', {
+                templateUrl: templates.editorListQuizzes,
+                controller: 'EditorListQuizzesController'
+            })
+      .when('/editor/quiz/new', {
+                templateUrl: templates.editorEditQuiz,
+                controller: 'EditorEditQuizController'
+            })
+      .when('/editor/quiz/:quizID/edit', {
+                templateUrl: templates.editorEditQuiz,
+                controller: 'EditorEditQuizController'
+            })
+      .when('/editor/quiz/:quizID/question/list', {
+                templateUrl: templates.editorListQuestions,
+                controller: 'EditorListQuestionsController'
+            })
+      .when('/editor/quiz/:quizID/question/new', {
+                templateUrl: templates.editorEditQuestion,
+                controller: 'EditorEditQuestionController'
+            })
+      .when('/editor/quiz/:quizID/question/:questionID/edit', {
+                templateUrl: templates.editorEditQuestion,
+                controller: 'EditorEditQuestionController'
             })
       .otherwise({redirectTo: '/list'});
 }])

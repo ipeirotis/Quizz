@@ -1,0 +1,79 @@
+<div ng-show="readyToShow == true">
+  <ol class="breadcrumb">
+    <li><a href="#/editor/quiz/list">quizzes</a></li>
+    <li><a href="#/editor/quiz/{{quizID}}/edit">{{quizID}}</a></li>
+    <li><a href="#/editor/quiz/{{quizID}}/question/list">questions</a></li>
+    <li>{{questionID}}</li>
+  </ol>
+  <tabset>
+    <tab heading="Question">
+      <form class="form-horizontal" role="form" id="questionForm" name="questionForm" ng-submit="saveQuestion(questionForm)" novalidate>
+        <div class="form-group"><label class="col-sm-2 control-label">Text</label>
+          <div class="col-sm-10">
+            <div summernote ng-model="question.questionText.value" id="text" name="text" required></div>
+            <span class="help-block error" ng-show="questionForm.text.$error.required && notValidForm==true">
+            <i class="fa fa-warning"></i> Text is required</span>
+          </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        <div class="form-group"><label class="col-sm-2 control-label">Help</label>
+          <div class="col-sm-10">
+            <div summernote ng-model="question.instruction.value"></div>
+          </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" ng-hide="!error || error==''" >
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              {{error}}
+            </div>
+            <div class="alert alert-success alert-dismissable" ng-hide="!success || success==''" >
+            	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            	{{success}}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-4 col-sm-offset-4">
+              <button class="btn btn-primary" type="submit">Save</button>
+              <a ng-href="#/editor/quiz/{{quizID}}/question/list" class="btn btn-default">Back</a>
+          </div>
+        </div>
+      </form>
+    </tab>
+    <tab>
+      <tab-heading>
+          Answers <span class="badge">{{question.answers.length || 0}}</span>
+      </tab-heading>
+      <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Answer</th>
+            <th>Kind</th>
+            <th width="20"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="answer in question.answers">
+            <td>
+            <a href="" ng-click="showAnswerModal(answer)">{{$index+1}}</a>
+            </td>
+            <td>{{answer.text}}
+            </td>
+            <td>{{answer.kind}}
+            </td>
+            <td><a href="" ng-click="deleteAnswer($index)"><i class="fa fa-trash-o"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row">
+        <div class="col-xs-12 text-center">
+          <button type="button" class="btn btn-default" ng-click="showAnswerModal()">Add</button>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+</div>

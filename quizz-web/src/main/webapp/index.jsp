@@ -35,6 +35,8 @@
 <meta property="og:site_name" content="Quizz.us" />
 
 <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/summernote/0.5.2/summernote.css">
 <link rel="stylesheet" type="text/css" href="/css/bootstrap-custom.css">
 <link rel="stylesheet" type="text/css" href="/css/style.css">
 
@@ -51,25 +53,34 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js" type="text/javascript"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.min.js" type="text/javascript"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.tpl.min.js" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/summernote/0.5.2/summernote.min.js" type="text/javascript"></script>
 <% if (isDev) {%>
 <script src="/js/app.js" type="text/javascript"></script>
 <script src="/js/templates.js" type="text/javascript"></script>
+
 <script src="/js/service/interceptor.js" type="text/javascript"></script>
 <script src="/js/service/loading.js" type="text/javascript"></script>
-<script src="/js/service/modal.js" type="text/javascript"></script>
 <script src="/js/service/questionService.js" type="text/javascript"></script>
 <script src="/js/service/quizService.js" type="text/javascript"></script>
 <script src="/js/service/userService.js" type="text/javascript"></script>
 <script src="/js/service/utils.js" type="text/javascript"></script>
 <script src="/js/service/workflowService.js" type="text/javascript"></script>
+<script src="/js/service/editorService.js" type="text/javascript"></script>
+
 <script src="/js/controller/feedback.js" type="text/javascript"></script>
 <script src="/js/controller/list.js" type="text/javascript"></script>
 <script src="/js/controller/quiz.js" type="text/javascript"></script>
 <script src="/js/controller/summary.js" type="text/javascript"></script>
 <script src="/js/controller/modals/challengeAnswer.js" type="text/javascript"></script>
+<script src="/js/controller/editor/listQuizzes.js" type="text/javascript"></script>
+<script src="/js/controller/editor/editQuiz.js" type="text/javascript"></script>
+<script src="/js/controller/editor/listQuestions.js" type="text/javascript"></script>
+<script src="/js/controller/editor/editQuestion.js" type="text/javascript"></script>
+<script src="/js/controller/modals/answerModalController.js" type="text/javascript"></script>
+
 <script src="/js/directive/slide.js" type="text/javascript"></script>
+<script src="/js/directive/summernote.js" type="text/javascript"></script>
 <% } else {%>
 <script src="/js/all.js" type="text/javascript"></script>
 <% } %>

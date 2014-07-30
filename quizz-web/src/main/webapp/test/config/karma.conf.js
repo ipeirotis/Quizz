@@ -11,8 +11,7 @@ module.exports = function(config) {
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-resource.js',
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js',
       'http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js',
-      'http://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.min.js',
-      'http://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.tpl.min.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js',
       'test/lib/angular-mocks.js',
       'js/**/*.js',
       'test/unit/**/*.js'

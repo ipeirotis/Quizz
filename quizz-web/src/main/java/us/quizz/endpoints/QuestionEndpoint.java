@@ -43,11 +43,25 @@ public class QuestionEndpoint {
   }
 
   // Lists all the questions in the quizID.
-  @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.POST)
+  @ApiMethod(name = "listAllQuestions", path = "listAllQuestions", httpMethod = HttpMethod.GET)
   public List<Question> listAllQuestions(@Named("quizID") String quizID, User user)
       throws UnauthorizedException {
     Security.verifyAuthenticatedUser(user);
     return this.questionService.getQuizQuestions(quizID);
+  }
+
+  // Gets the question by questionId
+  @ApiMethod(name = "getQuestion", path = "getQuestion", httpMethod = HttpMethod.GET)
+  public Question getQuestion(@Named("id") Long id) {
+    return this.questionService.get(id);
+  }
+
+  // Removes the question
+  @ApiMethod(name = "removeQuestion", path = "removeQuestion/{id}", httpMethod = HttpMethod.DELETE)
+  public void removeQuestion(@Named("id") Long id, User user)
+      throws UnauthorizedException {
+    Security.verifyAuthenticatedUser(user);
+    questionService.delete(id);
   }
 
   // Inserts the question given into the datastore.
@@ -101,6 +115,11 @@ public class QuestionEndpoint {
         question.setHasSilverAnswers(true);
         question.setHasGoldAnswer(false);
       }
+    }
+
+    if(question.getId() == null) {
+      quiz.setQuestions(quiz.getQuestions() == null ? 1 : (quiz.getQuestions() + 1));
+      quizService.asyncSave(quiz);
     }
 
     return questionService.save(question);

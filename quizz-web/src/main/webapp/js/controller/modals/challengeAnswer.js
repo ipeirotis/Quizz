@@ -1,6 +1,6 @@
 angular.module('quizz').controller('ChallengeAnswerController',
-  ['$scope', '$routeParams', 'questionService', 'workflowService',
-   function ($scope, $routeParams, questionService, workflowService) {
+  ['$scope', '$routeParams', '$modalInstance', 'questionService', 'workflowService',
+   function ($scope, $routeParams, $modalInstance, questionService, workflowService) {
   $scope.reason = 'OTHER';
   $scope.showOptions = true;
   $scope.showThanks = false;
@@ -16,7 +16,7 @@ angular.module('quizz').controller('ChallengeAnswerController',
       $scope.challengeURLMessage,
       $scope.reason,
       function(response) {
-        $scope.hide();
+        $modalInstance.dismiss('cancel');
       },
       function(error) {
       });
@@ -41,5 +41,9 @@ angular.module('quizz').controller('ChallengeAnswerController',
       function(response) {},
       function(error) {
       });
+  };
+
+  $scope.close = function () {
+    $modalInstance.dismiss('cancel');
   };
 }]);

@@ -10,16 +10,14 @@
     <span class="label label-primary">{{ranksFormating(performance.rankScore, performance.totalUsers)}}</span>
   </div>
 
-  <div class="instruction-text" ng-bind-html="currentQuestion.instruction.value"></div>
-
   <div class="lead text-center">
     <span ng-bind-html="currentQuestion.questionText.value"></span>
-    <span ng-if="currentQuestion.helpText" class="help"
+    <span ng-if="currentQuestion.instruction" class="help"
           ng-click="toggleQuestionHelp('help-' + answer.internalID)">
     </span>
-    <div ng-if="currentQuestion.helpText" class="panel panel-default help-panel"
-         slide-toggle="questionHelpState">
-      <div ng-bind-html="currentQuestion.helpText.value" class="panel-body">
+    <div ng-if="currentQuestion.instruction" class="panel panel-default help-panel"
+         slide-toggle="questionHelpState" style="display:none">
+      <div ng-bind-html="currentQuestion.instruction.value" class="panel-body">
       </div>
     </div>
   </div>

@@ -1,0 +1,56 @@
+<div ng-show="readyToShow == true">
+  <ol class="breadcrumb">
+    <li><a href="#/editor/quiz/list">quizzes</a></li>
+    <li>{{quizID}}</li>
+  </ol>
+  <a ng-href="#/editor/quiz/{{quizID}}/question/list" class="btn btn-default btn-sm" ng-disabled="!quizID">Questions</a>
+  <hr/>
+  <form class="form-horizontal" role="form" id="quizForm" name="quizForm"
+  ng-submit="saveQuiz(quizForm)" novalidate>
+    <div class="form-group"><label class="col-sm-2 control-label">Id</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="quizID" name="quizID" ng-model="quiz.quizID" ng-disabled="quizID" required>
+        <span class="help-block error" ng-show="quizForm.quizID.$error.required && notValidForm==true">
+          <i class="fa fa-warning"></i> Id is required</span>
+      </div>
+    </div>
+    <div class="hr-line-dashed"></div>
+    <div class="form-group"><label class="col-sm-2 control-label">Name</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="name" name="name" ng-model="quiz.name" required>
+        <span class="help-block error" ng-show="quizForm.name.$error.required && notValidForm==true">
+          <i class="fa fa-warning"></i> Name is required</span>
+      </div>
+    </div>
+    <div class="hr-line-dashed"></div>
+    <div class="form-group"><label class="col-sm-2 control-label"> Kind </label>
+      <div class="col-sm-10">
+        <div class="radio">
+          <label> <input type="radio" checked="" value="MULTIPLE_CHOICE" ng-model="quiz.kind"> multiple choice </label>
+        </div>
+        <div class="radio">
+          <label> <input type="radio" checked="" value="FREE_TEXT" ng-model="quiz.kind"> free text </label>
+        </div>
+      </div>
+    </div>
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
+      <div class="col-sm-12">
+        <div class="alert alert-danger alert-dismissable" ng-hide="!error || error==''" >
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          {{error}}
+        </div>
+        <div class="alert alert-success alert-dismissable" ng-hide="!success || success==''" >
+        	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        	{{success}}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-8 col-sm-offset-4">
+          <button class="btn btn-primary" type="submit">Save</button>
+          <a ng-href="#/editor/quiz/list" class="btn btn-default">Back</a>
+      </div>
+    </div>
+  </form>
+</div>
