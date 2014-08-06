@@ -2,6 +2,7 @@ package us.quizz.entities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,5 +22,7 @@ public class QuizTest {
     assertEquals(quiz_kind, quiz.getKind());
     assertEquals(quiz_name, quiz.getName());
     assertFalse(quiz.getShowOnDefault());
+
+    assertNull(quiz.getQuestionSelectionStrategy());
   }
 }

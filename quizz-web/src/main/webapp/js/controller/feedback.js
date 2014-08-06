@@ -11,16 +11,9 @@ angular.module('quizz').controller('FeedbackController',
   $scope.userAnswerID = workflowService.getUserAnswerId();
 
   $scope.challengeAnswer = function() {
-    var modalPromise = $modal({
-        template: templates.challengeAnswer,
-        persist: false,
-        show: false,
-        keyboard: true,
-        data: {}
-    });
-
-    $q.when(modalPromise).then(function(modalEl) {
-        modalEl.modal('show');
+    var modalInstance = $modal.open({
+        templateUrl: templates.challengeAnswer,
+        controller: 'ChallengeAnswerController'
     });
   };
 

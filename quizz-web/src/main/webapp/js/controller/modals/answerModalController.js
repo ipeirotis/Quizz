@@ -1,5 +1,6 @@
-angular.module('quizz').controller('AnswerModalController', [ '$scope', '$modalInstance', 'answer', function($scope, $modalInstance, answer) {
-
+angular.module('quizz').controller('AnswerModalController', [
+    '$scope', '$modalInstance', 'answer',
+    function($scope, $modalInstance, answer) {
   $scope.answer = answer || {kind: 'GOLD'};
 
   $scope.save = function (form) {
@@ -9,9 +10,8 @@ angular.module('quizz').controller('AnswerModalController', [ '$scope', '$modalI
     }
     $modalInstance.close($scope.answer);
   };
-  
+
   $scope.close = function () {
     $modalInstance.dismiss('cancel');
   };
-
 }]);

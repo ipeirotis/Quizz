@@ -143,7 +143,7 @@ public class QuestionService extends OfyBaseService<Question> {
   }
 
   private Map<String, Object> getQuestionsByStrategy(
-      String quizID, User user, Set<Long> questionIDs, Set<String> questionClientIDs,
+      Quiz quiz, String quizID, User user, Set<Long> questionIDs, Set<String> questionClientIDs,
       Integer numQuestions) {
     Map<String, Object> calibrationParams = new HashMap<String, Object>();
     // TODO(kobren): refactor magic strings.
@@ -164,11 +164,13 @@ public class QuestionService extends OfyBaseService<Question> {
     QuestionSelector calibrationSelector = new QuestionSelector(calibrationQuestions);
     QuestionSelector collectionSelector  = new QuestionSelector(collectionQuestions);
 
+    QuestionSelectionStrategy strategy = quiz.getQuestionSelectionStrategy();
     // TODO(kobren): find a way to pick a better parameter
     // TODO(kobren): think about assigning a question selection strategy upon user creation
-    QuestionSelectionStrategy strategy = user.pickQuestionSelectionStrategy();
-    userService.asyncSave(user);
-
+    if (strategy == null) {
+      strategy = user.pickQuestionSelectionStrategy();
+      userService.asyncSave(user);
+    }
     int numBins = 10;
     Map<String, Object> result = new HashMap<String, Object>();
     result.put(NUM_QUESTIONS_KEY, numQuestions);
@@ -228,7 +230,8 @@ public class QuestionService extends OfyBaseService<Question> {
     if (quiz.getUseQuestionSelectionStrategy() == null || !quiz.getUseQuestionSelectionStrategy()) {
       return getQuestionsWithLeastBits(quizID, questionIDs, questionClientIDs, numQuestions);
     } else {
-      return getQuestionsByStrategy(quizID, user, questionIDs, questionClientIDs, numQuestions);
+      return getQuestionsByStrategy(
+          quiz, quizID, user, questionIDs, questionClientIDs, numQuestions);
     } 
   }
 

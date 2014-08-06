@@ -7,6 +7,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
+import us.quizz.enums.QuestionSelectionStrategy;
 import us.quizz.enums.QuizKind;
 import us.quizz.utils.Helper;
 
@@ -106,6 +107,10 @@ public class Quiz implements Serializable {
 
   // Whether this quiz should use a questions selection strategy.
   private Boolean useQuestionSelectionStrategy;
+
+  // QuestionSelectionStrategy to be used for this quiz if useQuestionSelectionStrategy is true.
+  // If not set, assigns a random strategy to each user.
+  private QuestionSelectionStrategy questionSelectionStrategy;
 
   // Whether this quiz will allow varying number of questions in a single quiz (as opposed to
   // a fixed DEFAULT_NUM_QUESTIONS_PER_QUIZ questions).
@@ -364,5 +369,13 @@ public class Quiz implements Serializable {
     Preconditions.checkNotNull(allowVaryingLengthQuizSession,
         "allowVaryingLengthQuizSession cannot be null.");
     this.allowVaryingLengthQuizSession = allowVaryingLengthQuizSession;
+  }
+
+  public QuestionSelectionStrategy getQuestionSelectionStrategy() {
+    return this.questionSelectionStrategy;
+  }
+
+  public void setQuestionSelectionStrategy(QuestionSelectionStrategy selectionStrategy) {
+    this.questionSelectionStrategy = selectionStrategy;
   }
 }

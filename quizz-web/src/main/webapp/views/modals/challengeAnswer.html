@@ -57,5 +57,8 @@
 
 <div class="modal-footer" ng-show="showThanks">
   <button type="button" class="btn btn-default" ng-click="close()">Cancel</button>
-  <button type="button" class="btn btn-default" ng-click="send()">Send</button>
+  <button type="button" class="btn btn-default"
+          ng-click="send(challengeCorrectValueMessage, challengeURLMessage, challengeAnswerMessage)">
+    Send
+  </button>
 </div>

@@ -1,5 +1,6 @@
 angular.module('quizz').controller('EditorListQuestionsController',
-    ['$scope', '$routeParams', '$sce', 'editorService', function ($scope, $routeParams, $sce, editorService) {
+    ['$scope', '$routeParams', '$sce', 'editorService',
+     function ($scope, $routeParams, $sce, editorService) {
 
       $scope.quizID = $routeParams.quizID;
 

@@ -1,19 +1,23 @@
 angular.module('quizz').controller('ChallengeAnswerController',
-  ['$scope', '$routeParams', '$modalInstance', 'questionService', 'workflowService',
-   function ($scope, $routeParams, $modalInstance, questionService, workflowService) {
+  ['$scope', '$routeParams', '$modalInstance', 'questionService',
+       'workflowService',
+   function ($scope, $routeParams, $modalInstance, questionService,
+       workflowService) {
   $scope.reason = 'OTHER';
   $scope.showOptions = true;
   $scope.showThanks = false;
 
-  $scope.send = function() {
+  $scope.send = function(
+      challengeCorrectValueMessage, challengeURLMessage,
+      challengeAnswerMessage) {
     questionService.challengeAnswer(
       $routeParams.quizId,
       workflowService.getCurrentQuestion().id,
       workflowService.getLastAnswer().id,
       workflowService.getLastFeedback().userid,
-      $scope.challengeAnswerMessage,
-      $scope.challengeCorrectValueMessage,
-      $scope.challengeURLMessage,
+      challengeAnswerMessage,
+      challengeCorrectValueMessage,
+      challengeURLMessage,
       $scope.reason,
       function(response) {
         $modalInstance.dismiss('cancel');

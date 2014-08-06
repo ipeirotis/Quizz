@@ -11,6 +11,6 @@ angular.module('quizz').controller('EditorListQuizzesController',
           console.log(error);
         });
       };
-      
+
       $scope.loadQuizzes();
 }]);

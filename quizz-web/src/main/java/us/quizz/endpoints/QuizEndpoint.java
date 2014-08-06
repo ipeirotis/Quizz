@@ -2,11 +2,13 @@ package us.quizz.endpoints;
 
 import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
 
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
+import com.google.inject.Inject;
 
 import us.quizz.entities.Question;
 import us.quizz.entities.Quiz;
@@ -15,13 +17,11 @@ import us.quizz.service.QuizService;
 import us.quizz.utils.Constants;
 import us.quizz.utils.Security;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiMethod.HttpMethod;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
-import com.google.inject.Inject;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
 
 @Api(name = "quizz",
      description = "The API for Quizz.us",

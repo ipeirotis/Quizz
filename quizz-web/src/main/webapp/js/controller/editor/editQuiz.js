@@ -1,15 +1,15 @@
 angular.module('quizz').controller('EditorEditQuizController',
     ['$scope', '$location', '$routeParams', 'editorService',
      function ($scope, $location, $routeParams, editorService) {
-      
+
       $scope.quizID = $routeParams.quizID;
-      
+
       $scope.quiz = {
         kind: 'MULTIPLE_CHOICE',
         questions: 0,
         showOnDefault: true
       };
-      
+
       $scope.loadQuiz = function () {
         if($routeParams.quizID) {
           editorService.getQuiz($routeParams.quizID, function(response) {
@@ -24,15 +24,15 @@ angular.module('quizz').controller('EditorEditQuizController',
           $scope.readyToShow = true;
         }
       };
-      
+
       $scope.loadQuiz();
-      
+
       $scope.saveQuiz = function (form) {
         if(form.$invalid){
           $scope.notValidForm = true;
           return;
         }
-        
+
         editorService.saveQuiz($scope.quiz, function(response) {
           $scope.quizID = response.quizID;
           $scope.error = '';

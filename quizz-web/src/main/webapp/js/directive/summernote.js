@@ -22,7 +22,7 @@ angular.module('quizz').directive('summernote', function() {
       };
 
       element.summernote(config);
-      
+
       if(ngModel) {
         ngModel.$render = function() {
           element.code(ngModel.$viewValue || '');
