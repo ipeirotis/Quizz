@@ -1,10 +1,14 @@
-angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
+angular.module('quizz-admin', ['ngRoute', 'ngSanitize', 'ui.bootstrap'])
     .config(['$routeProvider', 'templates',
              function($routeProvider, templates) {  
                $routeProvider
                    .when('/quizzes', {
                              templateUrl: templates.quizzes,
                              controller: 'QuizzesController'
+                         })
+                   .when('/quizzes/:quizID', {
+                             templateUrl: templates.quiz,
+                             controller: 'QuizController'
                          })
                    .when('/reports/multiChoiceAnswers', {
                              templateUrl: templates.multiChoiceAnswersReport,
@@ -26,7 +30,7 @@ angular.module('quizz-admin', ['ngRoute', 'ngSanitize'])
                              controller: 'ContributionQualityReportController',
                              reloadOnSearch: false
                          })
-                   .otherwise({redirectTo: '/report'});
+                   .otherwise({redirectTo: '/quizzes'});
              }])
 
 .config(['$httpProvider', function($httpProvider) {

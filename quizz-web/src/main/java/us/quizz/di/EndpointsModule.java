@@ -1,7 +1,9 @@
 package us.quizz.di;
 
-import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import java.util.HashSet;
+import java.util.Set;
 
+import us.quizz.endpoints.CampaignManagementEndpoint;
 import us.quizz.endpoints.ProcessUserAnswerEndpoint;
 import us.quizz.endpoints.QuestionEndpoint;
 import us.quizz.endpoints.QuizEndpoint;
@@ -12,8 +14,7 @@ import us.quizz.endpoints.UserActionEndpoint;
 import us.quizz.endpoints.UserAnswerEndpoint;
 import us.quizz.endpoints.UserEndpoint;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
 
 public class EndpointsModule extends GuiceSystemServiceServletModule {
   @Override
@@ -30,6 +31,7 @@ public class EndpointsModule extends GuiceSystemServiceServletModule {
     serviceClasses.add(UserActionEndpoint.class);
     serviceClasses.add(UserAnswerEndpoint.class);
     serviceClasses.add(UserEndpoint.class);
+    serviceClasses.add(CampaignManagementEndpoint.class);
     this.serveGuiceSystemServiceServlet("/_ah/spi/*", serviceClasses);
   }
 }

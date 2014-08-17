@@ -42,6 +42,7 @@ angular.module('quizz').controller('QuizController',
      $scope.fetchAdditionalQuestions = function() {
        questionService.list(
          $routeParams.quizId,
+         $routeParams.questionId,
          userService.getUsername(),
          function(response) {
            workflowService.setQuestions(response, $routeParams.quizId);
@@ -50,7 +51,7 @@ angular.module('quizz').controller('QuizController',
            userActionService.recordQuestionShown(
                userService.getUsername(),
                $routeParams.quizId,
-               workflowService.getCurrentQuestion().id,
+               workflowService.getCurrentQuestion()?workflowService.getCurrentQuestion().id : $routeParams.questionId,
                function(response) {},
                function(error) {}
            );

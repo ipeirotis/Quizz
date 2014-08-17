@@ -1,0 +1,39 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Campaign</h4>
+</div>
+<form role="form" id="campaignForm" name="campaignForm" class="form-horizontal" ng-submit="save(campaignForm)" novalidate>
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="col-sm-12">
+            <label class="control-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" ng-model="campaign.name" required>
+                <span class="help-block error" ng-show="campaignForm.name.$error.required && notValidForm==true">
+                <i class="fa fa-warning"></i> Name is required</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+            <label class="control-label">Budget</label>
+                <input type="text" class="form-control" id="budget" name="budget" ng-model="campaign.budget" required>
+                <span class="help-block error" ng-show="campaignForm.budget.$error.required && notValidForm==true">
+                <i class="fa fa-warning"></i> Budget is required</span>
+            </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <label class="control-label"> Status </label>
+            <div class="radio">
+              <label> <input type="radio" checked="" value="ENABLED" ng-model="campaign.status"> enabled </label>
+            </div>
+            <div class="radio">
+              <label> <input type="radio" checked="" value="PAUSED" ng-model="campaign.status"> paused </label>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>

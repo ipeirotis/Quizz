@@ -14,5 +14,12 @@
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     <property name="GOOGLE_ANALYTICS_ID" value="${google.analytics.id}"/>
     <property name="AUTH_CLIENT_ID" value="${auth.client.id}"/>
+
+    <property name="API_ADWORDS_CLIENT_ID" value="${api.adwords.clientId}"/>
+    <property name="API_ADWORDS_CLIENT_SECRET" value="${api.adwords.clientSecret}"/>
+    <property name="API_ADWORDS_REFRESH_TOKEN" value="${api.adwords.refreshToken}"/>
+    <property name="API_ADWORDS_DEVELOPER_TOKEN" value="${api.adwords.developerToken}"/>
+    <property name="API_ADWORDS_CLIENT_CUSTOMER_ID" value="${api.adwords.clientCustomerId}"/>
+    <property name="API_ADWORDS_USER_AGENT" value="${api.adwords.userAgent}"/>
   </system-properties>
 </appengine-web-app>

@@ -69,7 +69,8 @@
         us.quizz.endpoints.QuestionEndpoint,
         us.quizz.endpoints.QuizPerformanceEndpoint,
         us.quizz.endpoints.UserAnswerEndpoint,
-        us.quizz.endpoints.UserEndpoint
+        us.quizz.endpoints.UserEndpoint,
+        us.quizz.endpoints.CampaignManagementEndpoint
       </param-value>
     </init-param>
   </servlet>

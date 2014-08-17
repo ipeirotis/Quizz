@@ -3,6 +3,7 @@ angular.module('quizz').factory('workflowService', [function() {
   var quizID = '';
   var userAnswers = [];
   var userFeedbacks = [];
+  var firstQuestion = null;
   var currentQuestion = null;
   var currentQuestionIndex = 0;
   var currentGoldQuestionIndex = 0;
@@ -49,6 +50,9 @@ angular.module('quizz').factory('workflowService', [function() {
     setQuestions: function(newQuestionsMap, newQuizID) {
       quizID = newQuizID;
       questions = newQuestionsMap;
+      if (newQuestionsMap.firstQuestion) {
+        firstQuestion = newQuestionsMap.firstQuestion;
+      }
       if (newQuestionsMap.calibration) {
         numCalibrationQuestions = newQuestionsMap.calibration.length;
       }
@@ -88,6 +92,9 @@ angular.module('quizz').factory('workflowService', [function() {
     // Picks the next question based on whether we are asking collection
     // or calibration questions (isNextQuestionGold).
     getNewCurrentQuestion: function() {
+      if(currentQuestionIndex == 0 && firstQuestion) {
+        currentQuestion = firstQuestion;
+      }
       // If there are no questions to ask of a certain label (calibration /
       // collection), ask a question of the other label type, if possible.
       if (numCalibrationQuestions == 0) {

@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="row" ng-show="readyToShow == true">
+    <div class="col-sm-offset-3 col-sm-6">
+      <ol class="breadcrumb">
+        <li>quizzes</li>
+      </ol>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Quiz</th>
+            <th width="20"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="quiz in quizzes | orderBy:'name'">
+            <td>
+              {{quiz.name}}
+            </td>
+            <td>
+              <a ng-href="#/quizzes/{{quiz.quizID}}"><i class="fa fa-bullhorn"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
