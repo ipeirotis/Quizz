@@ -303,7 +303,7 @@ public class QuizzTest {
 
   private Set<Question> startQuiz(String quizId) {
     Map<String, Object> questionMap =
-        quizEndpoint.getNextQuestions(quizId, "user1", NUMBER_OF_QUESTIONS);
+        quizEndpoint.getNextQuestions(quizId, null, "user1", NUMBER_OF_QUESTIONS);
     return (Set<Question>) questionMap.get("calibration");
   }
 

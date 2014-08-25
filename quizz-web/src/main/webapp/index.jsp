@@ -62,6 +62,8 @@
 <script src="/js/service/userService.js" type="text/javascript"></script>
 <script src="/js/service/utils.js" type="text/javascript"></script>
 <script src="/js/service/workflowService.js" type="text/javascript"></script>
+<script src="/js/service/userActionService.js" type="text/javascript"></script>
+
 <script src="/js/controller/feedback.js" type="text/javascript"></script>
 <script src="/js/controller/list.js" type="text/javascript"></script>
 <script src="/js/controller/quiz.js" type="text/javascript"></script>

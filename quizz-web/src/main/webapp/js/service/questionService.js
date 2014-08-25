@@ -12,9 +12,10 @@ angular.module('quizz').factory('questionService', ['$http', function($http) {
     // which is a map containing two values:
     //   - calibration - Set of calibration questions.
     //   - collection - Set of collection questions.
-    list: function(quizId, userid, success, error) {
+    list: function(quizId, firstQuestionId, userid, success, error) {
       var params = {
         quizID: quizId,
+        firstQuestionID: firstQuestionId,
         userID: userid
       };
       var url = Config.api + '/listNextQuestions';

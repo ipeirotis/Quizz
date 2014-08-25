@@ -90,9 +90,10 @@ public class QuizEndpoint {
              httpMethod = HttpMethod.POST)
   public Map<String, Object> getNextQuestions(
       @Named("quizID") String quizID,
+      @Nullable @Named("firstQuestionID") Long firstQuestionID,
       @Named("userID") String userID,
       @Nullable @Named("num") Integer num) {
-    return questionService.getNextQuizQuestions(quizID, userID);
+    return questionService.getNextQuizQuestions(quizID, firstQuestionID, userID);
   }
 
   // Inserts a new entity into Datastore. If the entity already exists, an exception will be thrown.

@@ -24,6 +24,7 @@ import us.quizz.service.AnswerChallengeCounterService;
 import us.quizz.service.BadgeAssignmentService;
 import us.quizz.service.BadgeService;
 import us.quizz.service.BrowserStatsService;
+import us.quizz.service.CampaignManagementService;
 import us.quizz.service.DomainStatsService;
 import us.quizz.service.ExperimentService;
 import us.quizz.service.ExplorationExploitationService;
@@ -64,6 +65,7 @@ public class CommonModule extends AbstractModule {
     bind(BadgeAssignmentService.class).in(Singleton.class);
     bind(BadgeService.class).in(Singleton.class);
     bind(BrowserStatsService.class).in(Singleton.class);
+    bind(CampaignManagementService.class).in(Singleton.class);
     bind(DomainStatsService.class).in(Singleton.class);
     bind(ExperimentService.class).in(Singleton.class);
     bind(ExplorationExploitationService.class).in(Singleton.class);

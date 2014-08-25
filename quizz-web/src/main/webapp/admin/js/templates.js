@@ -1,7 +1,9 @@
 angular.module('quizz-admin').constant('templates', {
-  quizzes: 'views/quizzes.html?v=1',
-  multiChoiceAnswersReport: 'views/reports/answersReport.html?v=1',
-  scoreByBrowserReport: 'views/reports/scoreByBrowserReport.html?v=1',
-  scoreByDomainReport: 'views/reports/scoreByDomainReport.html?v=1',
-  contributionQualityReport: 'views/reports/contributionQualityReport.html?v=1'
+  quiz: 'views/quiz.html',
+  quizzes: 'views/quizzes.html',
+  multiChoiceAnswersReport: 'views/reports/answersReport.html',
+  scoreByBrowserReport: 'views/reports/scoreByBrowserReport.html',
+  scoreByDomainReport: 'views/reports/scoreByDomainReport.html',
+  contributionQualityReport: 'views/reports/contributionQualityReport.html',
+  campaignModal: 'views/modals/campaign.html'
 });

@@ -2,6 +2,16 @@
   pageEncoding="UTF-8"%>
 <%@ page import="com.google.appengine.api.utils.SystemProperty"%>
 
+<%
+  boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
+  String apiUrl;
+
+  if (isDev)
+    apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+  else
+    apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
+%>
+
 <!DOCTYPE html>
 <html ng-app="quizz-admin">
 <head>
@@ -21,6 +31,7 @@
 <link rel="apple-touch-icon-precomposed" href="/assets/57x57.png">
 
 <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap-custom.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 
@@ -34,19 +45,32 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js" type="text/javascript"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
+<% if (isDev) {%>
+<script src="js/app.js" type="text/javascript"></script>
+<script src="js/templates.js" type="text/javascript"></script>
+<script src="js/controller/reports/contributionQualityReport.js" type="text/javascript"></script>
+<script src="js/controller/reports/multiChoiceAnswersReport.js" type="text/javascript"></script>
+<script src="js/controller/reports/scoreByBrowserReport.js" type="text/javascript"></script>
+<script src="js/controller/reports/scoreByDomainReport.js" type="text/javascript"></script>
+<script src="js/controller/menu.js" type="text/javascript"></script>
+<script src="js/controller/quizzes.js" type="text/javascript"></script>
+<script src="js/controller/quiz.js" type="text/javascript"></script>
+<script src="js/controller/modals/campaignModalController.js" type="text/javascript"></script>
+<script src="js/directive/reports/answersHeaderRow.js" type="text/javascript"></script>
+<script src="js/directive/reports/answersRow.js" type="text/javascript"></script>
+<script src="js/directive/navbar.js" type="text/javascript"></script>
+<script src="js/service/interceptor.js" type="text/javascript"></script>
+<script src="js/service/loading.js" type="text/javascript"></script>
+<script src="js/service/reportService.js" type="text/javascript"></script>
+<script src="js/service/quizService.js" type="text/javascript"></script>
+<script src="js/service/campaignService.js" type="text/javascript"></script>
+<% } else {%>
 <script src="js/all.js" type="text/javascript"></script>
+<% } %>
 <script src='/_ah/channel/jsapi'></script>
 
 </head>
-<%
-  boolean isDev = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
-  String apiUrl;
-
-  if (isDev)
-    apiUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
-  else
-    apiUrl = "https://" + SystemProperty.applicationId.get() + ".appspot.com";
-%>
 
 <script>
   var SCOPES = 'https://www.googleapis.com/auth/userinfo.email';
@@ -119,7 +143,7 @@
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        <li data-match-route="/quizzes"><a href="#/quizzes">Quizzes</a></li>
+        <li data-match-route="/quizzes/([A-Za-z0-9]+)"><a href="#/quizzes">Quizzes</a></li>
         <li data-match-route="/reports/([A-Za-z0-9]+)" class="dropdown">
           <a href="" class="dropdown-toggle"  data-toggle="dropdown">Reports <b class="caret"></b></a>
           <ul class="dropdown-menu">

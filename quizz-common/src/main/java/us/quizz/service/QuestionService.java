@@ -211,10 +211,11 @@ public class QuestionService extends OfyBaseService<Question> {
    *         COLLECTION_KEY -> set of collection questions.
    *         NUM_QUESTIONS_KEY -> The number of questions to group into a single quiz.
    */
-  public Map<String, Object> getNextQuizQuestions(String quizID, String userID) {
+  public Map<String, Object> getNextQuizQuestions(String quizID, Long firstQuestionID, String userID) {
     // First, we try to get a list of questions that the user has answered before for this quiz.
     List<UserAnswer> userAnswers = userAnswerRepository.getUserAnswers(quizID, userID);
     Set<Long> questionIDs = new HashSet<Long>();
+
     for (UserAnswer userAnswer : userAnswers) {
       questionIDs.add(userAnswer.getQuestionID());
     }
@@ -227,12 +228,21 @@ public class QuestionService extends OfyBaseService<Question> {
     // Some quizzes use a question selection strategy and others do not.
     // If this quiz uses such a strategy, select questions according to the strategy.
     // Otherwise, use the default strategy, which is picking those with the least bits.
+    Map<String, Object> result;
     if (quiz.getUseQuestionSelectionStrategy() == null || !quiz.getUseQuestionSelectionStrategy()) {
-      return getQuestionsWithLeastBits(quizID, questionIDs, questionClientIDs, numQuestions);
+      result = getQuestionsWithLeastBits(quizID, questionIDs, questionClientIDs, numQuestions);
     } else {
       return getQuestionsByStrategy(
           quiz, quizID, user, questionIDs, questionClientIDs, numQuestions);
     } 
+    // If user opened url with questionId param
+    if (firstQuestionID != null) {
+      Question firstQuestion = get(firstQuestionID);
+      if (firstQuestion != null) {
+        result.put("firstQuestion", firstQuestion);
+      }
+    }
+    return result;
   }
 
   /**

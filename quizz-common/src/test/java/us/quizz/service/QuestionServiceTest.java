@@ -201,7 +201,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsDuplicateAnsweredClientID() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID1);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID1);
     assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
@@ -213,7 +213,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsDuplicateUnansweredClientID() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID3);
     assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
@@ -224,7 +224,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsDuplicateCollectionQuestion() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID1);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID1);
     assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
@@ -237,7 +237,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsNullOrEmptyClientID() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, USER_ID2);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, null, USER_ID2);
     assertEquals(3, results.size());
 
     // Make sure all the questions are selected even though there are "repeated" empty
@@ -250,7 +250,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsCollectionQuestion() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, USER_ID1);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, null, USER_ID1);
     assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.COLLECTION_KEY));
@@ -263,7 +263,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsCalibrationQuestion() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, USER_ID2);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID2, null, USER_ID2);
     assertEquals(3, results.size());
 
     assertTrue(results.containsKey(QuestionService.CALIBRATION_KEY));
@@ -284,7 +284,7 @@ public class QuestionServiceTest extends QuizBaseTest {
     quiz.setAllowVaryingLengthQuizSession(true);
     quizService.save(quiz);
 
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID3);
     assertEquals(3, results.size());
 
     // Makes sure the sole question selected has the lowest totalUserScore.
@@ -305,7 +305,7 @@ public class QuestionServiceTest extends QuizBaseTest {
 
   @Test
   public void testNextQuestionsDefaultNumQuestions() throws Exception {
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID3);
     assertEquals(3, results.size());
     assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
     assertEquals((Integer) QuestionService.DEFAULT_NUM_QUESTIONS_PER_QUIZ,
@@ -322,7 +322,7 @@ public class QuestionServiceTest extends QuizBaseTest {
     quiz.setAllowVaryingLengthQuizSession(true);
     quizService.save(quiz);
 
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID3);
     assertEquals(3, results.size());
     assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
     assertEquals((Integer) 8, (Integer) results.get(QuestionService.NUM_QUESTIONS_KEY));
@@ -338,7 +338,7 @@ public class QuestionServiceTest extends QuizBaseTest {
     quiz.setAllowVaryingLengthQuizSession(true);
     quizService.save(quiz);
 
-    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, USER_ID3);
+    Map<String, Object> results = questionService.getNextQuizQuestions(QUIZ_ID1, null, USER_ID3);
     assertEquals(3, results.size());
     assertTrue(results.containsKey(QuestionService.NUM_QUESTIONS_KEY));
     assertEquals(-1, (int) (Integer) results.get(QuestionService.NUM_QUESTIONS_KEY));
